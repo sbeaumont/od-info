@@ -22,7 +22,7 @@ from bs4 import BeautifulSoup
 BASE_URL = 'https://www.opendominion.net/valhalla/round'
 ROUND_NUMBER = 49
 LAST_FIVE_ROUNDS = (49, 48, 47, 45, 44)
-
+OUT_DIR = 'out/'
 MASTERY_STATS = ('Most Masterful Spies', 'Most Masterful Wizards')
 OPS_STATS = ('Most Successful Spies', 'Most Successful Wizards')
 THEFT_STATS = ('Top Platinum Thieves', 'Top Food Thieves', 'Top Lumber Thieves', 'Top Mana Thieves',
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     blop_scores = blop_scores_for_round(ROUND_NUMBER)
     top_blop = sorted(blop_scores, key=lambda e: e[1], reverse=True)
 
-    with open(f'Top (Black) Oppers Round {ROUND_NUMBER}.txt', 'w') as f:
+    with open(f'{OUT_DIR}Top (Black) Oppers Round {ROUND_NUMBER}.txt', 'w') as f:
         for p in top_blop:
             f.write(f"{p[0]}, {p[1]}\n")
 
@@ -141,7 +141,7 @@ if __name__ == '__main__':
     top_5_blop = [(p, s) for p, s in last_five_rounds.items()]
     top_5_blop_sorted = sorted(top_5_blop, key=lambda e: e[1], reverse=True)
 
-    with open(f'Top (Black) Oppers Last Five Rounds.txt', 'w') as f:
+    with open(f'{OUT_DIR}Top (Black) Oppers Last Five Rounds.txt', 'w') as f:
         for p in top_5_blop_sorted:
             f.write(f"{p[0]}, {round(p[1], 3)}\n")
 

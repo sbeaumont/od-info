@@ -49,6 +49,14 @@ TOTAL_SCORE_RATIOS = {
 }
 
 
+def is_blop_stat(stat_name: str) -> bool:
+    blop_keywords = ['Wizard', 'Spies', 'Thieves', 'Masters', 'Saboteurs', 'Snare', 'Spy', 'Assassins']
+    for kw in blop_keywords:
+        if kw in stat_name:
+            return True
+    return False
+
+
 def all_player_names(stats: dict) -> list:
     players = set()
     for stat in stats.values():
@@ -69,7 +77,7 @@ def calculate_player_score(stats: dict, name: str) -> float:
 
 
 def blop_scores_for_round(round_number: int) -> list:
-    stats = load_stats(round_number)
+    stats = load_stats(round_number, is_blop_stat)
     players = all_player_names(stats)
     return [(player, calculate_player_score(stats, player)) for player in players]
 

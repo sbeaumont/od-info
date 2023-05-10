@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import requests
 from bs4 import BeautifulSoup
+from typing import Callable
 
 BASE_URL = 'https://www.opendominion.net/valhalla/round'
 
@@ -37,14 +38,6 @@ def parse_entries_from_page(soup: BeautifulSoup) -> dict:
     return results
 
 
-def is_blop_stat(stat_name: str) -> bool:
-    blop_keywords = ['Wizard', 'Spies', 'Thieves', 'Masters', 'Saboteurs', 'Snare', 'Spy', 'Assassins']
-    for kw in blop_keywords:
-        if kw in stat_name:
-            return True
-    return False
-
-
 def feature_scaled_scores(rankings: dict, low=0, high=1):
     max_score = max([r.score for r in rankings.values()])
     min_score = min([r.score for r in rankings.values()])
@@ -52,10 +45,10 @@ def feature_scaled_scores(rankings: dict, low=0, high=1):
         r.fs_score = low + ((r.score - min_score) * (high - low)) / (max_score - min_score)
 
 
-def load_stats(round_number: int):
+def load_stats(round_number: int, stat_filter: Callable[[str], int]):
     result = dict()
     stat_page_urls = get_stat_page_urls(round_number)
-    blop_pages = {k: v for k, v in stat_page_urls.items() if is_blop_stat(k)}
+    blop_pages = {k: v for k, v in stat_page_urls.items() if stat_filter(k)}
     for name, url in blop_pages.items():
         page = get_page(url)
         page_stats = parse_entries_from_page(page)

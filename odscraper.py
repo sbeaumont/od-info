@@ -1,3 +1,9 @@
+"""
+Round
+    Stat
+        Ranking
+"""
+
 from dataclasses import dataclass
 import requests
 from bs4 import BeautifulSoup
@@ -14,7 +20,13 @@ class Ranking:
     fs_score: float = 0
 
 
-def get_stat_page_urls(round_number: int):
+def get_page(page_url: str) -> BeautifulSoup:
+    """Utility function to load a URL into a BeautifulSoup instance."""
+    page = requests.get(page_url)
+    return BeautifulSoup(page.content, "html.parser")
+
+
+def get_stat_page_urls(round_number: int) -> dict[str, str]:
     """Retrieve all stat page URLs from the stat overview page of the round."""
     round_url = '/'.join([BASE_URL, str(round_number)])
     page = get_page(round_url)
@@ -22,14 +34,8 @@ def get_stat_page_urls(round_number: int):
     return stat_page_urls
 
 
-def get_page(page_url: str) -> BeautifulSoup:
-    """Utility function to load a URL into a BeautifulSoup instance."""
-    page = requests.get(page_url)
-    return BeautifulSoup(page.content, "html.parser")
-
-
-def parse_entries_from_page(soup: BeautifulSoup) -> dict:
-    """Pull rankings out of a stat page."""
+def parse_entries_from_page(soup: BeautifulSoup) -> dict[str, Ranking]:
+    """Pull rankings out of a stat page into a dict{player name: Ranking}."""
     results = dict()
     for line in soup.tbody.find_all('tr'):
         entry = [child.text.strip() for child in line.find_all('td')]
@@ -45,11 +51,12 @@ def feature_scaled_scores(rankings: dict, low=0, high=1):
         r.fs_score = low + ((r.score - min_score) * (high - low)) / (max_score - min_score)
 
 
-def load_stats(round_number: int, stat_filter: Callable[[str], int]):
-    result = dict()
+def load_stats(round_number: int, stat_filter: Callable[[str], int]) -> dict:
     stat_page_urls = get_stat_page_urls(round_number)
-    blop_pages = {k: v for k, v in stat_page_urls.items() if stat_filter(k)}
-    for name, url in blop_pages.items():
+    stat_pages = {k: v for k, v in stat_page_urls.items() if stat_filter(k)}
+
+    result = dict()
+    for name, url in stat_pages.items():
         page = get_page(url)
         page_stats = parse_entries_from_page(page)
         feature_scaled_scores(page_stats)

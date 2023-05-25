@@ -17,7 +17,7 @@ Fireball Score
 from collections import defaultdict
 from odscraper import load_stats
 
-ROUND_NUMBER = 49
+ROUND_NUMBER = 50
 LAST_FIVE_ROUNDS = (49, 48, 47, 45, 44)
 LAST_TEN_ROUNDS = (49, 48, 47, 45, 44, 42, 41, 39, 38, 36)
 
@@ -57,7 +57,7 @@ def is_blop_stat(stat_name: str) -> bool:
     return False
 
 
-def all_player_names(stats: dict) -> list:
+def all_player_names(stats: dict) -> set:
     players = set()
     for stat in stats.values():
         players.update(stat.keys())
@@ -140,7 +140,7 @@ def multiple_round_scores(round_numbers: list):
 
 
 if __name__ == '__main__':
-    # round_scores(ROUND_NUMBER)
+    round_scores(ROUND_NUMBER)
     # multiple_round_totals(LAST_FIVE_ROUNDS)
-    multiple_round_scores(LAST_FIVE_ROUNDS)
+    # multiple_round_scores(LAST_FIVE_ROUNDS)
 

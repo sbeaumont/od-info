@@ -48,7 +48,10 @@ def feature_scaled_scores(rankings: dict, low=0, high=1):
     max_score = max([r.score for r in rankings.values()])
     min_score = min([r.score for r in rankings.values()])
     for r in rankings.values():
-        r.fs_score = low + ((r.score - min_score) * (high - low)) / (max_score - min_score)
+        if max_score - min_score > 0:
+            r.fs_score = low + ((r.score - min_score) * (high - low)) / (max_score - min_score)
+        else:
+            r.fs_score = 1
 
 
 def load_stats(round_number: int, stat_filter: Callable[[str], int]) -> dict:
@@ -58,8 +61,8 @@ def load_stats(round_number: int, stat_filter: Callable[[str], int]) -> dict:
     result = dict()
     for name, url in stat_pages.items():
         page = get_page(url)
+        print('Loaded', name)
         page_stats = parse_entries_from_page(page)
         feature_scaled_scores(page_stats)
         result[name] = page_stats
-        print('Loaded', name)
     return result

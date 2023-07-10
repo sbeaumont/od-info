@@ -15,7 +15,7 @@ Fireball Score
 
 """
 from collections import defaultdict
-from odscraper import load_stats
+from rankingscraper import load_stats
 
 ROUND_NUMBER = 50
 LAST_FIVE_ROUNDS = (49, 48, 47, 45, 44)

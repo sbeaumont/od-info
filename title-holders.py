@@ -1,7 +1,7 @@
-from odscraper import load_stats
+from rankingscraper import load_stats
 
 EXCLUDE_STATS = ['Realm', 'Pack']
-ROUND_NUMBER = 49
+ROUND_NUMBER = 50
 
 
 def to_include(stat_name: str) -> bool:

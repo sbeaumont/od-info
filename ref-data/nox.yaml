@@ -1,0 +1,47 @@
+key: nox
+name: Nox
+alignment: evil
+description: >-
+  <p>Legends say that deep under the Undead swamps there exists a supernatural void; an unholy abyss absent of all light, in which unfathomable creatures skitter about in the inky dark. Among them are the Nox.</p>
+  <p>The Nox wear darkness like a cloak, dragging night into day in vast clouds that defy all reason, enveloping entire empires in an alien twilight wherever they strike. When the daylight returns, there's not a trace of their enemies left.</p>
+attacker_difficulty: 2
+explorer_difficulty: 1
+converter_difficulty: 2
+home_land_type: swamp
+perks:
+  food_consumption: -20
+  mana_production: 10
+  tech_production: 15
+units:
+  - name: Imp
+    cost:
+      platinum: 300
+      mana: 0
+    power:
+      offense: 3
+      defense: 0
+  - name: Fiend
+    cost:
+      platinum: 325
+      mana: 8
+    power:
+      offense: 0
+      defense: 3
+  - name: Nightshade
+    cost:
+      platinum: 975
+      mana: 25
+    power:
+      offense: 0
+      defense: 2
+    perks:
+      defense_from_land: swamp,10,4 # land type, ratio%, max
+  - name: Lich
+    cost:
+      platinum: 970
+      mana: 0
+    power:
+      offense: 5
+      defense: 2
+    perks:
+      casualties: -50

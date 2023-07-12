@@ -4,8 +4,8 @@ from pprint import pprint
 import json
 import yaml
 
-from scrapetools import get_soup_page, read_server_time, login
-from config import OPS_DATA_DIR, REF_DATA_DIR, SEARCH_PAGE, OP_CENTER_URL
+from scrapetools import get_soup_page, read_tick_time, login
+from config import REF_DATA_DIR, SEARCH_PAGE, OP_CENTER_URL
 
 NON_HOME_CAPACITY = 15
 BUILD_TICKS = 12
@@ -20,6 +20,13 @@ IMP_FACTORS = {
     'harbor': ImpFactor(0.6, 5000, 15000)
 }
 MASONRY_MULTIPLIER = 2.75
+
+NETWORTH_VALUES = {
+    'land': 20,
+    'buildings': 5,
+    'specs': 5,
+    'spywiz': 5
+}
 
 
 class Race(object):
@@ -133,16 +140,33 @@ class Ops(object):
         result += self.q('status.military_archmages')
         return result
 
+    def dom_networth(self) -> int:
+        networth = 0
+        networth += self.land * NETWORTH_VALUES['land']
+        networth += self.buildings.total * NETWORTH_VALUES['buildings']
 
-# class Building(object):
-#     def __init__(self, built=0, capacity=NON_HOME_CAPACITY):
-#         self.built = built
-#         self.constructing = {i: 0 for i in range(1, BUILD_TICKS + 1)}
-#         self.capacity = capacity
-#
-#     @property
-#     def total_capacity(self):
-#         return (self.built * self.capacity) + (sum(self.constructing.values()) * NON_HOME_CAPACITY)
+        networth += self.q('status.military_unit1') * NETWORTH_VALUES['specs']
+        networth += self.q('status.military_unit2') * NETWORTH_VALUES['specs']
+        networth += self.q('status.military_unit3') * race.elite_unit_networth(self.race.def_elite, ops)
+        networth += self.q('status.military_unit4') * race.elite_unit_networth(self.race.off_elite, ops)
+
+        networth += self.q('status.military_spies') * NETWORTH_VALUES['spywiz']
+        networth += self.q('status.military_assassins') * NETWORTH_VALUES['spywiz']
+        networth += self.q('status.military_wizards') * NETWORTH_VALUES['spywiz']
+        networth += self.q('status.military_archmages') * NETWORTH_VALUES['spywiz']
+        return round(networth)
+
+    def spywiz_estimate(self) -> int:
+        networth = self.q('status.networth')
+        networth -= self.land * NETWORTH_VALUES['land']
+        networth -= self.buildings.total * NETWORTH_VALUES['buildings']
+
+        networth -= self.q('status.military_unit1') * NETWORTH_VALUES['specs']
+        networth -= self.q('status.military_unit2') * NETWORTH_VALUES['specs']
+        networth -= self.q('status.military_unit3') * self.race.elite_unit_networth(ops.race.def_elite, ops)
+        networth -= self.q('status.military_unit4') * self.race.elite_unit_networth(ops.race.off_elite, ops)
+
+        return round(networth / NETWORTH_VALUES['spywiz'])
 
 
 class Buildings(object):
@@ -223,7 +247,7 @@ def print_ops(ops: Ops):
 
 def grab_search(session) -> list:
     soup = get_soup_page(session, SEARCH_PAGE)
-    server_time = read_server_time(soup)
+    server_time = read_tick_time(soup)
 
     search_lines = list()
     for row in soup.find(id='dominions-table').tbody.find_all('tr'):
@@ -235,7 +259,7 @@ def grab_search(session) -> list:
         dom_pop = int(cells[3].string.strip().replace(',', ''))
         dom_networth = int(cells[4].string.strip().replace(',', ''))
         in_range = cells[5].string.strip()
-        parsed_row = (server_time, dom_name, dom_code, realm_code, dom_race, dom_pop, dom_networth, in_range)
+        parsed_row = (str(server_time), dom_name, dom_code, realm_code, dom_race, dom_pop, dom_networth, in_range)
         search_lines.append(parsed_row)
     return search_lines
 

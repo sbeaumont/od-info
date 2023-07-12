@@ -2,18 +2,10 @@ import json
 import os
 
 from calculator.scrapetools import login
-from calculator.ops import grab_search, Ops
+from calculator.ops import grab_search
 from config import NETWORTH_FILE
-from datetime import datetime
+from datetime import datetime, timedelta
 from calculator.dominion import name_for_code
-
-
-NETWORTH_VALUES = {
-    'land': 20,
-    'buildings': 5,
-    'specs': 5,
-    'spywiz': 5
-}
 
 
 def update_networth(session, file_name):
@@ -42,39 +34,13 @@ def update_networth(session, file_name):
     return doms
 
 
-def dom_networth(ops: Ops) -> int:
-    networth = 0
-    networth += ops.land * NETWORTH_VALUES['land']
-    networth += ops.buildings.total * NETWORTH_VALUES['buildings']
-
-    networth += ops.q('status.military_unit1') * NETWORTH_VALUES['specs']
-    networth += ops.q('status.military_unit2') * NETWORTH_VALUES['specs']
-    networth += ops.q('status.military_unit3') * race.elite_unit_networth(ops.race.def_elite, ops)
-    networth += ops.q('status.military_unit4') * race.elite_unit_networth(ops.race.off_elite, ops)
-
-    networth += ops.q('status.military_spies') * NETWORTH_VALUES['spywiz']
-    networth += ops.q('status.military_assassins') * NETWORTH_VALUES['spywiz']
-    networth += ops.q('status.military_wizards') * NETWORTH_VALUES['spywiz']
-    networth += ops.q('status.military_archmages') * NETWORTH_VALUES['spywiz']
-    return round(networth)
-
-
-def spywiz_estimate(ops: Ops) -> int:
-    networth = ops.q('status.networth')
-    networth -= ops.land * NETWORTH_VALUES['land']
-    networth -= ops.buildings.total * NETWORTH_VALUES['buildings']
-
-    networth -= ops.q('status.military_unit1') * NETWORTH_VALUES['specs']
-    networth -= ops.q('status.military_unit2') * NETWORTH_VALUES['specs']
-    networth -= ops.q('status.military_unit3') * ops.race.elite_unit_networth(ops.race.def_elite, ops)
-    networth -= ops.q('status.military_unit4') * ops.race.elite_unit_networth(ops.race.off_elite, ops)
-
-    return round(networth / NETWORTH_VALUES['spywiz'])
-
-
 def print_networth_trends(doms):
     def to_ts(ts_str):
-        return datetime.strptime(ts_str, '%Y-%m-%d %H:%M:%S')
+        day_str, time_str = ts_str.split('.')
+        return timedelta(days=int(day_str),
+                         hours=int(time_str[:2]),
+                         minutes=int(time_str[2:4]),
+                         seconds=int(time_str[4:6]))
 
     nw_trends = list()
     for dom_code, networths in doms.items():
@@ -97,8 +63,8 @@ def print_networth_trends(doms):
 
 
 def main():
-    # session = login()
-    # doms = update_networth(session, NETWORTH_FILE)
+    session = login()
+    doms = update_networth(session, NETWORTH_FILE)
     with open(NETWORTH_FILE) as f:
         doms = json.load(f)
     print_networth_trends(doms)

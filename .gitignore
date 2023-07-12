@@ -3,3 +3,4 @@
 /.idea/
 /secret.py
 /ops-data/**
+**/__pycache__

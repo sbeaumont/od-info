@@ -1,40 +1,11 @@
-import requests
-from pprint import pprint
-from login import username, password
 from bs4 import BeautifulSoup
 import re
 
-TOWN_CRIER_URL = 'https://www.opendominion.net/dominion/town-crier'
-LOGIN_URL = 'https://www.opendominion.net/auth/login'
+from calculator.scrapetools import login
+from config import OUT_DIR, TOWN_CRIER_URL
 
 
-def print_response(res: requests.Response):
-    print(f"\n{res.url}\n")
-    pprint(res.text)
-    print("\n====================\n")
-
-
-def login():
-    session = requests.session()
-    session.auth = (username, password)
-    response = session.get(LOGIN_URL)
-    # print_response(response)
-    soup = BeautifulSoup(response.content, "html.parser")
-    csrf_token = soup.select_one('meta[name="csrf-token"]')['content']
-    payload = {
-        '_token': csrf_token,
-        'email': username,
-        'password': password
-    }
-    response = session.post(LOGIN_URL, data=payload)
-    if response.status_code == 200:
-        return session
-    else:
-        print("Login Failed.")
-        return None
-
-
-def get_number_of_tc_pages(session):
+def get_number_of_tc_pages(session) -> int:
     response = session.get(TOWN_CRIER_URL)
     # print_response(response)
     soup = BeautifulSoup(response.content, "html.parser")
@@ -43,7 +14,7 @@ def get_number_of_tc_pages(session):
     return max(page_numbers)
 
 
-def get_tc_page(session, page_nr: int):
+def get_tc_page(session, page_nr: int) -> list:
     def code_for_name(name):
         return event.find(string=re.compile(re.escape(name))).find_parent('a').attrs['href'].split('/')[-1]
 
@@ -114,7 +85,7 @@ def get_tc_page(session, page_nr: int):
 if __name__ == '__main__':
     session = login()
     if session:
-        with open('all_tc.txt', 'w') as f:
+        with open(f'{OUT_DIR}/all_tc.txt', 'w') as f:
             for page_nr in range(1, get_number_of_tc_pages(session) + 1):
                 events = get_tc_page(session, page_nr)
                 for event in events:

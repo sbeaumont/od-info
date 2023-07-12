@@ -15,13 +15,12 @@ Fireball Score
 
 """
 from collections import defaultdict
-from rankingscraper import load_stats
+from rush.rankingscraper import load_stats
+from config import OUT_DIR
 
 ROUND_NUMBER = 50
 LAST_FIVE_ROUNDS = (49, 48, 47, 45, 44)
 LAST_TEN_ROUNDS = (49, 48, 47, 45, 44, 42, 41, 39, 38, 36)
-
-OUT_DIR = 'out/'
 
 MASTERY_STATS = \
     ('Most Masterful Spies', 'Most Masterful Wizards')

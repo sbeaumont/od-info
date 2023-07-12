@@ -1,4 +1,5 @@
 /.venv/
 /out/
 /.idea/
-/login.py
+/secret.py
+/ops-data/**

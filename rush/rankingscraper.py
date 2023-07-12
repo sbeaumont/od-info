@@ -8,8 +8,7 @@ from dataclasses import dataclass
 import requests
 from bs4 import BeautifulSoup
 from typing import Callable
-
-BASE_URL = 'https://www.opendominion.net/valhalla/round'
+from config import VALHALLA_URL
 
 
 @dataclass
@@ -28,7 +27,7 @@ def get_page(page_url: str) -> BeautifulSoup:
 
 def get_stat_page_urls(round_number: int) -> dict[str, str]:
     """Retrieve all stat page URLs from the stat overview page of the round."""
-    round_url = '/'.join([BASE_URL, str(round_number)])
+    round_url = '/'.join([VALHALLA_URL, str(round_number)])
     page = get_page(round_url)
     stat_page_urls = {link.text: link['href'] for link in page.find_all('a') if link['href'].startswith(round_url)}
     return stat_page_urls

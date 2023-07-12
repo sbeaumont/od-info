@@ -1,0 +1,49 @@
+key: firewalker
+name: Firewalker
+alignment: good
+description: >-
+  <p>The origin of the Firewalkers is unknown, though it's rumored that they erupted into existence after Human experimentation in forbidden pyromantic arts went badly wrong.</p>
+  <p>Turning entire networks of caverns into vast furnaces where they live as one flame, Firewalker alchemies enhanced by pyromantic magics are the most productive in the lands, and their populations spread like wildfire wherever they ignite.</p>
+attacker_difficulty: 1
+explorer_difficulty: 2
+converter_difficulty: 3
+home_land_type: cavern
+perks:
+  max_population: 5
+  lumber_production: -10
+  gem_production: 15
+  construction_cost: -10
+  explore_platinum_cost: 5
+units:
+  - name: Fire Sprite
+    cost:
+      platinum: 300
+      ore: 0
+    power:
+      offense: 3
+      defense: 0
+  - name: Flamewolf
+    cost:
+      platinum: 300
+      ore: 0
+    power:
+      offense: 0
+      defense: 3
+  - name: Phoenix
+    cost:
+      platinum: 925
+      ore: 0
+    power:
+      offense: 0
+      defense: 4.5
+    perks:
+      rebirth: 6
+  - name: Salamander
+    cost:
+      platinum: 950
+      ore: 0
+    power:
+      offense: 5
+      defense: 3
+    perks:
+      casualties_offense: -45

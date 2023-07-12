@@ -1,0 +1,51 @@
+key: merfolk
+name: Merfolk
+alignment: good
+description: >-
+  <p>An aquatic race that lives in beautiful coral reefs where food is plentiful, Merfolk are the guardians of the great oceans.</p>
+  <p>Though typically peaceful, Merfolk are legendary for their wrath when angered, summoning terrors of the deep to destroy entire naval fleets with the thrashing tentacles of ravenous krakens. The chilling and alluring call of the siren might be the last thing you ever hear... before you're snatched from your ship and dragged down to the bottom of the cold, dark sea.</p>
+attacker_difficulty: 1
+explorer_difficulty: 1
+converter_difficulty: 3
+overall_difficulty: 1
+home_land_type: water
+perks:
+  lumber_production: -15
+  food_production: 5
+  explore_platinum_cost: 2.5
+  offense: 5
+units:
+  - name: Merman
+    cost:
+      platinum: 275
+      ore: 0
+    power:
+      offense: 3
+      defense: 0
+    need_boat: false
+  - name: Siren
+    cost:
+      platinum: 300
+      ore: 0
+    power:
+      offense: 0
+      defense: 3
+  - name: Leviathan
+    cost:
+      platinum: 1350
+      ore: 0
+    power:
+      offense: 0
+      defense: 7
+    perks:
+      sink_boats_defense: 1
+  - name: Kraken
+    cost:
+      platinum: 600
+      ore: 0
+    power:
+      offense: 4
+      defense: 2
+    perks:
+      sink_boats_offense: 1
+    need_boat: false

@@ -1,7 +1,6 @@
-from pprint import pprint
-
 import requests
 from bs4 import BeautifulSoup
+from pprint import pprint
 
 from config import LOGIN_URL, STATUS_URL
 from secret import username, password

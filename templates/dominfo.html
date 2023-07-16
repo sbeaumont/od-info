@@ -1,0 +1,74 @@
+{% extends "analytics-base.html" %}
+{% block title %}Dominion Info{% endblock %}
+
+{% block content %}
+  <div class="w3-container">
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <tr class="w3-dark-grey">
+            <th>Land</th>
+            <th>Population</th>
+            <th>Timestamp</th>
+        </tr>
+        {% for cs in dom %}
+        <tr>
+            <td>
+                {{ cs.land }}
+            </td>
+            <td>
+                {{ cs.peasants }}
+            </td>
+            <td>
+                {{ cs.timestamp }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table><br>
+  </div>
+
+  <div class="w3-container">
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <tr class="w3-dark-grey">
+            <th>Timestamp</th>
+            <th>Science Points</th>
+            <th>Science Rating</th>
+            <th>Keep Points</th>
+            <th>Keep Rating</th>
+            <th>Spires Points</th>
+            <th>Spires Rating</th>
+            <th>Forges Points</th>
+            <th>Forges Rating</th>
+        </tr>
+        {% for row in castle %}
+        <tr>
+            <td>
+                {{ row.timestamp }}
+            </td>
+            <td>
+                {{ row.science_points }}
+            </td>
+            <td>
+                {{ row.science_rating }}
+            </td>
+            <td>
+                {{ row.keep_points }}
+            </td>
+            <td>
+                {{ row.keep_rating }}
+            </td>
+            <td>
+                {{ row.spires_points }}
+            </td>
+            <td>
+                {{ row.spires_rating }}
+            </td>
+            <td>
+                {{ row.forges_points }}
+            </td>
+            <td>
+                {{ row.forges_rating }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table><br>
+  </div>
+{% endblock %}

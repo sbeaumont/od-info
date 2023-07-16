@@ -1,6 +1,9 @@
 OUT_DIR = './out'
 REF_DATA_DIR = './ref-data'
-OPS_DATA_DIR = './ops-data'
+OPS_DATA_DIR = 'opsdata'
+
+DATABASE = './opsdata/odinfo.sqlite'
+DB_SCHEMA_FILE = './opsdata/schema.sql'
 
 OD_BASE = 'https://www.opendominion.net'
 

@@ -2,5 +2,5 @@
 /out/**
 /.idea/
 /secret.py
-/ops-data/**
+/opsdata/**
 **/__pycache__

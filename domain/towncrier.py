@@ -1,13 +1,12 @@
 from bs4 import BeautifulSoup
 import re
 
-from calculator.scrapetools import login
+from domain.scrapetools import login
 from config import OUT_DIR, TOWN_CRIER_URL
 
 
 def get_number_of_tc_pages(session) -> int:
     response = session.get(TOWN_CRIER_URL)
-    # print_response(response)
     soup = BeautifulSoup(response.content, "html.parser")
     tc_page_urls = soup.find_all('a', href=re.compile(r'.*\/town-crier\?page=(\d+)'))
     page_numbers = [int(url['href'].split('page=')[-1]) for url in tc_page_urls]

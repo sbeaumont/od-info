@@ -3,9 +3,12 @@
 
 {% block content %}
   <div class="w3-container">
+    <a href="{{ url_for('dominfo', domcode=domcode, update='update' ) }}">Update</a>
+    <h5>ClearSight</h5>
     <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
         <tr class="w3-dark-grey">
             <th>Land</th>
+            <th>Networth</th>
             <th>Population</th>
             <th>Timestamp</th>
         </tr>
@@ -13,6 +16,9 @@
         <tr>
             <td>
                 {{ cs.land }}
+            </td>
+            <td>
+                {{ cs.networth }}
             </td>
             <td>
                 {{ cs.peasants }}
@@ -26,6 +32,7 @@
   </div>
 
   <div class="w3-container">
+    <h5>Castle Spy</h5>
     <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
         <tr class="w3-dark-grey">
             <th>Timestamp</th>
@@ -71,4 +78,69 @@
         {% endfor %}
     </table><br>
   </div>
+
+  <div class="w3-container">
+    <h5>Barracks Spy</h5>
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <tr class="w3-dark-grey">
+            <th>Timestamp</th>
+            <th>Draftees</th>
+            <th>Unit 1 Home</th>
+            <th>Unit 2 Home</th>
+            <th>Unit 3 Home</th>
+            <th>Unit 4 Home</th>
+            <th>Training</th>
+            <th>Returning</th>
+        </tr>
+        {% for row in barracks %}
+        <tr>
+            <td>
+                {{ row.timestamp }}
+            </td>
+            <td>
+                {{ row.draftees }}
+            </td>
+            <td>
+                {{ row.home_unit1 }}
+            </td>
+            <td>
+                {{ row.home_unit2 }}
+            </td>
+            <td>
+                {{ row.home_unit3 }}
+            </td>
+            <td>
+                {{ row.home_unit4 }}
+            </td>
+            <td>
+                {{ row.training }}
+            </td>
+            <td>
+                {{ row.return }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table><br>
+  </div>
+
+  <div class="w3-container">
+    <h5>Networth History</h5>
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <tr class="w3-dark-grey">
+            <th>Networth</th>
+            <th>Timestamp</th>
+        </tr>
+        {% for row in nw_history %}
+        <tr>
+            <td>
+                {{ row.networth }}
+            </td>
+            <td>
+                {{ row.timestamp }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table><br>
+  </div>
+
 {% endblock %}

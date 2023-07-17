@@ -1,56 +1,3 @@
-from domain.scrapetools import get_soup_page
-from domain.towncrier import get_number_of_tc_pages, get_tc_page
-from config import OP_CENTER_URL
-import json
-
-
-class Ops(object):
-    def __init__(self, contents):
-        self.contents = contents
-
-    def q_exists(self, q_str, start_node=None) -> bool:
-        paths = q_str.split('.')
-        current_node = start_node if start_node else self.contents
-        for path in paths:
-            if path in current_node:
-                current_node = current_node[path]
-                if not current_node:
-                    return False
-            else:
-                return False
-        return True
-
-    def q(self, q_str, start_node=None):
-        paths = q_str.split('.')
-        current_node = start_node if start_node else self.contents
-        for path in paths:
-            current_node = current_node[path]
-        return current_node
-
-
-def grab_ops(session, dom_code) -> Ops:
-    soup = get_soup_page(session, f'{OP_CENTER_URL}/{dom_code}')
-    ops_json = soup.find('textarea', id='ops_json').string
-    return Ops(json.loads(ops_json))
-
-
-def update_ops(session, db, dom_code):
-    ops = grab_ops(session, dom_code)
-    update_clearsight(ops, db, dom_code)
-    update_castle(ops, db, dom_code)
-
-
-def check_exists(db, table, dom_code, timestamp):
-    check_exists_qry = f'SELECT 1 FROM {table} WHERE dominion = ? AND timestamp = ?'
-    return len(db.query(check_exists_qry, (dom_code, timestamp))) > 0
-
-
-def _generate_insert(table_name, mapping):
-    field_list = ', '.join(mapping.keys())
-    param_list = ', '.join([f':{fld}' for fld in mapping.keys()])
-    return f'INSERT INTO {table_name} ({field_list}) VALUES ({param_list})'
-
-
 def _generate_select_by_dominion(table_name, mapping):
     field_list = ', '.join(mapping.keys())
     return f'SELECT {field_list} FROM {table_name} WHERE dominion = :dominion ORDER BY timestamp DESC'
@@ -61,38 +8,18 @@ def _query_ops_table_by_dominion(db, table_name, mapping, dom_code):
     return db.query(qry, {'dominion': dom_code})
 
 
-def _update_ops_table(ops, db, table_name, mapping, dom_code, timestamp):
-    if check_exists(db, table_name, dom_code, timestamp):
-        return
-    qry = _generate_insert(table_name, mapping)
-    params = {
-        'dominion': dom_code,
-        'timestamp': timestamp
-    }
-    for fld, srcpath in mapping.items():
-        if srcpath:
-            params[fld] = ops.q(srcpath)
-    db.execute(qry, params)
-
-
 # ------------------------------------------------------------ DominionHistory
 
 DOM_HISTORY_MAPPING = {
     'dominion': None,
-    'timestamp': 'status.created_at',
     'land': 'status.land',
-    'networth': 'status.networth'
+    'networth': 'status.networth',
+    'timestamp': 'status.created_at'
 }
 
 
 def query_dom_history(db, dom_code):
     return _query_ops_table_by_dominion(db, 'DominionHistory', DOM_HISTORY_MAPPING, dom_code)
-
-
-def update_dom_history(ops, db, dom_code, timestamp = None):
-    if not timestamp:
-        timestamp = ops.q('status.created_at')
-    _update_ops_table(ops, db, 'DominionHistory', DOM_HISTORY_MAPPING, dom_code, timestamp)
 
 
 # ------------------------------------------------------------ Dominion
@@ -104,26 +31,9 @@ DOMINION_MAPPING = {
     'race': 'race'
 }
 
-QRY_UPDATE_DOM = '''
-    INSERT INTO Dominions (code, name, realm, race)
-    VALUES (:code, :name, :realm, :race)
-    ON CONFLICT DO NOTHING 
-'''
-
-QRY_INSERT_DOM_HISTORY = '''
-    INSERT INTO DominionHistory
-    VALUES(:code, :land, :networth, :timestamp)
-    ON CONFLICT DO NOTHING 
-'''
-
 
 def query_dominion(db, dom_code):
     return _query_ops_table_by_dominion(db, 'Dominions', DOMINION_MAPPING, dom_code)
-
-
-def update_dominion(ops, db):
-    db.execute(QRY_UPDATE_DOM, ops)
-    db.execute(QRY_INSERT_DOM_HISTORY, ops)
 
 
 # ------------------------------------------------------------ ClearSight
@@ -153,12 +63,6 @@ def query_clearsight(db, dom_code):
     return _query_ops_table_by_dominion(db, 'ClearSight', CLEARSIGHT_MAPPING, dom_code)
 
 
-def update_clearsight(ops, db, dom_code):
-    timestamp = ops.q('status.created_at')
-    _update_ops_table(ops, db, 'ClearSight', CLEARSIGHT_MAPPING, dom_code, timestamp)
-    update_dom_history(ops, db, dom_code, timestamp)
-
-
 # ------------------------------------------------------------ CastleSpy
 
 CASTLE_SPY_MAPPING = {
@@ -183,23 +87,61 @@ def query_castle(db, dom_code):
     return _query_ops_table_by_dominion(db, 'CastleSpy', CASTLE_SPY_MAPPING, dom_code)
 
 
-def update_castle(ops, db, dom_code):
-    timestamp = ops.q('castle.created_at')
-    _update_ops_table(ops, db, 'CastleSpy', CASTLE_SPY_MAPPING, dom_code, timestamp)
+# ------------------------------------------------------------ BarracksSpy
+
+BARRACKS_SPY_MAPPING = {
+    'dominion':   None,
+    'timestamp':  None,
+    'draftees':   'barracks.units.home.draftees',
+    'home_unit1': 'barracks.units.home.unit1',
+    'home_unit2': 'barracks.units.home.unit2',
+    'home_unit3': 'barracks.units.home.unit3',
+    'home_unit4': 'barracks.units.home.unit4',
+    'training':   'barracks.units.training|tojson',
+    'return':     'barracks.units.returning|tojson',
+}
+
+
+def query_barracks(db, dom_code):
+    return _query_ops_table_by_dominion(db, 'BarracksSpy', BARRACKS_SPY_MAPPING, dom_code)
+
+
+# ------------------------------------------------------------ LandSpy
+
+LAND_SPY_MAPPING = {
+    'dominion':   None,
+    'timestamp':  None,
+    'total': 'land.totalLand',
+    'barren': 'land.totalBarrenLand',
+    'constructed': 'land.totalConstructedLand',
+    'plain': 'land.explored.amount',
+    'plain_constructed': 'land.explored.constructed',
+    'mountain': 'land.explored.amount',
+    'mountain_constructed': 'land.explored.constructed',
+    'swamp': 'land.explored.amount',
+    'swamp_constructed': 'land.explored.constructed',
+    'cavern': 'land.explored.amount',
+    'cavern_constructed': 'land.explored.constructed',
+    'forest': 'land.explored.amount',
+    'forest_constructed': 'land.explored.constructed',
+    'hill': 'land.explored.amount',
+    'hill_constructed': 'land.explored.constructed',
+    'water': 'land.explored.amount',
+    'water_constructed': 'land.explored.constructed',
+    'incoming': 'land.incoming|tojson'
+}
+
+
+def query_land(db, dom_code):
+    return _query_ops_table_by_dominion(db, 'LandSpy', LAND_SPY_MAPPING, dom_code)
 
 
 # ------------------------------------------------------------ Town Crier
 
 TC_FIELDS = 'timestamp,event_type,origin,origin_name,target,target_name,amount,text'
-TC_REPLACE_QRY = f'REPLACE INTO TownCrier ({TC_FIELDS}) VALUES (?,?,?,?,?,?,?,?)'
 
 
 def query_town_crier(db):
     return db.query('SELECT * FROM TownCrier ORDER BY timestamp DESC')
 
 
-def update_town_crier(session, db):
-    for page_nr in range(1, get_number_of_tc_pages(session) + 1):
-        events = get_tc_page(session, page_nr)
-        for event in events:
-            db.execute(TC_REPLACE_QRY, event)

@@ -16,8 +16,9 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
 <!-- Top container -->
 <div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
+  OD Info
   <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
-  <span class="w3-bar-item w3-right">Logo</span>
+  <span class="w3-bar-item w3-right"><img src="https://www.opendominion.net/favicon-32x32.png" alt="OD Icon"/></span>
 </div>
 
 <!-- Sidebar/menu -->
@@ -28,8 +29,8 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   <div class="w3-bar-block">
     <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
     <a href="{{ url_for('overview') }}" class="w3-bar-item w3-button w3-padding {% if request.endpoint == 'overview' %}w3-blue{% endif %}"><i class="fa fa-users fa-fw"></i>  Overview</a>
-    <a href="{{ url_for('towncrier') }}" class="w3-bar-item w3-button w3-padding {% if request.endpoint == 'towncrier' %}w3-blue{% endif %}"><i class="fa fa-eye fa-fw"></i>  Town Crier</a>
-    <a href="{{ url_for('nw_tracker') }}" class="w3-bar-item w3-button w3-padding {% if request.endpoint == 'nw_tracker' %}w3-blue{% endif %}"><i class="fa fa-users fa-fw"></i>  Networth Tracker</a>
+    <a href="{{ url_for('towncrier') }}" class="w3-bar-item w3-button w3-padding {% if request.endpoint == 'towncrier' %}w3-blue{% endif %}"><i class="fa fa-bell fa-fw"></i>  Town Crier</a>
+    <a href="{{ url_for('nw_tracker') }}" class="w3-bar-item w3-button w3-padding {% if request.endpoint == 'nw_tracker' %}w3-blue{% endif %}"><i class="fa fa-bank fa-fw"></i>  Networth Tracker</a>
     <!--a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i>  Geo</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-diamond fa-fw"></i>  Orders</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bell fa-fw"></i>  News</a>

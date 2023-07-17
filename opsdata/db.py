@@ -30,13 +30,13 @@ class Database(object):
     def close(self):
         self.conn.close()
 
-    def execute(self, sql: str, params: dict | list):
+    def execute(self, sql: str, params: dict | list | tuple):
         cur = self.conn.cursor()
         # print(f"Executing {sql} with {params}")
         cur.execute(sql, params)
         self.conn.commit()
 
-    def query(self, sql: str, params: dict | list | tuple = None, one = False):
+    def query(self, sql: str, params: dict | list | tuple = None, one=False):
         with self.conn as conn:
             if params:
                 cur = conn.execute(sql, params)

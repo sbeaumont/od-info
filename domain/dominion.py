@@ -1,17 +1,16 @@
-from domain.scrapetools import get_soup_page, read_server_time
+from opsdata.scrapetools import get_soup_page, read_server_time
 from config import SEARCH_PAGE
-from opsdata.schema import update_dominion
+from opsdata.updater import update_dominion
 
-QRY_UPDATE_DOM = 'REPLACE INTO Dominions(code, name, realm, race) VALUES(?, ?, ?, ?)'
 QRY_SELECT_ALL_DOMS = '''
     SELECT 
-        d.code, d.name, d.realm, d.role, h.land, h.networth, d.race, max(timestamp) 
+        d.code, d.name, d.realm, d.role, dh.land, dh.networth, d.race, max(timestamp) 
     FROM 
         Dominions d
     LEFT JOIN 
-        DominionHistory H on d.code = H.code
+        DominionHistory dh on d.code = dh.dominion
     GROUP BY d.code
-    ORDER BY h.land
+    ORDER BY dh.land
 '''
 
 
@@ -29,6 +28,8 @@ def update_dom_index(session, db):
 
 
 def grab_search(session) -> list:
+    """Grabs the search page from the OpenDominion site.
+    :returns list of dictionaries with the search page fields"""
     soup = get_soup_page(session, SEARCH_PAGE)
     server_time = read_server_time(soup)
 
@@ -38,6 +39,7 @@ def grab_search(session) -> list:
         dom_info = dict()
         dom_info['name'] = cells[0].a.string
         dom_info['code'] = cells[0].a['href'].split('/')[-1]
+        dom_info['dominion'] = dom_info['code']
         dom_info['realm'] = cells[1].a['href'].split('/')[-1]
         dom_info['race'] = cells[2].string.strip()
         dom_info['land'] = int(cells[3].string.strip().replace(',', ''))

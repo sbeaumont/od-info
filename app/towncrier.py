@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import re
 
-from domain.scrapetools import login
+from opsdata.scrapetools import login
 from config import OUT_DIR, TOWN_CRIER_URL
 
 

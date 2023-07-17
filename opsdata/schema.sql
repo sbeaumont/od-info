@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS Dominions (
 DROP TABLE IF EXISTS DominionHistory;
 
 CREATE TABLE IF NOT EXISTS DominionHistory (
-    code      INTEGER  NOT NULL REFERENCES Dominions,
+    dominion  INTEGER  NOT NULL REFERENCES Dominions,
     land      INTEGER  NOT NULL,
     networth  INTEGER  NOT NULL,
     timestamp DATETIME NOT NULL
@@ -73,6 +73,7 @@ DROP TABLE IF EXISTS BarracksSpy;
 CREATE TABLE IF NOT EXISTS BarracksSpy (
     dominion  INTEGER  NOT NULL REFERENCES Dominions,
     timestamp DATETIME NOT NULL,
+    draftees   INTEGER NOT NULL DEFAULT 0,
     home_unit1 INTEGER NOT NULL DEFAULT 0,
     home_unit2 INTEGER NOT NULL DEFAULT 0,
     home_unit3 INTEGER NOT NULL DEFAULT 0,

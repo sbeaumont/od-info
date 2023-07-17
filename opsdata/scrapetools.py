@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-from pprint import pprint
 
 from config import LOGIN_URL, STATUS_URL
 from secret import username, password
@@ -28,12 +27,6 @@ class ODTickTime(object):
         if other.__class__.__name__ == self.__class__.__name__:
             return float(str(self)) > float(str(other))
         return False
-
-
-def print_response(res: requests.Response):
-    print(f"\n{res.url}\n")
-    pprint(res.text)
-    print("\n====================\n")
 
 
 def get_soup_page(session: requests.Session, url: str) -> BeautifulSoup:
@@ -72,7 +65,7 @@ def login() -> requests.Session | None:
     if response.status_code == 200:
         return session
     else:
-        print("Login Failed.")
+        print(f"Login Failed. {response.status_code}, {response.text}")
         return None
 
 

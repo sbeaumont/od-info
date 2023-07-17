@@ -26,11 +26,11 @@ will be part of the main Python3 installation, which is fine for this case.*
 
 In a terminal window you'll need to "pip3 install":
 
-- flask
-- requests
-- jinja2
-- PyYAML
-- bs4 (Beautiful Soup)
+ - flask
+ - requests
+ - jinja2
+ - PyYAML
+ - bs4 (Beautiful Soup)
 
 
     pip3 install flask requests jinja2 PyYAML bs4

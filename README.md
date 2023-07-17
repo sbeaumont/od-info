@@ -26,14 +26,15 @@ will be part of the main Python3 installation, which is fine for this case.*
 
 In a terminal window you'll need to "pip3 install":
 
- - flask
- - requests
- - jinja2
- - PyYAML
- - bs4 (Beautiful Soup)
-
-
     pip3 install flask requests jinja2 PyYAML bs4
+
+This installs these libraries:
+
+ - flask (webserver)
+ - requests (pull stuff from the web)
+ - jinja2 (template engine for the web interface)
+ - PyYAML (to load configuration files)
+ - bs4 (Beautiful Soup, to scrape information from webpages)
 
 ### Download files
 Download the whole project from here and put it somewhere on your local disk.
@@ -78,3 +79,11 @@ The database "odinfo.sqlite" is created in the folder "opsdata". This is just a 
 You can reset the whole application by just renaming, moving or deleting the database file.
 As soon as the application sees that there is no database file it will
 generate a new one and initialize it.
+
+## Updating reference information
+
+If you're using this app for a while, the reference (.yml) files with facts
+about races, tech and wonders might get out of date. You can just download
+updated files from the ref-data folder in this project, or go straight to the source 
+at https://github.com/OpenDominion/OpenDominion/tree/develop/app/data and
+replace them in the ref-data folder.

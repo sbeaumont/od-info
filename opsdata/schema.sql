@@ -5,10 +5,20 @@ CREATE TABLE IF NOT EXISTS Dominions (
    	name TEXT NOT NULL,
 	realm INTEGER NOT NULL,
 	race TEXT NOT NULL,
-	land INTEGER NOT NULL DEFAULT 0,
-	networth INTEGER NOT NULL DEFAULT 0,
 	role TEXT CHECK(role IN ('attacker', 'explorer', 'blopper', 'unknown')) DEFAULT 'unknown'
 );
+
+DROP TABLE IF EXISTS DominionHistory;
+
+CREATE TABLE IF NOT EXISTS DominionHistory (
+    code      INTEGER  NOT NULL REFERENCES Dominions,
+    land      INTEGER  NOT NULL,
+    networth  INTEGER  NOT NULL,
+    timestamp DATETIME NOT NULL
+);
+
+DROP INDEX IF EXISTS idx_DominionHistory;
+CREATE UNIQUE INDEX idx_DominionHistory ON DominionHistory (code, timestamp);
 
 DROP TABLE IF EXISTS ClearSight;
 
@@ -33,6 +43,9 @@ CREATE TABLE IF NOT EXISTS ClearSight (
     clear_sight_accuracy REAL DEFAULT 0.85
 );
 
+DROP INDEX IF EXISTS idx_ClearSight;
+CREATE UNIQUE INDEX idx_ClearSight ON ClearSight (dominion, timestamp);
+
 DROP TABLE IF EXISTS CastleSpy;
 
 CREATE TABLE IF NOT EXISTS CastleSpy (
@@ -52,6 +65,9 @@ CREATE TABLE IF NOT EXISTS CastleSpy (
     harbor_rating REAL NOT NULL
 );
 
+DROP INDEX IF EXISTS idx_CastleSpy;
+CREATE UNIQUE INDEX idx_CastleSpy ON CastleSpy (dominion, timestamp);
+
 DROP TABLE IF EXISTS BarracksSpy;
 
 CREATE TABLE IF NOT EXISTS BarracksSpy (
@@ -64,6 +80,9 @@ CREATE TABLE IF NOT EXISTS BarracksSpy (
     training TEXT,
     return TEXT
 );
+
+DROP INDEX IF EXISTS idx_BarracksSpy;
+CREATE UNIQUE INDEX idx_BarracksSpy ON BarracksSpy (dominion, timestamp);
 
 DROP TABLE IF EXISTS SurveyDominion;
 
@@ -94,6 +113,9 @@ CREATE TABLE IF NOT EXISTS SurveyDominion (
     total_land INTEGER NOT NULL DEFAULT 0
 );
 
+DROP INDEX IF EXISTS idx_SurveyDominion;
+CREATE UNIQUE INDEX idx_SurveyDominion ON SurveyDominion (dominion, timestamp);
+
 DROP TABLE IF EXISTS LandSpy;
 
 CREATE TABLE IF NOT EXISTS LandSpy (
@@ -119,6 +141,9 @@ CREATE TABLE IF NOT EXISTS LandSpy (
     incoming TEXT
 );
 
+DROP INDEX IF EXISTS idx_LandSpy;
+CREATE UNIQUE INDEX idx_LandSpy ON LandSpy (dominion, timestamp);
+
 DROP TABLE IF EXISTS Vision;
 
 CREATE TABLE IF NOT EXISTS Vision (
@@ -131,7 +156,7 @@ DROP TABLE IF EXISTS TownCrier;
 
 CREATE TABLE IF NOT EXISTS TownCrier (
     timestamp DATETIME NOT NULL,
-    origin INTEGER NOT NULL REFERENCES Dominions,
+    origin INTEGER NOT NULL,
     origin_name TEXT NOT NULL,
     event_type TEXT NOT NULL DEFAULT 'other',
     target INTEGER NOT NULL,
@@ -139,3 +164,6 @@ CREATE TABLE IF NOT EXISTS TownCrier (
     amount INTEGER DEFAULT 0,
     text TEXT NOT NULL
 );
+
+DROP INDEX IF EXISTS idx_TownCrier;
+CREATE UNIQUE INDEX idx_TownCrier ON TownCrier (timestamp, origin, event_type, target);

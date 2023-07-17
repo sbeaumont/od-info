@@ -2,5 +2,6 @@
 /out/**
 /.idea/
 /secret.py
-/opsdata/**
 **/__pycache__
+/opsdata/copy_ops.txt
+/opsdata/odinfo.sqlite

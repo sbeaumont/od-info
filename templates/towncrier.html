@@ -1,0 +1,48 @@
+{% extends "odinfo-base.html" %}
+{% block title %}Town Crier{% endblock %}
+
+{% block content %}
+<div class="w3-container">
+  <a href="/towncrier?update=true">Update</a>
+  <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+      <tr class="w3-dark-grey">
+          <th>Event</th>
+          <th>Origin</th>
+          <th>Origin Name</th>
+          <th>Target</th>
+          <th>Target Name</th>
+          <th>Amount</th>
+          <th>Text</th>
+          <th>Timestamp</th>
+      </tr>
+      {% for event in towncrier %}
+      <tr>
+          <td>
+              {{ event.event_type }}
+          </td>
+          <td>
+              {{ event.origin }}
+          </td>
+          <td>
+              {{ event.origin_name }}
+          </td>
+          <td>
+              {{ event.target }}
+          </td>
+          <td>
+              {{ event.target_name }}
+          </td>
+          <td>
+              {{ event.amount }}
+          </td>
+          <td>
+              {{ event.text }}
+          </td>
+          <td>
+              {{ event.timestamp }}
+          </td>
+      </tr>
+  {% endfor %}
+  </table><br>
+</div>
+{% endblock %}

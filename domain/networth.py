@@ -30,3 +30,24 @@ def update_networth(session, file_name):
     return doms
 
 
+QRY_NW_SINCE = """
+    select
+        code, networth, {}(timestamp) as timestamp
+    from
+        DominionHistory
+    where
+        timestamp >= datetime('now', :since)
+    group by
+        code
+    order by
+        code
+"""
+
+
+def get_networth_deltas(db, since='-12 hours'):
+    latest_nws = db.query(QRY_NW_SINCE.format('max'), {'since': since})
+    oldest_nws = db.query(QRY_NW_SINCE.format('min'), {'since': since})
+    deltas = dict()
+    for latest, oldest in zip(latest_nws, oldest_nws):
+        deltas[latest['code']] = latest['networth'] - oldest['networth']
+    return deltas

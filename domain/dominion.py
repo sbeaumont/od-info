@@ -4,7 +4,7 @@ from opsdata.updater import update_dominion
 
 QRY_SELECT_ALL_DOMS = '''
     SELECT 
-        d.code, d.name, d.realm, d.role, dh.land, dh.networth, d.race, max(timestamp) 
+        d.code, d.name, d.realm, d.role, dh.land, dh.networth, d.player, d.race, max(dh.timestamp) 
     FROM 
         Dominions d
     LEFT JOIN 
@@ -20,6 +20,10 @@ def all_doms(db):
 
 def name_for_code(db, dom_code):
     return db.query('SELECT name FROM Dominions WHERE code = :dom_code', {'dom_code': dom_code}, one=True)['name']
+
+
+def realm_of_dom(db, dom_code):
+    return db.query('SELECT realm FROM Dominions WHERE code = :dom_code', {'dom_code': dom_code}, one=True)['realm']
 
 
 def update_dom_index(session, db):

@@ -22,7 +22,10 @@ class Ranking:
 def get_page(page_url: str) -> BeautifulSoup:
     """Utility function to load a URL into a BeautifulSoup instance."""
     page = requests.get(page_url)
-    return BeautifulSoup(page.content, "html.parser")
+    if page.status_code == 200:
+        return BeautifulSoup(page.content, "html.parser")
+    else:
+        return None
 
 
 def get_stat_page_urls(round_number: int) -> dict[str, str]:
@@ -36,10 +39,14 @@ def get_stat_page_urls(round_number: int) -> dict[str, str]:
 def parse_entries_from_page(soup: BeautifulSoup) -> dict[str, Ranking]:
     """Pull rankings out of a stat page into a dict{player name: Ranking}."""
     results = dict()
-    for line in soup.tbody.find_all('tr'):
-        entry = [child.text.strip() for child in line.find_all('td')]
-        ranking = Ranking(int(entry[0]), entry[2], int(entry[-1].replace(',', '')))
-        results[ranking.player] = ranking
+    try:
+        for line in soup.tbody.find_all('tr'):
+            entry = [child.text.strip() for child in line.find_all('td')]
+            ranking = Ranking(int(entry[0]), entry[2], int(entry[-1].replace(',', '')))
+            results[ranking.player] = ranking
+    except AttributeError:
+        print(soup.contents)
+        raise
     return results
 
 
@@ -60,8 +67,11 @@ def load_stats(round_number: int, stat_filter: Callable[[str], int]) -> dict:
     result = dict()
     for name, url in stat_pages.items():
         page = get_page(url)
-        print('Loaded', name)
-        page_stats = parse_entries_from_page(page)
-        feature_scaled_scores(page_stats)
-        result[name] = page_stats
+        if page:
+            print('Loaded', name)
+            page_stats = parse_entries_from_page(page)
+            feature_scaled_scores(page_stats)
+            result[name] = page_stats
+        else:
+            print("Warning: could not load page", url)
     return result

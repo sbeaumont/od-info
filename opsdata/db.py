@@ -43,6 +43,8 @@ class Database(object):
             else:
                 cur = conn.execute(sql)
             result = cur.fetchall()
+        if one and len(result) != 1:
+            print("Warning, expected exactly one result in", result, "for", sql, params)
         return result[0] if one else result
 
     def cursor(self):

@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS Dominions (
    	name TEXT NOT NULL,
 	realm INTEGER NOT NULL,
 	race TEXT NOT NULL,
-	role TEXT CHECK(role IN ('attacker', 'explorer', 'blopper', 'unknown')) DEFAULT 'unknown'
+	player TEXT DEFAULT '?',
+	role TEXT CHECK(role IN ('attacker', 'explorer', 'blopper', 'unknown', 'abandoner')) DEFAULT 'unknown'
 );
 
 DROP TABLE IF EXISTS DominionHistory;

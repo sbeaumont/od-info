@@ -18,9 +18,11 @@ from collections import defaultdict
 from rush.rankingscraper import load_stats
 from config import OUT_DIR
 
-ROUND_NUMBER = 50
-LAST_FIVE_ROUNDS = (49, 48, 47, 45, 44)
-LAST_TEN_ROUNDS = (49, 48, 47, 45, 44, 42, 41, 39, 38, 36)
+ROUND_NUMBER = 51
+LAST_FIVE_ROUNDS = (51, 49, 48, 47, 45)
+LAST_TEN_ROUNDS = (51, 49, 48, 47, 45, 44, 42, 41, 39, 38)
+ALL_BLOP_ROUNDS = (51, 49, 48, 47, 45, 44, 42, 41, 39, 38, 36, 35, 33, 30, 28, 26)
+BETA_ROUNDS = (24, 22, 20, 19)
 
 MASTERY_STATS = \
     ('Most Masterful Spies', 'Most Masterful Wizards')
@@ -63,6 +65,18 @@ def all_player_names(stats: dict) -> set:
     return players
 
 
+def score_components(stats: dict, name: str) -> dict:
+    result = dict()
+    for component_name, score_component in TOTAL_SCORE_RATIOS.items():
+        total = 0
+        for stat_name in score_component[0]:
+            if name in stats[stat_name]:
+                total += stats[stat_name][name].fs_score
+        component_score = total / len(score_component[0]) * score_component[1]
+        result[component_name] = component_score
+    return result
+
+
 def calculate_player_score(stats: dict, name: str) -> float:
     player_score = 0
     for score_component in TOTAL_SCORE_RATIOS.values():
@@ -75,18 +89,26 @@ def calculate_player_score(stats: dict, name: str) -> float:
     return round(player_score, 3)
 
 
-def blop_scores_for_round(round_number: int) -> list:
+def blop_scores_for_round(round_number: int, with_components=False) -> list:
     stats = load_stats(round_number, is_blop_stat)
     players = all_player_names(stats)
-    return [(player, calculate_player_score(stats, player)) for player in players]
+    if with_components:
+        return [(player, calculate_player_score(stats, player), score_components(stats, player)) for player in players]
+    else:
+        return [(player, calculate_player_score(stats, player)) for player in players]
 
 
-def round_scores(round_number: int):
-    blop_scores = blop_scores_for_round(round_number)
+def round_scores(round_number: int, with_components=False):
+    blop_scores = blop_scores_for_round(round_number, with_components)
     top_blop = sorted(blop_scores, key=lambda e: e[1], reverse=True)
-    with open(f'{OUT_DIR}Top (Black) Oppers Round {round_number}.txt', 'w') as f:
+    with open(f'{OUT_DIR}/Top (Black) Oppers Round {round_number}{" (Comps)" if with_components else ""}.txt', 'w') as f:
+        if with_components:
+            print(top_blop[0][2].keys())
         for p in top_blop:
-            f.write(f"{p[0]}, {p[1]}\n")
+            if with_components:
+                f.write(f"{p[0]}, {p[1]}, {', '.join([str(v) for v in p[2].values()])}\n")
+            else:
+                f.write(f"{p[0]}, {p[1]}\n")
 
 
 def multiple_round_totals(round_numbers: list):
@@ -99,7 +121,7 @@ def multiple_round_totals(round_numbers: list):
     top_blop = [(p, s) for p, s in player_totals.items()]
     top_blop_sorted = sorted(top_blop, key=lambda e: e[1], reverse=True)
 
-    with open(f'{OUT_DIR}Top (Black) Oppers Last {len(round_numbers)} Rounds.txt', 'w') as f:
+    with open(f'{OUT_DIR}/Top (Black) Oppers Last {len(round_numbers)} Rounds.txt', 'w') as f:
         for p in top_blop_sorted:
             f.write(f"{p[0]}, {round(p[1], 3)}\n")
 
@@ -133,13 +155,15 @@ def multiple_round_scores(round_numbers: list):
             player_scores[player].add_round_score(nr, score)
     top_blop_sorted = sorted(player_scores.values(), key=lambda e: e.total_score, reverse=True)
 
-    with open(f'{OUT_DIR}Top (Black) Oppers Last {len(round_numbers)} Rounds - full.txt', 'w') as f:
+    with open(f'{OUT_DIR}/Top (Black) Oppers Last {len(round_numbers)} Rounds - full.txt', 'w') as f:
         for player in top_blop_sorted:
             f.write(f"{player.name},{player.total_score},{player.scores_text()}\n")
 
 
 if __name__ == '__main__':
-    round_scores(ROUND_NUMBER)
-    # multiple_round_totals(LAST_FIVE_ROUNDS)
-    # multiple_round_scores(LAST_FIVE_ROUNDS)
+    round_scores(ROUND_NUMBER, True)
+    # print("Calculating totals for multiple blop rounds")
+    # multiple_round_totals(LAST_TEN_ROUNDS)
+    print("Separate scores for multiple blop rounds")
+    # multiple_round_scores(LAST_TEN_ROUNDS)
 

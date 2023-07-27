@@ -20,10 +20,11 @@ class ODInfoFacade(object):
     @property
     def session(self):
         if not self._session:
-            self._session = login()
+            self._session = login(10552)
         return self._session
 
     def teardown(self):
+        self.session.close()
         self._db.teardown()
         self._db = None
 

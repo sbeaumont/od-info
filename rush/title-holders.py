@@ -2,7 +2,7 @@ from rush.rankingscraper import load_stats
 from config import OUT_DIR
 
 EXCLUDE_STATS = ['Realm', 'Pack']
-ROUND_NUMBER = 50
+ROUND_NUMBER = 51
 
 
 def to_include(stat_name: str) -> bool:

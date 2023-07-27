@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-from config import LOGIN_URL, STATUS_URL
+from config import LOGIN_URL, STATUS_URL, SELECT_URL
 from secret import username, password
 
 
@@ -48,30 +48,46 @@ def read_tick_time(soup: BeautifulSoup) -> ODTickTime:
     return ODTickTime(int(day), int(tick), int(hh), int(mm))
 
 
-def login() -> requests.Session | None:
+def pull_csrf_token(soup):
+    return soup.select_one('meta[name="csrf-token"]')['content']
+
+
+def login(for_player_id=None) -> requests.Session | None:
     session = requests.session()
     session.auth = (username, password)
 
     soup = get_soup_page(session, LOGIN_URL)
-    csrf_token = soup.select_one('meta[name="csrf-token"]')['content']
-
     payload = {
-        '_token': csrf_token,
+        '_token': pull_csrf_token(soup),
         'email': username,
         'password': password
     }
     response = session.post(LOGIN_URL, data=payload)
 
     if response.status_code == 200:
+        if for_player_id:
+            s2 = BeautifulSoup(response.content, "html.parser")
+            response = select_current_dominion(session, pull_csrf_token(s2), 10552)
+            if response.status_code != 200:
+                print("Could not switch to other player")
+                return None
         return session
     else:
         print(f"Login Failed. {response.status_code}, {response.text}")
         return None
 
 
+def select_current_dominion(session, csrf_token, player_id):
+    payload = {
+        '_token': csrf_token
+    }
+    return session.post(SELECT_URL.format(str(player_id)), data=payload)
+
+
 def test_ok():
-    session = login()
+    session = login(10552)
     soup = get_soup_page(session, STATUS_URL)
+    print(soup.contents)
     print("Server time is:", read_server_time(soup))
     print("Tick time is:", read_tick_time(soup), repr(read_tick_time(soup)))
 

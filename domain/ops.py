@@ -4,8 +4,6 @@ from opsdata.scrapetools import get_soup_page
 from config import OP_CENTER_URL
 
 
-#
-#
 # class Buildings(object):
 #     def __init__(self, ops):
 #         self.ops = ops

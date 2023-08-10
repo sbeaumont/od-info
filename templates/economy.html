@@ -1,0 +1,32 @@
+{% extends "odinfo-base.html" %}
+{% block title %}Dominion {{ domname }}{% endblock %}
+
+{% block content %}
+  <div class="w3-container">
+      <a href="{{ op_center_url }}/{{ domcode }}" target="_blank">OP Center</a>
+    <h5>Economy</h5>
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <tr class="w3-dark-grey">
+            <th>Homes</th>
+            <th>Population</th>
+            <th>Jobs</th>
+            <th>Plat/Tick</th>
+        </tr>
+        <tr>
+            <td>
+                {{ economy.homes }}
+            </td>
+            <td>
+                {{ economy.population }}
+            </td>
+            <td>
+                {{ economy.jobs }}
+            </td>
+            <td>
+                {{ economy.plat_per_tick }}
+            </td>
+        </tr>
+    </table><br>
+  </div>
+
+{% endblock %}

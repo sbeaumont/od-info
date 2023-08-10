@@ -10,7 +10,7 @@ def get_number_of_tc_pages(session) -> int:
     soup = BeautifulSoup(response.content, "html.parser")
     tc_page_urls = soup.find_all('a', href=re.compile(r'.*\/town-crier\?page=(\d+)'))
     page_numbers = [int(url['href'].split('page=')[-1]) for url in tc_page_urls]
-    return max(page_numbers)
+    return max(page_numbers) if page_numbers else 1
 
 
 def get_tc_page(session, page_nr: int) -> list:

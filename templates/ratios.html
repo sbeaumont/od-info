@@ -1,0 +1,39 @@
+{% extends "odinfo-base.html" %}
+
+{% block content %}
+  <div class="w3-container">
+    <h5>Ratio Estimates</h5>
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <tr class="w3-dark-grey">
+            <th>Dominion</th>
+            <th>Race</th>
+            <th>Networth</th>
+            <th>Spywiz Networth</th>
+            <th>Spywiz Units</th>
+            <th>Ratios Estimate</th>
+        </tr>
+        {% for dom in doms %}
+        <tr>
+            <td>
+                <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
+            </td>
+            <td>
+                {{ dom.race.name }}
+            </td>
+            <td>
+                {{ dom.networth }}
+            </td>
+            <td>
+                {{ dom.military.spywiz_networth }}
+            </td>
+            <td>
+                {{ dom.military.spywiz_units }}
+            </td>
+            <td>
+                {{ dom.military.ratio_estimate }} - {{ dom.military.max_ratio_estimate }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table><br>
+  </div>
+{% endblock %}

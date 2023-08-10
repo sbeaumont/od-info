@@ -5,6 +5,7 @@ from config import REF_DATA_DIR
 NON_HOME_CAPACITY = 15
 BUILD_TICKS = 12
 MASONRY_MULTIPLIER = 2.75
+GT_DEFENSE_FACTOR = 1.75
 
 ImpFactor = namedtuple('ImpFactor', 'max factor plus')
 
@@ -15,6 +16,13 @@ IMP_FACTORS = {
     'forges': ImpFactor(0.3, 7500, 15000),
     'walls': ImpFactor(0.3, 7500, 15000),
     'harbor': ImpFactor(0.6, 5000, 15000)
+}
+
+NETWORTH_VALUES = {
+    'land': 20,
+    'buildings': 5,
+    'specs': 5,
+    'spywiz': 5
 }
 
 
@@ -38,38 +46,46 @@ class TechTree(object):
 
 
 class Unit(object):
-    def __init__(self, yaml_src: dict, ops):
-        self.src = yaml_src
-        self.ops = ops
+    def __init__(self, yaml_src: dict, dom):
+        self._data = yaml_src
+        self.dom = dom
+
+    def __str__(self):
+        return f"Unit({self.name}, {self.offense}OP, {self.defense}DP)"
 
     def land_bonus(self, perk_name: str) -> float:
-        if self.has_perk(perk_name) and self.ops.has_land:
+        if self.has_perk(perk_name):
             land_type, percent_per_point, max_bonus = self.get_perk(perk_name)
-            return min(float(max_bonus), self.ops.q(f'land.explored.{land_type}.percentage') / float(percent_per_point))
-        return 0
+            return min(float(max_bonus), self.dom.land.perc_of(land_type) / float(percent_per_point))
+        else:
+            return 0
+
+    @property
+    def name(self):
+        return self._data['name']
 
     def has_perk(self, name) -> bool:
-        return 'perks' in self.src and name in self.src['perks']
+        return 'perks' in self._data and name in self._data['perks']
 
     def get_perk(self, name):
         if self.has_perk(name):
-            return self.src['perks'][name].split(',')
+            return self._data['perks'][name].split(',')
         else:
             return None
 
     @property
     def cost(self) -> dict:
-        return self.src['cost']
+        return self._data['cost']
 
     @property
     def offense(self) -> float:
-        op = self.src['power']['offense']
+        op = self._data['power']['offense']
         op += self.land_bonus('offense_from_land')
         return op
 
     @property
     def defense(self) -> float:
-        dp = self.src['power']['defense']
+        dp = self._data['power']['defense']
         dp += self.land_bonus('defense_from_land')
         return dp
 
@@ -77,18 +93,25 @@ class Unit(object):
     def networth(self) -> int:
         op = self.offense
         dp = self.defense
-        return round(1.8 * min(6, max(op, dp))) + (0.45 * min(6, op, dp)) + (0.2 * (max((op - 6), 0) + max((dp - 6), 0)))
+        return 1.8 * min(6, max(op, dp)) + (0.45 * min(6, op, dp)) + (0.2 * (max((op - 6), 0) + max((dp - 6), 0)))
 
 
 class Race(object):
-    def __init__(self, ops):
-        self.ops = ops
-        name = self.ops.q('status.race_name').replace(' ', '').lower()
+    def __init__(self, name, dom):
+        self.name = name
+        self.dom = dom
+        self.yaml = self._load_data(self.name)
+        self.units = dict()
+        for i in range(1, 5):
+            self.units[i] = Unit(self.yaml['units'][i - 1], dom)
+
+    def _load_data(self, name):
+        name = name.replace(' ', '').lower()
         with open(f'{REF_DATA_DIR}/races/{name}.yml', 'r') as f:
-            self.yaml = yaml.safe_load(f)
+            return yaml.safe_load(f)
 
     def unit(self, nr) -> Unit:
-        return Unit(self.yaml['units'][nr - 1], self.ops)
+        return self.units[nr]
 
     @property
     def off_spec(self) -> Unit:

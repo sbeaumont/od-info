@@ -1,4 +1,6 @@
 """
+Utility to scrape the Valhalla pages and extract ranking information.
+
 Round
     Stat
         Ranking
@@ -8,6 +10,7 @@ from dataclasses import dataclass
 import requests
 from bs4 import BeautifulSoup
 from typing import Callable
+
 from config import VALHALLA_URL
 
 
@@ -51,6 +54,7 @@ def parse_entries_from_page(soup: BeautifulSoup) -> dict[str, Ranking]:
 
 
 def feature_scaled_scores(rankings: dict, low=0, high=1):
+    """Compress a series of scores into a range from 0 (lowest score) to 1 (highest score)."""
     max_score = max([r.score for r in rankings.values()])
     min_score = min([r.score for r in rankings.values()])
     for r in rankings.values():
@@ -61,6 +65,7 @@ def feature_scaled_scores(rankings: dict, low=0, high=1):
 
 
 def load_stats(round_number: int, stat_filter: Callable[[str], int]) -> dict:
+    """Pull all the Valhalla ranking pages and returns all the relevant ranking lists for a specific round."""
     stat_page_urls = get_stat_page_urls(round_number)
     stat_pages = {k: v for k, v in stat_page_urls.items() if stat_filter(k)}
 

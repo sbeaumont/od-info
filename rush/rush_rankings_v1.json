@@ -1,0 +1,56 @@
+{
+  "Mastery": [
+    [
+      "Most Masterful Spies",
+      "Most Masterful Wizards"
+    ],
+    25
+  ],
+  "Ops": [
+    [
+      "Most Successful Spies",
+      "Most Successful Wizards"
+    ],
+    35
+  ],
+  "Theft": [
+    [
+      "Top Platinum Thieves",
+      "Top Food Thieves",
+      "Top Lumber Thieves",
+      "Top Mana Thieves",
+      "Top Ore Thieves",
+      "Top Gem Thieves"
+    ],
+    10
+  ],
+  "Blackops": [
+    [
+      "Masters of Plague",
+      "Masters of Swarm",
+      "Masters of Air",
+      "Masters of Lightning",
+      "Masters of Water",
+      "Masters of Earth",
+      "Top Snare Setters"
+    ],
+    10
+  ],
+  "Assassination": [
+    [
+      "Most Spies Executed",
+      "Top Saboteurs",
+      "Top Magical Assassins",
+      "Top Military Assassins",
+      "Most Wizards Executed",
+      "Top Spy Disbanders"
+    ],
+    5
+  ],
+  "Fireball": [
+    [
+      "Masters of Fire"
+    ],
+    10
+  ]
+}

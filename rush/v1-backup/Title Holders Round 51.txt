@@ -1,0 +1,76 @@
+The Strongest Dominions,Faith,1798553
+The Strongest Solo Dominions,Warpig,1540682
+The Largest Dominions,Wurstmeyer,8008
+The Largest Solo Dominions,Craghack,7841
+Largest Attacking Dominions,Wurstmeyer,6147
+Most Victorious Dominions,Muggistan,35
+Most Hero Experience,Trannysaurus Rex,8630
+Largest Exploring Dominions,Craghack,7591
+Most Prestigious Dominions,Warpig,1533
+Most Wonder Damage,Slice,315569
+Most Wonders Destroyed,Kale,2
+Most Wonders Destroyed,bigchris27,2
+Most Masterful Spies,Crazy Elf,973
+Most Successful Spies,Shaidar,1876
+Most Spies Executed,Tidnab,8311
+Top Platinum Thieves,Jaune,8178955
+Top Food Thieves,Esthera,262555
+Top Lumber Thieves,Virchue,2270805
+Top Mana Thieves,JRog,726053
+Top Ore Thieves,Guydoonster,681373
+Top Gem Thieves,JRog,331528
+Top Saboteurs,Downrightdave,6185
+Top Magical Assassins,Zar,1124
+Top Military Assassins,TeFinete,38385
+Top Snare Setters,GreyKoan,490
+Most Masterful Wizards,Saccora,826
+Most Successful Wizards,Dark towers,1333
+Most Wizards Executed,Robert,614
+Masters of Fire,Saccora,183999
+Masters of Plague,Cronel,809
+Masters of Swarm,mcgeeal,1682
+Masters of Air,Dark towers,478261
+Masters of Lightning,JRog,13378552
+Masters of Water,Rush,820
+Masters of Earth,JRog,1830
+Top Spy Disbanders,Swamp Fox,1254
+The Strongest Dark Elves,Kale,1149976
+The Strongest Dwarves,Oment,1111111
+The Strongest Firewalkers,Sloxxor,883808
+The Strongest Gnomes,Daesan,1141465
+The Strongest Goblins,Semo,276266
+The Strongest Halflings,Crazy Elf,872468
+The Strongest Humans,Volv,1319117
+The Strongest Icekins,Wurstmeyer,1700998
+The Strongest Kobolds,lamb,813082
+The Strongest Lizardfolks,Downrightdave,1005881
+The Strongest Lycanthropes,DanTheMan,965174
+The Strongest Merfolks,Mulla,1097196
+The Strongest Nomads,Warpig,1540682
+The Strongest Noxes,Sharkey,1204417
+The Strongest Orcs,MacTheMeek,917917
+The Strongest Spirits,Rury,986291
+The Strongest Sylvans,Esthera,1457110
+The Strongest Trolls,Gorgh,1231536
+The Strongest Undeads,Erix,1249888
+The Strongest Wood Elves,Faith,1798553
+The Largest Dark Elves,Beautiful Disaster,5960
+The Largest Dwarves,Unfather,6125
+The Largest Firewalkers,Sloxxor,6426
+The Largest Gnomes,Shaidar,5904
+The Largest Goblins,Semo,2084
+The Largest Halflings,Crazy Elf,7512
+The Largest Humans,Zedijar,7569
+The Largest Icekins,Wurstmeyer,8008
+The Largest Kobolds,lokiramza,5254
+The Largest Lizardfolks,Downrightdave,5240
+The Largest Lycanthropes,DanTheMan,6041
+The Largest Merfolks,Craghack,7841
+The Largest Nomads,Warpig,6672
+The Largest Noxes,Bespoked,6128
+The Largest Orcs,MacTheMeek,4009
+The Largest Spirits,Rury,7563
+The Largest Sylvans,Templeman,6043
+The Largest Trolls,RJ,5513
+The Largest Undeads,Erix,5134
+The Largest Wood Elves,Faith,7629

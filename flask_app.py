@@ -1,9 +1,13 @@
 from flask import Flask, g, request
 from flask import render_template
+import logging
+
+from config import OP_CENTER_URL
 from app.facade import ODInfoFacade
 
 
-app = Flask(__name__)
+app = Flask('od-info')
+app.logger.setLevel(logging.DEBUG)
 
 
 def facade() -> ODInfoFacade:
@@ -14,16 +18,17 @@ def facade() -> ODInfoFacade:
 
 
 @app.route('/', methods=['GET', 'POST'])
-@app.route('/dominfo/')
+@app.route('/dominfo/', methods=['GET', 'POST'])
 def overview():
     if request.args.get('update'):
         facade().update_dom_index()
+    elif request.args.get('update_all'):
+        facade().update_all()
     if request.method == 'POST':
         for k, v in request.form.items():
             if k.startswith('role.'):
                 prefix, dom, old_role = k.split('.')
                 if old_role != v:
-                    print(f"Dominion {dom} changed {old_role} to {v}")
                     facade().update_role(dom, v)
     dom_list, nw_deltas = facade().dom_list()
     return render_template('overview.html', doms=dom_list, nw_deltas=nw_deltas)
@@ -41,7 +46,8 @@ def dominfo(domcode: int, update=None):
                            dom=facade().dom_status(domcode),
                            castle=facade().castle(domcode),
                            barracks=facade().barracks(domcode),
-                           nw_history=facade().nw_history(domcode))
+                           nw_history=facade().nw_history(domcode),
+                           op_center_url=OP_CENTER_URL)
 
 
 @app.route('/towncrier')
@@ -58,6 +64,16 @@ def nw_tracker(send=None):
     if send == 'send':
         result_of_send = facade().send_top_bot_nw_to_discord()
     return render_template('nwtracker.html', top_nw=facade().get_top_bot_nw(), bot_nw=facade().get_top_bot_nw(False), result_of_send=result_of_send)
+
+
+@app.route('/economy')
+def economy():
+    return render_template('economy.html', economy=facade().economy())
+
+
+@app.route('/ratios')
+def ratios():
+    return render_template('ratios.html', doms=facade().doms_with_ratios())
 
 
 @app.teardown_appcontext

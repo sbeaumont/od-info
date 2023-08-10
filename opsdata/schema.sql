@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS Dominions (
 	realm INTEGER NOT NULL,
 	race TEXT NOT NULL,
 	player TEXT DEFAULT '?',
-	role TEXT CHECK(role IN ('attacker', 'explorer', 'blopper', 'unknown', 'abandoner')) DEFAULT 'unknown'
+	role TEXT CHECK(role IN ('attacker', 'explorer', 'blopper', 'unknown', 'abandoner')) DEFAULT 'unknown',
+	last_op DATETIME
 );
 
 DROP TABLE IF EXISTS DominionHistory;
@@ -19,7 +20,7 @@ CREATE TABLE IF NOT EXISTS DominionHistory (
 );
 
 DROP INDEX IF EXISTS idx_DominionHistory;
-CREATE UNIQUE INDEX idx_DominionHistory ON DominionHistory (code, timestamp);
+CREATE UNIQUE INDEX idx_DominionHistory ON DominionHistory (dominion, timestamp);
 
 DROP TABLE IF EXISTS ClearSight;
 
@@ -41,11 +42,25 @@ CREATE TABLE IF NOT EXISTS ClearSight (
     military_unit2 INTEGER NOT NULL,
     military_unit3 INTEGER NOT NULL,
     military_unit4 INTEGER NOT NULL,
+    military_spies INTEGER,
+    military_assassins INTEGER,
+    military_wizards INTEGER,
+    military_archmages INTEGER,
     clear_sight_accuracy REAL DEFAULT 0.85
 );
 
 DROP INDEX IF EXISTS idx_ClearSight;
 CREATE UNIQUE INDEX idx_ClearSight ON ClearSight (dominion, timestamp);
+
+DROP TRIGGER IF EXISTS last_op_Clearsight;
+CREATE TRIGGER last_op_Clearsight
+AFTER INSERT ON ClearSight
+BEGIN
+    UPDATE Dominions
+    SET last_op = new.timestamp
+    WHERE code = new.dominion
+    AND (last_op < new.timestamp OR last_op IS NULL);
+END;
 
 DROP TABLE IF EXISTS CastleSpy;
 
@@ -69,6 +84,16 @@ CREATE TABLE IF NOT EXISTS CastleSpy (
 DROP INDEX IF EXISTS idx_CastleSpy;
 CREATE UNIQUE INDEX idx_CastleSpy ON CastleSpy (dominion, timestamp);
 
+DROP TRIGGER IF EXISTS last_op_CastleSpy;
+CREATE TRIGGER last_op_CastleSpy
+AFTER INSERT ON CastleSpy
+BEGIN
+    UPDATE Dominions
+    SET last_op = new.timestamp
+    WHERE code = new.dominion
+    AND (last_op < new.timestamp OR last_op IS NULL);
+END;
+
 DROP TABLE IF EXISTS BarracksSpy;
 
 CREATE TABLE IF NOT EXISTS BarracksSpy (
@@ -85,6 +110,16 @@ CREATE TABLE IF NOT EXISTS BarracksSpy (
 
 DROP INDEX IF EXISTS idx_BarracksSpy;
 CREATE UNIQUE INDEX idx_BarracksSpy ON BarracksSpy (dominion, timestamp);
+
+DROP TRIGGER IF EXISTS last_op_BarracksSpy;
+CREATE TRIGGER last_op_BarracksSpy
+AFTER INSERT ON BarracksSpy
+BEGIN
+    UPDATE Dominions
+    SET last_op = new.timestamp
+    WHERE code = new.dominion
+    AND (last_op < new.timestamp OR last_op IS NULL);
+END;
 
 DROP TABLE IF EXISTS SurveyDominion;
 
@@ -118,6 +153,16 @@ CREATE TABLE IF NOT EXISTS SurveyDominion (
 DROP INDEX IF EXISTS idx_SurveyDominion;
 CREATE UNIQUE INDEX idx_SurveyDominion ON SurveyDominion (dominion, timestamp);
 
+DROP TRIGGER IF EXISTS last_op_SurveyDominion;
+CREATE TRIGGER last_op_SurveyDominion
+AFTER INSERT ON SurveyDominion
+BEGIN
+    UPDATE Dominions
+    SET last_op = new.timestamp
+    WHERE code = new.dominion
+    AND (last_op < new.timestamp OR last_op IS NULL);
+END;
+
 DROP TABLE IF EXISTS LandSpy;
 
 CREATE TABLE IF NOT EXISTS LandSpy (
@@ -146,13 +191,32 @@ CREATE TABLE IF NOT EXISTS LandSpy (
 DROP INDEX IF EXISTS idx_LandSpy;
 CREATE UNIQUE INDEX idx_LandSpy ON LandSpy (dominion, timestamp);
 
-DROP TABLE IF EXISTS Vision;
+DROP TRIGGER IF EXISTS last_op_LandSpy;
+CREATE TRIGGER last_op_LandSpy
+AFTER INSERT ON LandSpy
+BEGIN
+    UPDATE Dominions
+    SET last_op = new.timestamp
+    WHERE code = new.dominion
+    AND (last_op < new.timestamp OR last_op IS NULL);
+END;
 
+DROP TABLE IF EXISTS Vision;
 CREATE TABLE IF NOT EXISTS Vision (
     dominion  INTEGER  NOT NULL REFERENCES Dominions,
     timestamp DATETIME NOT NULL,
     techs TEXT NOT NULL
 );
+
+DROP TRIGGER IF EXISTS last_op_Vision;
+CREATE TRIGGER last_op_Vision
+AFTER INSERT ON Vision
+BEGIN
+    UPDATE Dominions
+    SET last_op = new.timestamp
+    WHERE code = new.dominion
+    AND (last_op < new.timestamp OR last_op IS NULL);
+END;
 
 DROP TABLE IF EXISTS TownCrier;
 

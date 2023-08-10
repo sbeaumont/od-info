@@ -1,0 +1,77 @@
+The Strongest Dominions,MannoWrath,283263
+The Strongest Solo Dominions,Oment,271054
+The Largest Dominions,Wurstmeyer,3174
+The Largest Solo Dominions,Chunk,3093
+Largest Attacking Dominions,Wurstmeyer,2152
+Most Victorious Dominions,Guydoonster,26
+Most Hero Experience,Aoqakluss,2582
+Largest Exploring Dominions,Chunk,2850
+Most Prestigious Dominions,Wurstmeyer,1001
+Most Wonder Damage,Ivetza,59907
+Most Wonders Destroyed,Sharkey,1
+Most Wonders Destroyed,Vovin,1
+Most Masterful Spies,GreyKoan,138
+Most Successful Spies,Rury,588
+Most Spies Executed,Phoenix,121
+Top Platinum Thieves,Phoenix,1777798
+Top Food Thieves,Grapes of Math,22238
+Top Lumber Thieves,Downrightdave,10925
+Top Mana Thieves,Uruk Hai,61906
+Top Ore Thieves,Cronel,4176
+Top Gem Thieves,Grapes of Math,2131
+Top Saboteurs,InternetFett,126
+Top Magical Assassins,JRog,134
+Top Military Assassins,Jack of One,3881
+Top Snare Setters,Sloxxor,48
+Most Masterful Wizards,cerbrus87,116
+Most Successful Wizards,Jomutta,265
+Most Wizards Executed,Cronel,10
+Most Wizards Executed,Chunk,10
+Masters of Fire,cerbrus87,26321
+Masters of Plague,Uruk Hai,122
+Masters of Swarm,GreyKoan,152
+Masters of Air,GreyKoan,18000
+Masters of Lightning,Saccora,526173
+Masters of Water,jmerc13,186
+Masters of Earth,Uruk Hai,207
+Top Spy Disbanders,Uruk Hai,17
+The Strongest Dark Elves,Bazzaroony,168380
+The Strongest Dwarves,Cronel,179029
+The Strongest Firewalkers,DavetheGoliath,255385
+The Strongest Gnomes,Bot,107607
+The Strongest Goblins,Edgar,158733
+The Strongest Halflings,Jomutta,177282
+The Strongest Humans,Dark towers,185354
+The Strongest Icekins,Bot,14355
+The Strongest Kobolds,lamb,234741
+The Strongest Lizardfolks,Downrightdave,271617
+The Strongest Lycanthropes,nurtho,209866
+The Strongest Merfolks,Gil,189383
+The Strongest Nomads,Calvin,223441
+The Strongest Noxes,Beautiful Disaster,194377
+The Strongest Orcs,Bot,40113
+The Strongest Spirits,Vovin,145721
+The Strongest Sylvans,Daesan,216940
+The Strongest Trolls,Dark Monument,82087
+The Strongest Undeads,MannoWrath,283263
+The Strongest Wood Elves,Rury,159790
+The Largest Dark Elves,Jocke,2000
+The Largest Dwarves,Cronel,1520
+The Largest Firewalkers,DavetheGoliath,2304
+The Largest Gnomes,Bot,1228
+The Largest Goblins,Edgar,1175
+The Largest Halflings,Jomutta,2701
+The Largest Humans,Bespoked,2072
+The Largest Icekins,Bot,409
+The Largest Kobolds,Chunk,3093
+The Largest Lizardfolks,Wurstmeyer,3174
+The Largest Lycanthropes,jboy,2752
+The Largest Merfolks,Gil,1565
+The Largest Nomads,Calvin,2166
+The Largest Noxes,Beautiful Disaster,2085
+The Largest Orcs,Bot,558
+The Largest Spirits,Vovin,1313
+The Largest Sylvans,Daesan,1918
+The Largest Trolls,Dark Monument,649
+The Largest Undeads,MannoWrath,2608
+The Largest Wood Elves,Rury,2618

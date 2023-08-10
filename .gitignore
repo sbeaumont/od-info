@@ -4,4 +4,4 @@
 /secret.py
 **/__pycache__
 /opsdata/copy_ops.txt
-/opsdata/odinfo.sqlite
+/opsdata/*.sqlite

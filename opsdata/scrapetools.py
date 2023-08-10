@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from config import LOGIN_URL, STATUS_URL, SELECT_URL
-from secret import username, password
+from secret import username, password, current_player_id
 
 
 class ODTickTime(object):
@@ -35,8 +35,15 @@ def get_soup_page(session: requests.Session, url: str) -> BeautifulSoup:
 
 
 def read_server_time(soup: BeautifulSoup) -> str:
-    timestamp_span = [s for s in soup.footer.find_all('span') if s.has_attr('title')][0]
-    return timestamp_span['title']
+    list_o_titles = [s for s in soup.footer.find_all('span', title=True)]
+    if len(list_o_titles) > 0:
+        timestamp_span = list_o_titles[0]
+        return timestamp_span['title']
+    else:
+        print("Can't find server time!")
+        print(soup.footer.find_all('span'))
+        print('\n', soup.footer)
+        return None
 
 
 def read_tick_time(soup: BeautifulSoup) -> ODTickTime:
@@ -67,7 +74,7 @@ def login(for_player_id=None) -> requests.Session | None:
     if response.status_code == 200:
         if for_player_id:
             s2 = BeautifulSoup(response.content, "html.parser")
-            response = select_current_dominion(session, pull_csrf_token(s2), 10552)
+            response = select_current_dominion(session, pull_csrf_token(s2), current_player_id)
             if response.status_code != 200:
                 print("Could not switch to other player")
                 return None
@@ -85,7 +92,7 @@ def select_current_dominion(session, csrf_token, player_id):
 
 
 def test_ok():
-    session = login(10552)
+    session = login(current_player_id)
     soup = get_soup_page(session, STATUS_URL)
     print(soup.contents)
     print("Server time is:", read_server_time(soup))

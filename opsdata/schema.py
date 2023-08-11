@@ -4,6 +4,7 @@ Basic CRUD access to tables.
 
 import json
 import logging
+import re
 from datetime import datetime
 
 
@@ -14,7 +15,9 @@ logger = logging.getLogger('od-info.db')
 
 def cleanup_timestamp(timestamp: str):
     """Ensures that a timestamp has a YYYY-MM-DD HH:MM:SS format."""
-    dt = datetime.fromisoformat(timestamp)
+    m = re.match(r"(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})", timestamp)
+    clean_ts = f"{m.group(1)} {m.group(2)}"
+    dt = datetime.strptime(clean_ts, "%Y-%m-%d %H:%M:%S")
     return dt.replace(tzinfo=None).isoformat(sep=' ', timespec='seconds')
 
 

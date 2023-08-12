@@ -6,6 +6,7 @@ NON_HOME_CAPACITY = 15
 BUILD_TICKS = 12
 MASONRY_MULTIPLIER = 2.75
 GT_DEFENSE_FACTOR = 1.75
+GN_OFFENSE_BONUS = 1.75
 
 ImpFactor = namedtuple('ImpFactor', 'max factor plus')
 
@@ -142,5 +143,11 @@ class Race(object):
     def off_elite(self) -> Unit:
         return self.unit(4)
 
-    def has_perk(self, perk_name: str) -> bool:
-        pass
+    def has_perk(self, name) -> bool:
+        return 'perks' in self.yaml and name in self.yaml['perks']
+
+    def get_perk(self, name, default=None):
+        if self.has_perk(name):
+            return self.yaml['perks'][name]
+        else:
+            return default

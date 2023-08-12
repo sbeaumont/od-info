@@ -154,3 +154,11 @@ class ODInfoFacade(object):
                 result.append(dom)
         return sorted(result, key=lambda d: d.military.ratio_estimate, reverse=True)
 
+    def all_doms_as_objects(self):
+        all_dom_codes = [d['code'] for d in all_doms(self._db)]
+        result = list()
+        for domcode in all_dom_codes:
+            dom = Dominion(self._db, domcode)
+            if (str(dom.military.op) != 'Unknown') or (str(dom.military.dp) != 'Unknown'):
+                result.append(dom)
+        return sorted(result, key=lambda d: d.total_land, reverse=True)

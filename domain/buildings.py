@@ -26,6 +26,9 @@ NON_HOME_TYPES = (
     'dock'
 )
 
+JOB_TYPES = [t for t in NON_HOME_TYPES if t != 'barracks']
+JOBS_PER_BUILDING = 20
+
 POP_PER_HOME = 30
 POP_PER_NON_HOME = 15
 POP_PER_BARREN = 5
@@ -45,6 +48,10 @@ class Buildings(object):
         buildings = [f"{t}:{self._data[t]}" for t in NON_HOME_TYPES]
         buildings.append(f"home:{self.homes}")
         return f"Buildings({'|'.join(buildings)})"
+
+    @property
+    def alchemies(self):
+        return self._data['alchemy']
 
     @property
     def barren(self):
@@ -67,6 +74,10 @@ class Buildings(object):
         return sum([int(self._data[n]) for n in NON_HOME_TYPES])
 
     @property
+    def jobs(self) -> int:
+        return sum([int(self._data[n]) for n in JOB_TYPES]) * JOBS_PER_BUILDING
+
+    @property
     def total(self) -> int:
         return self.homes + self.non_homes
 
@@ -85,6 +96,9 @@ class Buildings(object):
     @property
     def constructing(self) -> int:
         return sum(self._constructing.values())
+
+    def perc_of(self, building_type: str):
+        return self._data[building_type] / self.dom.total_land
 
 
 def buildings_for(db, dom):

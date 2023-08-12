@@ -1,58 +1,43 @@
-from math import trunc
-
-from opsdata.schema import *
-from domain.castle import castle_for
+from domain.dominion import Dominion
+from secret import current_player_id
 
 
 class Economy(object):
-    def __init__(self, domcode, cs, dom, survey, castle):
-        self.domcode = domcode
+    def __init__(self, dom: Dominion):
         self.dom = dom
-        self.cs = cs
-        self.survey = survey
-        self.castle = castle
-
-    def base_plat_per_hour(self):
-        pass
 
     @property
-    def raw_capacity(self) -> int:
-        homes = self.homes * 30
-        non_homes = self.non_homes * 15
-        constructing = self.constructing * 15
-        barren = self.barren * 5
-        return homes + non_homes + constructing + barren
+    def plat_total_bonus(self):
+        bonus = 0
+        # Assuming Midas Touch is up
+        bonus += 0.10
+        bonus += self.dom.castle.science
+        bonus += self.dom.tech.value_for_perk('platinum_production') / 100
+        return bonus
 
     @property
-    def total_capacity(self) -> int:
-        return trunc(self.raw_capacity * self.castle.keep)
+    def base_plat_per_tick(self):
+        employed_peasants = min(self.dom.cs['peasants'], self.dom.buildings.jobs)
+        peasants_income = employed_peasants * PLAT_PER_PEASANT_PER_TICK
+        alchemies_income = self.dom.buildings.alchemies * PLAT_PER_ALCHEMY_PER_TICK
+        return peasants_income + alchemies_income
 
     @property
-    def homes(self) -> int:
-        return int(self.survey['home'])
-
-    @property
-    def non_homes(self) -> int:
-        return sum([int(v) for k, v in self.constructed.items() if k != 'home']) if self.constructed else 0
-
-    @property
-    def constructing(self) -> int:
-        constructing = 0
-        if self.ops.q_exists('survey.constructing'):
-            for b in self.ops.q('survey.constructing').values():
-                for t in b.values():
-                    constructing += int(t)
-        return constructing
-
-    @property
-    def barren(self) -> int:
-        return self.ops.q('land.totalBarrenLand')
+    def platinum_production(self):
+        return self.base_plat_per_tick * (1 + self.plat_total_bonus)
 
 
-def economy_for(db, domcode):
-    cs = query_clearsight(db, domcode, latest=True)
-    survey = query_survey(db, domcode, latest=True)
-    castle = castle_for(db, domcode)
-    ls = query_land(db, domcode, latest=True)
-    dom = query_dominion(db, domcode)
-    return Economy(domcode, cs, dom, survey, castle)
+if __name__ == '__main__':
+    from opsdata.db import Database
+    from config import DATABASE, PLAT_PER_ALCHEMY_PER_TICK, PLAT_PER_PEASANT_PER_TICK
+
+    db = Database()
+    db.init(DATABASE)
+    # dom = Dominion(db, 10792)
+    dom = Dominion(db, current_player_id)
+    econ = Economy(dom)
+
+    print(econ.base_plat_per_tick)
+    print(econ.plat_total_bonus)
+    print(econ.platinum_production)
+

@@ -76,6 +76,11 @@ def ratios():
     return render_template('ratios.html', doms=facade().doms_with_ratios())
 
 
+@app.route('/military')
+def military():
+    return render_template('military.html', doms=facade().all_doms_as_objects())
+
+
 @app.teardown_appcontext
 def teardown_app(exception):
     facade = getattr(g, '_facade', None)

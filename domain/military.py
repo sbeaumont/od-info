@@ -2,7 +2,7 @@ from math import trunc
 
 from opsdata.schema import query_barracks
 from domain.unknown import Unknown
-from domain.refdata import GT_DEFENSE_FACTOR
+from domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS
 from domain.refdata import NETWORTH_VALUES
 
 
@@ -44,30 +44,46 @@ class Military(object):
         return self.dom.cs['military_archmages']
 
     @property
+    def offense_bonus(self):
+        bonus = 0
+        # Racial offense bonus
+        bonus += self.dom.race.get_perk('offense', 0) / 100
+        # Tech bonus
+        bonus += float(self.dom.tech.value_for_perk('offense')) / 100
+        # Forges bonus
+        bonus += self.dom.castle.forges
+        # Gryphon Nest bonus
+        bonus += self.dom.buildings.perc_of('gryphon_nest') * GN_OFFENSE_BONUS / 100
+        # Prestige Bonus
+        bonus += self.dom.cs['prestige'] / 10000
+        return bonus
+
+    @property
     def op(self):
-        offense = 0
-        offense += sum([self.op_of(i) for i in range(1, 5)])
-
-        offense_bonus = 1 + (float(self.dom.tech.value_for_perk('offense')) / 100)
-        offense *= offense_bonus
-
-        offense *= 1 + self.dom.castle.forges
+        offense = sum([self.op_of(i) for i in range(1, 5)])
+        offense *= 1 + self.offense_bonus
 
         return round(offense)
+
+    @property
+    def defense_bonus(self):
+        bonus = 0
+        # Racial bonus
+        bonus += self.dom.race.get_perk('defense', 0) / 100
+        # Tech bonus
+        bonus += float(self.dom.tech.value_for_perk('defense')) / 100
+        # Forges bonus
+        bonus += self.dom.castle.walls
+        # Guard Tower bonus
+        bonus += self.dom.buildings.perc_of('guard_tower') * GT_DEFENSE_FACTOR / 100
+        return bonus
 
     @property
     def dp(self):
         defense = 0
         defense += sum([self.dp_of(i) for i in range(1, 5)])
         defense += self.dom.cs['military_draftees']
-
-        tech_bonus = 1 + (float(self.dom.tech.value_for_perk('defense')) / 100)
-        defense *= tech_bonus
-
-        gt_bonus = 1 + (self.dom.buildings.guard_towers / self.dom.land.total * GT_DEFENSE_FACTOR)
-        defense *= gt_bonus
-
-        defense *= 1 + self.dom.castle.walls
+        defense *= 1 + self.defense_bonus
 
         return round(defense)
 

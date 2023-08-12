@@ -1,3 +1,5 @@
+from math import trunc
+
 from opsdata.schema import query_barracks
 from domain.unknown import Unknown
 from domain.refdata import GT_DEFENSE_FACTOR
@@ -92,6 +94,40 @@ class Military(object):
     @property
     def max_ratio_estimate(self) -> float:
         return round(self.spywiz_units / self.dom.total_land, 3)
+
+    @property
+    def spy_ratio_estimate(self) -> float:
+        return round(self.ratio_estimate + (self.spy_units_equiv / self.dom.total_land), 3)
+
+    @property
+    def max_spy_ratio_estimate(self) -> float:
+        return round(self.max_ratio_estimate + (self.spy_units_equiv / self.dom.total_land), 3)
+
+    @property
+    def wiz_ratio_estimate(self) -> float:
+        return round(self.ratio_estimate + (self.wiz_units_equiv / self.dom.total_land), 3)
+
+    @property
+    def max_wiz_ratio_estimate(self) -> float:
+        return round(self.max_ratio_estimate + (self.wiz_units_equiv / self.dom.total_land), 3)
+
+    @property
+    def spy_units_equiv(self):
+        spy_units_equiv = 0
+        for i in range(1, 5):
+            unit_ratios = self.unit_type(i).ratios
+            spy_per_unit = max(unit_ratios['spy_offense'], unit_ratios['spy_defense'])
+            spy_units_equiv += trunc(self.amount(i) * spy_per_unit)
+        return spy_units_equiv
+
+    @property
+    def wiz_units_equiv(self):
+        wiz_units_equiv = 0
+        for i in range(1, 5):
+            unit_ratios = self.unit_type(i).ratios
+            wiz_per_unit = max(unit_ratios['wiz_offense'], unit_ratios['wiz_defense'])
+            wiz_units_equiv += trunc(self.amount(i) * wiz_per_unit)
+        return wiz_units_equiv
 
 
 def military_for(db, dom):

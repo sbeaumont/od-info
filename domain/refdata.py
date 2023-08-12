@@ -67,11 +67,15 @@ class Unit(object):
     def has_perk(self, name) -> bool:
         return 'perks' in self._data and name in self._data['perks']
 
-    def get_perk(self, name):
+    def get_perk(self, name, default=None):
         if self.has_perk(name):
-            return self._data['perks'][name].split(',')
+            perk_value = self._data['perks'][name]
+            if isinstance(perk_value, str) and (',' in perk_value):
+                return perk_value.split(',')
+            else:
+                return perk_value
         else:
-            return None
+            return default
 
     @property
     def cost(self) -> dict:
@@ -94,6 +98,15 @@ class Unit(object):
         op = self.offense
         dp = self.defense
         return 1.8 * min(6, max(op, dp)) + (0.45 * min(6, op, dp)) + (0.2 * (max((op - 6), 0) + max((dp - 6), 0)))
+
+    @property
+    def ratios(self) -> dict:
+        return {
+            'spy_offense': self.get_perk('counts_as_spy_offense', 0),
+            'spy_defense': self.get_perk('counts_as_spy_defense', 0),
+            'wiz_offense': self.get_perk('counts_as_wizard_offense', 0),
+            'wiz_defense': self.get_perk('counts_as_wizard_defense', 0)
+        }
 
 
 class Race(object):
@@ -128,3 +141,6 @@ class Race(object):
     @property
     def off_elite(self) -> Unit:
         return self.unit(4)
+
+    def has_perk(self, perk_name: str) -> bool:
+        pass

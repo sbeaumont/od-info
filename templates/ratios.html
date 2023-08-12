@@ -8,9 +8,12 @@
             <th>Dominion</th>
             <th>Race</th>
             <th>Networth</th>
+            <th>Military Spy</th>
+            <th>Military Wiz</th>
             <th>Spywiz Networth</th>
             <th>Spywiz Units</th>
-            <th>Ratios Estimate</th>
+            <th>Spy Ratios Estimate</th>
+            <th>Wiz Ratios Estimate</th>
         </tr>
         {% for dom in doms %}
         <tr>
@@ -24,13 +27,22 @@
                 {{ dom.networth }}
             </td>
             <td>
+                {{ dom.military.spy_units_equiv }}
+            </td>
+            <td>
+                {{ dom.military.wiz_units_equiv }}
+            </td>
+            <td>
                 {{ dom.military.spywiz_networth }}
             </td>
             <td>
                 {{ dom.military.spywiz_units }}
             </td>
             <td>
-                {{ dom.military.ratio_estimate }} - {{ dom.military.max_ratio_estimate }}
+                {{ dom.military.spy_ratio_estimate }} - {{ dom.military.max_spy_ratio_estimate }}
+            </td>
+            <td>
+                {{ dom.military.wiz_ratio_estimate }} - {{ dom.military.max_wiz_ratio_estimate }}
             </td>
         </tr>
         {% endfor %}

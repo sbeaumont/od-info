@@ -1,4 +1,5 @@
 import yaml
+from math import erf
 from collections import defaultdict, namedtuple
 from config import REF_DATA_DIR
 
@@ -25,6 +26,11 @@ NETWORTH_VALUES = {
     'specs': 5,
     'spywiz': 5
 }
+
+
+def infamy_bonus(infamy, maxbonus):
+    """Max plat bonus 0.075, Gems, Ore and Lumber 0.03"""
+    return 0.5 * (1 + erf(0.00452 * (infamy - 385))) * maxbonus
 
 
 class TechTree(object):

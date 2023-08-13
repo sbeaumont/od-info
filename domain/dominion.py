@@ -134,6 +134,15 @@ class Dominion(object):
             self._technology = tech_for(self.db, self)
         return self._technology
 
+    @property
+    def last_op(self):
+        return self.data['last_op']
+
+    @property
+    def last_op_since(self):
+        return hours_since(self.last_op)
+
+
 
 if __name__ == '__main__':
     from opsdata.db import Database
@@ -159,4 +168,6 @@ if __name__ == '__main__':
     print("CS:", row_s_to_dict(dom.cs))
     print("OP:", dom.military.op)
     print("DP:", dom.military.dp)
+    print("Last op", dom.last_op)
+    print("Last op since:", dom.last_op_since)
 

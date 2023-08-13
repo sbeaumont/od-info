@@ -1,5 +1,4 @@
 DROP TABLE IF EXISTS Dominions;
-
 CREATE TABLE IF NOT EXISTS Dominions (
 	code INTEGER PRIMARY KEY,
    	name TEXT NOT NULL,
@@ -11,7 +10,6 @@ CREATE TABLE IF NOT EXISTS Dominions (
 );
 
 DROP TABLE IF EXISTS DominionHistory;
-
 CREATE TABLE IF NOT EXISTS DominionHistory (
     dominion  INTEGER  NOT NULL REFERENCES Dominions,
     land      INTEGER  NOT NULL,
@@ -23,7 +21,6 @@ DROP INDEX IF EXISTS idx_DominionHistory;
 CREATE UNIQUE INDEX idx_DominionHistory ON DominionHistory (dominion, timestamp);
 
 DROP TABLE IF EXISTS ClearSight;
-
 CREATE TABLE IF NOT EXISTS ClearSight (
     dominion INTEGER NOT NULL REFERENCES Dominions,
     timestamp DATETIME NOT NULL,
@@ -63,7 +60,6 @@ BEGIN
 END;
 
 DROP TABLE IF EXISTS CastleSpy;
-
 CREATE TABLE IF NOT EXISTS CastleSpy (
     dominion  INTEGER  NOT NULL REFERENCES Dominions,
     timestamp DATETIME NOT NULL,
@@ -95,7 +91,6 @@ BEGIN
 END;
 
 DROP TABLE IF EXISTS BarracksSpy;
-
 CREATE TABLE IF NOT EXISTS BarracksSpy (
     dominion  INTEGER  NOT NULL REFERENCES Dominions,
     timestamp DATETIME NOT NULL,
@@ -122,7 +117,6 @@ BEGIN
 END;
 
 DROP TABLE IF EXISTS SurveyDominion;
-
 CREATE TABLE IF NOT EXISTS SurveyDominion (
     dominion  INTEGER  NOT NULL REFERENCES Dominions,
     timestamp DATETIME NOT NULL,
@@ -164,7 +158,6 @@ BEGIN
 END;
 
 DROP TABLE IF EXISTS LandSpy;
-
 CREATE TABLE IF NOT EXISTS LandSpy (
     dominion  INTEGER  NOT NULL REFERENCES Dominions,
     timestamp DATETIME NOT NULL,
@@ -208,6 +201,9 @@ CREATE TABLE IF NOT EXISTS Vision (
     techs TEXT NOT NULL
 );
 
+DROP INDEX IF EXISTS idx_Vision;
+CREATE UNIQUE INDEX idx_Vision ON Vision (dominion, timestamp);
+
 DROP TRIGGER IF EXISTS last_op_Vision;
 CREATE TRIGGER last_op_Vision
 AFTER INSERT ON Vision
@@ -218,8 +214,29 @@ BEGIN
     AND (last_op < new.timestamp OR last_op IS NULL);
 END;
 
-DROP TABLE IF EXISTS TownCrier;
+DROP TABLE IF EXISTS Revelation;
+CREATE TABLE IF NOT EXISTS Revelation (
+    dominion  INTEGER  NOT NULL REFERENCES Dominions,
+    timestamp DATETIME NOT NULL,
+    spell TEXT NOT NULL,
+    duration INTEGER NOT NULL,
+    expires DATETIME NOT NULL
+);
 
+DROP INDEX IF EXISTS idx_Revelation;
+CREATE UNIQUE INDEX idx_Revelation ON Revelation (dominion, timestamp, spell);
+
+DROP TRIGGER IF EXISTS last_op_Revelation;
+CREATE TRIGGER last_op_Revelation
+AFTER INSERT ON Revelation
+BEGIN
+    UPDATE Dominions
+    SET last_op = new.timestamp
+    WHERE code = new.dominion
+    AND (last_op < new.timestamp OR last_op IS NULL);
+END;
+
+DROP TABLE IF EXISTS TownCrier;
 CREATE TABLE IF NOT EXISTS TownCrier (
     timestamp DATETIME NOT NULL,
     origin INTEGER NOT NULL,

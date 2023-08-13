@@ -5,7 +5,10 @@ Basic CRUD access to tables.
 import json
 import logging
 import re
-from datetime import datetime
+from math import trunc
+from datetime import datetime, timedelta
+from config import DATE_TIME_FORMAT
+from secret import LOCAL_TIME_SHIFT
 
 
 logger = logging.getLogger('od-info.db')
@@ -17,7 +20,7 @@ def cleanup_timestamp(timestamp: str):
     """Ensures that a timestamp has a YYYY-MM-DD HH:MM:SS format."""
     m = re.match(r"(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})", timestamp)
     clean_ts = f"{m.group(1)} {m.group(2)}"
-    dt = datetime.strptime(clean_ts, "%Y-%m-%d %H:%M:%S")
+    dt = datetime.strptime(clean_ts, DATE_TIME_FORMAT)
     return dt.replace(tzinfo=None).isoformat(sep=' ', timespec='seconds')
 
 
@@ -29,6 +32,17 @@ def row_s_to_dict(row_s):
             return dict(zip(row_s.keys(), row_s))
     else:
         return dict()
+
+
+def hours_since(timestamp):
+    if timestamp:
+        last_op_dt = datetime.strptime(timestamp, DATE_TIME_FORMAT)
+        server_now = datetime.now() + timedelta(hours=LOCAL_TIME_SHIFT)
+        delta = server_now - last_op_dt
+        delta_hours = delta / timedelta(hours=1)
+        return trunc(delta_hours)
+    else:
+        return 999
 
 # ---------------------------------------------------------------------- Parameterized Queries
 
@@ -159,6 +173,10 @@ def update_dominion(ops, db):
 
     db.execute(qry_update_dom, ops)
     db.execute(qry_insert_dom_history, ops)
+
+
+def query_last_ops(db):
+    return db.query("SELECT code, last_op FROM Dominions")
 
 
 # ------------------------------------------------------------ ClearSight
@@ -343,6 +361,50 @@ def query_vision(db, dom_code, latest=False):
 def update_vision(ops, db, dom_code):
     timestamp = cleanup_timestamp(ops.q('vision.created_at'))
     _update_ops_table(ops, db, 'Vision', VISION_MAPPING, dom_code, timestamp)
+
+
+# ------------------------------------------------------------ Revelation
+
+
+REVELATION_MAPPING = {
+    'dominion': None,
+    'timestamp': None,
+    'spell': 'spell',
+    'duration': 'duration',
+}
+
+qry_insert_spell = '''
+    INSERT INTO Revelation (dominion, timestamp, spell, duration, expires)
+    VALUES(:dominion, :timestamp, :spell, :duration, :expires)
+    ON CONFLICT DO NOTHING 
+'''
+
+qry_select_spells = f'''
+    SELECT
+        dominion,
+        timestamp,
+        spell,
+        duration,
+        max(expires) as expiration
+    FROM
+        Revelation 
+    WHERE
+        dominion = :dominion
+    GROUP BY
+        spell
+'''
+
+
+def query_revelation(db, dom_code):
+    params = {
+        'dominion': dom_code
+    }
+    return db.execute(qry_select_spells, params)
+
+
+def update_revelation(ops, db, dom_code):
+    timestamp = cleanup_timestamp(ops.q('revelation.created_at'))
+    _update_ops_table(ops, db, 'Revelation', REVELATION_MAPPING, dom_code, timestamp)
 
 
 # ------------------------------------------------------------ Town Crier

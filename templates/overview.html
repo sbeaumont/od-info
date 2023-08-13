@@ -1,5 +1,7 @@
 {% extends "odinfo-base.html" %}
+
 {% block title %}Overview{% endblock %}
+
 {% block extrascripts %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
@@ -7,7 +9,6 @@
 {% endblock %}
 
 {% block content %}
-
   <div class="w3-container">
     <a href="/?update=true">Update</a> | <a href="/?update_all=true">Update All</a>
     <form action="{{ url_for('overview') }}" method="post" id="domform">
@@ -15,6 +16,7 @@
         <thead>
             <tr class="w3-dark-grey">
                 <th>Name</th>
+                <th>Ops Age</th>
                 <th>Land</th>
                 <th>Networth</th>
                 <th>NW Delta (12h)</th>
@@ -30,6 +32,7 @@
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
+            <td  {% if 1 < ages[dom.code] <= 12 %}class="stale"{% elif ages[dom.code] > 12 %}class="invalid"{% endif %}>{{ ages[dom.code] }}</td>
             <td>{{ dom.land }}</td>
             <td>{{ dom.networth }}</td>
             <td>{{ nw_deltas[dom.code] }}</td>
@@ -54,7 +57,7 @@
     $(document).ready( function () {
         $('#myTable').DataTable({
             'paging': false,
-            'order': [[1, 'desc']]
+            'order': [[2, 'desc']]
         });
     } );
 </script>

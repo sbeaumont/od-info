@@ -31,7 +31,11 @@ def overview():
                 if old_role != v:
                     facade().update_role(dom, v)
     dom_list, nw_deltas = facade().dom_list()
-    return render_template('overview.html', doms=dom_list, nw_deltas=nw_deltas)
+    return render_template(
+        'overview.html',
+        doms=dom_list,
+        nw_deltas=nw_deltas,
+        ages=facade().all_doms_ops_age())
 
 
 @app.route('/dominfo/<domcode>')

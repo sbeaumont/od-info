@@ -19,5 +19,7 @@ MY_OP_CENTER_URL = f'{OD_BASE}/dominion/advisors/op-center'
 
 DOM_INDEX = f'{OUT_DIR}/dom_index.json'
 NETWORTH_FILE = f'{OUT_DIR}/nw.json'
+DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
 PLAT_PER_ALCHEMY_PER_TICK = 45
 PLAT_PER_PEASANT_PER_TICK = 2.7

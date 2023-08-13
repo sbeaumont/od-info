@@ -162,3 +162,9 @@ class ODInfoFacade(object):
             if (str(dom.military.op) != 'Unknown') or (str(dom.military.dp) != 'Unknown'):
                 result.append(dom)
         return sorted(result, key=lambda d: d.total_land, reverse=True)
+
+    def all_doms_ops_age(self):
+        last_ops = query_last_ops(self._db)
+        return {op['code']: hours_since(op['last_op']) for op in last_ops}
+
+

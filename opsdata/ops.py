@@ -59,6 +59,10 @@ class Ops(object):
     def has_survey(self) -> bool:
         return self.q_exists('survey.constructed')
 
+    @property
+    def has_revelation(self) -> bool:
+        return self.q_exists('revelation.spells')
+
 
 def grab_ops(session, dom_code) -> Ops:
     """Grabs the copy_ops JSON file for a specified dominion."""

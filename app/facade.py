@@ -166,5 +166,3 @@ class ODInfoFacade(object):
     def all_doms_ops_age(self):
         last_ops = query_last_ops(self._db)
         return {op['code']: hours_since(op['last_op']) for op in last_ops}
-
-

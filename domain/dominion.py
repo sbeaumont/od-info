@@ -3,6 +3,7 @@ from domain.military import military_for
 from domain.castle import castle_for
 from domain.land import land_for
 from domain.buildings import buildings_for
+from domain.magic import revelation_for
 from domain.refdata import Race
 from domain.technology import tech_for
 from domain.refdata import NETWORTH_VALUES
@@ -45,6 +46,7 @@ class Dominion(object):
         self._land = None
         self._race = None
         self._technology = None
+        self._magic = None
 
     @property
     def military(self):
@@ -63,6 +65,12 @@ class Dominion(object):
         if not self._castle:
             self._castle = castle_for(self.db, self)
         return self._castle
+
+    @property
+    def magic(self):
+        if not self._magic:
+            self._magic = revelation_for(self.db, self)
+        return self._magic
 
     @property
     def cs(self):
@@ -143,14 +151,14 @@ class Dominion(object):
         return hours_since(self.last_op)
 
 
-
 if __name__ == '__main__':
     from opsdata.db import Database
     from config import DATABASE
     db = Database()
     db.init(DATABASE)
+    dom = Dominion(db, 10756)
     # dom = Dominion(db, 10792)
-    dom = Dominion(db, 10793)
+    # dom = Dominion(db, 10793)
     print("Name:", dom.name)
     print("Code:", dom.code)
     print("Pop Bonus:", dom.population_bonus)
@@ -170,4 +178,7 @@ if __name__ == '__main__':
     print("DP:", dom.military.dp)
     print("Last op", dom.last_op)
     print("Last op since:", dom.last_op_since)
+    print("Ares:", dom.magic.ares)
+    for spell in dom.magic.spells:
+        print(row_s_to_dict(spell))
 

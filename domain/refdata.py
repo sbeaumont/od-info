@@ -8,6 +8,8 @@ BUILD_TICKS = 12
 MASONRY_MULTIPLIER = 2.75
 GT_DEFENSE_FACTOR = 1.75
 GN_OFFENSE_BONUS = 1.75
+BS_UNCERTAINTY = 1.15
+ARES_BONUS = 1.1
 
 ImpFactor = namedtuple('ImpFactor', 'max factor plus')
 

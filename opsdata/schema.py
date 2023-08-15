@@ -34,15 +34,31 @@ def row_s_to_dict(row_s):
         return dict()
 
 
+def current_od_time(as_str=False) -> datetime | str:
+    dt = datetime.now() + timedelta(hours=LOCAL_TIME_SHIFT)
+    if as_str:
+        return dt.strftime(DATE_TIME_FORMAT)
+    else:
+        return dt
+
+
 def hours_since(timestamp):
     if timestamp:
         last_op_dt = datetime.strptime(timestamp, DATE_TIME_FORMAT)
-        server_now = datetime.now() + timedelta(hours=LOCAL_TIME_SHIFT)
-        delta = server_now - last_op_dt
+        delta = current_od_time() - last_op_dt
         delta_hours = delta / timedelta(hours=1)
         return trunc(delta_hours)
     else:
         return 999
+
+
+def add_duration(timestamp: str, duration: int, whole_hour=False) -> str:
+    timestamp_dt = datetime.strptime(timestamp, DATE_TIME_FORMAT)
+    duration_td = timedelta(hours=duration)
+    new_dt = timestamp_dt + duration_td
+    if whole_hour:
+        new_dt = new_dt.replace(minute=0, second=0)
+    return new_dt.strftime(DATE_TIME_FORMAT)
 
 # ---------------------------------------------------------------------- Parameterized Queries
 
@@ -385,7 +401,7 @@ qry_select_spells = f'''
         timestamp,
         spell,
         duration,
-        max(expires) as expiration
+        max(expires) as expires
     FROM
         Revelation 
     WHERE
@@ -399,12 +415,20 @@ def query_revelation(db, dom_code):
     params = {
         'dominion': dom_code
     }
-    return db.execute(qry_select_spells, params)
+    return db.query(qry_select_spells, params)
 
 
 def update_revelation(ops, db, dom_code):
     timestamp = cleanup_timestamp(ops.q('revelation.created_at'))
-    _update_ops_table(ops, db, 'Revelation', REVELATION_MAPPING, dom_code, timestamp)
+    for spell in ops.q('revelation.spells'):
+        params = {
+            'dominion': dom_code,
+            'timestamp': timestamp,
+            'spell': spell['spell'],
+            'duration': spell['duration'],
+            'expires': add_duration(timestamp, spell['duration'], whole_hour=True)
+        }
+        db.execute(qry_insert_spell, params)
 
 
 # ------------------------------------------------------------ Town Crier

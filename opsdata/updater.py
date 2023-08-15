@@ -26,6 +26,8 @@ def update_ops(ops, db, dom_code):
         update_land(ops, db, dom_code)
     if ops.has_vision:
         update_vision(ops, db, dom_code)
+    if ops.has_revelation:
+        update_revelation(ops, db, dom_code)
 
 
 def update_town_crier(session, db):

@@ -3,7 +3,7 @@ from math import trunc
 from opsdata.schema import query_barracks
 from domain.unknown import Unknown
 from domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS
-from domain.refdata import NETWORTH_VALUES
+from domain.refdata import NETWORTH_VALUES, BS_UNCERTAINTY, ARES_BONUS
 
 
 class Military(object):
@@ -19,7 +19,10 @@ class Military(object):
         return self.dom.race.unit(nr)
 
     def amount(self, unit_type_nr) -> float:
-        return self.dom.cs[f'military_unit{unit_type_nr}']
+        if not isinstance(self.dom.cs, Unknown):
+            return self.dom.cs[f'military_unit{unit_type_nr}']
+        else:
+            return self._data[f'home_unit{unit_type_nr}'] * BS_UNCERTAINTY
 
     def op_of(self, unit_type_nr):
         return self.amount(unit_type_nr) * self.unit_type(unit_type_nr).offense
@@ -84,6 +87,8 @@ class Military(object):
         defense += sum([self.dp_of(i) for i in range(1, 5)])
         defense += self.dom.cs['military_draftees']
         defense *= 1 + self.defense_bonus
+        if self.dom.magic.ares:
+            defense *= ARES_BONUS
 
         return round(defense)
 

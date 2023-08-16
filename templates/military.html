@@ -7,13 +7,14 @@
 
 {% block content %}
   <div class="w3-container">
-    <h5>Ratio Estimates</h5>
+    <h5>Military</h5>
     <table id="military_table" class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
         <thead>
             <tr class="w3-dark-grey">
                 <th>Dominion</th>
                 <th>Realm</th>
                 <th>Race</th>
+                <th>Ops Age</th>
                 <th>Land</th>
                 <th>OP Bonus %</th>
                 <th>OP</th>
@@ -32,6 +33,7 @@
             <td>
                 {{ dom.race.name }}
             </td>
+            <td  {% if 1 < ages[dom.code] <= 12 %}class="stale"{% elif ages[dom.code] > 12 %}class="invalid"{% endif %}>{{ ages[dom.code] }}</td>
             <td>
                 {{ dom.total_land }}
             </td>
@@ -56,7 +58,7 @@
     $(document).ready( function () {
         $('#military_table').DataTable({
             'paging': false,
-            'order': [[3, 'desc']]
+            'order': [[4, 'desc']]
         });
     } );
 </script>

@@ -56,7 +56,7 @@ class Military(object):
         # Forges bonus
         bonus += self.dom.castle.forges
         # Gryphon Nest bonus
-        bonus += self.dom.buildings.perc_of('gryphon_nest') * GN_OFFENSE_BONUS / 100
+        bonus += self.dom.buildings.perc_of('gryphon_nest') * GN_OFFENSE_BONUS
         # Prestige Bonus
         bonus += self.dom.cs['prestige'] / 10000
         return bonus

@@ -82,7 +82,9 @@ def ratios():
 
 @app.route('/military')
 def military():
-    return render_template('military.html', doms=facade().all_doms_as_objects())
+    return render_template('military.html',
+                           doms=facade().all_doms_as_objects(),
+                           ages=facade().all_doms_ops_age())
 
 
 @app.teardown_appcontext

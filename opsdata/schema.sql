@@ -1,3 +1,11 @@
+CREATE TABLE IF NOT EXISTS SchemaVersion (
+    timestamp DATETIME NOT NULL,
+    version TEXT NOT NULL
+);
+
+INSERT INTO SchemaVersion (timestamp, version) VALUES (DATETIME('now'), '1.0');
+
+
 DROP TABLE IF EXISTS Dominions;
 CREATE TABLE IF NOT EXISTS Dominions (
 	code INTEGER PRIMARY KEY,

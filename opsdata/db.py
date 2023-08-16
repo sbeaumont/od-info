@@ -4,7 +4,7 @@ import sqlite3
 
 class Database(object):
     def __init__(self):
-        self._conn = None
+        self._conn: sqlite3.Connection | None = None
 
     def teardown(self):
         self._conn.close()
@@ -44,6 +44,9 @@ class Database(object):
         # print(f"Executing {sql} with {params}")
         cur.executemany(sql, params)
         self.conn.commit()
+
+    def executescript(self, scriptfilename: str):
+        self.conn.executescript(scriptfilename)
 
     def query(self, sql: str, params: dict | list | tuple = None, one=False):
         with self.conn as conn:

@@ -46,7 +46,8 @@ class Database(object):
         self.conn.commit()
 
     def executescript(self, scriptfilename: str):
-        self.conn.executescript(scriptfilename)
+        with open(scriptfilename) as f:
+            self.conn.executescript(f.read())
 
     def query(self, sql: str, params: dict | list | tuple = None, one=False):
         with self.conn as conn:

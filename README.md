@@ -1,6 +1,10 @@
 # OD Info
 Utility app for the OpenDominion game
 
+This is very much a work in progress. I've tried to make it as easy as possible for a non-programmer to install and run this,
+but there are still some quirks that I could improve in the future, like not needing to go into
+config files to change things.
+
 ## Installation
 
 I don't use Windows machines, but on python.org there are probably good installers
@@ -45,10 +49,17 @@ You'll also need to add a text file called "secrets.py" file in the project root
     username = (your OD username)
     password = (your OD password)
     discord_webhook = (Discord webhook URL)
+    current_player_id = (Your player id. Easiest way to find out is go to Search page, hover over your dom name, and note the number at the end of the ".../op-center/<your number>" URL)
+    LOCAL_TIME_SHIFT = (Difference in hours between your local time and OD server time. Positive if your time is ahead of OD server time: e.g. if OD time is 8:21 and your local time is 10:21, you fill in 2 here)
 
 You can send the networth tracking overview to Discord, but you'll need to set up a
 webhook there. On a channel where you can access the settings you can add a webhook
 and copy the URL from there.
+
+### One database per round
+
+You can open the config.py file with a text editor and change the DATABASE = './opsdata/odinfo-round-36.sqlite' line to
+a new round number. This way you can have a fresh database for every round.
 
 ### Run application
 Run the app locally from the Terminal from the root of the project:

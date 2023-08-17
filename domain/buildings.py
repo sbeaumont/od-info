@@ -70,6 +70,10 @@ class Buildings(object):
         return self._data['guard_tower']
 
     @property
+    def temples(self) -> int:
+        return self._data['temple']
+
+    @property
     def non_homes(self) -> int:
         return sum([int(self._data[n]) for n in NON_HOME_TYPES])
 
@@ -97,7 +101,7 @@ class Buildings(object):
     def constructing(self) -> int:
         return sum(self._constructing.values())
 
-    def perc_of(self, building_type: str):
+    def perc_of(self, building_type: str) -> float:
         return self._data[building_type] / self.dom.total_land
 
 

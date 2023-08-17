@@ -75,10 +75,17 @@ class Military(object):
         bonus += self.dom.race.get_perk('defense', 0) / 100
         # Tech bonus
         bonus += float(self.dom.tech.value_for_perk('defense')) / 100
-        # Forges bonus
+        # Walls bonus
         bonus += self.dom.castle.walls
         # Guard Tower bonus
-        bonus += self.dom.buildings.perc_of('guard_tower') * GT_DEFENSE_FACTOR / 100
+        bonus += self.dom.buildings.perc_of('guard_tower') * GT_DEFENSE_FACTOR
+        # Ares Bonus (assume it's up unless proven not to be)
+        # if not isinstance(self.dom.magic, Unknown) and not self.dom.magic.ares:
+        #     # Proven not to be up
+        #     pass
+        # else:
+        #     # Assume it's up
+        bonus += ARES_BONUS
         return bonus
 
     @property
@@ -87,9 +94,6 @@ class Military(object):
         defense += sum([self.dp_of(i) for i in range(1, 5)])
         defense += self.dom.cs['military_draftees']
         defense *= 1 + self.defense_bonus
-        if self.dom.magic.ares:
-            defense *= ARES_BONUS
-
         return round(defense)
 
     @property

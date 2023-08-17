@@ -18,6 +18,7 @@
                 <th>Land</th>
                 <th>OP Bonus %</th>
                 <th>OP</th>
+                <th>Temples</th>
                 <th>DP Bonus %</th>
                 <th>DP</th>
             </tr>
@@ -27,28 +28,17 @@
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
-            <td>
-                {{ dom.realm }}
+            <td>{{ dom.realm }}</td>
+            <td>{{ dom.race.name }}</td>
+            <td  {% if 1 < ages[dom.code] <= 12 %}class="stale"{% elif ages[dom.code] > 12 %}class="invalid"{% endif %}>
+                {{ ages[dom.code] }}
             </td>
-            <td>
-                {{ dom.race.name }}
-            </td>
-            <td  {% if 1 < ages[dom.code] <= 12 %}class="stale"{% elif ages[dom.code] > 12 %}class="invalid"{% endif %}>{{ ages[dom.code] }}</td>
-            <td>
-                {{ dom.total_land }}
-            </td>
-            <td>
-                {{ (dom.military.offense_bonus * 100)|round(3) }}
-            </td>
-            <td>
-                {{ dom.military.op }}
-            </td>
-            <td>
-                {{ (dom.military.defense_bonus * 100)|round(3) }}
-            </td>
-            <td>
-                {{ dom.military.dp }}
-            </td>
+            <td>{{ dom.total_land }}</td>
+            <td>{{ (dom.military.offense_bonus * 100)|round(1) }}%</td>
+            <td>{{ dom.military.op }}</td>
+            <td>{{ (dom.buildings.perc_of('temple') * 100)|round(1) }}%</td>
+            <td>{{ (dom.military.defense_bonus * 100)|round(1) }}%</td>
+            <td>{{ dom.military.dp }}</td>
         </tr>
         {% endfor %}
     </table><br>

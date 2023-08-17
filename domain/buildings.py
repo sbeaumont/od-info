@@ -101,7 +101,7 @@ class Buildings(object):
     def constructing(self) -> int:
         return sum(self._constructing.values())
 
-    def perc_of(self, building_type: str) -> float:
+    def ratio_of(self, building_type: str) -> float:
         return self._data[building_type] / self.dom.total_land
 
 

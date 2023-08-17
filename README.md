@@ -5,12 +5,12 @@ This is very much a work in progress. I've tried to make it as easy as possible 
 but there are still some quirks that I could improve in the future, like not needing to go into
 config files to change things.
 
-## Installation
+## Install Python 3
 
-I don't use Windows machines, but on python.org there are probably good installers
-to be found for Python3.
+### Windows (direct install)
+Go to https://python.org/downloads/ and download the latest release version, install it.
 
-### Homebrew and Python3 (Mac or Linux)
+### Mac or Linux (via Homebrew)
 To make it work you'll need Python 3 installed. If you have no clue how to do this,
 the easiest on Mac is to install the Homebrew package manager (https://brew.sh/#install). 
 It tells you to execute this in a Terminal window:
@@ -23,7 +23,7 @@ Next step is installing Python3 (also in the Terminal window):
 
 ### Python3 packages
 *Note that there's a whole thing about "virtual environments" that is good practice
-if you run or develop different applications. If this is the only Python
+if you run or develop different Python applications. If this is the only Python
 application you're ever planning on running because you're not a leet hacker,
 don't bother with it, just continue to the next step: it just means the packages
 will be part of the main Python3 installation, which is fine for this case.*

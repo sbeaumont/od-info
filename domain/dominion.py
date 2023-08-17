@@ -164,7 +164,7 @@ if __name__ == '__main__':
     print("Pop Bonus:", dom.population_bonus)
     print("Military:", dom.military)
     print("Nightshade:", dom.military.unit_type(3).defense)
-    print("Swamp %:", dom.land.perc_of('swamp'))
+    print("Swamp %:", dom.land.ratio_of('swamp'))
     print("Castle:", dom.castle)
     print("Buildings:", dom.buildings)
     print("Mason bonus:", dom.castle.mason_bonus)

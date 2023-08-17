@@ -56,7 +56,7 @@ class Military(object):
         # Forges bonus
         bonus += self.dom.castle.forges
         # Gryphon Nest bonus
-        bonus += self.dom.buildings.perc_of('gryphon_nest') * GN_OFFENSE_BONUS
+        bonus += self.dom.buildings.ratio_of('gryphon_nest') * GN_OFFENSE_BONUS
         # Prestige Bonus
         bonus += self.dom.cs['prestige'] / 10000
         return bonus
@@ -78,7 +78,7 @@ class Military(object):
         # Walls bonus
         bonus += self.dom.castle.walls
         # Guard Tower bonus
-        bonus += self.dom.buildings.perc_of('guard_tower') * GT_DEFENSE_FACTOR
+        bonus += self.dom.buildings.ratio_of('guard_tower') * GT_DEFENSE_FACTOR
         # Ares Bonus (assume it's up unless proven not to be)
         # if not isinstance(self.dom.magic, Unknown) and not self.dom.magic.ares:
         #     # Proven not to be up

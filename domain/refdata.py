@@ -65,7 +65,7 @@ class Unit(object):
     def land_bonus(self, perk_name: str) -> float:
         if self.has_perk(perk_name):
             land_type, percent_per_point, max_bonus = self.get_perk(perk_name)
-            return min(float(max_bonus), self.dom.land.perc_of(land_type) / float(percent_per_point))
+            return min(float(max_bonus), self.dom.land.ratio_of(land_type) / float(percent_per_point))
         else:
             return 0
 

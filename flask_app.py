@@ -30,6 +30,10 @@ def overview():
                 prefix, dom, old_role = k.split('.')
                 if old_role != v:
                     facade().update_role(dom, v)
+            elif k.startswith('name.'):
+                prefix, dom, old_name = k.split('.')
+                if old_name != v:
+                    facade().update_player(dom, v)
     dom_list, nw_deltas = facade().dom_list()
     return render_template(
         'overview.html',

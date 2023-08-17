@@ -45,9 +45,14 @@ class ODInfoFacade(object):
         update_ops(ops, self._db, dom_code)
 
     def update_role(self, dom_code, role):
-        logger.debug("Updated dominion %s role to %s", dom_code, role)
+        logger.debug("Updating dominion %s role to %s", dom_code, role)
         qry = f'UPDATE Dominions SET role = ? WHERE code = ?'
         self._db.execute(qry, (role, dom_code))
+
+    def update_player(self, dom_code, player_name):
+        logger.debug("Updating dominion player name from %s to %s", dom_code, player_name)
+        qry = f'UPDATE Dominions SET player = ? WHERE code = ?'
+        self._db.execute(qry, (player_name, dom_code))
 
     def update_town_crier(self):
         update_town_crier(self.session, self._db)

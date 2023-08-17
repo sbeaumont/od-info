@@ -44,7 +44,7 @@
                 </select>
             </td>
             <td>{{ dom.realm }}</td>
-            <td>{{ dom.player }}</td>
+            <td><input type="text" name="name.{{dom.code}}.{{dom.player}}" onfocusout="this.form.submit()" value="{{ dom.player }}"></td>
             <td>{{ dom.race }}</td>
         </tr>
         {% endfor %}

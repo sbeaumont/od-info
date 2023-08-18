@@ -7,7 +7,6 @@ DB_SCHEMA_FILE = './opsdata/schema.sql'
 
 OD_BASE = 'https://www.opendominion.net'
 
-VALHALLA_URL = f'{OD_BASE}/valhalla/round'
 LOGIN_URL = f'{OD_BASE}/auth/login'
 SEARCH_PAGE = f'{OD_BASE}/dominion/search'
 OP_CENTER_URL = f'{OD_BASE}/dominion/op-center'

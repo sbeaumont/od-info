@@ -3,7 +3,7 @@ from flask import render_template
 import logging
 
 from config import OP_CENTER_URL
-from app.facade import ODInfoFacade
+from facade.odinfo import ODInfoFacade
 
 
 app = Flask('od-info')
@@ -81,7 +81,9 @@ def economy():
 
 @app.route('/ratios')
 def ratios():
-    return render_template('ratios.html', doms=facade().doms_with_ratios())
+    return render_template('ratios.html',
+                           doms=facade().doms_with_ratios(),
+                           ages=facade().all_doms_ops_age())
 
 
 @app.route('/military')

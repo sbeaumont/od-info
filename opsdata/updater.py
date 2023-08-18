@@ -4,7 +4,7 @@ Higher order update actions.
 
 import logging
 
-from app.towncrier import get_number_of_tc_pages, get_tc_page
+from facade.towncrier import get_number_of_tc_pages, get_tc_page
 from opsdata.schema import *
 
 logger = logging.getLogger('od-info.db')

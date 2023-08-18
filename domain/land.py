@@ -25,7 +25,7 @@ class Land(object):
     def total(self):
         return self._data['total']
 
-    def perc_of(self, land_type):
+    def ratio_of(self, land_type):
         return self._data[land_type] / self.dom.total_land * 100
 
 

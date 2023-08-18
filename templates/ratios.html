@@ -12,6 +12,8 @@
         <thead>
             <tr class="w3-dark-grey">
                 <th>Dominion</th>
+                <th>Ops Age</th>
+                <th>Realm</th>
                 <th>Race</th>
                 <th>Networth</th>
                 <th>Military Spy</th>
@@ -27,6 +29,10 @@
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
+            <td  {% if 1 < ages[dom.code] <= 12 %}class="stale"{% elif ages[dom.code] > 12 %}class="invalid"{% endif %}>
+                {{ ages[dom.code] }}
+            </td>
+            <td>{{ dom.realm }}</td>
             <td>
                 {{ dom.race.name }}
             </td>

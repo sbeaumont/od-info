@@ -6,7 +6,7 @@ from opsdata.ops import grab_ops, grab_my_ops, update_dom_index, get_last_scans
 from operator import itemgetter
 from opsdata.db import Database
 from opsdata.schema import *
-from odinfo.discord import send_to_webhook
+from facade.discord import send_to_webhook
 from opsdata.updater import update_ops, update_town_crier
 from secret import current_player_id
 

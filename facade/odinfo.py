@@ -1,12 +1,13 @@
-from config import DATABASE, DB_SCHEMA_FILE
-from opsdata.scrapetools import login
-from domain.dominion import all_doms, name_for_code, Dominion
-from calculators.networthcalculator import get_networth_deltas
-from opsdata.ops import grab_ops, grab_my_ops, update_dom_index, get_last_scans
 from operator import itemgetter
-from opsdata.db import Database
-from opsdata.schema import *
+
+from calculators.networthcalculator import get_networth_deltas
+from config import DATABASE, DB_SCHEMA_FILE
+from domain.dominion import all_doms, name_for_code, Dominion
 from facade.discord import send_to_webhook
+from opsdata.db import Database
+from opsdata.ops import grab_ops, grab_my_ops, update_dom_index, get_last_scans
+from opsdata.schema import *
+from opsdata.scrapetools import login
 from opsdata.updater import update_ops, update_town_crier
 from secret import current_player_id
 

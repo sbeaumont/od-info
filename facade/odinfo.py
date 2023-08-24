@@ -2,7 +2,7 @@ from operator import itemgetter
 
 from calculators.networthcalculator import get_networth_deltas
 from config import DATABASE, DB_SCHEMA_FILE
-from domain.dominion import all_doms, name_for_code, Dominion
+from domain.dominion import all_doms, name_for_code, Dominion, doms_of_realm, realm_of_dom
 from facade.discord import send_to_webhook
 from opsdata.db import Database
 from opsdata.ops import grab_ops, grab_my_ops, update_dom_index, get_last_scans
@@ -56,6 +56,11 @@ class ODInfoFacade(object):
 
     def update_town_crier(self):
         update_town_crier(self.session, self._db)
+
+    def update_realmies(self):
+        realm = realm_of_dom(self._db, current_player_id)
+        for dom_code in doms_of_realm(self._db, realm):
+            self.update_ops(dom_code)
 
     # ---------------------------------------- COMMANDS - Change directly
 

@@ -33,6 +33,11 @@ def realm_of_dom(db, dom_code):
     return db.query('SELECT realm FROM Dominions WHERE code = :dom_code', {'dom_code': dom_code}, one=True)['realm']
 
 
+def doms_of_realm(db, realm):
+    result = (db.query('SELECT code FROM Dominions WHERE realm = :realm', {'realm': realm}))
+    return [dom['code'] for dom in result]
+
+
 class Dominion(object):
     def __init__(self, db, domcode):
         self.code = domcode

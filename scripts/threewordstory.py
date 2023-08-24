@@ -9,7 +9,7 @@ FORUM_URL = 'https://www.opendominion.net/dominion/forum/325?page={}'
 def go():
     comments = list()
     session = login(current_player_id)
-    for page_nr in range(10):
+    for page_nr in range(1, 99):
         soup = get_soup_page(session, FORUM_URL.format(page_nr))
         if not soup:
             break

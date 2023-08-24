@@ -24,6 +24,7 @@ def overview():
         facade().update_dom_index()
     elif request.args.get('update_all'):
         facade().update_all()
+        facade().update_realmies()
     if request.method == 'POST':
         for k, v in request.form.items():
             if k.startswith('role.'):

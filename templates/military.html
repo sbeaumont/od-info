@@ -18,6 +18,7 @@
                 <th>Land</th>
                 <th>OP Bonus %</th>
                 <th>OP</th>
+                <th>5/4</th>
                 <th>Temples</th>
                 <th>DP Bonus %</th>
                 <th>DP</th>
@@ -36,6 +37,7 @@
             <td>{{ dom.total_land }}</td>
             <td>{{ (dom.military.offense_bonus * 100)|round(1) }}%</td>
             <td>{{ dom.military.op }}</td>
+            <td>{{ dom.military.max_sendable_op }}</td>
             <td>{{ (dom.buildings.ratio_of('temple') * 100)|round(1) }}%</td>
             <td>{{ (dom.military.defense_bonus * 100)|round(1) }}%</td>
             <td>{{ dom.military.dp }}</td>
@@ -50,7 +52,7 @@
             'paging': false,
             'order': [[4, 'desc']],
             'columnDefs': [
-                { "type": "num", "targets": [1, 3, 4, 6, 9]}
+                { "type": "num", "targets": [1, 3, 4, 6, 7, 10]}
             ]
         });
     } );

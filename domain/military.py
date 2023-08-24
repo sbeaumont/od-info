@@ -69,6 +69,10 @@ class Military(object):
         return round(offense)
 
     @property
+    def max_sendable_op(self):
+        return min(self.op, self.dp * 1.25)
+
+    @property
     def defense_bonus(self):
         bonus = 0
         # Racial bonus

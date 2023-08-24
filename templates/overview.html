@@ -57,7 +57,10 @@
     $(document).ready( function () {
         $('#myTable').DataTable({
             'paging': false,
-            'order': [[2, 'desc']]
+            'order': [[2, 'desc']],
+            'columnDefs': [
+                { "type": "num", "targets": [1, 2, 3, 4, 6]}
+            ]
         });
     } );
 </script>

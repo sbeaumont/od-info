@@ -50,6 +50,7 @@ def dominfo(domcode: int, update=None):
         facade().update_ops(domcode)
     dom_name = facade().name_for_dom_code(domcode)
     return render_template('dominfo.html',
+                           dominion=facade().dominion(domcode),
                            domname=dom_name,
                            domcode=domcode,
                            dom=facade().dom_status(domcode),

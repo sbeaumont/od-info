@@ -95,6 +95,9 @@ class ODInfoFacade(object):
 
     # ---------------------------------------- QUERIES - Single Dominion
 
+    def dominion(self, dom_code):
+        return Dominion(self._db, dom_code)
+
     def dom_status(self, dom_code: int, update=False):
         """Get information of a specific dominion."""
         logger.debug("Getting dom status for %s", dom_code)

@@ -73,8 +73,8 @@ class ODInfoFacade(object):
 
     def send_top_bot_nw_to_discord(self):
         def create_message(header, nw_list):
-            msg_content = '\n'.join([f"{item['name']:<50} {item['nwdelta']:>9} {item['networth']:>9} {item['land']:>5}" for item in nw_list if item['nwdelta'] != 0])
-            return f"{header}\n```{'Dominion':<50} {'Delta':>9} {'Networth':>9} {'Land':>5}\n\n{msg_content}```"
+            msg_content = '\n'.join([f"{item['name']:<50} {item['realm']:>5} {item['nwdelta']:>9} {item['networth']:>9} {item['land']:>5}" for item in nw_list if item['nwdelta'] != 0])
+            return f"{header}\n```{'Dominion':<50} {'Realm':>5} {'Delta':>9} {'Networth':>9} {'Land':>5}\n\n{msg_content}```"
 
         header_top = '**Top 10 Networth Growers since past 12 hours**'
         top10_message = create_message(header_top, self.get_top_bot_nw())

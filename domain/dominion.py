@@ -163,7 +163,7 @@ if __name__ == '__main__':
     print("Opening database", DATABASE)
     db.init(DATABASE)
     # dom = Dominion(db, 10756)
-    dom = Dominion(db, 10898)
+    dom = Dominion(db, 10794)
     # dom = Dominion(db, 10793)
     print("Name:", dom.name)
     print("Code:", dom.code)

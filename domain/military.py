@@ -2,7 +2,7 @@ from math import trunc
 
 from opsdata.schema import query_barracks
 from domain.unknown import Unknown
-from domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS
+from domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, SendableType, Unit
 from domain.refdata import NETWORTH_VALUES, BS_UNCERTAINTY, ARES_BONUS
 
 
@@ -15,20 +15,29 @@ class Military(object):
         unit_txt = [f"{self.amount(i)} {self.unit_type(i).name} {self.unit_type(i).offense}/{self.unit_type(i).defense}" for i in range(1, 5)]
         return f"Military({'|'.join(unit_txt)}, {self.op}OP, {self.dp}DP)"
 
-    def unit_type(self, nr):
-        return self.dom.race.unit(nr)
+    def unit_type(self, unit_or_nr) -> Unit:
+        if isinstance(unit_or_nr, Unit):
+            return unit_or_nr
+        else:
+            return self.dom.race.unit(unit_or_nr)
 
-    def amount(self, unit_type_nr) -> float:
+    def amount(self, unit_or_nr) -> float:
+        unit_type_nr = self.dom.race.nr_of_unit(unit_or_nr)
+
         if not isinstance(self.dom.cs, Unknown):
             return self.dom.cs[f'military_unit{unit_type_nr}']
         else:
             return self._data[f'home_unit{unit_type_nr}'] * BS_UNCERTAINTY
 
-    def op_of(self, unit_type_nr):
-        return self.amount(unit_type_nr) * self.unit_type(unit_type_nr).offense
+    def op_of(self, unit_type_nr, with_bonus=False, partial_amount=0):
+        amount = partial_amount if partial_amount else self.amount(unit_type_nr)
+        op = amount * self.unit_type(unit_type_nr).offense
+        return (op * (1 + self.offense_bonus)) if with_bonus else op
 
-    def dp_of(self, unit_type_nr):
-        return self.amount(unit_type_nr) * self.unit_type(unit_type_nr).defense
+    def dp_of(self, unit_type_nr, with_bonus=False, partial_amount=0):
+        amount = partial_amount if partial_amount else self.amount(unit_type_nr)
+        dp = amount * self.unit_type(unit_type_nr).defense
+        return (dp * (1 + self.defense_bonus)) if with_bonus else dp
 
     @property
     def spies(self) -> int:
@@ -70,7 +79,25 @@ class Military(object):
 
     @property
     def max_sendable_op(self):
-        return min(self.op, self.dp * 1.25)
+        pure_offense = sum([self.op_of(u) for u in self.dom.race.pure_offense_units])
+        sendable_offense = pure_offense
+        home_defense = self.dp
+        hybrid_units_sendable = dict()
+        for unit_type in self.dom.race.hybrid_units:
+            new_op = sendable_offense + self.op_of(unit_type, True)
+            new_dp = home_defense - self.dp_of(unit_type, True)
+            if new_op < (1.25 * new_dp):
+                # Can send all of these units
+                hybrid_units_sendable[unit_type] = self.amount(unit_type)
+                sendable_offense += self.op_of(unit_type, True)
+                home_defense -= self.dp_of(unit_type, True)
+            else:
+                # Can only send part
+                sendable = (1.25 * home_defense - sendable_offense) / (unit_type.offense + 1.25 * unit_type.defense)
+                hybrid_units_sendable[unit_type] = trunc(sendable)
+                break
+        hybrid_op = sum([self.op_of(u, with_bonus=True, partial_amount=a) for u, a in hybrid_units_sendable.items()])
+        return pure_offense + hybrid_op
 
     @property
     def defense_bonus(self):
@@ -108,8 +135,8 @@ class Military(object):
 
         networth -= self.dom.military.amount(1) * NETWORTH_VALUES['specs']
         networth -= self.dom.military.amount(2) * NETWORTH_VALUES['specs']
-        networth -= self.dom.military.amount(3) * self.dom.race.def_elite.networth
-        networth -= self.dom.military.amount(4) * self.dom.race.off_elite.networth
+        networth -= self.dom.military.amount(3) * self.dom.race.unit(3).networth
+        networth -= self.dom.military.amount(4) * self.dom.race.unit(4).networth
         return round(networth, 1)
 
     @property
@@ -165,4 +192,3 @@ def military_for(db, dom):
         return Military(dom, data)
     else:
         return Unknown()
-

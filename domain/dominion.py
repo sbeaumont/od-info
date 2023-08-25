@@ -160,9 +160,10 @@ if __name__ == '__main__':
     from opsdata.db import Database
     from config import DATABASE
     db = Database()
+    print("Opening database", DATABASE)
     db.init(DATABASE)
-    dom = Dominion(db, 10756)
-    # dom = Dominion(db, 10792)
+    # dom = Dominion(db, 10756)
+    dom = Dominion(db, 10898)
     # dom = Dominion(db, 10793)
     print("Name:", dom.name)
     print("Code:", dom.code)
@@ -181,6 +182,7 @@ if __name__ == '__main__':
     print("CS:", row_s_to_dict(dom.cs))
     print("OP:", dom.military.op)
     print("DP:", dom.military.dp)
+    print("5/4:", dom.military.max_sendable_op)
     print("Last op", dom.last_op)
     print("Last op since:", dom.last_op_since)
     print("Ares:", dom.magic.ares)

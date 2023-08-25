@@ -53,7 +53,12 @@ class Unknown(object):
     def __lt__(self, other):
         return self
 
+    def __le__(self, other):
+        return self
+
     def __gt__(self, other):
         return self
 
+    def __ge__(self, other):
+        return self
 

@@ -1,5 +1,9 @@
+import math
+from operator import attrgetter
+
 import yaml
 from math import erf
+from enum import Enum
 from collections import defaultdict, namedtuple
 from config import REF_DATA_DIR
 
@@ -28,6 +32,12 @@ NETWORTH_VALUES = {
     'specs': 5,
     'spywiz': 5
 }
+
+
+class SendableType(Enum):
+    PURE_DEFENSE = 1
+    PURE_OFFENSE = 2
+    HYBRID = 3
 
 
 def infamy_bonus(infamy, maxbonus):
@@ -87,6 +97,24 @@ class Unit(object):
             return default
 
     @property
+    def sendable_type(self):
+        if self.offense == 0:
+            return SendableType.PURE_DEFENSE
+        elif self.defense == 0:
+            return SendableType.PURE_OFFENSE
+        else:
+            return SendableType.HYBRID
+
+    @property
+    def op_over_dp(self):
+        if self.offense == 0:
+            return 0
+        elif self.defense == 0:
+            return math.inf
+        else:
+            return self.offense / self.defense
+
+    @property
     def cost(self) -> dict:
         return self._data['cost']
 
@@ -124,8 +152,11 @@ class Race(object):
         self.dom = dom
         self.yaml = self._load_data(self.name)
         self.units = dict()
+        self.reverse_units = dict()
         for i in range(1, 5):
-            self.units[i] = Unit(self.yaml['units'][i - 1], dom)
+            unit = Unit(self.yaml['units'][i - 1], dom)
+            self.units[i] = unit
+            self.reverse_units[unit] = i
 
     def _load_data(self, name):
         name = name.replace(' ', '').lower()
@@ -135,21 +166,10 @@ class Race(object):
     def unit(self, nr) -> Unit:
         return self.units[nr]
 
-    @property
-    def off_spec(self) -> Unit:
-        return self.unit(1)
-
-    @property
-    def def_spec(self) -> Unit:
-        return self.unit(2)
-
-    @property
-    def def_elite(self) -> Unit:
-        return self.unit(3)
-
-    @property
-    def off_elite(self) -> Unit:
-        return self.unit(4)
+    def nr_of_unit(self, unit):
+        if isinstance(unit, int):
+            return unit
+        return self.reverse_units[unit]
 
     def has_perk(self, name) -> bool:
         return 'perks' in self.yaml and name in self.yaml['perks']
@@ -159,3 +179,15 @@ class Race(object):
             return self.yaml['perks'][name]
         else:
             return default
+
+    @property
+    def hybrid_units(self):
+        return sorted([u for u in self.units.values() if u.sendable_type == SendableType.HYBRID], key=attrgetter('op_over_dp'), reverse=True)
+
+    @property
+    def pure_offense_units(self):
+        return [u for u in self.units.values() if u.sendable_type == SendableType.PURE_OFFENSE]
+
+    @property
+    def pure_defense_units(self):
+        return [u for u in self.units.values() if u.sendable_type == SendableType.PURE_DEFENSE]

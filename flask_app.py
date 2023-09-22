@@ -49,22 +49,24 @@ def dominfo(domcode: int, update=None):
     if update == 'update':
         facade().update_ops(domcode)
     dom_name = facade().name_for_dom_code(domcode)
-    return render_template('dominfo.html',
-                           dominion=facade().dominion(domcode),
-                           domname=dom_name,
-                           domcode=domcode,
-                           dom=facade().dom_status(domcode),
-                           castle=facade().castle(domcode),
-                           barracks=facade().barracks(domcode),
-                           nw_history=facade().nw_history(domcode),
-                           op_center_url=OP_CENTER_URL)
+    return render_template(
+        'dominfo.html',
+        dominion=facade().dominion(domcode),
+        domname=dom_name,
+        domcode=domcode,
+        dom=facade().dom_status(domcode),
+        castle=facade().castle(domcode),
+        barracks=facade().barracks(domcode),
+        nw_history=facade().nw_history(domcode),
+        op_center_url=OP_CENTER_URL)
 
 
 @app.route('/towncrier')
 def towncrier():
     if request.args.get('update'):
         facade().update_town_crier()
-    return render_template('towncrier.html', towncrier=facade().get_town_crier())
+    return render_template('towncrier.html',
+                           towncrier=facade().get_town_crier())
 
 
 @app.route('/nwtracker/<send>')
@@ -73,12 +75,16 @@ def nw_tracker(send=None):
     result_of_send = ''
     if send == 'send':
         result_of_send = facade().send_top_bot_nw_to_discord()
-    return render_template('nwtracker.html', top_nw=facade().get_top_bot_nw(), bot_nw=facade().get_top_bot_nw(False), result_of_send=result_of_send)
+    return render_template('nwtracker.html',
+                           top_nw=facade().get_top_bot_nw(),
+                           bot_nw=facade().get_top_bot_nw(False),
+                           result_of_send=result_of_send)
 
 
 @app.route('/economy')
 def economy():
-    return render_template('economy.html', economy=facade().economy())
+    return render_template('economy.html',
+                           economy=facade().economy())
 
 
 @app.route('/ratios')

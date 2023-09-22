@@ -100,27 +100,33 @@ class Realm(object):
 
 def go():
     db = Database()
-    db.init(DATABASE, None)
+    db.init(DATABASE)
     realms = dict()
     i = 0
-    for x, y in centers_for(10, 400):
+    for x, y in centers_for(14, 400):
         realms[i] = Realm(i, Point(x, y))
         i += 1
     realms[0].init_size(100000)
 
     invasions = [line for line in get_tc_lines(db) if line['event_type'] == 'invasion']
     volg_nr = 1
-    for event in invasions:
-        origin = realm_of_dom(db, event['origin'])
-        target = realm_of_dom(db, event['target'])
-        hit_size = event['amount']
-        realms[target].size -= hit_size
-        realms[origin].size += hit_size
-        file_name = f'out/tcmovie/tcmovie-{volg_nr}.png'
-        draw_realms(db, realms, event, file_name)
-        print("Printed event", volg_nr)
+    for event in [inv for inv in invasions if inv is not None]:
+        try:
+            assert event['origin'], f"Origin of event {event} should not be None"
+            origin = realm_of_dom(db, event['origin'])
+            assert event['target'], f"Target of event {event} should not be None"
+            target = realm_of_dom(db, event['target'])
+            assert event['amount'], f"Amount of event {event} should not be None"
+            hit_size = event['amount']
+            realms[target].size -= hit_size
+            realms[origin].size += hit_size
+            file_name = f'out/tcmovie/tcmovie-{volg_nr}.png'
+            draw_realms(db, realms, event, file_name)
+            print("Printed event", volg_nr)
+        except (AssertionError, TypeError):
+            pass
         volg_nr += 1
-    draw_realms(db, realms, event)
+    draw_realms(db, realms)
 
 
 def connect_audio():
@@ -138,9 +144,9 @@ def connect_audio():
 
 
 if __name__ == '__main__':
-    # print("Generating frames...")
-    # go()
-    # print("Exporting video...")
-    # export_video()
+    print("Generating frames...")
+    go()
+    print("Exporting video...")
+    export_video()
     print("Attaching audio...")
     connect_audio()

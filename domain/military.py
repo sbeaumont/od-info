@@ -95,7 +95,14 @@ class Military(object):
     def op(self):
         offense = sum([self.op_of(i) for i in range(1, 5)])
         offense *= 1 + self.offense_bonus
+        return round(offense)
 
+    @property
+    def safe_op(self):
+        """Only calc based on attack units"""
+        offense = self.op_of(1)
+        offense += self.op_of(4)
+        offense *= 1 + self.offense_bonus
         return round(offense)
 
     @property

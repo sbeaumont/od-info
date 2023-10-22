@@ -16,8 +16,8 @@
                 <th>Race</th>
                 <th>Ops Age</th>
                 <th>Land</th>
-                <th>OP Bonus %</th>
                 <th>OP</th>
+                <th>Safe OP</th>
                 <th>5/4 OP</th>
                 <th>5/4 DP</th>
                 <th>Temples</th>
@@ -36,8 +36,8 @@
                 {{ ages[dom.code] }}
             </td>
             <td>{{ dom.total_land }}</td>
-            <td>{{ (dom.military.offense_bonus * 100)|round(1) }}%</td>
             <td>{{ dom.military.op }}</td>
+            <td>{{ dom.military.safe_op }}</td>
             {% set fivefour = dom.military.max_sendable_op %}
             <td>{{ fivefour[0] }}</td>
             <td>{{ fivefour[1] }}</td>

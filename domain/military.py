@@ -1,3 +1,4 @@
+import json
 from math import trunc
 
 from opsdata.schema import query_barracks
@@ -23,10 +24,30 @@ class Military(object):
 
     def amount(self, unit_or_nr) -> int:
         unit_type_nr = self.dom.race.nr_of_unit(unit_or_nr)
+        total = 0
         if not isinstance(self.dom.cs, Unknown):
-            return trunc(self.dom.cs[f'military_unit{unit_type_nr}'])
+            total += trunc(self.dom.cs[f'military_unit{unit_type_nr}'])
         else:
-            return trunc(self._data[f'home_unit{unit_type_nr}'] * BS_UNCERTAINTY)
+            total += trunc(self._data[f'home_unit{unit_type_nr}'] * BS_UNCERTAINTY)
+            total += self.coming_home(unit_type_nr)
+        total += self.in_training(unit_type_nr)
+        return total
+
+    def in_training(self, unit_type_nr: int) -> int:
+        tr = json.loads(self._data['training'])
+        key = f'unit{unit_type_nr}'
+        if key in tr:
+            return sum(tr[key].values())
+        else:
+            return 0
+
+    def coming_home(self, unit_type_nr: int):
+        tr = json.loads(self._data['return'])
+        key = f'unit{unit_type_nr}'
+        if key in tr:
+            return sum(tr[key].values())
+        else:
+            return 0
 
     def op_of(self, unit_type_nr, with_bonus=False, partial_amount=None):
         amount = partial_amount if partial_amount else self.amount(unit_type_nr)
@@ -140,6 +161,7 @@ class Military(object):
         networth -= self.dom.total_land * NETWORTH_VALUES['land']
         networth -= self.dom.buildings.total * NETWORTH_VALUES['buildings']
 
+        # self.dom.military is this object...? Would removing dom.military break sth?
         networth -= self.dom.military.amount(1) * NETWORTH_VALUES['specs']
         networth -= self.dom.military.amount(2) * NETWORTH_VALUES['specs']
         networth -= self.dom.military.amount(3) * self.dom.race.unit(3).networth

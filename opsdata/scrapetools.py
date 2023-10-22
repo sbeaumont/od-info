@@ -1,8 +1,13 @@
 import requests
+import logging
 from bs4 import BeautifulSoup
 
 from config import LOGIN_URL, STATUS_URL, SELECT_URL
 from secret import username, password, current_player_id
+from requests.exceptions import TooManyRedirects
+
+
+logger = logging.getLogger('od-info.scraping')
 
 
 class ODTickTime(object):
@@ -29,9 +34,13 @@ class ODTickTime(object):
         return False
 
 
-def get_soup_page(session: requests.Session, url: str) -> BeautifulSoup:
-    response = session.get(url)
-    return BeautifulSoup(response.content, "html.parser")
+def get_soup_page(session: requests.Session, url: str) -> BeautifulSoup | None:
+    logger.debug(f"Getting page {url}")
+    try:
+        response = session.get(url)
+        return BeautifulSoup(response.content, "html.parser")
+    except TooManyRedirects:
+        return None
 
 
 def read_server_time(soup: BeautifulSoup) -> str:

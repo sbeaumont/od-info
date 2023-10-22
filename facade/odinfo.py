@@ -52,7 +52,10 @@ class ODInfoFacade(object):
             ops = grab_my_ops(self.session)
         else:
             ops = grab_ops(self.session, dom_code)
-        update_ops(ops, self._db, dom_code)
+        if ops:
+            update_ops(ops, self._db, dom_code)
+        else:
+            logger.warn(f"Can't get ops for dominion {dom_code}")
 
     def update_town_crier(self):
         update_town_crier(self.session, self._db)

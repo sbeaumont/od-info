@@ -64,11 +64,14 @@ class Ops(object):
         return self.q_exists('revelation.spells')
 
 
-def grab_ops(session, dom_code) -> Ops:
+def grab_ops(session, dom_code) -> Ops | None:
     """Grabs the copy_ops JSON file for a specified dominion."""
     soup = get_soup_page(session, f'{OP_CENTER_URL}/{dom_code}')
-    ops_json = soup.find('textarea', id='ops_json').string
-    return Ops(json.loads(ops_json))
+    if soup:
+        ops_json = soup.find('textarea', id='ops_json').string
+        return Ops(json.loads(ops_json))
+    else:
+        return None
 
 
 def grab_my_ops(session) -> Ops:

@@ -22,7 +22,7 @@ class Military(object):
         else:
             return self.dom.race.unit(unit_or_nr)
 
-    def amount(self, unit_or_nr) -> int:
+    def amount(self, unit_or_nr, include_paid=True) -> int:
         unit_type_nr = self.dom.race.nr_of_unit(unit_or_nr)
         total = 0
         if not isinstance(self.dom.cs, Unknown):
@@ -30,7 +30,8 @@ class Military(object):
         else:
             total += trunc(self._data[f'home_unit{unit_type_nr}'] * BS_UNCERTAINTY)
             total += self.coming_home(unit_type_nr)
-        total += self.in_training(unit_type_nr)
+        if include_paid:
+            total += self.in_training(unit_type_nr)
         return total
 
     def in_training(self, unit_type_nr: int) -> int:
@@ -162,10 +163,10 @@ class Military(object):
         networth -= self.dom.buildings.total * NETWORTH_VALUES['buildings']
 
         # self.dom.military is this object...? Would removing dom.military break sth?
-        networth -= self.dom.military.amount(1) * NETWORTH_VALUES['specs']
-        networth -= self.dom.military.amount(2) * NETWORTH_VALUES['specs']
-        networth -= self.dom.military.amount(3) * self.dom.race.unit(3).networth
-        networth -= self.dom.military.amount(4) * self.dom.race.unit(4).networth
+        networth -= self.amount(1, include_paid=False) * NETWORTH_VALUES['specs']
+        networth -= self.amount(2, include_paid=False) * NETWORTH_VALUES['specs']
+        networth -= self.amount(3, include_paid=False) * self.dom.race.unit(3).networth
+        networth -= self.amount(4, include_paid=False) * self.dom.race.unit(4).networth
         return round(networth, 1)
 
     @property
@@ -202,7 +203,7 @@ class Military(object):
         for i in range(1, 5):
             unit_ratios = self.unit_type(i).ratios
             spy_per_unit = max(unit_ratios['spy_offense'], unit_ratios['spy_defense'])
-            spy_units_equiv += trunc(self.amount(i) * spy_per_unit)
+            spy_units_equiv += trunc(self.amount(i, include_paid=False) * spy_per_unit)
         return spy_units_equiv
 
     @property
@@ -211,7 +212,7 @@ class Military(object):
         for i in range(1, 5):
             unit_ratios = self.unit_type(i).ratios
             wiz_per_unit = max(unit_ratios['wiz_offense'], unit_ratios['wiz_defense'])
-            wiz_units_equiv += trunc(self.amount(i) * wiz_per_unit)
+            wiz_units_equiv += trunc(self.amount(i, include_paid=False) * wiz_per_unit)
         return wiz_units_equiv
 
 

@@ -76,8 +76,8 @@ def nw_tracker(send=None):
     if send == 'send':
         result_of_send = facade().send_top_bot_nw_to_discord()
     return render_template('nwtracker.html',
-                           top_nw=facade().get_top_bot_nw(),
-                           bot_nw=facade().get_top_bot_nw(False),
+                           top_nw=facade().get_top_bot_nw(filter_zeroes=True),
+                           bot_nw=facade().get_top_bot_nw(top=False, filter_zeroes=True),
                            unchanged_nw=facade().get_unchanged_nw(),
                            result_of_send=result_of_send)
 

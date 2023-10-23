@@ -85,9 +85,9 @@ class ODInfoFacade(object):
             return f"{header}\n```{'Dominion':<50} {'Realm':>5} {'Delta':>9} {'Networth':>9} {'Land':>5}\n\n{msg_content}```"
 
         header_top = '**Top 10 Networth Growers since past 12 hours**'
-        top10_message = create_message(header_top, [dom for dom in self.get_top_bot_nw() if dom['nwdelta'] != 0])
+        top10_message = create_message(header_top, self.get_top_bot_nw(filter_zeroes=True))
         header_bot = '**Top 10 Networth *Sinkers* since past 12 hours**'
-        bot10_message = create_message(header_bot, [dom for dom in self.get_top_bot_nw(False) if dom['nwdelta'] != 0])
+        bot10_message = create_message(header_bot, self.get_top_bot_nw(top=False, filter_zeroes=True))
         header_unchanged = '**Networth *Unchanged* since past 12 hours**'
         unchanged_message = create_message(header_unchanged, self.get_unchanged_nw())
         discord_message = f"{top10_message}\n{bot10_message}"
@@ -197,7 +197,7 @@ class ODInfoFacade(object):
             result.append(nw_row)
         return result
 
-    def get_top_bot_nw(self, top=True):
+    def get_top_bot_nw(self, top=True, filter_zeroes=False):
         logger.debug("Getting Top and Bot NW changes")
         doms, nw_deltas = self.dom_list()
         sorted_deltas = sorted(nw_deltas.items(), key=lambda x: x[1], reverse=top)[:10]
@@ -214,6 +214,8 @@ class ODInfoFacade(object):
                 'realm': row['realm']
             }
             result.append(nw_row)
+        if filter_zeroes:
+            result = [dom for dom in result if dom['nwdelta'] != 0]
         return sorted(result, key=itemgetter('nwdelta'), reverse=top)
 
     def economy(self):

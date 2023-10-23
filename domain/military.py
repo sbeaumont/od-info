@@ -1,7 +1,7 @@
 import json
 from math import trunc
 
-from opsdata.schema import query_barracks
+from opsdata.schema import query_barracks, hours_since
 from domain.unknown import Unknown
 from domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, SendableType, Unit
 from domain.refdata import NETWORTH_VALUES, BS_UNCERTAINTY, ARES_BONUS
@@ -41,6 +41,17 @@ class Military(object):
             return sum(tr[key].values())
         else:
             return 0
+
+    @property
+    def paid_until(self):
+        age = hours_since(self._data['timestamp'])
+        training = json.loads(self._data['training'])
+        max_ticks = 0
+        for i in range(1, 5):
+            key = f'unit{i}'
+            if key in training:
+                max_ticks = max(max_ticks, max([int(t) for t in training[key]]))
+        return max(0, max_ticks - age)
 
     def coming_home(self, unit_type_nr: int):
         tr = json.loads(self._data['return'])
@@ -92,6 +103,10 @@ class Military(object):
         return bonus
 
     @property
+    def max_sendable_op(self):
+        return min((self.safe_op, self.five_over_four_op[0]))
+
+    @property
     def op(self):
         offense = sum([self.op_of(i) for i in range(1, 5)])
         offense *= 1 + self.offense_bonus
@@ -106,7 +121,7 @@ class Military(object):
         return round(offense)
 
     @property
-    def max_sendable_op(self):
+    def five_over_four_op(self) -> tuple:
         pure_offense = sum([self.op_of(u) for u in self.dom.race.pure_offense_units])
         sendable_offense = pure_offense
         home_defense = self.dp

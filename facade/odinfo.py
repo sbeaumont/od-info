@@ -170,6 +170,15 @@ class ODInfoFacade(object):
         last_ops = query_last_ops(self._db)
         return {op['code']: hours_since(op['last_op']) for op in last_ops}
 
+    def top_op(self, dom_list=None):
+        if not dom_list:
+            dom_list = self.all_doms_as_objects()
+        topop = dom_list[0]
+        for dom in dom_list[1:]:
+            if dom.military.max_sendable_op > topop.military.max_sendable_op:
+                topop = dom
+        return topop
+
     # ---------------------------------------- QUERIES - Utility
 
     def name_for_dom_code(self, domcode):

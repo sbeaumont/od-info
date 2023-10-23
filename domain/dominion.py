@@ -182,7 +182,7 @@ if __name__ == '__main__':
     print("CS:", row_s_to_dict(dom.cs))
     print("OP:", dom.military.op)
     print("DP:", dom.military.dp)
-    print("5/4:", dom.military.max_sendable_op)
+    print("5/4:", dom.military.five_over_four_op)
     print("Last op", dom.last_op)
     print("Last op since:", dom.last_op_since)
     print("Ares:", dom.magic.ares)

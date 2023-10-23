@@ -8,9 +8,12 @@
 {% block content %}
   <div class="w3-container">
     <h5>Military</h5>
+    <p><b>Top OP is {{ top_op.name }} (#{{ top_op.realm }}) with {{ top_op.military.max_sendable_op }} OP and
+        {{ (top_op.buildings.ratio_of('temple') * 100)|round(1) }}% Temples, in {{ top_op.military.paid_until }} ticks.
+    </b></p>
     <table id="military_table" class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
         <thead>
-            <tr class="w3-dark-grey">
+            <tr class="w3-black">
                 <th>Dominion</th>
                 <th>Realm</th>
                 <th>Race</th>
@@ -21,7 +24,7 @@
                 <th>5/4 OP</th>
                 <th>5/4 DP</th>
                 <th>Temples</th>
-                <th>DP Bonus %</th>
+                <th>Paid</th>
                 <th>DP</th>
             </tr>
         </thead>
@@ -38,11 +41,11 @@
             <td>{{ dom.total_land }}</td>
             <td>{{ dom.military.op }}</td>
             <td>{{ dom.military.safe_op }}</td>
-            {% set fivefour = dom.military.max_sendable_op %}
+            {% set fivefour = dom.military.five_over_four_op %}
             <td>{{ fivefour[0] }}</td>
             <td>{{ fivefour[1] }}</td>
             <td>{{ (dom.buildings.ratio_of('temple') * 100)|round(1) }}%</td>
-            <td>{{ (dom.military.defense_bonus * 100)|round(1) }}%</td>
+            <td>{{ dom.military.paid_until }}</td>
             <td>{{ dom.military.dp }}</td>
         </tr>
         {% endfor %}

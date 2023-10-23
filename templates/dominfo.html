@@ -6,7 +6,7 @@
     <a href="{{ url_for('dominfo', domcode=domcode, update='update' ) }}">Update</a> |
       <a href="{{ op_center_url }}/{{ domcode }}" target="_blank">OP Center</a>
     <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
-        <tr class="w3-dark-grey">
+        <tr class="w3-black">
             <th>Ops Age</th>
             <th>Land</th>
             <th>Networth</th>
@@ -26,7 +26,7 @@
                 {{ dominion.cs.peasants }}
             </td>
         </tr>
-        <tr class="w3-dark-grey">
+        <tr class="w3-black">
             <th>Science Rating</th>
             <th>Keep Rating</th>
             <th>Spires Rating</th>
@@ -38,7 +38,7 @@
             <td>{{dominion.castle.science}}</td>
             <td>{{dominion.castle.science}}</td>
         </tr>
-        <tr class="w3-dark-grey">
+        <tr class="w3-black">
             <th>OP Bonus %</th>
             <th>OP</th>
             <th>Temples</th>
@@ -52,7 +52,7 @@
             <td>{{ (dominion.military.defense_bonus * 100)|round(1) }}%</td>
             <td>{{ dominion.military.dp }}</td>
         </tr>
-        <tr class="w3-dark-grey">
+        <tr class="w3-black">
             <th>Military Spy</th>
             <th>Military Wiz</th>
             <th>Spywiz Networth</th>
@@ -80,7 +80,7 @@
                 {{ dominion.military.wiz_ratio_estimate }} - {{ dominion.military.max_wiz_ratio_estimate }}
             </td>
         </tr>
-        <tr class="w3-dark-grey">
+        <tr class="w3-black">
             <th>Unit 1</th>
             <th>Unit 2</th>
             <th>Unit 3</th>

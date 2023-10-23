@@ -81,17 +81,23 @@ class ODInfoFacade(object):
 
     def send_top_bot_nw_to_discord(self):
         def create_message(header, nw_list):
-            msg_content = '\n'.join([f"{item['name']:<50} {item['realm']:>5} {item['nwdelta']:>9} {item['networth']:>9} {item['land']:>5}" for item in nw_list if item['nwdelta'] != 0])
+            msg_content = '\n'.join([f"{item['name']:<50} {item['realm']:>5} {item['nwdelta']:>9} {item['networth']:>9} {item['land']:>5}" for item in nw_list])
             return f"{header}\n```{'Dominion':<50} {'Realm':>5} {'Delta':>9} {'Networth':>9} {'Land':>5}\n\n{msg_content}```"
 
         header_top = '**Top 10 Networth Growers since past 12 hours**'
-        top10_message = create_message(header_top, self.get_top_bot_nw())
+        top10_message = create_message(header_top, [dom for dom in self.get_top_bot_nw() if dom['nwdelta'] != 0])
         header_bot = '**Top 10 Networth *Sinkers* since past 12 hours**'
-        bot10_message = create_message(header_bot, self.get_top_bot_nw(False))
+        bot10_message = create_message(header_bot, [dom for dom in self.get_top_bot_nw(False) if dom['nwdelta'] != 0])
+        header_unchanged = '**Networth *Unchanged* since past 12 hours**'
+        unchanged_message = create_message(header_unchanged, self.get_unchanged_nw())
         discord_message = f"{top10_message}\n{bot10_message}"
 
         logger.debug("Sending to Discord webhook: %s", discord_message)
         webhook_response = send_to_webhook(discord_message)
+        logger.debug("Webhook response: %s", webhook_response)
+
+        logger.debug("Sending to Discord webhook: %s", unchanged_message)
+        webhook_response = send_to_webhook(unchanged_message)
         logger.debug("Webhook response: %s", webhook_response)
 
         return webhook_response
@@ -172,6 +178,24 @@ class ODInfoFacade(object):
         return name_for_code(self._db, domcode)
 
     # ---------------------------------------- QUERIES - Reports
+
+    def get_unchanged_nw(self):
+        logger.debug("Getting Unchanged NW")
+        doms, nw_deltas = self.dom_list()
+        selected_doms = [d for d, nwd in nw_deltas.items() if nwd == 0]
+        relevant_doms = [d for d in doms if d['code'] in selected_doms]
+        result = list()
+        for row in relevant_doms:
+            nw_row = {
+                'code': row['code'],
+                'name': row['name'],
+                'land': row['land'],
+                'networth': row['networth'],
+                'nwdelta': nw_deltas[row['code']],
+                'realm': row['realm']
+            }
+            result.append(nw_row)
+        return result
 
     def get_top_bot_nw(self, top=True):
         logger.debug("Getting Top and Bot NW changes")

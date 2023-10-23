@@ -33,6 +33,34 @@
     <br>
   </div>
   <div class="w3-container">
+    <h5>Unchanged NW</h5>
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <thead>
+            <tr class="w3-dark-grey">
+                <th>Name</th>
+                <th>Land</th>
+                <th>Networth</th>
+                <th>NW Delta (12h)</th>
+                <th>Realm</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for dom in unchanged_nw %}
+        <tr>
+            <td>
+                <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
+            </td>
+            <td>{{ dom.land }}</td>
+            <td>{{ dom.networth }}</td>
+            <td>{{ dom.nwdelta }}</td>
+            <td>{{ dom.realm }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+  </div>
+  <div class="w3-container">
     <h5>Bottom 10</h5>
     <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
         <thead>

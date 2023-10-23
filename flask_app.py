@@ -78,6 +78,7 @@ def nw_tracker(send=None):
     return render_template('nwtracker.html',
                            top_nw=facade().get_top_bot_nw(),
                            bot_nw=facade().get_top_bot_nw(False),
+                           unchanged_nw=facade().get_unchanged_nw(),
                            result_of_send=result_of_send)
 
 

@@ -87,8 +87,9 @@ class ODInfoFacade(object):
         top10_message = create_message(header_top, self.get_top_bot_nw(filter_zeroes=True))
         header_bot = '**Top 10 Networth *Sinkers* since past 12 hours**'
         bot10_message = create_message(header_bot, self.get_top_bot_nw(top=False, filter_zeroes=True))
-        header_unchanged = '**Networth *Unchanged* since past 12 hours**'
-        unchanged_message = create_message(header_unchanged, self.get_unchanged_nw())
+        nr_networth_unchanged = 10
+        header_unchanged = f'**Top {nr_networth_unchanged} largest Networth *Unchanged* since past 12 hours**'
+        unchanged_message = create_message(header_unchanged, self.get_unchanged_nw(top=nr_networth_unchanged))
         discord_message = f"{top10_message}\n{bot10_message}"
 
         logger.debug("Sending to Discord webhook: %s", discord_message)
@@ -197,7 +198,7 @@ class ODInfoFacade(object):
 
     # ---------------------------------------- QUERIES - Reports
 
-    def get_unchanged_nw(self):
+    def get_unchanged_nw(self, top: int = 50):
         logger.debug("Getting Unchanged NW")
         doms, nw_deltas = self.dom_list()
         selected_doms = [d for d, nwd in nw_deltas.items() if nwd == 0]
@@ -213,7 +214,7 @@ class ODInfoFacade(object):
                 'realm': row['realm']
             }
             result.append(nw_row)
-        return result
+        return sorted(result, key=itemgetter('land'), reverse=True)[:top]
 
     def get_top_bot_nw(self, top=True, filter_zeroes=False):
         logger.debug("Getting Top and Bot NW changes")

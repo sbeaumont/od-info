@@ -104,6 +104,12 @@ def military():
                            top_op=facade().top_op(dom_list))
 
 
+@app.route('/realmies')
+def realmies():
+    return render_template('realmies.html',
+                           realmies=facade().realmies())
+
+
 @app.teardown_appcontext
 def teardown_app(exception):
     facade = getattr(g, '_facade', None)

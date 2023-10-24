@@ -42,10 +42,17 @@ def current_od_time(as_str=False) -> datetime | str:
         return dt
 
 
-def hours_since(timestamp):
+def hours_until(timestamp):
+    return hours_since(timestamp, future=True)
+
+
+def hours_since(timestamp, future=False):
     if timestamp:
-        last_op_dt = datetime.strptime(timestamp, DATE_TIME_FORMAT)
-        delta = current_od_time() - last_op_dt
+        timestamp_dt = datetime.strptime(timestamp, DATE_TIME_FORMAT)
+        if future:
+            delta = timestamp_dt - current_od_time()
+        else:
+            delta = current_od_time() - timestamp_dt
         delta_hours = delta / timedelta(hours=1)
         return trunc(delta_hours)
     else:

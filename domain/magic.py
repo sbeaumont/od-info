@@ -1,4 +1,4 @@
-from opsdata.schema import query_revelation, current_od_time
+from opsdata.schema import query_revelation, hours_until
 from domain.unknown import Unknown
 
 
@@ -10,8 +10,9 @@ class Magic(object):
     @property
     def ares(self) -> int | None:
         for spell in self.spells:
-            if ('ares_call' == spell['spell']) and (current_od_time(True) < spell['expires']):
-                return spell['expires']
+            print(spell['spell'], spell['duration'], spell['expires'])
+            if spell['spell'] == 'ares_call':
+                return hours_until(spell['expires'])
         return None
 
 

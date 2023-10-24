@@ -2,7 +2,7 @@ from operator import itemgetter
 
 from calculators.networthcalculator import get_networth_deltas
 from config import DATABASE, DB_SCHEMA_FILE
-from domain.dominion import all_doms, name_for_code, Dominion, doms_of_realm, realm_of_dom
+from domain.dominion import all_doms, name_for_code, Dominion, dom_codes_of_realm, realm_of_dom, doms_of_realm
 from facade.discord import send_to_webhook
 from opsdata.db import Database
 from opsdata.ops import grab_ops, grab_my_ops, update_dom_index, get_last_scans
@@ -61,8 +61,7 @@ class ODInfoFacade(object):
         update_town_crier(self.session, self._db)
 
     def update_realmies(self):
-        realm = realm_of_dom(self._db, current_player_id)
-        for dom_code in doms_of_realm(self._db, realm):
+        for dom_code in self.realmie_codes():
             self.update_ops(dom_code)
 
     # ---------------------------------------- COMMANDS - Change directly
@@ -178,6 +177,16 @@ class ODInfoFacade(object):
             if dom.military.max_sendable_op > topop.military.max_sendable_op:
                 topop = dom
         return topop
+
+    def realmie_codes(self) -> list[int]:
+        logger.debug("Getting Realmies")
+        realm = realm_of_dom(self._db, current_player_id)
+        return dom_codes_of_realm(self._db, realm)
+
+    def realmies(self) -> list[Dominion]:
+        logger.debug("Getting Realmies")
+        realm = realm_of_dom(self._db, current_player_id)
+        return doms_of_realm(self._db, realm)
 
     # ---------------------------------------- QUERIES - Utility
 

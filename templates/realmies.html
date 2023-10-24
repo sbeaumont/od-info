@@ -1,0 +1,46 @@
+{% extends "odinfo-base.html" %}
+{% block extrascripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
+{% endblock %}
+
+{% block content %}
+  <div class="w3-container">
+    <h5>Realmies</h5>
+    <table id="realmies_table" class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <thead>
+            <tr class="w3-black">
+                <th>Dominion</th>
+                <th>Land</th>
+                <th>Max Sendable</th>
+                <th>DP</th>
+                <th>Ares</th>
+            </tr>
+        </thead>
+        {% for dom in realmies %}
+        <tr>
+            <td>
+                <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
+            </td>
+            <td>{{ dom.total_land }}</td>
+            <td>{{ dom.military.max_sendable_op }}</td>
+            <td>{{ dom.military.dp }}</td>
+            <td>{{ dom.magic.ares }}</td>
+        </tr>
+        {% endfor %}
+    </table><br>
+  </div>
+
+<script>
+    $(document).ready( function () {
+        $('#realmies_table').DataTable({
+            'paging': false,
+            'order': [[4, 'asc']],
+            'columnDefs': [
+                { "type": "num", "targets": [1, 2, 3, 4]}
+            ]
+        });
+    } );
+</script>
+{% endblock %}

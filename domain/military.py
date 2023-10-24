@@ -53,6 +53,10 @@ class Military(object):
                 max_ticks = max(max_ticks, max([int(t) for t in training[key]]))
         return max(0, max_ticks - age)
 
+    @property
+    def hittable_75_percent(self):
+        return trunc(self.dom.total_land * 3 / 4)
+
     def coming_home(self, unit_type_nr: int):
         tr = json.loads(self._data['return'])
         key = f'unit{unit_type_nr}'

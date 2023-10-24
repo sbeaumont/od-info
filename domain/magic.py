@@ -10,7 +10,6 @@ class Magic(object):
     @property
     def ares(self) -> int | None:
         for spell in self.spells:
-            print(spell['spell'], spell['duration'], spell['expires'])
             if spell['spell'] == 'ares_call':
                 return hours_until(spell['expires'])
         return None

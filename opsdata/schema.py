@@ -43,7 +43,7 @@ def current_od_time(as_str=False) -> datetime | str:
 
 
 def hours_until(timestamp):
-    return hours_since(timestamp, future=True)
+    return hours_since(timestamp, future=True) + 1
 
 
 def hours_since(timestamp, future=False):

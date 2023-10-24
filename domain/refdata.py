@@ -98,12 +98,12 @@ class Unit(object):
 
     @property
     def sendable_type(self):
-        if self.offense == 0:
+        if (self.offense != 0) and (self.defense != 0):
+            return SendableType.HYBRID
+        elif self.offense == 0:
             return SendableType.PURE_DEFENSE
         elif self.defense == 0:
             return SendableType.PURE_OFFENSE
-        else:
-            return SendableType.HYBRID
 
     @property
     def op_over_dp(self):

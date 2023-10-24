@@ -95,13 +95,15 @@ def ratios():
                            ages=facade().all_doms_ops_age())
 
 
-@app.route('/military')
-def military():
+@app.route('/military', defaults={'versus_op': 0})
+@app.route('/military/<versus_op>')
+def military(versus_op: int = 0):
     dom_list = facade().all_doms_as_objects()
     return render_template('military.html',
                            doms=dom_list,
                            ages=facade().all_doms_ops_age(),
-                           top_op=facade().top_op(dom_list))
+                           top_op=facade().top_op(dom_list),
+                           versus_op=int(versus_op))
 
 
 @app.route('/realmies')

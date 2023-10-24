@@ -1,10 +1,13 @@
 import json
+import logging
 from math import trunc
 
 from opsdata.schema import query_barracks, hours_since
 from domain.unknown import Unknown
-from domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, SendableType, Unit
+from domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, Unit
 from domain.refdata import NETWORTH_VALUES, BS_UNCERTAINTY, ARES_BONUS
+
+logger = logging.getLogger('od-info.military')
 
 
 class Military(object):
@@ -117,12 +120,36 @@ class Military(object):
         return round(offense)
 
     @property
-    def safe_op(self):
+    def safe_op(self) -> int:
         """Only calc based on attack units"""
         offense = self.op_of(1)
         offense += self.op_of(4)
         offense *= 1 + self.offense_bonus
         return round(offense)
+
+    def safe_op_versus(self, enemy_op: int) -> int:
+        pure_defense = sum([self.dp_of(u) for u in self.dom.race.pure_defense_units])
+        remaining_op = enemy_op - pure_defense
+        safe_op = sum([self.op_of(u) for u in self.dom.race.pure_offense_units])
+        have_enough = False
+        if remaining_op > 0:
+            for unit_type in reversed(self.dom.race.hybrid_units):
+                if have_enough:
+                    safe_op += self.op_of(unit_type, with_bonus=True)
+                    continue
+                units_needed = (remaining_op // unit_type.defense) + 1
+                remaining_units = self.amount(unit_type) - units_needed
+                dp_of_units_needed = self.op_of(unit_type, partial_amount=remaining_units, with_bonus=True)
+                if units_needed <= self.amount(unit_type):
+                    # Have enough of this unit type
+                    have_enough = True
+                    safe_op += dp_of_units_needed
+                else:
+                    remaining_op -= dp_of_units_needed
+            return trunc(safe_op)
+        else:
+            # Pure defense units are enough, can send all op units
+            return self.op
 
     @property
     def five_over_four_op(self) -> tuple:

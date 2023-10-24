@@ -7,7 +7,7 @@
 
 {% block content %}
   <div class="w3-container">
-    <h5>Military</h5>
+    <h5>Military {% if versus_op != 0 %}(VERSUS {{ versus_op }} OP){% endif %}</h5>
     <p><b>Top OP is {{ top_op.name }} (#{{ top_op.realm }}) with {{ top_op.military.max_sendable_op }} OP and
         {{ (top_op.buildings.ratio_of('temple') * 100)|round(1) }}% Temples, in {{ top_op.military.paid_until }} ticks.
     </b></p>
@@ -35,14 +35,24 @@
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
             <td>{{ dom.realm }}</td>
-            <td>{{ dom.race.name }}</td>
+            <td>
+                <a href="{{ url_for('military', versus_op=dom.military.safe_op) }}">
+                    {{ dom.race.name }}
+                </a>
+            </td>
             <td  {% if 1 < ages[dom.code] <= 12 %}class="stale"{% elif ages[dom.code] > 12 %}class="invalid"{% endif %}>
                 {{ ages[dom.code] }}
             </td>
             <td>{{ dom.total_land }}</td>
             <td>{{ dom.military.hittable_75_percent }}</td>
             <td>{{ dom.military.op }}</td>
-            <td>{{ dom.military.safe_op }}</td>
+            <td>
+                {% if versus_op == 0 %}
+                    {{ dom.military.safe_op }}
+                {% else %}
+                    {{ dom.military.safe_op_versus(versus_op) }}
+                {% endif %}
+            </td>
             {% set fivefour = dom.military.five_over_four_op %}
             <td>{{ fivefour[0] }}</td>
             <td>{{ fivefour[1] }}</td>

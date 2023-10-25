@@ -22,6 +22,7 @@
                 <th>75%</th>
                 <th>OP</th>
                 <th>Safe OP</th>
+                <th>Safe DP</th>
                 <th>5/4 OP</th>
                 <th>5/4 DP</th>
                 <th>Temples</th>
@@ -50,7 +51,14 @@
                 {% if versus_op == 0 %}
                     {{ dom.military.safe_op }}
                 {% else %}
-                    {{ dom.military.safe_op_versus(versus_op) }}
+                    {{ dom.military.safe_op_versus(versus_op)[0] }}
+                {% endif %}
+            </td>
+            <td>
+                {% if versus_op == 0 %}
+                    {{ dom.military.safe_dp }}
+                {% else %}
+                    {{ dom.military.safe_op_versus(versus_op)[1] }}
                 {% endif %}
             </td>
             {% set fivefour = dom.military.five_over_four_op %}

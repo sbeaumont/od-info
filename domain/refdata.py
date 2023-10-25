@@ -185,6 +185,11 @@ class Race(object):
         return sorted([u for u in self.units.values() if u.sendable_type == SendableType.HYBRID], key=attrgetter('op_over_dp'), reverse=True)
 
     @property
+    def hybrids_by_dp(self):
+        assert len(self.hybrid_units) + len(self.pure_offense_units) + len(self.pure_defense_units) == len(self.units)
+        return sorted(self.hybrid_units, key=attrgetter('defense'), reverse=True)
+
+    @property
     def pure_offense_units(self):
         return [u for u in self.units.values() if u.sendable_type == SendableType.PURE_OFFENSE]
 

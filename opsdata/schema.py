@@ -165,6 +165,7 @@ DOMINION_MAPPING = {
     'name': 'name',
     'realm': 'realm',
     'race': 'race',
+    'player': 'player',
     'last_op': None
 }
 

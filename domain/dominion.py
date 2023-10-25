@@ -107,6 +107,10 @@ class Dominion(object):
         return self.data['realm']
 
     @property
+    def player(self):
+        return self.data['player']
+
+    @property
     def calc_networth(self) -> int:
         networth = 0
         networth += self.land * NETWORTH_VALUES['land']

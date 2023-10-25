@@ -12,6 +12,7 @@
         <thead>
             <tr class="w3-black">
                 <th>Dominion</th>
+                <th>Player</th>
                 <th>Land</th>
                 <th>Max Sendable</th>
                 <th>DP</th>
@@ -23,6 +24,7 @@
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
+            <td>{{ dom.player }}</td>
             <td>{{ dom.total_land }}</td>
             <td>{{ dom.military.max_sendable_op }}</td>
             <td>{{ dom.military.dp }}</td>
@@ -36,7 +38,7 @@
     $(document).ready( function () {
         $('#realmies_table').DataTable({
             'paging': false,
-            'order': [[4, 'asc']],
+            'order': [[5, 'asc']],
             'columnDefs': [
                 { "type": "num", "targets": [1, 2, 3, 4]}
             ]

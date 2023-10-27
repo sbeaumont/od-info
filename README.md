@@ -98,3 +98,15 @@ about races, tech and wonders might get out of date. You can just download
 updated files from the ref-data folder in this project, or go straight to the source 
 at https://github.com/OpenDominion/OpenDominion/tree/develop/app/data and
 replace them in the ref-data folder.
+
+## Packaging the app to your own architecture
+
+If you also install PyInstaller, 
+
+    pip3 install pyinstaller
+
+you can use
+
+    pyinstaller odinfo.spec
+
+to build an executable that will run on your architecture.

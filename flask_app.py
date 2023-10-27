@@ -1,12 +1,21 @@
+import os
+import sys
 from flask import Flask, g, request
 from flask import render_template
 import logging
 
+
 from config import OP_CENTER_URL
 from facade.odinfo import ODInfoFacade
 
+if getattr(sys, 'frozen', False):
+    template_folder = os.path.join(sys._MEIPASS, 'templates')
+    static_folder = os.path.join(sys._MEIPASS, 'static')
+    app = Flask('od-info', template_folder=template_folder, static_folder=static_folder)
+else:
+    app = Flask('od-info')
 
-app = Flask('od-info')
+# app = Flask('od-info')
 app.logger.setLevel(logging.DEBUG)
 
 
@@ -118,3 +127,7 @@ def teardown_app(exception):
     if facade:
         facade.teardown()
 
+
+if __name__ == '__main__':
+    print("Starting Server...")
+    app.run()

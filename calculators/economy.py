@@ -1,5 +1,5 @@
 from domain.dominion import Dominion
-from secret import current_player_id
+from config import current_player_id
 
 
 class Economy(object):

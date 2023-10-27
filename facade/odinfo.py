@@ -9,7 +9,7 @@ from opsdata.ops import grab_ops, grab_my_ops, update_dom_index, get_last_scans
 from opsdata.schema import *
 from opsdata.scrapetools import login
 from opsdata.updater import update_ops, update_town_crier
-from secret import current_player_id
+from config import current_player_id
 
 logger = logging.getLogger('od-info.facade')
 

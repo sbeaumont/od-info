@@ -8,7 +8,7 @@ import re
 from math import trunc
 from datetime import datetime, timedelta
 from config import DATE_TIME_FORMAT
-from secret import LOCAL_TIME_SHIFT
+from config import LOCAL_TIME_SHIFT
 
 
 logger = logging.getLogger('od-info.db')

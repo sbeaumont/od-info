@@ -1,6 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-
 a = Analysis(
     ['flask_app.py'],
     pathex=[],
@@ -19,7 +18,8 @@ a = Analysis(
         'opsdata/*.sqlite',
         '.venv',
         'out',
-        'test'
+        'test',
+        'secret.txt'
     ],
     noarchive=True,
 )

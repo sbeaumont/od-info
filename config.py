@@ -1,6 +1,14 @@
 import sys
 import os
 
+SECRETS_TEMPLATE = """Remove this line and all the <...> sections to make it work.
+username = <your OD username>
+password = <your OD password>
+discord_webhook = None <An https:// URL with a discord webhook to send stuff to>
+current_player_id = <Five number id of your player this round>
+LOCAL_TIME_SHIFT = 0 <(Negative) number. If you see the timing of the app being off, this allows you to correct it.>
+"""
+
 
 def resource_path(rel_path: str):
     if getattr(sys, 'frozen', False):
@@ -15,6 +23,29 @@ def executable_path(rel_path: str):
     else:
         return rel_path
 
+
+def load_secrets():
+    secrets_filename = executable_path('secret.txt')
+    if not os.path.exists(secrets_filename):
+        with open(secrets_filename, 'w') as f:
+            f.writelines(SECRETS_TEMPLATE)
+        print("You did not have a secrets.txt file yet. Edit it and restart the application.")
+        sys.exit("Edit the secret.txt file and restart.")
+
+    with open(secrets_filename) as f:
+        secrets_dict = dict()
+        for line in f.readlines():
+            key, value = [part.strip() for part in line.split('=', 1)]
+            secrets_dict[key] = value
+        return secrets_dict
+
+
+SECRETS = load_secrets()
+username = SECRETS['username']
+password = SECRETS['password']
+current_player_id = int(SECRETS['current_player_id'])
+LOCAL_TIME_SHIFT = int(SECRETS['LOCAL_TIME_SHIFT'])
+discord_webhook = SECRETS['discord_webhook']
 
 OUT_DIR = './out'
 REF_DATA_DIR = './ref-data'

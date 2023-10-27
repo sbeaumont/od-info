@@ -2,8 +2,7 @@ import requests
 import logging
 from bs4 import BeautifulSoup
 
-from config import LOGIN_URL, STATUS_URL, SELECT_URL
-from secret import username, password, current_player_id
+from config import LOGIN_URL, STATUS_URL, SELECT_URL, username, password, current_player_id
 from requests.exceptions import TooManyRedirects
 
 
@@ -43,7 +42,7 @@ def get_soup_page(session: requests.Session, url: str) -> BeautifulSoup | None:
         return None
 
 
-def read_server_time(soup: BeautifulSoup) -> str:
+def read_server_time(soup: BeautifulSoup) -> str | None:
     list_o_titles = [s for s in soup.footer.find_all('span', title=True)]
     if len(list_o_titles) > 0:
         timestamp_span = list_o_titles[0]

@@ -1,6 +1,6 @@
 import time
 
-from secret import current_player_id
+from config import current_player_id
 from opsdata.scrapetools import login, get_soup_page
 
 FORUM_URL = 'https://www.opendominion.net/dominion/forum/325?page={}'

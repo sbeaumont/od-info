@@ -1,5 +1,5 @@
 import requests
-from secret import discord_webhook
+from config import discord_webhook
 
 
 def send_to_webhook(message):

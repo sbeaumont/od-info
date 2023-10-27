@@ -1,5 +1,5 @@
 from config import OP_CENTER_URL
-from secret import current_player_id
+from config import current_player_id
 from opsdata.scrapetools import login, get_soup_page
 
 

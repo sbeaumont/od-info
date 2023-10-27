@@ -1,10 +1,11 @@
 /.venv/
 /out/**
 /.idea/
-/secret.py
+/secret.txt
 **/__pycache__
 /opsdata/copy_ops.txt
 /opsdata/*.sqlite
 /scripts/threewordstory-R36.txt
 /dist/
 /build/
+/secret.txt

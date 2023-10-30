@@ -3,6 +3,7 @@ import sys
 from flask import Flask, g, request
 from flask import render_template
 import logging
+from config import feature_toggles
 
 
 from config import OP_CENTER_URL
@@ -15,7 +16,6 @@ if getattr(sys, 'frozen', False):
 else:
     app = Flask('od-info')
 
-# app = Flask('od-info')
 app.logger.setLevel(logging.DEBUG)
 
 
@@ -47,6 +47,7 @@ def overview():
     dom_list, nw_deltas = facade().dom_list()
     return render_template(
         'overview.html',
+        feature_toggles=feature_toggles,
         doms=dom_list,
         nw_deltas=nw_deltas,
         ages=facade().all_doms_ops_age())
@@ -60,6 +61,7 @@ def dominfo(domcode: int, update=None):
     dom_name = facade().name_for_dom_code(domcode)
     return render_template(
         'dominfo.html',
+        feature_toggles=feature_toggles,
         dominion=facade().dominion(domcode),
         domname=dom_name,
         domcode=domcode,
@@ -75,6 +77,7 @@ def towncrier():
     if request.args.get('update'):
         facade().update_town_crier()
     return render_template('towncrier.html',
+                           feature_toggles=feature_toggles,
                            towncrier=facade().get_town_crier())
 
 
@@ -85,6 +88,7 @@ def nw_tracker(send=None):
     if send == 'send':
         result_of_send = facade().send_top_bot_nw_to_discord()
     return render_template('nwtracker.html',
+                           feature_toggles=feature_toggles,
                            top_nw=facade().get_top_bot_nw(filter_zeroes=True),
                            bot_nw=facade().get_top_bot_nw(top=False, filter_zeroes=True),
                            unchanged_nw=facade().get_unchanged_nw(),
@@ -94,12 +98,14 @@ def nw_tracker(send=None):
 @app.route('/economy')
 def economy():
     return render_template('economy.html',
+                           feature_toggles=feature_toggles,
                            economy=facade().economy())
 
 
 @app.route('/ratios')
 def ratios():
     return render_template('ratios.html',
+                           feature_toggles=feature_toggles,
                            doms=facade().doms_with_ratios(),
                            ages=facade().all_doms_ops_age())
 
@@ -109,6 +115,7 @@ def ratios():
 def military(versus_op: int = 0):
     dom_list = facade().all_doms_as_objects()
     return render_template('military.html',
+                           feature_toggles=feature_toggles,
                            doms=dom_list,
                            ages=facade().all_doms_ops_age(),
                            top_op=facade().top_op(dom_list),
@@ -118,6 +125,7 @@ def military(versus_op: int = 0):
 @app.route('/realmies')
 def realmies():
     return render_template('realmies.html',
+                           feature_toggles=feature_toggles,
                            realmies=facade().realmies())
 
 

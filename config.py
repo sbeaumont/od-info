@@ -47,6 +47,10 @@ current_player_id = int(SECRETS['current_player_id'])
 LOCAL_TIME_SHIFT = int(SECRETS['LOCAL_TIME_SHIFT'])
 discord_webhook = SECRETS['discord_webhook']
 
+feature_toggles = []
+if 'feature_toggles' in SECRETS:
+    feature_toggles = [toggle.strip() for toggle in SECRETS['feature_toggles'].split(',')]
+
 OUT_DIR = './out'
 REF_DATA_DIR = './ref-data'
 OPS_DATA_DIR = 'opsdata'

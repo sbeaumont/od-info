@@ -33,7 +33,9 @@
     <a href="{{ url_for('overview') }}" class="w3-bar-item w3-button w3-padding {% if request.endpoint == 'overview' %}w3-blue{% endif %}"><i class="fa fa-users fa-fw"></i>  Overview</a>
     <a href="{{ url_for('towncrier') }}" class="w3-bar-item w3-button w3-padding {% if request.endpoint == 'towncrier' %}w3-blue{% endif %}"><i class="fa fa-bell fa-fw"></i>  Town Crier</a>
     <a href="{{ url_for('nw_tracker') }}" class="w3-bar-item w3-button w3-padding {% if request.endpoint == 'nw_tracker' %}w3-blue{% endif %}"><i class="fa fa-bank fa-fw"></i>  Networth Tracker</a>
-    <a href="{{ url_for('economy') }}" class="w3-bar-item w3-button w3-padding {% if request.endpoint == 'economy' %}w3-blue{% endif %}"><i class="fa fa-bank fa-fw"></i>  Economy</a>
+    {% if 'economy' in feature_toggles %}
+      <a href="{{ url_for('economy') }}" class="w3-bar-item w3-button w3-padding {% if request.endpoint == 'economy' %}w3-blue{% endif %}"><i class="fa fa-bank fa-fw"></i>  Economy</a>
+    {% endif %}
     <a href="{{ url_for('ratios') }}" class="w3-bar-item w3-button w3-padding {% if request.endpoint == 'ratios' %}w3-blue{% endif %}"><i class="fa fa-bullseye fa-fw"></i>  Ratios</a>
     <a href="{{ url_for('military') }}" class="w3-bar-item w3-button w3-padding {% if request.endpoint == 'military' %}w3-blue{% endif %}"><i class="fa fa-diamond fa-fw"></i>  Military Tracker</a>
     <a href="{{ url_for('realmies') }}" class="w3-bar-item w3-button w3-padding {% if request.endpoint == 'realmies' %}w3-blue{% endif %}"><i class="fa fa-users fa-fw"></i>  Realmies</a>

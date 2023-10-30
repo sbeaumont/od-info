@@ -28,7 +28,7 @@ application you're ever planning on running because you're not a leet hacker,
 don't bother with it, just continue to the next step: it just means the packages
 will be part of the main Python3 installation, which is fine for this case.*
 
-In a terminal window you'll need to "pip3 install":
+In a terminal window / command prompt you'll need to "pip3 install":
 
     pip3 install flask requests jinja2 PyYAML bs4
 
@@ -43,20 +43,33 @@ This installs these libraries:
 ### Download files
 Download the whole project from here and put it somewhere on your local disk.
 
-### Add secrets.py file
-You'll also need to add a text file called "secrets.py" file in the project root with contents:
+### Add secrets.txt file
+(_When you're running the binary app the secrets.txt file needs to be next to the executable.
+If you run the app the first time and it doesn't see that file it will generate a template for
+you and exit._)
+
+You'll also need to add a text file called "secrets.txt" file in the project root (or next to the executable 
+if you're using that) with contents:
 
     username = (your OD username)
     password = (your OD password)
-    discord_webhook = (Discord webhook URL)
+    discord_webhook = (Discord webhook URL, if you have one.)
     current_player_id = (Your player id. Easiest way to find out is go to Search page, hover over your dom name, and note the number at the end of the ".../op-center/<your number>" URL)
     LOCAL_TIME_SHIFT = (Difference in hours between your local time and OD server time. Positive if your time is ahead of OD server time: e.g. if OD time is 8:21 and your local time is 10:21, you fill in 2 here)
+
+Example:
+
+    username = myODusername
+    password = thisisabadpassword123!
+    discord_webhook = https://discord.com/api/webhooks/<other stuff>
+    current_player_id = 99999
+    LOCAL_TIME_SHIFT = -2
 
 You can send the networth tracking overview to Discord, but you'll need to set up a
 webhook there. On a channel where you can access the settings you can add a webhook
 and copy the URL from there.
 
-### One database per round
+### One database per round (not for binary version)
 
 You can open the config.py file with a text editor and change the DATABASE = './opsdata/odinfo-round-36.sqlite' line to
 a new round number. This way you can have a fresh database for every round.

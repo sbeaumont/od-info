@@ -1,5 +1,8 @@
 """
 Basic CRUD access to tables.
+
+Yes, I know, you can use SQLAlchemy for this, but the complexity grew gradually. Still don't know if converting
+will be worth it.
 """
 
 import json

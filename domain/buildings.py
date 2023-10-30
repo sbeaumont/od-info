@@ -101,8 +101,14 @@ class Buildings(object):
     def constructing(self) -> int:
         return sum(self._constructing.values())
 
-    def ratio_of(self, building_type: str) -> float:
-        return self._data[building_type] / self.dom.total_land
+    def ratio_of(self, building_type: str, include_paid=True) -> float:
+        nr_of_buildings = self._data[building_type]
+        amount_of_land = self.dom.total_land
+        if include_paid:
+            nr_of_buildings += self._constructing[building_type]
+            if self.dom._land:
+                amount_of_land += self.dom._land.incoming
+        return nr_of_buildings / amount_of_land
 
 
 def buildings_for(db, dom):

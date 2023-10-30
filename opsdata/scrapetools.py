@@ -1,3 +1,11 @@
+"""
+Core of the webscraping functionality.
+
+- Knows how to create a valid OD session for the user
+- Pulls in whole page for other code to parse
+- Knows how to deal with OD time versus "real"/system time.
+"""
+
 import requests
 import logging
 from bs4 import BeautifulSoup

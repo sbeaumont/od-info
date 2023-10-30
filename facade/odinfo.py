@@ -1,3 +1,9 @@
+"""
+Facade object to ensure that all "business logic" doesn't get mixed into user interface code.
+
+This class is therefore by definition a smorgasbord of queries and actions that the UI (flask_app) needs.
+"""
+
 from operator import itemgetter
 
 from calculators.networthcalculator import get_networth_deltas

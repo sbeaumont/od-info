@@ -1,6 +1,13 @@
+"""
+- Update database based on freshly scraped data
+- Pull relevant information from OD scraped page
+- Check OP Center for newer scans
+
+- Mostly uses the search page and the copy-ops JSON structure that is under the "Copy Ops" button on the site.
+"""
+
 import json
 import logging
-from operator import itemgetter
 
 from opsdata.schema import update_dominion
 from opsdata.scrapetools import get_soup_page, read_server_time

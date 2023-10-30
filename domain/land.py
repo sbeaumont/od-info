@@ -1,3 +1,4 @@
+import json
 from opsdata.schema import query_land
 from domain.unknown import Unknown
 
@@ -27,6 +28,15 @@ class Land(object):
 
     def ratio_of(self, land_type):
         return self._data[land_type] / self.dom.total_land * 100
+
+    @property
+    def incoming(self):
+        result = 0
+        incoming = json.loads(self._data['incoming'])
+        for landtype in LAND_TYPES:
+            if landtype in incoming:
+                result += sum(incoming[landtype].values())
+        return result
 
 
 def land_for(db, dom):

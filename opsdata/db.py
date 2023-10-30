@@ -1,7 +1,10 @@
+"""
+Database access, including necessary initialization, teardown and logging.
+"""
+
 import os
 import sqlite3
 import logging
-from config import resource_path
 
 logger = logging.getLogger('od-info.db')
 

@@ -21,7 +21,7 @@ class Technology(object):
         return self.tech_tree.value_for_perk(perk_name, self.researched)
 
 
-def tech_for(db, dom):
+def tech_for(db, dom) -> Technology | Unknown:
     vision_data = query_vision(db, dom.code, latest=True)
     if vision_data:
         return Technology(dom, vision_data)

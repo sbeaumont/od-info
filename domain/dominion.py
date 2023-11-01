@@ -21,11 +21,11 @@ QRY_SELECT_ALL_DOMS = '''
 '''
 
 
-def all_doms(db):
+def all_doms(db) -> list:
     return db.query(QRY_SELECT_ALL_DOMS)
 
 
-def name_for_code(db, dom_code):
+def name_for_code(db, dom_code) -> str:
     return db.query('SELECT name FROM Dominions WHERE code = :dom_code', {'dom_code': dom_code}, one=True)['name']
 
 
@@ -43,8 +43,8 @@ def doms_of_realm(db, realm) -> list:
 
 
 class Dominion(object):
-    def __init__(self, db, domcode):
-        self.code = domcode
+    def __init__(self, db, domcode: int):
+        self.code: int = domcode
         self.db = db
         self.data = query_dominion(self.db, self.code)
         self.history = query_dom_history(self.db, self.code, latest=True)
@@ -99,7 +99,7 @@ class Dominion(object):
         return self.history['land']
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.data['name']
 
     @property
@@ -107,7 +107,7 @@ class Dominion(object):
         return self.data['realm']
 
     @property
-    def player(self):
+    def player(self) -> str:
         return self.data['player']
 
     @property
@@ -132,13 +132,13 @@ class Dominion(object):
         return self.cs['networth']
 
     @property
-    def race(self):
+    def race(self) -> Race:
         if not self._race:
             self._race = Race(self.data['race'], self)
         return self._race
 
     @property
-    def population_bonus(self):
+    def population_bonus(self) -> float:
         # return (1 + self.castle.keep +
         #         self.tech.pop_bonus +
         #         self.wonder_bonus) * (1 + self.prestige_bonus)
@@ -146,7 +146,7 @@ class Dominion(object):
                 self.tech.pop_bonus) * (1 + self.prestige_bonus)
 
     @property
-    def prestige_bonus(self):
+    def prestige_bonus(self) -> float:
         return 1 + (self.cs['prestige'] / 10000)
 
     @property
@@ -160,7 +160,7 @@ class Dominion(object):
         return self.data['last_op']
 
     @property
-    def last_op_since(self):
+    def last_op_since(self) -> int:
         return hours_since(self.last_op)
 
 

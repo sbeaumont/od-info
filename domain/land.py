@@ -26,11 +26,11 @@ class Land(object):
     def total(self):
         return self._data['total']
 
-    def ratio_of(self, land_type):
+    def ratio_of(self, land_type: str) -> float:
         return self._data[land_type] / self.dom.total_land * 100
 
     @property
-    def incoming(self):
+    def incoming(self) -> int:
         result = 0
         incoming = json.loads(self._data['incoming'])
         for landtype in LAND_TYPES:
@@ -39,7 +39,7 @@ class Land(object):
         return result
 
 
-def land_for(db, dom):
+def land_for(db, dom) -> Land | Unknown:
     data = query_land(db, dom.code, latest=True)
     if data:
         return Land(dom, data)

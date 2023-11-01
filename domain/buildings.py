@@ -111,7 +111,7 @@ class Buildings(object):
         return nr_of_buildings / amount_of_land
 
 
-def buildings_for(db, dom):
+def buildings_for(db, dom) -> Buildings | Unknown:
     data = query_survey(db, dom.code, latest=True)
     if data:
         return Buildings(dom, data)

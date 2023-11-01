@@ -46,7 +46,7 @@ class Military(object):
             return 0
 
     @property
-    def paid_until(self):
+    def paid_until(self) -> int:
         age = hours_since(self._data['timestamp'])
         training = json.loads(self._data['training'])
         max_ticks = 0
@@ -60,7 +60,7 @@ class Military(object):
     def hittable_75_percent(self):
         return trunc(self.dom.total_land * 3 / 4)
 
-    def coming_home(self, unit_type_nr: int):
+    def coming_home(self, unit_type_nr: int) -> int:
         tr = json.loads(self._data['return'])
         key = f'unit{unit_type_nr}'
         if key in tr:
@@ -110,11 +110,11 @@ class Military(object):
         return bonus
 
     @property
-    def max_sendable_op(self):
+    def max_sendable_op(self) -> int:
         return min((self.safe_op, self.five_over_four_op[0]))
 
     @property
-    def op(self):
+    def op(self) -> int:
         offense = sum([self.op_of(i) for i in range(1, 5)])
         offense *= 1 + self.offense_bonus
         return round(offense)
@@ -230,7 +230,7 @@ class Military(object):
         return bonus
 
     @property
-    def dp(self):
+    def dp(self) -> int:
         defense = 0
         defense += sum([self.dp_of(i) for i in range(1, 5)])
         defense += self.dom.cs['military_draftees']
@@ -243,7 +243,6 @@ class Military(object):
         networth -= self.dom.total_land * NETWORTH_VALUES['land']
         networth -= self.dom.buildings.total * NETWORTH_VALUES['buildings']
 
-        # self.dom.military is this object...? Would removing dom.military break sth?
         networth -= self.amount(1, include_paid=False) * NETWORTH_VALUES['specs']
         networth -= self.amount(2, include_paid=False) * NETWORTH_VALUES['specs']
         networth -= self.amount(3, include_paid=False) * self.dom.race.unit(3).networth
@@ -288,7 +287,7 @@ class Military(object):
         return spy_units_equiv
 
     @property
-    def wiz_units_equiv(self):
+    def wiz_units_equiv(self) -> int:
         wiz_units_equiv = 0
         for i in range(1, 5):
             unit_ratios = self.unit_type(i).ratios
@@ -297,7 +296,7 @@ class Military(object):
         return wiz_units_equiv
 
 
-def military_for(db, dom):
+def military_for(db, dom) -> Military | Unknown:
     data = query_barracks(db, dom.code, latest=True)
     if data:
         return Military(dom, data)

@@ -40,7 +40,7 @@ class SendableType(Enum):
     HYBRID = 3
 
 
-def infamy_bonus(infamy, maxbonus):
+def infamy_bonus(infamy, maxbonus) -> float:
     """Max plat bonus 0.075, Gems, Ore and Lumber 0.03"""
     return 0.5 * (1 + erf(0.00452 * (infamy - 385))) * maxbonus
 
@@ -80,7 +80,7 @@ class Unit(object):
             return 0
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._data['name']
 
     def has_perk(self, name) -> bool:
@@ -97,7 +97,7 @@ class Unit(object):
             return default
 
     @property
-    def sendable_type(self):
+    def sendable_type(self) -> SendableType:
         if (self.offense != 0) and (self.defense != 0):
             return SendableType.HYBRID
         elif self.offense == 0:
@@ -106,7 +106,7 @@ class Unit(object):
             return SendableType.PURE_OFFENSE
 
     @property
-    def op_over_dp(self):
+    def op_over_dp(self) -> float:
         if self.offense == 0:
             return 0
         elif self.defense == 0:
@@ -166,7 +166,7 @@ class Race(object):
     def unit(self, nr) -> Unit:
         return self.units[nr]
 
-    def nr_of_unit(self, unit):
+    def nr_of_unit(self, unit) -> int:
         if isinstance(unit, int):
             return unit
         return self.reverse_units[unit]
@@ -181,18 +181,18 @@ class Race(object):
             return default
 
     @property
-    def hybrid_units(self):
+    def hybrid_units(self) -> list[Unit]:
         return sorted([u for u in self.units.values() if u.sendable_type == SendableType.HYBRID], key=attrgetter('op_over_dp'), reverse=True)
 
     @property
-    def hybrids_by_dp(self):
+    def hybrids_by_dp(self) -> list[Unit]:
         assert len(self.hybrid_units) + len(self.pure_offense_units) + len(self.pure_defense_units) == len(self.units)
         return sorted(self.hybrid_units, key=attrgetter('defense'), reverse=True)
 
     @property
-    def pure_offense_units(self):
+    def pure_offense_units(self) -> list[Unit]:
         return [u for u in self.units.values() if u.sendable_type == SendableType.PURE_OFFENSE]
 
     @property
-    def pure_defense_units(self):
+    def pure_defense_units(self) -> list[Unit]:
         return [u for u in self.units.values() if u.sendable_type == SendableType.PURE_DEFENSE]

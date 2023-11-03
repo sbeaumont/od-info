@@ -122,6 +122,10 @@ class Military(object):
     @property
     def safe_op(self) -> int:
         """Only calc based on attack units (types 1 & 4)"""
+        # Correct for weird races like Troll
+        if self.dom.race.name in ('Troll'):
+            return self.five_over_four_op[0]
+
         offense = self.op_of(1)
         offense += self.op_of(4)
         offense *= 1 + self.offense_bonus
@@ -130,27 +134,25 @@ class Military(object):
     @property
     def safe_dp(self) -> int:
         """Only calc based on defense units (types 2 & 3)"""
+        # Correct for weird races like Troll
+        if self.dom.race.name in ('Troll'):
+            return self.five_over_four_op[1]
+
         defense = self.dp_of(2)
         defense += self.dp_of(3)
         defense *= 1 + self.defense_bonus
         return round(defense)
 
     def safe_op_versus(self, enemy_op: int) -> tuple[int, int]:
-        # logger.debug(f'Checking safe OP/DP for {self.dom.name} ({self.dp} DP) vs {enemy_op} OP')
         # First subtract power of all pure DP units
-        # logger.debug(f'Pure defense units: {[(str(u), self.amount(u)) for u in self.dom.race.pure_defense_units]}, {self.defense_bonus}')
         dp_at_home = sum([self.dp_of(u, with_bonus=True) for u in self.dom.race.pure_defense_units])
         dp_at_home += self.dom.cs['military_draftees'] * (1 + self.defense_bonus)
         op_to_defend = enemy_op - dp_at_home
 
         # Pure offense units don't contribute to defense, can always send
-        # logger.debug(f'Pure offense units: {[str(u) for u in self.dom.race.pure_offense_units]}')
         safe_op = sum([self.op_of(u, with_bonus=True) for u in self.dom.race.pure_offense_units])
 
-        # logger.debug(f'Pure defense and attack: {round(safe_op)} OP / {round(dp_at_home)} DP, remaining {round(op_to_defend)}')
-
         # Check the hybrid units
-        # logger.debug(f'Hybrid units: {[str(u) for u in self.dom.race.hybrids_by_dp]}')
         # Most defensive hybrids first
         for unit_type in self.dom.race.hybrids_by_dp:
             if op_to_defend <= 0:
@@ -166,16 +168,13 @@ class Military(object):
                     # Can attack with the rest
                     remaining_units = self.amount(unit_type) - units_needed
                     can_send_op = self.op_of(unit_type, with_bonus=True, partial_amount=remaining_units)
-                    # logger.debug(f"Only need {round(units_needed)} units for {round(dp_of_units_needed)} DP, can send {round(can_send_op)} OP")
                 else:
                     # Need all these units to contribute to DP
                     dp_of_units_needed = self.dp_of(unit_type, with_bonus=True)
                     can_send_op = 0
-                    # logger.debug(f"Needed all ({self.amount(unit_type)}) of {unit_type} for {round(dp_of_units_needed)} DP, can send {round(can_send_op)} OP")
             op_to_defend -= dp_of_units_needed
             dp_at_home += dp_of_units_needed
             safe_op += can_send_op
-            # logger.debug(f'Hybrid unit {unit_type}: needed {round(units_needed)} @ {round(dp_of_units_needed)}DP for {round(safe_op)} OP / {round(dp_at_home)} DP, remaining {round(op_to_defend)}')
         return trunc(safe_op), round(dp_at_home)
 
     @property

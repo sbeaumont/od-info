@@ -16,6 +16,7 @@ from opsdata.schema import *
 from opsdata.scrapetools import login
 from opsdata.updater import update_ops, update_town_crier
 from config import current_player_id
+from domain.unknown import Unknown
 
 logger = logging.getLogger('od-info.facade')
 
@@ -181,7 +182,8 @@ class ODInfoFacade(object):
             dom_list = self.all_doms_as_objects()
         topop = dom_list[0]
         for dom in dom_list[1:]:
-            if dom.military.max_sendable_op > topop.military.max_sendable_op:
+            dom_op = dom.military.max_sendable_op
+            if not isinstance(dom_op, Unknown) and dom_op > topop.military.max_sendable_op:
                 topop = dom
         return topop
 

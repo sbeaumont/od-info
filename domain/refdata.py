@@ -6,6 +6,7 @@ from math import erf
 from enum import Enum
 from collections import defaultdict, namedtuple
 from config import REF_DATA_DIR
+from domain.unknown import Unknown
 
 NON_HOME_CAPACITY = 15
 BUILD_TICKS = 12
@@ -122,6 +123,14 @@ class Unit(object):
     def offense(self) -> float:
         op = self._data['power']['offense']
         op += self.land_bonus('offense_from_land')
+        if self.has_perk('offense_raw_wizard_ratio'):
+            per_percent, max_bonus = self.get_perk('offense_raw_wizard_ratio')
+            if not isinstance(self.dom.cs, Unknown) and self.dom.cs['wpa']:
+                wpa = float(self.dom.cs['wpa'])
+                wpa_bonus = wpa * float(per_percent)
+                if wpa_bonus > float(max_bonus):
+                    wpa_bonus = float(max_bonus)
+                op += wpa_bonus
         return op
 
     @property

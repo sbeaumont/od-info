@@ -229,7 +229,8 @@ CLEARSIGHT_MAPPING = {
     'military_spies': 'status.military_spies|optional',
     'military_assassins': 'status.military_assassins|optional',
     'military_wizards': 'status.military_wizards|optional',
-    'military_archmages': 'status.military_archmages|optional'
+    'military_archmages': 'status.military_archmages|optional',
+    'wpa': 'status.wpa|optional'
 }
 
 

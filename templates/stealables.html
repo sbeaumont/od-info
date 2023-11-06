@@ -1,0 +1,46 @@
+{% extends "odinfo-base.html" %}
+{% block extrascripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
+{% endblock %}
+
+{% block content %}
+  <div class="w3-container">
+    <h5>Stealables</h5>
+    <table id="stealables_table" class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <thead>
+            <tr class="w3-black">
+                <th>Dominion</th>
+                <th>Platinum</th>
+                <th>Food</th>
+                <th>Mana</th>
+                <th>Gems</th>
+            </tr>
+        </thead>
+        {% for row in stealables %}
+        <tr>
+            <td>
+                <a href="{{ url_for('dominfo', domcode=row.dominion) }}">{{ row.dominion }}</a>
+            </td>
+            <td>{{ row.platinum }}</td>
+            <td>{{ row.food }}</td>
+            <td>{{ row.mana }}</td>
+            <td>{{ row.gems }}</td>
+        </tr>
+        {% endfor %}
+    </table><br>
+  </div>
+
+<script>
+    $(document).ready( function () {
+        $('#stealables_table').DataTable({
+            'paging': false,
+            'order': [[1, 'desc']],
+            'columnDefs': [
+                { "type": "num", "targets": [1, 2, 3, 4]}
+            ]
+        });
+    } );
+</script>
+{% endblock %}

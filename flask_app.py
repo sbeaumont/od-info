@@ -129,6 +129,13 @@ def realmies():
                            realmies=facade().realmies())
 
 
+@app.route('/stealables')
+def stealables():
+    return render_template('stealables.html',
+                           feature_toggles=feature_toggles,
+                           stealables = facade().stealables())
+
+
 @app.teardown_appcontext
 def teardown_app(exception):
     facade = getattr(g, '_facade', None)

@@ -244,6 +244,35 @@ def update_clearsight(ops, db, dom_code):
     update_dom_history(ops, db, dom_code, timestamp)
 
 
+qry_stealables = """
+select
+    max(c.timestamp),
+    c.dominion,
+    c.resource_platinum as platinum,
+    c.resource_food as food,
+    c.resource_gems as gems,
+    c.resource_mana as mana
+from 
+    ClearSight c
+where 
+    c.timestamp > :timestamp
+group by 
+    c.dominion
+order by 
+    c.resource_platinum desc,
+    c.resource_food desc,
+    c.resource_mana desc,
+    c.resource_gems desc
+"""
+
+
+def query_stealables(db, timestamp):
+    params = {
+        'timestamp': cleanup_timestamp(timestamp)
+    }
+    return db.query(qry_stealables, params)
+
+
 # ------------------------------------------------------------ CastleSpy
 
 CASTLE_SPY_MAPPING = {
@@ -450,5 +479,3 @@ TC_FIELDS = 'timestamp,event_type,origin,origin_name,target,target_name,amount,t
 
 def query_town_crier(db):
     return db.query('SELECT * FROM TownCrier ORDER BY timestamp DESC')
-
-

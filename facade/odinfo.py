@@ -171,7 +171,7 @@ class ODInfoFacade(object):
             dom = Dominion(self._db, domcode)
             if (str(dom.military.op) != 'Unknown') or (str(dom.military.dp) != 'Unknown'):
                 result.append(dom)
-        return sorted(result, key=lambda d: d.total_land, reverse=True)
+        return sorted(result, key=lambda d: d.total_land, reverse=True)[:20]
 
     def all_doms_ops_age(self):
         last_ops = query_last_ops(self._db)

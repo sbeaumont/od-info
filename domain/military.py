@@ -193,6 +193,11 @@ class Military(object):
                 home_defense -= self.dp_of(unit_type, True)
             else:
                 # Can only send part
+                # s = trunc((hDP + (t * eDP) - (sOP * 4/5)) / ((eOP * 4/5) + eDP))
+                # sendable = trunc(new_dp + (self.amount(unit_type) * unit_type.defense) - (new_op * 4/5) /
+                #                  ((unit_type.offense * 4/5) + unit_type.defense))
+                # hybrid_units_sendable[unit_type] = sendable
+
                 for i in range(1, self.amount(unit_type)):
                     new_op = sendable_offense + self.op_of(unit_type, with_bonus=True, partial_amount=i)
                     new_dp = home_defense - self.dp_of(unit_type, with_bonus=True, partial_amount=i)

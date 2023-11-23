@@ -14,6 +14,7 @@
                 <th>Dominion</th>
                 <th>Player</th>
                 <th>Land</th>
+                <td>75%</td>
                 <th>Max Sendable</th>
                 <th>DP</th>
                 <th>Ares</th>
@@ -26,6 +27,7 @@
             </td>
             <td>{{ dom.player }}</td>
             <td>{{ dom.total_land }}</td>
+            <td>{{ dom.military.hittable_75_percent }}</td>
             <td>{{ dom.military.max_sendable_op }}</td>
             <td>{{ dom.military.dp }}</td>
             <td>{{ dom.magic.ares }}</td>
@@ -38,9 +40,9 @@
     $(document).ready( function () {
         $('#realmies_table').DataTable({
             'paging': false,
-            'order': [[5, 'asc']],
+            'order': [[6, 'asc']],
             'columnDefs': [
-                { "type": "num", "targets": [2, 3, 4, 5]}
+                { "type": "num", "targets": [2, 3, 4, 5, 6]}
             ]
         });
     } );

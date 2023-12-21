@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS ClearSight (
     military_wizards INTEGER,
     military_archmages INTEGER,
     clear_sight_accuracy REAL DEFAULT 0.85
+    wpa REAL;
 );
 
 DROP INDEX IF EXISTS idx_ClearSight;

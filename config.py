@@ -68,7 +68,7 @@ if 'feature_toggles' in SECRETS:
 if getattr(sys, 'frozen', False):
     DATABASE = executable_path('odinfo-database.sqlite')
 else:
-    DATABASE = executable_path('./opsdata/odinfo-round-37.sqlite')
+    DATABASE = executable_path(f"./opsdata/{SECRETS['database_name']}.sqlite")
 
 DB_SCHEMA_FILE = resource_path('./opsdata/schema.sql')
 

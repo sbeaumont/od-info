@@ -3,7 +3,7 @@ import time
 from config import current_player_id
 from opsdata.scrapetools import login, get_soup_page
 
-FORUM_URL = 'https://www.opendominion.net/dominion/forum/325?page={}'
+FORUM_URL = 'https://www.opendominion.net/dominion/forum/327?page={}'
 
 
 def go():
@@ -15,7 +15,7 @@ def go():
             break
         for comment in soup.find_all('div', {'class': 'comment-text'}):
             comments.append(comment.p.text)
-    with open('threewordstory-R36.txt', 'w') as f:
+    with open('threewordstory-R37.txt', 'w') as f:
         f.write(' '.join(comments))
 
 

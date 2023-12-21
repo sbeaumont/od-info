@@ -179,6 +179,11 @@ class Military(object):
 
     @property
     def five_over_four_op(self) -> tuple:
+        def five_over_four_sendable_elites(pure_op, pure_dp, total_elites, unit_type):
+            top = pure_op - (5 / 4 * pure_dp) - (5 / 4 * total_elites * self.dp_of(unit_type))
+            bottom = -(self.op_of(unit_type) + (5 / 4 * self.dp_of(unit_type)))
+            return trunc(top / bottom)
+
         pure_offense = sum([self.op_of(u) for u in self.dom.race.pure_offense_units])
         sendable_offense = pure_offense
         home_defense = self.dp
@@ -193,23 +198,23 @@ class Military(object):
                 home_defense -= self.dp_of(unit_type, True)
             else:
                 # Can only send part
-                # s = trunc((hDP + (t * eDP) - (sOP * 4/5)) / ((eOP * 4/5) + eDP))
-                # sendable = trunc(new_dp + (self.amount(unit_type) * unit_type.defense) - (new_op * 4/5) /
-                #                  ((unit_type.offense * 4/5) + unit_type.defense))
-                # hybrid_units_sendable[unit_type] = sendable
+                sendable = five_over_four_sendable_elites(sendable_offense, home_defense, self.amount(unit_type), unit_type)
+                hybrid_units_sendable[unit_type] = sendable
 
-                for i in range(1, self.amount(unit_type)):
-                    new_op = sendable_offense + self.op_of(unit_type, with_bonus=True, partial_amount=i)
-                    new_dp = home_defense - self.dp_of(unit_type, with_bonus=True, partial_amount=i)
-                    if new_op > (1.25 * new_dp):
-                        sendable = i - 1
-                        hybrid_units_sendable[unit_type] = sendable
-                        break
+                # for i in range(1, self.amount(unit_type)):
+                #     new_op = sendable_offense + self.op_of(unit_type, with_bonus=True, partial_amount=i)
+                #     new_dp = home_defense - self.dp_of(unit_type, with_bonus=True, partial_amount=i)
+                #     if new_op > (1.25 * new_dp):
+                #         sendable = i - 1
+                #         hybrid_units_sendable[unit_type] = sendable
+                #         break
                 break
-        hybrid_op = sum([self.op_of(u, partial_amount=a) for u, a in hybrid_units_sendable.items()])
-        total_op = trunc((pure_offense + hybrid_op) * (1 + self.offense_bonus))
-        hybrid_dp = sum([self.dp_of(u, partial_amount=a) for u, a in hybrid_units_sendable.items()])
-        total_dp = trunc(self.dp - (hybrid_dp * (1 + self.defense_bonus)))
+        hybrid_op = sum([self.op_of(u, partial_amount=a, with_bonus=True) for u, a in hybrid_units_sendable.items()])
+        # total_op = trunc((pure_offense + hybrid_op) * (1 + self.offense_bonus))
+        total_op = trunc(pure_offense + hybrid_op)
+        hybrid_dp = sum([self.dp_of(u, partial_amount=a, with_bonus=True) for u, a in hybrid_units_sendable.items()])
+        # total_dp = trunc(self.dp - (hybrid_dp * (1 + self.defense_bonus)))
+        total_dp = trunc(self.dp - hybrid_dp)
         return total_op, total_dp
 
     @property

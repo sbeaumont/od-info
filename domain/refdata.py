@@ -56,7 +56,7 @@ class TechTree(object):
 
     @staticmethod
     def _load_techs() -> dict:
-        with open(f'{REF_DATA_DIR}/techs.yaml', 'r') as f:
+        with open(f'{REF_DATA_DIR}/techs.yml', 'r') as f:
             tech_yaml = yaml.safe_load(f)
             techs = defaultdict(dict)
             for tech_name, tech in tech_yaml.items():

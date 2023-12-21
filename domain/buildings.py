@@ -18,7 +18,7 @@ NON_HOME_TYPES = (
     'diamond_mine',
     'school',
     'lumberyard',
-    'forest_haven',
+    # 'forest_haven',
     'factory',
     'guard_tower',
     'shrine',

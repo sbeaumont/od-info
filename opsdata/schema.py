@@ -380,7 +380,7 @@ SURVEY_DOMINION_MAPPING = {
     'diamond_mine': 'survey.constructed.diamond_mine',
     'school': 'survey.constructed.school',
     'lumberyard': 'survey.constructed.lumberyard',
-    'forest_haven': 'survey.constructed.forest_haven',
+    # 'forest_haven': 'survey.constructed.forest_haven',
     'factory': 'survey.constructed.factory',
     'guard_tower': 'survey.constructed.guard_tower',
     'shrine': 'survey.constructed.shrine',

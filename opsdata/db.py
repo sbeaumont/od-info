@@ -50,7 +50,7 @@ class Database(object):
 
     def execute(self, sql: str, params: dict | list | tuple):
         cur = self.conn.cursor()
-        # print(f"Executing {sql} with {params}")
+        print(f"Executing {sql} with {params}")
         cur.execute(sql, params)
         self.conn.commit()
 

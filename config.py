@@ -83,6 +83,10 @@ OUT_DIR = './out'
 REF_DATA_DIR = './ref-data'
 OPS_DATA_DIR = 'opsdata'
 
+# user file
+
+USERS_FILE = 'users.json'
+
 # Knowledge of the URL structure of the OD website
 
 OD_BASE = 'https://www.opendominion.net'
@@ -103,3 +107,4 @@ NETWORTH_FILE = f'{OUT_DIR}/nw.json'
 
 PLAT_PER_ALCHEMY_PER_TICK = 45
 PLAT_PER_PEASANT_PER_TICK = 2.7
+PEASANTS_PER_HOME = 30

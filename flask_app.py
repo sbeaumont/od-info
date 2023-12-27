@@ -1,12 +1,13 @@
 import os
 import sys
-from flask import Flask, g, request
-from flask import render_template
 import logging
-from config import feature_toggles
+import flask
+from flask import Flask, g, request, render_template
+from flask_login import LoginManager, login_user, login_required
+from forms import LoginForm
+from facade.user import get_user_by_id, get_user_by_name
 
-
-from config import OP_CENTER_URL
+from config import feature_toggles, OP_CENTER_URL, load_secrets
 from facade.odinfo import ODInfoFacade
 
 if getattr(sys, 'frozen', False):
@@ -17,6 +18,17 @@ else:
     app = Flask('od-info')
 
 app.logger.setLevel(logging.DEBUG)
+app.secret_key = load_secrets()['secret_key']
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+login_manager.login_message = u"Please login"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return get_user_by_id(user_id)
 
 
 def facade() -> ODInfoFacade:
@@ -28,6 +40,7 @@ def facade() -> ODInfoFacade:
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/dominfo/', methods=['GET', 'POST'])
+@login_required
 def overview():
     if request.args.get('update'):
         facade().update_dom_index()
@@ -55,6 +68,7 @@ def overview():
 
 @app.route('/dominfo/<domcode>')
 @app.route('/dominfo/<domcode>/<update>')
+@login_required
 def dominfo(domcode: int, update=None):
     if update == 'update':
         facade().update_ops(domcode)
@@ -73,6 +87,7 @@ def dominfo(domcode: int, update=None):
 
 
 @app.route('/towncrier')
+@login_required
 def towncrier():
     if request.args.get('update'):
         facade().update_town_crier()
@@ -83,6 +98,7 @@ def towncrier():
 
 @app.route('/nwtracker/<send>')
 @app.route('/nwtracker')
+@login_required
 def nw_tracker(send=None):
     result_of_send = ''
     if send == 'send':
@@ -96,6 +112,7 @@ def nw_tracker(send=None):
 
 
 @app.route('/economy')
+@login_required
 def economy():
     return render_template('economy.html',
                            feature_toggles=feature_toggles,
@@ -103,6 +120,7 @@ def economy():
 
 
 @app.route('/ratios')
+@login_required
 def ratios():
     return render_template('ratios.html',
                            feature_toggles=feature_toggles,
@@ -112,6 +130,7 @@ def ratios():
 
 @app.route('/military', defaults={'versus_op': 0})
 @app.route('/military/<versus_op>')
+@login_required
 def military(versus_op: int = 0):
     dom_list = facade().all_doms_as_objects()[:20]
     return render_template('military.html',
@@ -123,6 +142,7 @@ def military(versus_op: int = 0):
 
 
 @app.route('/realmies')
+@login_required
 def realmies():
     return render_template('realmies.html',
                            feature_toggles=feature_toggles,
@@ -130,10 +150,39 @@ def realmies():
 
 
 @app.route('/stealables')
+@login_required
 def stealables():
     return render_template('stealables.html',
                            feature_toggles=feature_toggles,
                            stealables = facade().stealables())
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm(request.form)
+    if (request.method == 'POST') and form.validate():
+        user = get_user_by_name(form.username.data)
+        if user:
+            if user.password == form.password.data:
+                print("Authenticated", user.name)
+                user._authenticated = True
+                login_user(user)
+            else:
+                print("Could not authenticate", user.name)
+        else:
+            print("Could find user with name", form.username.data)
+
+        flask.flash('Logged in successfully.')
+
+        next = flask.request.args.get('next')
+        # url_has_allowed_host_and_scheme should check if the url is safe
+        # for redirects, meaning it matches the request host.
+        # See Django's url_has_allowed_host_and_scheme for an example.
+        # if not url_has_allowed_host_and_scheme(next, request.host):
+        #     return flask.abort(400)
+
+        return flask.redirect(next or flask.url_for('overview'))
+    return flask.render_template('login.html', form=form)
 
 
 @app.teardown_appcontext

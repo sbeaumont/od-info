@@ -1,0 +1,13 @@
+{% extends "odinfo-base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+{% if current_user.is_authenticated %}
+  Hi {{ current_user.name }}!
+{% endif %}
+<form method="POST" action="/login">
+    <div>{{ form.username.label }}: {{ form.username() }}</div>
+    <div>{{ form.password.label }}: {{ form.password() }}</div>
+    <input type="submit" name="action" value="Validate"/>
+</form>
+{% endblock %}

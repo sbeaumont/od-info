@@ -7,26 +7,31 @@
     <h5>Economy</h5>
     <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
         <tr class="w3-dark-grey">
-            <th>Homes</th>
-            <th>Population</th>
             <th>Jobs</th>
-            <th>Plat/Tick</th>
+            <th>Income</th>
+            <th>Per Building</th>
+            <th>Boop</th>
         </tr>
         <tr>
             <td>
-                {{ economy.homes }}
+                Employed: {{ economy.employed_peasants }}<br/>
+                Free: {{ economy.free_jobs }}
             </td>
             <td>
-                {{ economy.population }}
+                Peasants: {{ economy.peasant_income }}<br/>
+                Alchemies: {{ economy.alchemy_income }}<br/>
+                Bonus %: {{ economy.plat_total_bonus * 100 |round(3) }}<br/>
+                Total: {{ economy.platinum_production }}
             </td>
             <td>
-                {{ economy.jobs }}
+                Home: {{ economy.plat_per_home|round(2) }}<br/>
+                Alchemy: {{ 45 }}<br/>
+                Guard Towers: {{ economy.guard_towers[0] }} ({{ economy.guard_towers[1] }}%)
             </td>
             <td>
-                {{ economy.plat_per_tick }}
+
             </td>
         </tr>
     </table><br>
   </div>
-
 {% endblock %}

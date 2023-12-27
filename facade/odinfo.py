@@ -6,6 +6,7 @@ This class is therefore by definition a smorgasbord of queries and actions that 
 
 from operator import itemgetter
 
+from calculators.economy import Economy
 from calculators.networthcalculator import get_networth_deltas
 from config import DATABASE, DB_SCHEMA_FILE
 from domain.dominion import all_doms, name_for_code, Dominion, dom_codes_of_realm, realm_of_dom, doms_of_realm
@@ -254,10 +255,4 @@ class ODInfoFacade(object):
 
     def economy(self):
         self.update_ops(current_player_id)
-        survey = self.survey(current_player_id, latest=True)
-        return {
-            'homes': survey['home'],
-            'population': row_s_to_dict(survey),
-            'jobs': 30,
-            'plat_per_tick': 40
-        }
+        return Economy(self.dominion(current_player_id))

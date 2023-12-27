@@ -1,5 +1,6 @@
 from domain.dominion import Dominion
-from config import current_player_id
+from config import *
+from math import trunc
 
 
 class Economy(object):
@@ -16,20 +17,40 @@ class Economy(object):
         return bonus
 
     @property
+    def employed_peasants(self):
+        return min(self.dom.cs['peasants'], self.dom.buildings.jobs)
+
+    @property
+    def free_jobs(self):
+        return self.dom.buildings.jobs - self.dom.cs['peasants']
+
+    @property
+    def peasant_income(self):
+        return trunc(self.employed_peasants * PLAT_PER_PEASANT_PER_TICK)
+
+    @property
+    def plat_per_home(self):
+        return (PEASANTS_PER_HOME * (1 + self.dom.castle.keep)) * PLAT_PER_PEASANT_PER_TICK
+
+    @property
+    def alchemy_income(self):
+        return trunc(self.dom.buildings.alchemies * PLAT_PER_ALCHEMY_PER_TICK)
+
+    @property
+    def guard_towers(self):
+        return self.dom.buildings.guard_towers, self.dom.buildings.ratio_of('guard_tower')
+
+    @property
     def base_plat_per_tick(self):
-        employed_peasants = min(self.dom.cs['peasants'], self.dom.buildings.jobs)
-        peasants_income = employed_peasants * PLAT_PER_PEASANT_PER_TICK
-        alchemies_income = self.dom.buildings.alchemies * PLAT_PER_ALCHEMY_PER_TICK
-        return peasants_income + alchemies_income
+        return trunc(self.peasant_income + self.alchemy_income)
 
     @property
     def platinum_production(self):
-        return self.base_plat_per_tick * (1 + self.plat_total_bonus)
+        return trunc(self.base_plat_per_tick * (1 + self.plat_total_bonus))
 
 
 if __name__ == '__main__':
     from opsdata.db import Database
-    from config import DATABASE, PLAT_PER_ALCHEMY_PER_TICK, PLAT_PER_PEASANT_PER_TICK
 
     db = Database()
     db.init(DATABASE)

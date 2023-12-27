@@ -3,13 +3,18 @@ import json
 
 
 class User(object):
-    def __init__(self, user_info: dict):
-        self.user_info = user_info
-        self._authenticated = False
+    @classmethod
+    def from_json(cls, json_data):
+        u = cls(json_data)
+        u._authenticated = json_data['authenticated']
+        return u
 
-    @property
-    def name(self):
-        return self.user_info['name']
+    def __init__(self, user_info: dict):
+        self._id = user_info["id"]
+        self.name = user_info["name"]
+        self.password = user_info["password"]
+        self._active = user_info["active"]
+        self._authenticated = False
 
     @property
     def is_authenticated(self):
@@ -17,50 +22,40 @@ class User(object):
 
     @property
     def is_active(self) -> bool:
-        return self.user_info['active'] == "true"
+        return self._active == "true"
 
     @property
     def is_anonymous(self):
         return False
 
     def get_id(self):
-        return str(self.user_info['id'])
+        return str(self._id)
 
-    @property
-    def password(self):
-        return self.user_info['password']
+    def to_json(self):
+        return {
+            "id": self._id,
+            "name": self.name,
+            "password": self.password,
+            "active": self.is_active,
+            "authenticated": self._authenticated
+        }
 
-    def __str__(self):
-        return f"User({self.user_info})"
 
-
-USERS = dict()
-
-
-def get_user_by_id(_id: str | int) -> User | None:
-    if _id in USERS:
-        return USERS[_id]
-
+def load_user_by_id(_id: str | int) -> User | None:
     with open(USERS_FILE) as f:
         users = json.loads(f.read())
-    for user in users:
-        if str(_id) == str(user["id"]):
-            USERS[user['id']] = User(user)
-            return USERS[user['id']]
+    for u in users:
+        if str(_id) == str(u["id"]):
+            return User(u)
     return None
 
 
-def get_user_by_name(name: str) -> User | None:
-    for user in USERS.values():
-        if str(name) == str(user.name):
-            return user
-
+def load_user_by_name(name: str) -> User | None:
     with open(USERS_FILE) as f:
         users = json.loads(f.read())
-    for user in users:
-        if str(name) == str(user["name"]):
-            USERS[user['id']] = User(user)
-            return USERS[user['id']]
+    for u in users:
+        if str(name) == str(u["name"]):
+            return User(u)
     return None
 
 

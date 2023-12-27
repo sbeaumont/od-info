@@ -2,10 +2,10 @@ import os
 import sys
 import logging
 import flask
-from flask import Flask, g, request, render_template
+from flask import Flask, g, request, render_template, session
 from flask_login import LoginManager, login_user, login_required
 from forms import LoginForm
-from facade.user import get_user_by_id, get_user_by_name
+from facade.user import load_user_by_id, load_user_by_name, User
 
 from config import feature_toggles, OP_CENTER_URL, load_secrets
 from facade.odinfo import ODInfoFacade
@@ -28,7 +28,18 @@ login_manager.login_message = u"Please login"
 
 @login_manager.user_loader
 def load_user(user_id):
-    return get_user_by_id(user_id)
+    print('Loading user {}'.format(user_id))
+    print(session.get('od_user', None))
+    if 'od_user' not in session:
+        print("Loading new user")
+        session['od_user'] = load_user_by_id(user_id).to_json()
+    user = User.from_json(session['od_user'])
+    print(user, user.get_id(), str(user_id))
+    if user and (user.get_id() == str(user_id)):
+        print("Returning", user)
+        return user
+    else:
+        return None
 
 
 def facade() -> ODInfoFacade:
@@ -161,11 +172,12 @@ def stealables():
 def login():
     form = LoginForm(request.form)
     if (request.method == 'POST') and form.validate():
-        user = get_user_by_name(form.username.data)
+        user = load_user_by_name(form.username.data)
         if user:
             if user.password == form.password.data:
                 print("Authenticated", user.name)
                 user._authenticated = True
+                session['od_user'] = user.to_json()
                 login_user(user)
             else:
                 print("Could not authenticate", user.name)

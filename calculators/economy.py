@@ -38,7 +38,11 @@ class Economy(object):
 
     @property
     def guard_towers(self):
-        return self.dom.buildings.guard_towers, self.dom.buildings.ratio_of('guard_tower')
+        gt_ratio = self.dom.buildings.ratio_of('guard_tower') * 1.75
+        new_ratio = (self.dom.buildings.guard_towers + 1) / self.dom.total_land * 1.75
+        extra_dp_percentage = new_ratio - gt_ratio
+        extra_dp = self.dom.military.dp * extra_dp_percentage
+        return extra_dp
 
     @property
     def base_plat_per_tick(self):

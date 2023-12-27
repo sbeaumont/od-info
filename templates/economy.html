@@ -20,13 +20,13 @@
             <td>
                 Peasants: {{ economy.peasant_income }}<br/>
                 Alchemies: {{ economy.alchemy_income }}<br/>
-                Bonus %: {{ economy.plat_total_bonus * 100 |round(3) }}<br/>
+                Bonus %: {{ (economy.plat_total_bonus * 100) |round(3) }}<br/>
                 Total: {{ economy.platinum_production }}
             </td>
             <td>
                 Home: {{ economy.plat_per_home|round(2) }}<br/>
                 Alchemy: {{ 45 }}<br/>
-                Guard Towers: {{ economy.guard_towers[0] }} ({{ economy.guard_towers[1] }}%)
+                Guard Tower: {{ economy.guard_towers|round(2) }} DP
             </td>
             <td>
 

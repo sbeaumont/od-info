@@ -71,11 +71,27 @@ class Military(object):
     def op_of(self, unit_type_or_nr, with_bonus=False, partial_amount=None):
         amount = partial_amount if partial_amount else self.amount(unit_type_or_nr)
         op = amount * self.unit_type(unit_type_or_nr).offense
+
+        # Pairing perk (e.g. kobold)
+        if self.unit_type(unit_type_or_nr).has_perk('offense_from_pairing'):
+            slot, op_buff, num_required = self.unit_type(unit_type_or_nr).get_perk('offense_from_pairing')
+            pairable_amount = min(self.amount(int(slot)) // int(num_required), amount)
+            op += pairable_amount * int(op_buff)
+            print("Paired ", self.amount(int(slot)), amount, pairable_amount * int(op_buff))
+
         return (op * (1 + self.offense_bonus)) if with_bonus else op
 
     def dp_of(self, unit_type_or_nr, with_bonus=False, partial_amount=None):
         amount = partial_amount if partial_amount else self.amount(unit_type_or_nr)
         dp = amount * self.unit_type(unit_type_or_nr).defense
+
+        # Pairing perk (e.g. kobold)
+        if self.unit_type(unit_type_or_nr).has_perk('defense_from_pairing'):
+            slot, buff, num_required = self.unit_type(unit_type_or_nr).get_perk('defense_from_pairing')
+            pairable_amount = min(self.amount(int(slot)) // int(num_required), amount)
+            dp += pairable_amount * int(buff)
+            print("Paired DP ", self.amount(int(slot)), amount, pairable_amount * int(buff))
+
         return (dp * (1 + self.defense_bonus)) if with_bonus else dp
 
     @property

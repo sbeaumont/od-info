@@ -23,7 +23,7 @@
         {% for row in stealables %}
         <tr>
             <td>
-                <a href="{{ url_for('dominfo', domcode=row.dominion) }}">{{ row.dominion }}</a>
+                <a href="{{ url_for('dominfo', domcode=row.dominion) }}">{{ row.name }}</a>
             </td>
             <td>{{ row.land }}</td>
             <td  {% if 1 < ages[row.dominion] <= 12 %}class="stale"{% elif ages[row.dominion] > 12 %}class="invalid"{% endif %}>
@@ -42,9 +42,9 @@
     $(document).ready( function () {
         $('#stealables_table').DataTable({
             'paging': false,
-            'order': [[2, 'desc']],
+            'order': [[3, 'desc']],
             'columnDefs': [
-                { "type": "num", "targets": [1, 2, 3, 4, 5]}
+                { "type": "num", "targets": [1, 2, 3, 4, 5, 6]}
             ]
         });
     } );

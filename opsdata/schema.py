@@ -248,18 +248,22 @@ qry_stealables = """
 select
     max(c.timestamp),
     c.dominion,
+    d.name,
     c.land,
     c.resource_platinum as platinum,
     c.resource_food as food,
     c.resource_gems as gems,
     c.resource_mana as mana
-from 
-    ClearSight c
-where 
-    c.timestamp > :timestamp
-group by 
+from
+    ClearSight c,
+    Dominions d
+where
+    (c.dominion = d.code)
+    and (d.realm != :realm)
+    and (c.timestamp > :timestamp)
+group by
     c.dominion
-order by 
+order by
     c.resource_platinum desc,
     c.resource_food desc,
     c.resource_mana desc,
@@ -267,9 +271,10 @@ order by
 """
 
 
-def query_stealables(db, timestamp):
+def query_stealables(db, timestamp, my_realm: int):
     params = {
-        'timestamp': cleanup_timestamp(timestamp)
+        'timestamp': cleanup_timestamp(timestamp),
+        'realm': my_realm
     }
     return db.query(qry_stealables, params)
 

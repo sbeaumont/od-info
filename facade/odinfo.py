@@ -201,8 +201,7 @@ class ODInfoFacade(object):
     def stealables(self) -> list:
         logger.debug("Listing stealables")
         since = add_duration(current_od_time(as_str=True), -12, True)
-        result = query_stealables(self._db, since)
-        print(result)
+        result = query_stealables(self._db, since, realm_of_dom(self._db, current_player_id))
         return result
 
     # ---------------------------------------- QUERIES - Utility

@@ -165,7 +165,8 @@ def realmies():
 def stealables():
     return render_template('stealables.html',
                            feature_toggles=feature_toggles,
-                           stealables = facade().stealables())
+                           stealables = facade().stealables(),
+                           ages=facade().all_doms_ops_age())
 
 
 @app.route('/login', methods=['GET', 'POST'])

@@ -13,6 +13,7 @@
             <tr class="w3-black">
                 <th>Dominion</th>
                 <th>Land</th>
+                <th>Age</th>
                 <th>Platinum</th>
                 <th>Food</th>
                 <th>Mana</th>
@@ -25,6 +26,9 @@
                 <a href="{{ url_for('dominfo', domcode=row.dominion) }}">{{ row.dominion }}</a>
             </td>
             <td>{{ row.land }}</td>
+            <td  {% if 1 < ages[row.dominion] <= 12 %}class="stale"{% elif ages[row.dominion] > 12 %}class="invalid"{% endif %}>
+                {{ ages[row.dominion] }}
+            </td>
             <td>{{ row.platinum }}</td>
             <td>{{ row.food }}</td>
             <td>{{ row.mana }}</td>

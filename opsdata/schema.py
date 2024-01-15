@@ -248,6 +248,7 @@ qry_stealables = """
 select
     max(c.timestamp),
     c.dominion,
+    c.land,
     c.resource_platinum as platinum,
     c.resource_food as food,
     c.resource_gems as gems,

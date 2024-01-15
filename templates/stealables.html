@@ -12,6 +12,7 @@
         <thead>
             <tr class="w3-black">
                 <th>Dominion</th>
+                <th>Land</th>
                 <th>Platinum</th>
                 <th>Food</th>
                 <th>Mana</th>
@@ -23,6 +24,7 @@
             <td>
                 <a href="{{ url_for('dominfo', domcode=row.dominion) }}">{{ row.dominion }}</a>
             </td>
+            <td>{{ row.land }}</td>
             <td>{{ row.platinum }}</td>
             <td>{{ row.food }}</td>
             <td>{{ row.mana }}</td>
@@ -36,9 +38,9 @@
     $(document).ready( function () {
         $('#stealables_table').DataTable({
             'paging': false,
-            'order': [[1, 'desc']],
+            'order': [[2, 'desc']],
             'columnDefs': [
-                { "type": "num", "targets": [1, 2, 3, 4]}
+                { "type": "num", "targets": [1, 2, 3, 4, 5]}
             ]
         });
     } );

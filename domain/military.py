@@ -77,7 +77,6 @@ class Military(object):
             slot, op_buff, num_required = self.unit_type(unit_type_or_nr).get_perk('offense_from_pairing')
             pairable_amount = min(self.amount(int(slot)) // int(num_required), amount)
             op += pairable_amount * int(op_buff)
-            print("Paired ", self.amount(int(slot)), amount, pairable_amount * int(op_buff))
 
         return (op * (1 + self.offense_bonus)) if with_bonus else op
 
@@ -90,7 +89,6 @@ class Military(object):
             slot, buff, num_required = self.unit_type(unit_type_or_nr).get_perk('defense_from_pairing')
             pairable_amount = min(self.amount(int(slot)) // int(num_required), amount)
             dp += pairable_amount * int(buff)
-            print("Paired DP ", self.amount(int(slot)), amount, pairable_amount * int(buff))
 
         return (dp * (1 + self.defense_bonus)) if with_bonus else dp
 

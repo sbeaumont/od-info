@@ -125,4 +125,3 @@ def get_last_scans(session) -> dict:
         timestamp = cells[4].span.string.strip()
         result[domcode] = timestamp
     return result
-

@@ -1,3 +1,11 @@
+"""
+Main entrypoint for the application.
+
+- Uses the ODInfo facade object for all queries and actions.
+- Knows the routing, the templates to use, which facade calls to make and which data to pass to a template.
+
+"""
+
 import os
 import sys
 import logging
@@ -28,15 +36,10 @@ login_manager.login_message = u"Please login"
 
 @login_manager.user_loader
 def load_user(user_id):
-    print('Loading user {}'.format(user_id))
-    print(session.get('od_user', None))
     if 'od_user' not in session:
-        print("Loading new user")
         session['od_user'] = load_user_by_id(user_id).to_json()
     user = User.from_json(session['od_user'])
-    print(user, user.get_id(), str(user_id))
     if user and (user.get_id() == str(user_id)):
-        print("Returning", user)
         return user
     else:
         return None
@@ -149,7 +152,8 @@ def military(versus_op: int = 0):
                            doms=dom_list,
                            ages=facade().all_doms_ops_age(),
                            top_op=facade().top_op(dom_list),
-                           versus_op=int(versus_op))
+                           versus_op=int(versus_op),
+                           current_day=facade().current_tick.day)
 
 
 @app.route('/realmies')

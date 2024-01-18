@@ -203,5 +203,9 @@ class Race(object):
         return [u for u in self.units.values() if u.sendable_type == SendableType.PURE_OFFENSE]
 
     @property
+    def sendable_units(self) -> list[Unit]:
+        return self.pure_offense_units + self.hybrids_by_dp
+
+    @property
     def pure_defense_units(self) -> list[Unit]:
         return [u for u in self.units.values() if u.sendable_type == SendableType.PURE_DEFENSE]

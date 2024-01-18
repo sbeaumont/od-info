@@ -74,6 +74,10 @@ class Buildings(object):
         return self._data['temple']
 
     @property
+    def docks(self) -> int:
+        return self._data['dock']
+
+    @property
     def non_homes(self) -> int:
         return sum([int(self._data[n]) for n in NON_HOME_TYPES])
 

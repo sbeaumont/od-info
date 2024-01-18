@@ -1,20 +1,21 @@
 """
-Facade object to ensure that all "business logic" doesn't get mixed into user interface code.
+Facade object to ensure that all "business and data logic" doesn't get mixed into user interface code.
 
-This class is therefore by definition a smorgasbord of queries and actions that the UI (flask_app) needs.
+This class is intentianally the smorgasbord of queries and actions that the UI (flask_app) needs
+so that any ugliness is contained in this class.
 """
 
 from operator import itemgetter
 
 from calculators.economy import Economy
 from calculators.networthcalculator import get_networth_deltas
-from config import DATABASE, DB_SCHEMA_FILE
+from config import DATABASE, DB_SCHEMA_FILE, SEARCH_PAGE
 from domain.dominion import all_doms, name_for_code, Dominion, dom_codes_of_realm, realm_of_dom, doms_of_realm
 from facade.discord import send_to_webhook
 from opsdata.db import Database
 from opsdata.ops import grab_ops, grab_my_ops, update_dom_index, get_last_scans
 from opsdata.schema import *
-from opsdata.scrapetools import login
+from opsdata.scrapetools import login, read_tick_time, get_soup_page
 from opsdata.updater import update_ops, update_town_crier
 from config import current_player_id
 from domain.unknown import Unknown
@@ -210,6 +211,11 @@ class ODInfoFacade(object):
         """Get the name connected with a dominion code."""
         logger.debug("Getting name for %s", domcode)
         return name_for_code(self._db, domcode)
+
+    @property
+    def current_tick(self):
+        soup = get_soup_page(self.session, SEARCH_PAGE)
+        return read_tick_time(soup)
 
     # ---------------------------------------- QUERIES - Reports
 

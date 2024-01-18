@@ -25,6 +25,8 @@
                 <th>5/4 OP</th>
                 <th>5/4 DP</th>
                 <th>Temples</th>
+                <th>Boats</th>
+                <th>Sendable</th>
                 <th>Paid</th>
                 <th>OP</th>
                 <th>DP</th>
@@ -65,6 +67,8 @@
             <td>{{ fivefour[0] }}</td>
             <td>{{ fivefour[1] }}</td>
             <td>{{ (dom.buildings.ratio_of('temple') * 100)|round(1) }}%</td>
+            <td>{{ dom.military.boats(current_day)[0] }}/{{ dom.military.boats(current_day)[1] }}</td>
+            <td>{{ dom.military.boats(current_day)[2] }}/{{ dom.military.boats(current_day)[3] }}</td>
             <td>{{ dom.military.paid_until }}</td>
             <td>{{ dom.military.op }}</td>
             <td>{{ dom.military.dp }}</td>

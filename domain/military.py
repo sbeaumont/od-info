@@ -221,16 +221,25 @@ class Military(object):
                 home_defense -= self.dp_of(unit_type, True)
             else:
                 # Can only send part
-                sendable = five_over_four_sendable_elites(sendable_offense, home_defense, self.amount(unit_type), unit_type)
-                hybrid_units_sendable[unit_type] = sendable
+                # sendable = five_over_four_sendable_elites(sendable_offense, home_defense, self.amount(unit_type), unit_type)
+                # hybrid_units_sendable[unit_type] = sendable
 
-                # for i in range(1, self.amount(unit_type)):
-                #     new_op = sendable_offense + self.op_of(unit_type, with_bonus=True, partial_amount=i)
-                #     new_dp = home_defense - self.dp_of(unit_type, with_bonus=True, partial_amount=i)
-                #     if new_op > (1.25 * new_dp):
-                #         sendable = i - 1
-                #         hybrid_units_sendable[unit_type] = sendable
-                #         break
+                sendable = 1
+                step = 10000
+                for i in range(1, self.amount(unit_type), step):
+                    new_op = sendable_offense + self.op_of(unit_type, with_bonus=True, partial_amount=i)
+                    new_dp = home_defense - self.dp_of(unit_type, with_bonus=True, partial_amount=i)
+                    if new_op > (1.25 * new_dp):
+                        sendable = i - step
+                        break
+
+                for i in range(sendable, self.amount(unit_type)):
+                    new_op = sendable_offense + self.op_of(unit_type, with_bonus=True, partial_amount=i)
+                    new_dp = home_defense - self.dp_of(unit_type, with_bonus=True, partial_amount=i)
+                    if new_op > (1.25 * new_dp):
+                        sendable = i - 1
+                        hybrid_units_sendable[unit_type] = sendable
+                        break
                 break
         hybrid_op = sum([self.op_of(u, partial_amount=a, with_bonus=True) for u, a in hybrid_units_sendable.items()])
         # total_op = trunc((pure_offense + hybrid_op) * (1 + self.offense_bonus))
@@ -252,12 +261,7 @@ class Military(object):
         bonus += self.dom.castle.walls
         # Guard Tower bonus
         bonus += self.dom.buildings.ratio_of('guard_tower') * GT_DEFENSE_FACTOR
-        # Ares Bonus (assume it's up unless proven not to be)
-        # if not isinstance(self.dom.magic, Unknown) and not self.dom.magic.ares:
-        #     # Proven not to be up
-        #     pass
-        # else:
-        #     # Assume it's up
+        # Assume ares is up
         bonus += ARES_BONUS
         return bonus
 
@@ -334,3 +338,19 @@ def military_for(db, dom) -> Military | Unknown:
         return Military(dom, data)
     else:
         return Unknown()
+
+
+if __name__ == '__main__':
+    from opsdata.db import Database
+    from config import DATABASE, current_player_id
+    from domain.dominion import Dominion
+
+    db = Database()
+    db.init(DATABASE)
+    # dom = Dominion(db, current_player_id)
+    mil = Dominion(db, 11751).military
+
+    print(mil.defense_bonus)
+    print(mil.five_over_four_op)
+    print(mil.op)
+    print(mil.dp)

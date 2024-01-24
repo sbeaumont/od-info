@@ -34,13 +34,14 @@
             </tr>
         </thead>
         {% for dom in doms %}
+        {% set fivefour = dom.military.five_over_four_op %}
         <tr>
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
             <td>{{ dom.realm }}</td>
             <td>
-                <a href="{{ url_for('military', versus_op=dom.military.safe_op) }}">
+                <a href="{{ url_for('military', versus_op=fivefour[0]) }}">
                     {{ dom.race.name }}
                 </a>
             </td>
@@ -49,7 +50,6 @@
             </td>
             <td>{{ dom.total_land }}</td>
             <td>{{ dom.military.hittable_75_percent }}</td>
-            {% set fivefour = dom.military.five_over_four_op %}
             <td>{{ fivefour[0] }}</td>
             <td>{{ fivefour[1] }}</td>
             <td>{{ (dom.buildings.ratio_of('temple') * 100)|round(1) }}%</td>

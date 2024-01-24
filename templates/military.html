@@ -20,16 +20,16 @@
                 <th>Ops Age</th>
                 <th>Land</th>
                 <th>75%</th>
-                <th>Safe OP</th>
-                <th>Safe DP</th>
                 <th>5/4 OP</th>
                 <th>5/4 DP</th>
                 <th>Temples</th>
-                <th>Boats</th>
-                <th>Sendable</th>
+                <th>Boats (#/prt)</th>
+                <th>Sendable (#/cap)</th>
                 <th>Paid</th>
                 <th>OP</th>
                 <th>DP</th>
+                <th>OP (1&4)</th>
+                <th>DP (2&3)</th>
                 <th>NW</th>
             </tr>
         </thead>
@@ -49,6 +49,15 @@
             </td>
             <td>{{ dom.total_land }}</td>
             <td>{{ dom.military.hittable_75_percent }}</td>
+            {% set fivefour = dom.military.five_over_four_op %}
+            <td>{{ fivefour[0] }}</td>
+            <td>{{ fivefour[1] }}</td>
+            <td>{{ (dom.buildings.ratio_of('temple') * 100)|round(1) }}%</td>
+            <td>{{ dom.military.boats(current_day)[0] }}/{{ dom.military.boats(current_day)[1] }}</td>
+            <td>{{ dom.military.boats(current_day)[2] }}/{{ dom.military.boats(current_day)[3] }}</td>
+            <td>{{ dom.military.paid_until }}</td>
+            <td>{{ dom.military.op }}</td>
+            <td>{{ dom.military.dp }}</td>
             <td>
                 {% if versus_op == 0 %}
                     {{ dom.military.safe_op }}
@@ -63,15 +72,6 @@
                     {{ dom.military.safe_op_versus(versus_op)[1] }}
                 {% endif %}
             </td>
-            {% set fivefour = dom.military.five_over_four_op %}
-            <td>{{ fivefour[0] }}</td>
-            <td>{{ fivefour[1] }}</td>
-            <td>{{ (dom.buildings.ratio_of('temple') * 100)|round(1) }}%</td>
-            <td>{{ dom.military.boats(current_day)[0] }}/{{ dom.military.boats(current_day)[1] }}</td>
-            <td>{{ dom.military.boats(current_day)[2] }}/{{ dom.military.boats(current_day)[3] }}</td>
-            <td>{{ dom.military.paid_until }}</td>
-            <td>{{ dom.military.op }}</td>
-            <td>{{ dom.military.dp }}</td>
             <td>{{ dom.networth }}</td>
         </tr>
         {% endfor %}

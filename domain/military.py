@@ -110,12 +110,12 @@ class Military(object):
         return self.dom.cs['military_archmages']
 
     def boats(self, current_day: int):
-        """Return [boats, docks (protected boats), sendable units]"""
+        """Return [boats, docks (protected boats), sendable units, total boat capacity]"""
         boats = self.dom.cs['resource_boats']
         protected_boats = self.dom.buildings.docks * (2.25 + current_day * 0.05)
         units_per_boat = 30 + self.dom.race.get_perk('boat_capacity', 0)
         total_sendable_units = sum([self.amount(u) for u in self.dom.race.sendable_units])
-        return boats, protected_boats, trunc(total_sendable_units), trunc(boats * units_per_boat)
+        return round(boats, 1), round(protected_boats, 1), trunc(total_sendable_units), trunc(boats * units_per_boat)
 
     @property
     def offense_bonus(self):

@@ -348,9 +348,10 @@ if __name__ == '__main__':
     db = Database()
     db.init(DATABASE)
     # dom = Dominion(db, current_player_id)
-    mil = Dominion(db, 11751).military
+    mil = Dominion(db, 11719).military
 
     print(mil.defense_bonus)
+    print(mil.offense_bonus)
     print(mil.five_over_four_op)
     print(mil.op)
     print(mil.dp)

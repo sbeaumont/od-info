@@ -1,3 +1,4 @@
+from json import loads
 from opsdata.schema import query_vision
 from domain.refdata import TechTree
 from domain.unknown import Unknown
@@ -11,7 +12,7 @@ class Technology(object):
 
     @property
     def researched(self):
-        return self._data['techs']
+        return loads(self._data['techs'])
 
     @property
     def pop_bonus(self):

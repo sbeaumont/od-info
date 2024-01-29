@@ -17,6 +17,7 @@ from facade.user import load_user_by_id, load_user_by_name, User
 
 from config import feature_toggles, OP_CENTER_URL, load_secrets
 from facade.odinfo import ODInfoFacade
+from facade.graphs import nw_history_graph, land_history_graph
 
 if getattr(sys, 'frozen', False):
     template_folder = os.path.join(sys._MEIPASS, 'templates')
@@ -87,6 +88,7 @@ def dominfo(domcode: int, update=None):
     if update == 'update':
         facade().update_ops(domcode)
     dom_name = facade().name_for_dom_code(domcode)
+    nw_history = facade().nw_history(domcode)
     return render_template(
         'dominfo.html',
         feature_toggles=feature_toggles,
@@ -96,7 +98,9 @@ def dominfo(domcode: int, update=None):
         dom=facade().dom_status(domcode),
         castle=facade().castle(domcode),
         barracks=facade().barracks(domcode),
-        nw_history=facade().nw_history(domcode),
+        nw_history=nw_history,
+        nw_history_graph=nw_history_graph(nw_history),
+        land_history_graph=land_history_graph(nw_history),
         op_center_url=OP_CENTER_URL)
 
 

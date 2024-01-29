@@ -14,7 +14,8 @@ def nw_history_graph(dom_history):
 
 def dom_history_graph(dom_history, yaxis: str):
     def conv_ts(ts):
-        return datetime.fromisoformat(ts).strftime('%Y-%m-%d %H:%M')
+        # return datetime.fromisoformat(ts).strftime('%Y-%m-%d %H:%M')
+        return datetime.fromisoformat(ts)
     converted = {conv_ts(h['timestamp']): h[yaxis] for h in dom_history}
     x = list(converted.keys())
     x.sort()

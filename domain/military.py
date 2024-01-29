@@ -3,7 +3,6 @@ import logging
 from math import trunc
 
 from opsdata.schema import query_barracks, hours_since
-from opsdata.scrapetools import read_tick_time
 from domain.unknown import Unknown
 from domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, Unit
 from domain.refdata import NETWORTH_VALUES, BS_UNCERTAINTY, ARES_BONUS
@@ -114,7 +113,7 @@ class Military(object):
         boats = self.dom.cs['resource_boats']
         protected_boats = self.dom.buildings.docks * (2.25 + current_day * 0.05)
         units_per_boat = 30 + self.dom.race.get_perk('boat_capacity', 0)
-        total_sendable_units = sum([self.amount(u) for u in self.dom.race.sendable_units])
+        total_sendable_units = sum([self.amount(u) for u in self.dom.race.sendable_units if u.need_boat])
         return round(boats, 1), round(protected_boats, 1), trunc(total_sendable_units), trunc(boats * units_per_boat)
 
     @property
@@ -355,3 +354,4 @@ if __name__ == '__main__':
     print(mil.five_over_four_op)
     print(mil.op)
     print(mil.dp)
+    print(mil.boats(1))

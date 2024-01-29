@@ -98,6 +98,10 @@ class Unit(object):
             return default
 
     @property
+    def need_boat(self):
+        return self._data.get('need_boat', True)
+
+    @property
     def sendable_type(self) -> SendableType:
         if (self.offense != 0) and (self.defense != 0):
             return SendableType.HYBRID

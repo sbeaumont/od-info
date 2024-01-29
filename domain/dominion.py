@@ -1,3 +1,5 @@
+from enum import Enum
+
 from opsdata.schema import *
 from domain.military import military_for
 from domain.castle import castle_for
@@ -42,6 +44,12 @@ def doms_of_realm(db, realm) -> list:
     return [Dominion(db, code) for code in dom_codes_of_realm(db, realm)]
 
 
+class WarStatus(Enum):
+    NONE = 0
+    WAR = 1
+    MUTUAL = 2
+
+
 class Dominion(object):
     def __init__(self, db, domcode: int):
         self.code: int = domcode
@@ -56,6 +64,7 @@ class Dominion(object):
         self._race = None
         self._technology = None
         self._magic = None
+        self.war_status = WarStatus.NONE
 
     @property
     def military(self):

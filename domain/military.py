@@ -4,7 +4,7 @@ from math import trunc
 
 from opsdata.schema import query_barracks, hours_since
 from domain.unknown import Unknown
-from domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, Unit
+from domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, Unit, Spells
 from domain.refdata import NETWORTH_VALUES, BS_UNCERTAINTY, ARES_BONUS
 
 logger = logging.getLogger('od-info.military')
@@ -14,6 +14,7 @@ class Military(object):
     def __init__(self, dom, data):
         self.dom = dom
         self._data = data
+        self.spells = None
 
     def __str__(self):
         unit_txt = [f"{self.amount(i)} {self.unit_type(i).name} {self.unit_type(i).offense}/{self.unit_type(i).defense}" for i in range(1, 5)]
@@ -116,11 +117,18 @@ class Military(object):
         total_sendable_units = sum([self.amount(u) for u in self.dom.race.sendable_units if u.need_boat])
         return round(boats, 1), round(protected_boats, 1), trunc(total_sendable_units), trunc(boats * units_per_boat)
 
+    def spell_bonus(self, race: str, perk_name: str):
+        if not self.spells:
+            self.spells = Spells()
+        return self.spells.value_for_perk(race.lower(), perk_name)
+
     @property
     def offense_bonus(self):
         bonus = 0
         # Racial offense bonus
         bonus += self.dom.race.get_perk('offense', 0) / 100
+        # Spell bonus
+        bonus += self.spell_bonus(self.dom.race.name, 'offense') / 100
         # Tech bonus
         bonus += float(self.dom.tech.value_for_perk('offense')) / 100
         # Forges bonus
@@ -254,6 +262,8 @@ class Military(object):
         bonus = 0
         # Racial bonus
         bonus += self.dom.race.get_perk('defense', 0) / 100
+        # Spell bonus
+        bonus += self.spell_bonus(self.dom.race.name, 'defense') / 100
         # Tech bonus
         bonus += float(self.dom.tech.value_for_perk('defense')) / 100
         # Walls bonus
@@ -347,7 +357,7 @@ if __name__ == '__main__':
     db = Database()
     db.init(DATABASE)
     # dom = Dominion(db, current_player_id)
-    mil = Dominion(db, 11719).military
+    mil = Dominion(db, 11793).military
 
     print(mil.defense_bonus)
     print(mil.offense_bonus)

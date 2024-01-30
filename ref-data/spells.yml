@@ -1,0 +1,532 @@
+clear_sight:
+  name: Clear Sight
+  category: info
+  cost_mana: 0.5
+  cost_strength: 2
+  perks:
+    clear_sight: 1
+vision:
+  name: Vision
+  category: info
+  cost_mana: 0.5
+  cost_strength: 2
+  perks:
+    vision: 1
+revelation:
+  name: Revelation
+  category: info
+  cost_mana: 1
+  cost_strength: 2
+  perks:
+    revelation: 1
+disclosure:
+  name: Disclosure
+  category: info
+  cost_mana: 0.5
+  cost_strength: 2
+  perks:
+    disclosure: 1
+plague:
+  name: Plague
+  category: hostile
+  cost_mana: 3
+  cost_strength: 5
+  duration: 8
+  perks:
+    population_growth: -50
+insect_swarm:
+  name: Insect Swarm
+  category: hostile
+  cost_mana: 3
+  cost_strength: 5
+  duration: 8
+  perks:
+    food_production: -15
+great_flood:
+  name: Great Flood
+  category: hostile
+  cost_mana: 3
+  cost_strength: 5
+  duration: 8
+  perks:
+    boat_production: -25
+earthquake:
+  name: Earthquake
+  category: hostile
+  cost_mana: 3
+  cost_strength: 5
+  duration: 8
+  perks:
+    gem_production: -5
+    ore_production: -5
+disband_spies:
+  name: Disband Spies
+  category: war
+  cost_mana: 3.5
+  cost_strength: 5
+  perks:
+    convert_military_spies_to_military_draftees: 2
+fireball:
+  name: Fireball
+  category: war
+  cost_mana: 3
+  cost_strength: 5
+  perks:
+    destroy_peasants: 5
+    destroy_resource_food: 2
+    apply_burning: 20
+lightning_bolt:
+  name: Lightning Bolt
+  category: war
+  cost_mana: 3.25
+  cost_strength: 5
+  perks:
+    destroy_improvement_science: 1
+    destroy_improvement_keep: 1
+    destroy_improvement_forges: 1
+    destroy_improvement_walls: 1
+    apply_burning: 10
+cyclone:
+  name: Cyclone
+  category: wonder
+  cost_mana: 2
+  cost_strength: 5
+  perks:
+    wonder_damage: 3
+gaias_watch:
+  name: Gaia's Watch
+  category: self
+  cost_mana: 2
+  cost_strength: 5
+  duration: 12
+  perks:
+    food_production: 10
+ares_call:
+  name: Ares' Call
+  category: self
+  cost_mana: 2.5
+  cost_strength: 5
+  duration: 12
+  perks:
+    defense: 10
+midas_touch:
+  name: Midas Touch
+  category: self
+  cost_mana: 2.5
+  cost_strength: 5
+  duration: 12
+  perks:
+    platinum_production: 10
+    cancels_cull_the_weak: 1
+mining_strength:
+  name: Mining Strength
+  category: self
+  cost_mana: 2
+  cost_strength: 5
+  duration: 12
+  perks:
+    ore_production: 10
+harmony:
+  name: Harmony
+  category: self
+  cost_mana: 2.5
+  cost_strength: 5
+  duration: 12
+  perks:
+    population_growth: 50
+fools_gold:
+  name: Fool's Gold
+  category: self
+  cost_mana: 1
+  cost_strength: 5
+  duration: 10
+  cooldown: 20
+  perks:
+    fools_gold: 1
+    invalid_protection: 1
+surreal_perception:
+  name: Surreal Perception
+  category: self
+  cost_mana: 3
+  cost_strength: 5
+  duration: 12
+  perks:
+    surreal_perception: 1
+energy_mirror:
+  name: Energy Mirror
+  category: self
+  cost_mana: 4
+  cost_strength: 5
+  duration: 12
+  perks:
+    enemy_spell_damage: -15
+    enemy_spell_duration: -2
+amplify_magic:
+  name: Amplify Magic
+  category: self
+  cost_mana: 0.5
+  cost_strength: 5
+  duration: 6
+  perks:
+    self_spell_cost: 100
+    self_spell_duration: 50
+    invalid_protection: 1
+crusade:
+  name: Crusade
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - human
+  perks:
+    offense: 10
+favorable_terrain:
+  name: Favorable Terrain
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - nomad-rework
+  perks:
+    offense_from_barren_land: 10
+miners_sight:
+  name: Miner's Sight
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - dwarf
+    - gnome
+  perks:
+    ore_production: 20
+    ore_production_damage: -100
+killing_rage:
+  name: Killing Rage
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - goblin
+  perks:
+    offense: 10
+alchemist_flame:
+  name: Alchemist Flame
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - firewalker
+  perks:
+    platinum_production_raw: 15
+erosion:
+  name: Erosion
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - lizardfolk
+    - merfolk
+  perks:
+    auto_rezone_water: 20
+blizzard:
+  name: Blizzard
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - icekin
+  perks:
+    defense: 15
+  active: false
+alchemist_frost:
+  name: Alchemist Frost
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - icekin
+  perks:
+    platinum_production: 15
+mechanical_genius:
+  name: Mechanical Genius
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - gnome
+  perks:
+    rezone_cost: 30
+  active: false
+bloodrage:
+  name: Bloodrage
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - orc
+  perks:
+    offense: 10
+    casualties_offense: 10
+unholy_ghost:
+  name: Unholy Ghost
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - spirit-rework
+  perks:
+    ignore_draftees: 1
+defensive_frenzy:
+  name: Defensive Frenzy
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - halfling
+  perks:
+    defense: 20
+  active: false
+frenzy:
+  name: Frenzy
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - halfling
+  perks:
+    spy_power: 20
+    spy_losses: -10
+howling:
+  name: Howling
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - kobold
+    - kobold-rework
+  perks:
+    offense: 10
+    defense: 10
+verdant_bloom:
+  name: Verdant Bloom
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - sylvan
+  perks:
+    auto_rezone_forest: 35
+warsong:
+  name: Warsong
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - sylvan
+  perks:
+    offense: 10
+  active: false
+regeneration:
+  name: Regeneration
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - troll
+  perks:
+    casualties: -25
+parasitic_hunger:
+  name: Parasitic Hunger
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - undead
+  perks:
+    conversion_rate: 20
+    spreads_plague: 1
+  active: false
+feral_hunger:
+  name: Feral Hunger
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - lycanthrope
+  perks:
+    convert_werewolves: 15
+ascendance:
+  name: Ascendance
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - dark-elf-rework
+  perks:
+    upgrade_swordsmen: 8
+  active: false
+delve_into_shadow:
+  name: Delve into Shadow
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - dark-elf-rework
+  perks:
+    explore_cost_wizard_mastery: 100
+    spell_refund: 50
+gaias_blessing:
+  name: Gaia's Blessing
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - wood-elf
+  perks:
+    food_production: 20
+    lumber_production: 10
+nightfall:
+  name: Nightfall
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - nox
+  perks:
+    offense: 5
+miasma:
+  name: Miasma
+  category: war
+  cost_mana: 3
+  cost_strength: 5
+  duration: 8
+  races:
+    - nox
+  perks:
+    wizard_power: -5
+    mana_decay: 50
+necromantic_ritual:
+  name: Necromantic Ritual
+  category: war
+  cost_mana: 5
+  cost_strength: 5
+  races:
+    - undead
+  perks:
+    convert_peasants_to_self_military_unit3: 2
+  active: false
+cull_the_weak:
+  name: Cull the Weak
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - undead-rework
+  perks:
+    upgrade_specs: 1
+    cancels_midas_touch: 1
+    invalid_protection: 1
+raise_the_dead:
+  name: Raise the Dead
+  category: self
+  cost_mana: 2
+  cost_strength: 5
+  duration: 12
+  races:
+    - undead-rework
+  perks:
+    conversions_range: 60
+  active: false
+burning:
+  name: Burning
+  category: effect
+  cost_mana: 0
+  cost_strength: 0
+  duration: 24
+  perks:
+    fixed_population_growth: 6
+    apply_rejuvenation: 1
+rejuvenation:
+  name: Rejuvenation
+  category: effect
+  cost_mana: 0
+  cost_strength: 0
+  duration: 48
+  perks:
+    population_growth: 200
+    enemy_spell_damage: -75
+    immune_burning: 1
+    war_cancels: 1
+spell_reflect:
+  name: Spell Reflect
+  category: friendly
+  cost_mana: 2
+  cost_strength: 4
+  duration: 3
+  cooldown: 3
+  perks:
+    spell_reflect: 1
+arcane_ward:
+  name: Arcane Ward
+  category: friendly
+  cost_mana: 3
+  cost_strength: 4
+  duration: 6
+  cooldown: 3
+  perks:
+    wizard_power_defense: 10
+illumination:
+  name: Illumination
+  category: friendly
+  cost_mana: 3
+  cost_strength: 4
+  duration: 6
+  cooldown: 3
+  perks:
+    spy_power_defense: 10
+gaias_light:
+  name: Gaia's Light
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - wood-elf-rework
+  perks:
+    wizard_power: 15
+    cancels_gaias_shadow: 1
+gaias_shadow:
+  name: Gaia's Shadow
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - wood-elf-rework
+  perks:
+    spy_power: 15
+    cancels_gaias_light: 1

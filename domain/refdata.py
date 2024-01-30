@@ -46,6 +46,26 @@ def infamy_bonus(infamy, maxbonus) -> float:
     return 0.5 * (1 + erf(0.00452 * (infamy - 385))) * maxbonus
 
 
+class Spells(object):
+    """Loads the offense and defense perks only."""
+    def __init__(self):
+        self.spells = self._load_spells()
+
+    def value_for_perk(self, race: str, perk_name: str):
+        return self.spells[perk_name].get(race, 0)
+
+    @staticmethod
+    def _load_spells() -> dict:
+        with open(f'{REF_DATA_DIR}/spells.yml', 'r') as f:
+            spell_yaml = yaml.safe_load(f)
+            spells = defaultdict(dict)
+            for spell_name, spell in spell_yaml.items():
+                for perk, value in spell['perks'].items():
+                    for race in spell.get('races', ['all']):
+                        spells[perk][race] = spells[perk].get(race, 0) + value
+        return spells
+
+
 class TechTree(object):
     def __init__(self):
         self.techs = self._load_techs()
@@ -213,3 +233,9 @@ class Race(object):
     @property
     def pure_defense_units(self) -> list[Unit]:
         return [u for u in self.units.values() if u.sendable_type == SendableType.PURE_DEFENSE]
+
+
+if __name__ == '__main__':
+    sp = Spells()
+    print(sp.spells)
+    print(sp.value_for_perk('orc', 'offense'))

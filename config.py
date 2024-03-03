@@ -9,6 +9,9 @@ password = <your OD password>
 discord_webhook = None <An https:// URL with a discord webhook to send stuff to>
 current_player_id = <Five number id of your player this round>
 LOCAL_TIME_SHIFT = 0 <(Negative) number. If you see the timing of the app being off, this allows you to correct it.>
+feature_toggles = economy
+secret_key=<random secret key>
+database_name=odinfo-round-X (name of db without extension or path)
 """
 
 # Utility functions

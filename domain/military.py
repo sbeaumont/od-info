@@ -129,6 +129,7 @@ class Military(object):
         bonus += self.dom.race.get_perk('offense', 0) / 100
         # Spell bonus
         bonus += self.spell_bonus(self.dom.race.name, 'offense') / 100
+        # bonus += self.spell_bonus(self.dom.race.name, 'offense_from_barren_land') / 100
         # Tech bonus
         bonus += float(self.dom.tech.value_for_perk('offense')) / 100
         # Forges bonus

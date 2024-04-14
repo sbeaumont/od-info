@@ -30,32 +30,41 @@ will be part of the main Python3 installation, which is fine for this case.*
 
 In a terminal window / command prompt you'll need to "pip3 install":
 
-    pip3 install flask requests jinja2 PyYAML bs4
+```bash
+    pip3 install bs4 Flask-Login flask jinja2 matplotlib PyYAML requests wtforms
+```
 
 This installs these libraries:
 
- - flask (webserver)
- - requests (pull stuff from the web)
- - jinja2 (template engine for the web interface)
- - PyYAML (to load configuration files)
- - bs4 (Beautiful Soup, to scrape information from webpages)
+- bs4 (Beautiful Soup, to scrape information from webpages)
+- Flask-Login (for user login)
+- flask (webserver)
+- jinja2 (template engine for the web interface)
+- matplotlib (for graphs)
+- PyYAML (to load configuration files)
+- requests (pull stuff from the web)
+- wtforms (for forms in the web interface)
 
 ### Download files
-Download the whole project from here and put it somewhere on your local disk.
+Download the whole project from here and put it somewhere on your local disk. Easiest is to clone https://github.com/sbeaumont/od-info.git using git.
 
-### Add secrets.txt file
-(_When you're running the binary app the secrets.txt file needs to be next to the executable.
+### Add secret.txt file
+(_When you're running the binary app the secret.txt file needs to be next to the executable.
 If you run the app the first time and it doesn't see that file it will generate a template for
 you and exit._)
 
-You'll also need to add a text file called "secrets.txt" file in the project root (or next to the executable 
+You'll also need to add a text file called "secret.txt" file in the project root (or next to the executable 
 if you're using that) with contents:
 
     username = (your OD username)
     password = (your OD password)
     discord_webhook = (Discord webhook URL, if you have one.)
-    current_player_id = (Your player id. Easiest way to find out is go to Search page, hover over your dom name, and note the number at the end of the ".../op-center/<your number>" URL)
+    current_player_id = (Your current round dominion id. Easiest way to find out is go to Search page, hover over your dom name, and note the number at the end of the ".../op-center/<your number>" URL)
     LOCAL_TIME_SHIFT = (Difference in hours between your local time and OD server time. Positive if your time is ahead of OD server time: e.g. if OD time is 8:21 and your local time is 10:21, you fill in 2 here)
+    feature_toggles = economy
+    secret_key=<random secret key> (this is a random string of characters, used for session management)
+    database_name=e.g. odinfo-round-X (name of db without extension or path)
+
 
 Example:
 
@@ -64,10 +73,28 @@ Example:
     discord_webhook = https://discord.com/api/webhooks/<other stuff>
     current_player_id = 99999
     LOCAL_TIME_SHIFT = -2
+    feature_toggles = economy
+    secret_key = aApmDI0r3qHCw5AjGdE5rLhHey-q_VeP
+    database_name = odinfo-round-round39
 
 You can send the networth tracking overview to Discord, but you'll need to set up a
 webhook there. On a channel where you can access the settings you can add a webhook
 and copy the URL from there.
+
+### Add users.json file
+You will also need to add a file called "users.json" in the project root (or next to the executable if you're using that) with contents:
+
+```json
+[
+    {
+        "id": 1,
+        "name": "dummyuser",
+        "password": "dummy_password",
+        "active": true,
+        "authenticated": false
+    }
+]
+```
 
 ### One database per round (not for binary version)
 

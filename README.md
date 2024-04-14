@@ -56,7 +56,7 @@ you and exit._)
 You'll also need to add a text file called "secret.txt" file in the project root (or next to the executable 
 if you're using that) with contents:
 
-    username = (your OD username)
+    username = (your OD username, which is an email address)
     password = (your OD password)
     discord_webhook = (Discord webhook URL, if you have one.)
     current_player_id = (Your current round dominion id. Easiest way to find out is go to Search page, hover over your dom name, and note the number at the end of the ".../op-center/<your number>" URL)
@@ -68,7 +68,7 @@ if you're using that) with contents:
 
 Example:
 
-    username = myODusername
+    username = myemail@mydomain.com
     password = thisisabadpassword123!
     discord_webhook = https://discord.com/api/webhooks/<other stuff>
     current_player_id = 99999

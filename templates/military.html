@@ -8,8 +8,8 @@
 {% block content %}
   <div class="w3-container">
     <h5>Military {% if versus_op != 0 %}(VERSUS {{ versus_op }} OP){% endif %}</h5>
-    <p><b>Top OP is {{ top_op.name }} (#{{ top_op.realm }}) with {{ top_op.military.max_sendable_op }} OP and
-        {{ (top_op.buildings.ratio_of('temple') * 100)|round(1) }}% Temples, in {{ top_op.military.paid_until }} ticks.
+    <p><b>Top OP is {{ top_op.name }} (#{{ top_op.realm }}) with {{ top_op.five_over_four_op }} OP and
+        {{ (top_op.temples * 100)|round(1) }}% Temples, in {{ top_op.paid_until }} ticks.
     </b></p>
     <table id="military_table" class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
         <thead>
@@ -34,44 +34,31 @@
             </tr>
         </thead>
         {% for dom in doms %}
-        {% set fivefour = dom.military.five_over_four_op %}
         <tr>
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
             <td>{{ dom.realm }}</td>
             <td>
-                <a href="{{ url_for('military', versus_op=fivefour[0]) }}">
-                    {{ dom.race.name }}
+                <a href="{{ url_for('military', versus_op=dom.five_over_four_op) }}">
+                    {{ dom.race }}
                 </a>
             </td>
-            <td  {% if 1 < ages[dom.code] <= 12 %}class="stale"{% elif ages[dom.code] > 12 %}class="invalid"{% endif %}>
-                {{ ages[dom.code] }}
+            <td  {% if 1 < dom.ops_age <= 12 %}class="stale"{% elif dom.ops_age > 12 %}class="invalid"{% endif %}>
+                {{ dom.ops_age }}
             </td>
-            <td>{{ dom.total_land }}</td>
-            <td>{{ dom.military.hittable_75_percent }}</td>
-            <td>{{ fivefour[0] }}</td>
-            <td>{{ fivefour[1] }}</td>
-            <td>{{ (dom.buildings.ratio_of('temple') * 100)|round(1) }}%</td>
-            <td>{{ dom.military.boats(current_day)[0] }}/{{ dom.military.boats(current_day)[1] }}</td>
-            <td>{{ dom.military.boats(current_day)[2] }}/{{ dom.military.boats(current_day)[3] }}</td>
-            <td>{{ dom.military.paid_until }}</td>
-            <td>{{ dom.military.op }}</td>
-            <td>{{ dom.military.dp }}</td>
-            <td>
-                {% if versus_op == 0 %}
-                    {{ dom.military.safe_op }}
-                {% else %}
-                    {{ dom.military.safe_op_versus(versus_op)[0] }}
-                {% endif %}
-            </td>
-            <td>
-                {% if versus_op == 0 %}
-                    {{ dom.military.safe_dp }}
-                {% else %}
-                    {{ dom.military.safe_op_versus(versus_op)[1] }}
-                {% endif %}
-            </td>
+            <td>{{ dom.land }}</td>
+            <td>{{ dom.hittable_75_percent }}</td>
+            <td>{{ dom.five_over_four_op }}</td>
+            <td>{{ dom.five_over_four_dp }}</td>
+            <td>{{ (dom.temples * 100)|round(1) }}%</td>
+            <td>{{ dom.boats_amount }}/{{ dom.boats_prt }}</td>
+            <td>{{ dom.boats_sendable }}/{{ dom.boats_capacity }}</td>
+            <td>{{ dom.paid_until }}</td>
+            <td title="Raw {{ dom.raw_op }}">{{ dom.op }}</td>
+            <td title="Raw {{ dom.raw_op }}">{{ dom.dp }}</td>
+            <td>{{ dom.safe_op }}</td>
+            <td>{{ dom.safe_dp }}</td>
             <td>{{ dom.networth }}</td>
         </tr>
         {% endfor %}

@@ -14,6 +14,7 @@
                 <th>Dominion</th>
                 <th>Ops Age</th>
                 <th>Realm</th>
+                <th>Land</th>
                 <th>Race</th>
                 <th>Networth</th>
                 <th>Military Spy</th>
@@ -29,33 +30,36 @@
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
-            <td  {% if 1 < ages[dom.code] <= 12 %}class="stale"{% elif ages[dom.code] > 12 %}class="invalid"{% endif %}>
-                {{ ages[dom.code] }}
+            <td  {% if 1 < dom.ops_age <= 12 %}class="stale"{% elif dom.ops_age > 12 %}class="invalid"{% endif %}>
+                {{ dom.ops_age }}
             </td>
             <td>{{ dom.realm }}</td>
             <td>
-                {{ dom.race.name }}
+                {{ dom.land }}
+            </td>
+            <td>
+                {{ dom.race }}
             </td>
             <td>
                 {{ dom.networth }}
             </td>
             <td>
-                {{ dom.military.spy_units_equiv }}
+                {{ dom.spy_units_equiv }}
             </td>
             <td>
-                {{ dom.military.wiz_units_equiv }}
+                {{ dom.wiz_units_equiv }}
             </td>
             <td>
-                {{ dom.military.spywiz_networth }}
+                {{ dom.spywiz_networth }}
             </td>
             <td>
-                {{ dom.military.spywiz_units }}
+                {{ dom.spywiz_units }}
             </td>
             <td>
-                {{ dom.military.spy_ratio_estimate }} - {{ dom.military.max_spy_ratio_estimate }}
+                {{ dom.spy_ratio_estimate }} - {{ dom.max_spy_ratio_estimate }}
             </td>
             <td>
-                {{ dom.military.wiz_ratio_estimate }} - {{ dom.military.max_wiz_ratio_estimate }}
+                {{ dom.wiz_ratio_estimate }} - {{ dom.max_wiz_ratio_estimate }}
             </td>
         </tr>
         {% endfor %}
@@ -66,7 +70,7 @@
     $(document).ready( function () {
         $('#ratios_table').DataTable({
             'paging': false,
-            'order': [[7, 'desc']]
+            'order': [[8, 'desc']]
         });
     } );
 </script>

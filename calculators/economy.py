@@ -1,4 +1,4 @@
-from domain.dominion import Dominion
+from domain.models import Dominion
 from config import *
 from math import trunc
 
@@ -12,7 +12,7 @@ class Economy(object):
         bonus = 0
         # Assuming Midas Touch is up
         bonus += 0.10
-        bonus += self.dom.castle.science
+        bonus += self.dom.last_castle.science
         bonus += self.dom.tech.value_for_perk('platinum_production') / 100
         return bonus
 

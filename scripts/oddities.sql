@@ -63,17 +63,6 @@ order by
     total desc;
 
 select
-    target_name as dominion,
-    sum(amount) as total,
-    count(1) as hits
-from
-    TownCrier
-group by
-    target
-order by
-    total desc;
-
-select
     origin_name as dominion,
     sum(amount) as total,
     count(1) as hits

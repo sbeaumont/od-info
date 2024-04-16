@@ -12,8 +12,11 @@ import logging
 import flask
 from flask import Flask, g, request, render_template, session
 from flask_login import LoginManager, login_user, login_required
+from flask_sqlalchemy import SQLAlchemy
 from forms import LoginForm
+
 from facade.user import load_user_by_id, load_user_by_name, User
+from domain.models import *  # Ensure all models are loaded to be able to create the db.
 
 from config import feature_toggles, OP_CENTER_URL, load_secrets
 from facade.odinfo import ODInfoFacade
@@ -27,8 +30,19 @@ else:
     app = Flask('od-info')
 
 app.logger.setLevel(logging.DEBUG)
-app.secret_key = load_secrets()['secret_key']
 
+# Initialize flask_SQLAlchemy
+db = SQLAlchemy(model_class=Base, session_options={"autoflush": False})
+# The lib adds an "instance" folder to the URL so I have to take that into account.
+db_url = load_secrets()['database_name']
+print("Database URL:", db_url)
+app.config["SQLALCHEMY_DATABASE_URI"] = db_url
+db.init_app(app)
+with app.app_context():
+    db.create_all()
+
+# Initialize flask_login
+app.secret_key = load_secrets()['secret_key']
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
@@ -49,7 +63,7 @@ def load_user(user_id):
 def facade() -> ODInfoFacade:
     _facade = getattr(g, '_facade', None)
     if not _facade:
-        _facade = g._facade = ODInfoFacade()
+        _facade = g._facade = ODInfoFacade(db)
     return _facade
 
 
@@ -72,12 +86,11 @@ def overview():
                 prefix, dom, old_name = k.split('.')
                 if old_name != v:
                     facade().update_player(dom, v)
-    dom_list, nw_deltas = facade().dom_list()
     return render_template(
         'overview.html',
         feature_toggles=feature_toggles,
-        doms=dom_list,
-        nw_deltas=nw_deltas,
+        doms=facade().dom_list(),
+        nw_deltas=facade().nw_deltas(),
         ages=facade().all_doms_ops_age())
 
 
@@ -87,18 +100,15 @@ def overview():
 def dominfo(domcode: int, update=None):
     if update == 'update':
         facade().update_ops(domcode)
-    dom_name = facade().name_for_dom_code(domcode)
     nw_history = facade().nw_history(domcode)
+    dominion = facade().dominion(domcode)
     return render_template(
         'dominfo.html',
         feature_toggles=feature_toggles,
-        dominion=facade().dominion(domcode),
-        domname=dom_name,
-        domcode=domcode,
-        dom=facade().dom_status(domcode),
-        castle=facade().castle(domcode),
-        barracks=facade().barracks(domcode),
-        nw_history=nw_history,
+        dominion=dominion,
+        military=facade().military(dominion),
+        ratios=facade().ratios(dominion),
+        ops_age=facade().ops_age(dominion),
         nw_history_graph=nw_history_graph(nw_history),
         land_history_graph=land_history_graph(nw_history),
         op_center_url=OP_CENTER_URL)
@@ -142,18 +152,17 @@ def economy():
 def ratios():
     return render_template('ratios.html',
                            feature_toggles=feature_toggles,
-                           doms=facade().doms_with_ratios(),
-                           ages=facade().all_doms_ops_age())
+                           doms=facade().ratio_list())
 
 
 @app.route('/military', defaults={'versus_op': 0})
 @app.route('/military/<versus_op>')
 @login_required
 def military(versus_op: int = 0):
-    dom_list = facade().all_doms_as_objects()[:20]
+    dom_list = facade().military_list(versus_op=versus_op, top=100)
     return render_template('military.html',
                            feature_toggles=feature_toggles,
-                           doms=dom_list,
+                           doms= dom_list,
                            ages=facade().all_doms_ops_age(),
                            top_op=facade().top_op(dom_list),
                            versus_op=int(versus_op),

@@ -1,7 +1,7 @@
 /.venv/
 /out/**
 /.idea/
-/secret.txt
+/instance/secret.txt
 **/__pycache__
 /opsdata/copy_ops*.txt
 /opsdata/*.sqlite
@@ -9,4 +9,5 @@
 /dist/
 /build/
 **/secret.txt
-/users.json
+/instance/users.json
+/instance/

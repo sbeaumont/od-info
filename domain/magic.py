@@ -1,4 +1,5 @@
-from opsdata.schema import query_revelation, hours_until
+from opsdata.schema import query_revelation
+from timeutils import hours_until
 from domain.unknown import Unknown
 
 

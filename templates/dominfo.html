@@ -1,29 +1,33 @@
 {% extends "odinfo-base.html" %}
-{% block title %}Dominion {{ domname }}{% endblock %}
+{% block title %}Dominion {{ dominion.name }} ({{ dominion.code }}){% endblock %}
 
 {% block content %}
   <div class="w3-container">
-    <a href="{{ url_for('dominfo', domcode=domcode, update='update' ) }}">Update</a> |
-      <a href="{{ op_center_url }}/{{ domcode }}" target="_blank">OP Center</a>
+    <a href="{{ url_for('dominfo', domcode=dominion.code, update='update' ) }}">Update</a> |
+      <a href="{{ op_center_url }}/{{ dominion.code }}" target="_blank">OP Center</a>
     <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
         <tr class="w3-black">
             <th>Ops Age</th>
             <th>Land</th>
+            <th>Race</th>
             <th>Networth</th>
             <th>Population</th>
         </tr>
         <tr>
-            <td  {% if 1 < dominion.last_op_since <= 12 %}class="stale"{% elif dominion.last_op_since > 12 %}class="invalid"{% endif %}>
-                {{ dominion.last_op_since }}
+            <td  {% if 1 < ops_age <= 12 %}class="stale"{% elif ops_age > 12 %}class="invalid"{% endif %}>
+                {{ ops_age }}
             </td>
             <td>
-                {{ dominion.total_land }}
+                {{ dominion.current_land }}
             </td>
             <td>
-                {{ dominion.networth }}
+                {{ dominion.race }}
             </td>
             <td>
-                {{ dominion.cs.peasants }}
+                {{ dominion.current_networth }}
+            </td>
+            <td>
+                {{ dominion.last_cs.peasants }}
             </td>
         </tr>
         <tr class="w3-black">
@@ -33,10 +37,17 @@
             <th>Forges Rating</th>
         </tr>
         <tr>
-            <td>{{dominion.castle.science}}</td>
-            <td>{{dominion.castle.science}}</td>
-            <td>{{dominion.castle.science}}</td>
-            <td>{{dominion.castle.science}}</td>
+            {% if dominion.last_castle is not none %}
+                <td>{{dominion.last_castle.science_rating | round(3) }}</td>
+                <td>{{dominion.last_castle.keep_rating | round(3) }}</td>
+                <td>{{dominion.last_castle.spires_rating | round(3) }}</td>
+                <td>{{dominion.last_castle.forges_rating | round(3) }}</td>
+            {% else %}
+                <td>Unknown</td>
+                <td>Unknown</td>
+                <td>Unknown</td>
+                <td>Unknown</td>
+            {% endif %}
         </tr>
         <tr class="w3-black">
             <th>OP Bonus %</th>
@@ -46,11 +57,11 @@
             <th>DP</th>
         </tr>
         <tr>
-            <td>{{ (dominion.military.offense_bonus * 100)|round(1) }}%</td>
-            <td>{{ dominion.military.op }}</td>
+            <td>{{ (military.offense_bonus * 100) | round(3) }}%</td>
+            <td>{{ military.op }}</td>
             <td>{{ (dominion.buildings.ratio_of('temple') * 100)|round(1) }}%</td>
-            <td>{{ (dominion.military.defense_bonus * 100)|round(1) }}%</td>
-            <td>{{ dominion.military.dp }}</td>
+            <td>{{ (military.defense_bonus * 100)|round(1) }}%</td>
+            <td>{{ military.dp }}</td>
         </tr>
         <tr class="w3-black">
             <th>Military Spy</th>
@@ -62,22 +73,22 @@
         </tr>
         <tr>
             <td>
-                {{ dominion.military.spy_units_equiv }}
+                {{ ratios.spy_units_equiv }}
             </td>
             <td>
-                {{ dominion.military.wiz_units_equiv }}
+                {{ ratios.wiz_units_equiv }}
             </td>
             <td>
-                {{ dominion.military.spywiz_networth }}
+                {{ ratios.spywiz_networth }}
             </td>
             <td>
-                {{ dominion.military.spywiz_units }}
+                {{ ratios.spywiz_units }}
             </td>
             <td>
-                {{ dominion.military.spy_ratio_estimate }} - {{ dominion.military.max_spy_ratio_estimate }}
+                {{ ratios.spy_ratio_estimate }} - {{ ratios.max_spy_ratio_estimate }}
             </td>
             <td>
-                {{ dominion.military.wiz_ratio_estimate }} - {{ dominion.military.max_wiz_ratio_estimate }}
+                {{ ratios.wiz_ratio_estimate }} - {{ ratios.max_wiz_ratio_estimate }}
             </td>
         </tr>
         <tr class="w3-black">
@@ -88,16 +99,16 @@
         </tr>
         <tr>
             <td>
-                {{ dominion.military.amount(1) }}
+                {{ military.amount(1) }}
             </td>
             <td>
-                {{ dominion.military.amount(2) }}
+                {{ military.amount(2) }}
             </td>
             <td>
-                {{ dominion.military.amount(3) }}
+                {{ military.amount(3) }}
             </td>
             <td>
-                {{ dominion.military.amount(4) }}
+                {{ military.amount(4)}}
             </td>
         </tr>
     </table><br>

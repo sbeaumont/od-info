@@ -36,13 +36,13 @@ class Unknown(object):
         return "Unknown()"
 
     def __getitem__(self, item):
-        return self
+        return Unknown()
 
     def __getattr__(self, item):
-        return self
+        return Unknown()
 
     def __call__(self, *args, **kwargs):
-        return self
+        return Unknown()
 
     def __float__(self):
         return 0.0

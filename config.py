@@ -36,7 +36,7 @@ def executable_path(rel_path: str):
 
 def load_secrets():
     """Load secrets.txt configuration file."""
-    secrets_filename = executable_path('secret.txt')
+    secrets_filename = executable_path('instance/secret.txt')
     if not os.path.exists(secrets_filename):
         with open(secrets_filename, 'w') as f:
             f.writelines(SECRETS_TEMPLATE)
@@ -88,7 +88,7 @@ OPS_DATA_DIR = 'opsdata'
 
 # user file
 
-USERS_FILE = 'users.json'
+USERS_FILE = 'instance/users.json'
 
 # Knowledge of the URL structure of the OD website
 

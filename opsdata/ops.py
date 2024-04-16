@@ -8,8 +8,11 @@
 
 import json
 import logging
+from datetime import datetime
 
-from opsdata.schema import update_dominion
+import config
+from domain.timeutils import cleanup_timestamp
+
 from opsdata.scrapetools import get_soup_page, read_server_time
 from config import OP_CENTER_URL, MY_OP_CENTER_URL, SEARCH_PAGE
 
@@ -17,8 +20,9 @@ logger = logging.getLogger('db-info.ops')
 
 
 class Ops(object):
-    def __init__(self, contents):
+    def __init__(self, contents, dom_id):
         self.contents = contents
+        self.dom_id = dom_id
 
     def q_exists(self, q_str, start_node=None) -> bool:
         paths = q_str.split('.')
@@ -41,6 +45,34 @@ class Ops(object):
             except KeyError:
                 logger.error("Tried to find %s in %s", path, current_node)
         return current_node
+
+    @property
+    def name(self) -> str:
+        return self.q('status.name')
+
+    @property
+    def race(self) -> str:
+        return self.q('status.race_name')
+
+    @property
+    def realm(self) -> int:
+        return int(self.q('status.realm'))
+
+    @property
+    def land(self) -> int:
+        return int(self.q('status.land'))
+
+    @property
+    def networth(self) -> int:
+        return int(self.q('status.networth'))
+
+    @property
+    def timestamp(self) -> datetime:
+        ts = self.q_exists('status.created_at')
+        if ts:
+            return cleanup_timestamp(self.q('status.created_at'))
+        else:
+            return datetime.now()
 
     @property
     def has_clearsight(self) -> bool:
@@ -71,12 +103,12 @@ class Ops(object):
         return self.q_exists('revelation.spells')
 
 
-def grab_ops(session, dom_code) -> Ops | None:
+def grab_ops(session, dom_code: int) -> Ops | None:
     """Grabs the copy_ops JSON file for a specified dominion."""
     soup = get_soup_page(session, f'{OP_CENTER_URL}/{dom_code}')
     if soup:
         ops_json = soup.find('textarea', id='ops_json').string
-        return Ops(json.loads(ops_json))
+        return Ops(json.loads(ops_json), dom_code)
     else:
         return None
 
@@ -85,34 +117,29 @@ def grab_my_ops(session) -> Ops:
     """Grabs the copy_ops JSON file for the player's dominion."""
     soup = get_soup_page(session, f'{MY_OP_CENTER_URL}')
     ops_json = soup.find('textarea', id='ops_json').string
-    return Ops(json.loads(ops_json))
+    return Ops(json.loads(ops_json), config.current_player_id)
 
 
-def update_dom_index(session, db):
-    for line in grab_search(session):
-        update_dominion(line, db)
-
-
-def grab_search(session) -> list:
+def grab_search(session) -> dict:
     """Grabs the search page from the OpenDominion site.
-    :returns list of dictionaries with the search page fields"""
+    :returns dict of dictionaries with the search page fields"""
     soup = get_soup_page(session, SEARCH_PAGE)
     server_time = read_server_time(soup)
 
-    search_lines = list()
+    search_lines = dict()
     for row in soup.find(id='dominions-table').tbody.find_all('tr'):
         cells = row.find_all('td')
         dom_info = dict()
         dom_info['name'] = cells[0].a.string
-        dom_info['code'] = cells[0].a['href'].split('/')[-1]
+        dom_info['code'] = int(cells[0].a['href'].split('/')[-1])
         dom_info['dominion'] = dom_info['code']
-        dom_info['realm'] = cells[1].a['href'].split('/')[-1]
+        dom_info['realm'] = int(cells[1].a['href'].split('/')[-1])
         dom_info['race'] = cells[2].string.strip()
         dom_info['land'] = int(cells[3].string.strip().replace(',', ''))
         dom_info['networth'] = int(cells[4].string.strip().replace(',', ''))
         dom_info['in_range'] = cells[5].string.strip()
         dom_info['timestamp'] = str(server_time)
-        search_lines.append(dom_info)
+        search_lines[dom_info['code']] = dom_info
     return search_lines
 
 
@@ -123,5 +150,5 @@ def get_last_scans(session) -> dict:
         cells = row.find_all('td')
         domcode = int(cells[0].a['href'].split('/')[-1])
         timestamp = cells[4].span.string.strip()
-        result[domcode] = timestamp
+        result[domcode] = cleanup_timestamp(timestamp)
     return result

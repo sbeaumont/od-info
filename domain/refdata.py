@@ -1,4 +1,5 @@
 import math
+import logging
 from operator import attrgetter
 
 import yaml
@@ -6,7 +7,11 @@ from math import erf
 from enum import Enum
 from collections import defaultdict, namedtuple
 from config import REF_DATA_DIR
-from domain.unknown import Unknown
+from functools import lru_cache
+
+
+logger = logging.getLogger('od-info.refdata')
+
 
 NON_HOME_CAPACITY = 15
 BUILD_TICKS = 12
@@ -47,6 +52,8 @@ def infamy_bonus(infamy, maxbonus) -> float:
 
 
 class Spells(object):
+    SPELL_REGISTRY: dict | None = None
+
     """Loads the offense and defense perks only."""
     def __init__(self):
         self.spells = self._load_spells()
@@ -55,18 +62,23 @@ class Spells(object):
         return self.spells[perk_name].get(race, 0)
 
     @staticmethod
+    @lru_cache(maxsize=None)
     def _load_spells() -> dict:
-        with open(f'{REF_DATA_DIR}/spells.yml', 'r') as f:
-            spell_yaml = yaml.safe_load(f)
-            spells = defaultdict(dict)
-            for spell_name, spell in spell_yaml.items():
-                for perk, value in spell['perks'].items():
-                    for race in spell.get('races', ['all']):
-                        spells[perk][race] = spells[perk].get(race, 0) + value
-        return spells
+        if not Spells.SPELL_REGISTRY:
+            with open(f'{REF_DATA_DIR}/spells.yml', 'r') as f:
+                spell_yaml = yaml.safe_load(f)
+                spells = defaultdict(dict)
+                for spell_name, spell in spell_yaml.items():
+                    for perk, value in spell['perks'].items():
+                        for race in spell.get('races', ['all']):
+                            spells[perk][race] = spells[perk].get(race, 0) + value
+            Spells.SPELL_REGISTRY = spells
+        return Spells.SPELL_REGISTRY
 
 
 class TechTree(object):
+    TECHS_REGISTRY: dict | None = None
+
     def __init__(self):
         self.techs = self._load_techs()
 
@@ -75,14 +87,17 @@ class TechTree(object):
         return sum([perk_techs[tech] for tech in techs if tech in perk_techs.keys()])
 
     @staticmethod
+    @lru_cache(maxsize=None)
     def _load_techs() -> dict:
-        with open(f'{REF_DATA_DIR}/techs.yml', 'r') as f:
-            tech_yaml = yaml.safe_load(f)
-            techs = defaultdict(dict)
-            for tech_name, tech in tech_yaml.items():
-                for perk, value in tech['perks'].items():
-                    techs[perk][tech_name] = value
-        return techs
+        if not TechTree.TECHS_REGISTRY:
+            with open(f'{REF_DATA_DIR}/techs.yml', 'r') as f:
+                tech_yaml = yaml.safe_load(f)
+                techs = defaultdict(dict)
+                for tech_name, tech in tech_yaml.items():
+                    for perk, value in tech['perks'].items():
+                        techs[perk][tech_name] = value
+            TechTree.TECHS_REGISTRY = techs
+        return TechTree.TECHS_REGISTRY
 
 
 class Unit(object):
@@ -94,7 +109,7 @@ class Unit(object):
         return f"Unit({self.name}, {self.offense}OP, {self.defense}DP)"
 
     def land_bonus(self, perk_name: str) -> float:
-        if self.has_perk(perk_name):
+        if self.dom.land and self.has_perk(perk_name):
             land_type, percent_per_point, max_bonus = self.get_perk(perk_name)
             return min(float(max_bonus), self.dom.land.ratio_of(land_type) / float(percent_per_point))
         else:
@@ -149,8 +164,8 @@ class Unit(object):
         op += self.land_bonus('offense_from_land')
         if self.has_perk('offense_raw_wizard_ratio'):
             per_percent, max_bonus = self.get_perk('offense_raw_wizard_ratio')
-            if not isinstance(self.dom.cs, Unknown) and self.dom.cs['wpa']:
-                wpa = float(self.dom.cs['wpa'])
+            if self.dom.last_cs and self.dom.last_cs.wpa:
+                wpa = float(self.dom.last_cs.wpa)
                 wpa_bonus = wpa * float(per_percent)
                 if wpa_bonus > float(max_bonus):
                     wpa_bonus = float(max_bonus)
@@ -180,10 +195,13 @@ class Unit(object):
 
 
 class Race(object):
-    def __init__(self, name, dom):
+    RACE_REGISTRY: dict = dict()
+
+    def __init__(self, dom, name: str):
+        assert isinstance(name, str)
         self.name = name
         self.dom = dom
-        self.yaml = self._load_data(self.name)
+        self.yaml = self._load_race_data(self.name)
         self.units = dict()
         self.reverse_units = dict()
         for i in range(1, 5):
@@ -191,12 +209,17 @@ class Race(object):
             self.units[i] = unit
             self.reverse_units[unit] = i
 
-    def _load_data(self, name):
-        name = name.replace(' ', '').lower()
-        with open(f'{REF_DATA_DIR}/races/{name}.yml', 'r') as f:
-            return yaml.safe_load(f)
+    @staticmethod
+    @lru_cache(maxsize=None)
+    def _load_race_data(name) -> dict:
+        if name not in Race.RACE_REGISTRY:
+            logger.debug(f'Cache miss for race {name}')
+            name = name.replace(' ', '').lower()
+            with open(f'{REF_DATA_DIR}/races/{name}.yml', 'r') as f:
+                Race.RACE_REGISTRY[name] = yaml.safe_load(f)
+        return Race.RACE_REGISTRY[name]
 
-    def unit(self, nr) -> Unit:
+    def unit(self, nr: int) -> Unit:
         return self.units[nr]
 
     def nr_of_unit(self, unit) -> int:

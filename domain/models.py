@@ -256,7 +256,6 @@ class ClearSight(TimestampedOpsMixin, Base):
     networth: Mapped[int] = mapped_column(Integer)
     prestige: Mapped[int] = mapped_column(Integer)
     resource_platinum: Mapped[int] = mapped_column(Integer)
-    # TODO WOOD!
     resource_food: Mapped[int] = mapped_column(Integer, default=0)
     resource_lumber: Mapped[int] = mapped_column(Integer, default=0)
     resource_mana: Mapped[int] = mapped_column(Integer, default=0)

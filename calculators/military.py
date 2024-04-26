@@ -268,7 +268,7 @@ class MilitaryCalculator(object):
                 self._five_four_dp = trunc(dp)
             logger.debug(f"op: {self._five_four_op}, 5/4 dp: {self._five_four_dp * 5 / 4}")
             assert self._five_four_op <= (round(self._five_four_dp * 5/4, 2)), f"op: {self._five_four_op}, 5/4 dp: {round(self._five_four_dp * 5/4, 2)}"
-        return self._five_four_op, self._five_four_dp
+        return round(self._five_four_op), round(self._five_four_dp)
 
 
 class RatioCalculator(object):

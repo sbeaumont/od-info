@@ -1,0 +1,145 @@
+{% extends "odinfo-base.html" %}
+{% block title %}Bunch 'O Stats{% endblock %}
+
+{% block content %}
+  <div class="w3-container">
+    <h5>Top Doms who caused bounces (Bouncy Castle Award)</h5>
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <thead>
+            <tr class="w3-black">
+                <th>Dominion</th>
+                <th>Bounces</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for dom in stats.bouncy_castle_award %}
+        <tr>
+            <td>
+                <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
+            </td>
+            <td>{{ dom.amount }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+  </div>
+  <div class="w3-container">
+    <h5>Top Doms who bounced</h5>
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <thead>
+            <tr class="w3-black">
+                <th>Dominion</th>
+                <th>Bounces</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for dom in stats.bouncy_loser_award %}
+        <tr>
+            <td>
+                <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
+            </td>
+            <td>{{ dom.amount }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+  </div>
+  <div class="w3-container">
+    <h5>Realms that declared war (Warmonger Award)</h5>
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <thead>
+            <tr class="w3-black">
+                <th>Realm</th>
+                <th>Number</th>
+                <th>War Declarations</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for dom in stats.war_declarations %}
+        <tr>
+            <td>
+                <a href="{{ url_for('dominfo', domcode=dom.origin) }}">{{ dom.origin_name }}</a>
+            </td>
+            <td>{{ dom.origin }}</td>
+            <td>{{ dom.declarations }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+  </div>
+  <div class="w3-container">
+    <h5>Realms were declared on (Lightning Rod Award)</h5>
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <thead>
+            <tr class="w3-black">
+                <th>Realm</th>
+                <th>Number</th>
+                <th>War Declarations</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for dom in stats.declared_on %}
+        <tr>
+            <td>
+                <a href="{{ url_for('dominfo', domcode=dom.target) }}">{{ dom.target_name }}</a>
+            </td>
+            <td>{{ dom.target }}</td>
+            <td>{{ dom.declared_on }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+  </div>
+  <div class="w3-container">
+    <h5>Hits done by dominions (Nom Nom Nom Award)</h5>
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <thead>
+            <tr class="w3-black">
+                <th>Dominion</th>
+                <th>Total Land</th>
+                <th>Number of Hits</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for dom in stats.hits_done %}
+        <tr>
+            <td>
+                <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
+            </td>
+            <td>{{ dom.total_land }}</td>
+            <td>{{ dom.total_hits }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+  </div>
+  <div class="w3-container">
+    <h5>Hits taken by dominions (Zooj Award)</h5>
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <thead>
+            <tr class="w3-black">
+                <th>Dominion</th>
+                <th>Land Lost</th>
+                <th>Number of Hits</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for dom in stats.hits_taken %}
+        <tr>
+            <td>
+                <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
+            </td>
+            <td>{{ dom.total_land }}</td>
+            <td>{{ dom.total_hits }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+  </div>
+{% endblock %}

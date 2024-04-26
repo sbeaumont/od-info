@@ -21,6 +21,7 @@ from domain.models import *  # Ensure all models are loaded to be able to create
 from config import feature_toggles, OP_CENTER_URL, load_secrets
 from facade.odinfo import ODInfoFacade
 from facade.graphs import nw_history_graph, land_history_graph
+from facade.awardstats import AwardStats
 
 if getattr(sys, 'frozen', False):
     template_folder = os.path.join(sys._MEIPASS, 'templates')
@@ -122,6 +123,16 @@ def towncrier():
     return render_template('towncrier.html',
                            feature_toggles=feature_toggles,
                            towncrier=facade().get_town_crier())
+
+
+@app.route('/stats')
+@login_required
+def stats():
+    if request.args.get('update'):
+        facade().update_town_crier()
+    return render_template('stats.html',
+                           feature_toggles=feature_toggles,
+                           stats=facade().award_stats())
 
 
 @app.route('/nwtracker/<send>')

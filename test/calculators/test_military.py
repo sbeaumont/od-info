@@ -13,18 +13,18 @@ class MilitaryCalculatorTestCase(unittest.TestCase):
 
     def test_five_over_four(self):
         bs = self.dom.last_barracks
-        bs.draftees = 1
-        bs.unit1 = 1
-        bs.unit2 = 1
-        bs.unit3 = 1
-        bs.unit4 = 1
+        bs.draftees = 10
+        bs.unit1 = 10
+        bs.unit2 = 10
+        bs.unit3 = 10
+        bs.unit4 = 10
 
         cs = self.dom.last_cs
-        cs.military_draftees = 1
-        cs.military_unit1 = 1
-        cs.military_unit2 = 1
-        cs.military_unit3 = 1
-        cs.military_unit4 = 1
+        cs.military_draftees = 10
+        cs.military_unit1 = 10
+        cs.military_unit2 = 10
+        cs.military_unit3 = 10
+        cs.military_unit4 = 10
 
         mc = MilitaryCalculator(self.dom)
         fnork = mc.dp
@@ -33,9 +33,9 @@ class MilitaryCalculatorTestCase(unittest.TestCase):
         print(mc.flex_unit)
         print([str(unit) for unit in mc.race.units.values()])
 
-        self.assertEqual(14, mc.op)
-        self.assertEqual(11.55, mc.dp)
-        self.assertEqual(mc.five_over_four, (100, 100))
+        self.assertEqual(144, mc.op)
+        self.assertEqual(116, mc.dp)
+        self.assertEqual(mc.five_over_four, (122, 98))
 
 
 if __name__ == '__main__':

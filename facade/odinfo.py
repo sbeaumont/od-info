@@ -16,6 +16,7 @@ from config import current_player_id
 from domain.dataaccesslayer import all_doms, dom_by_id, is_database_empty, realmies, query_town_crier
 from domain.models import Dominion
 from domain.timeutils import hours_since
+from facade.awardstats import AwardStats
 from facade.discord import send_to_webhook
 from opsdata.ops import grab_ops, grab_my_ops, get_last_scans
 from opsdata.scrapetools import login, read_tick_time, get_soup_page
@@ -303,3 +304,7 @@ class ODInfoFacade(object):
     def economy(self):
         self.update_ops(current_player_id)
         return Economy(self.dominion(current_player_id))
+
+    def award_stats(self):
+        # self.update_town_crier()
+        return AwardStats(self._db)

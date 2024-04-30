@@ -3,7 +3,7 @@
 
 {% block content %}
   <div class="w3-container">
-    <h5>Top Doms who caused bounces (Bouncy Castle Award)</h5>
+    <h5>Top Doms who caused bounces (Made Of Rubber Award)</h5>
     <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
         <thead>
             <tr class="w3-black">
@@ -25,7 +25,7 @@
     <br>
   </div>
   <div class="w3-container">
-    <h5>Top Doms who bounced</h5>
+    <h5>Top Doms who bounced (Bouncy Castle Award)</h5>
     <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
         <thead>
             <tr class="w3-black">
@@ -95,7 +95,7 @@
     <br>
   </div>
   <div class="w3-container">
-    <h5>Hits done by dominions (Nom Nom Nom Award)</h5>
+    <h5>Hits done by dominions (Nom Nom Nom Award) (Conqueror Award)</h5>
     <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
         <thead>
             <tr class="w3-black">
@@ -119,7 +119,7 @@
     <br>
   </div>
   <div class="w3-container">
-    <h5>Hits taken by dominions (Zooj Award)</h5>
+    <h5>Hits taken by dominions (Zooj Award: hits) (Salty Merf Award: land)</h5>
     <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
         <thead>
             <tr class="w3-black">
@@ -136,6 +136,28 @@
             </td>
             <td>{{ dom.total_land }}</td>
             <td>{{ dom.total_hits }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+  </div>
+  <div class="w3-container">
+    <h5>Abandons (Kool-Aid Award)</h5>
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <thead>
+            <tr class="w3-black">
+                <th>Dominion</th>
+                <th>Realm</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for dom in stats.abandons %}
+        <tr>
+            <td>
+                <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
+            </td>
+            <td>{{ dom.realm }}</td>
         </tr>
         {% endfor %}
         </tbody>

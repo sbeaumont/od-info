@@ -72,3 +72,14 @@ group by
     origin
 order by
     total desc;
+
+select
+    origin as code,
+    origin_name as name,
+    target as realm
+from
+    TownCrier
+where
+    event_type like 'abandon'
+group by
+    realm;

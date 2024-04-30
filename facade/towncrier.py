@@ -67,6 +67,9 @@ def get_tc_page(session, page_nr: int) -> list:
             elif 'declared WAR' in event_text:
                 event_type = 'war_declare'
                 target_name, target_code = re.search(r'has declared WAR on (.*) \(#(\d+)', event_text).group(1, 2)
+            elif 'abandoned' in event_text:
+                event_type = 'abandon'
+                target_code = re.search(r'\(#(\d+)', event_text).group(1)
             else:
                 event_type = 'other'
 

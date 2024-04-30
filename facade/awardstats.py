@@ -97,3 +97,17 @@ class AwardStats(object):
                         order by
                             total_land desc;""")
         return self.db.session.execute(query)
+
+    @property
+    def abandons(self):
+        query = text("""select
+                            origin as code,
+                            origin_name as name,
+                            target as realm
+                        from
+                            TownCrier
+                        where
+                            event_type like 'abandon'
+                        group by
+                            realm;""")
+        return self.db.session.execute(query)

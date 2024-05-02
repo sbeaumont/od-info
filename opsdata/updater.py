@@ -11,6 +11,7 @@ from domain.models import Dominion, DominionHistory, TownCrier
 from facade.towncrier import get_number_of_tc_pages, get_tc_page
 from domain.models import (ClearSight, CastleSpy, BarracksSpy,
                            SurveyDominion, LandSpy, Vision, Revelation)
+from sqlalchemy import text
 
 logger = logging.getLogger('od-info.updater')
 
@@ -233,7 +234,7 @@ def query_stealables(db, timestamp, my_realm: int):
         'timestamp': cleanup_timestamp(timestamp),
         'realm': my_realm
     }
-    return db.query(qry_stealables, params)
+    return db.session.execute(text(qry_stealables), params)
 
 
 # ------------------------------------------------------------ CastleSpy

@@ -15,6 +15,10 @@ def dom_by_id(db, domid) -> Dominion:
     return db.session.execute(db.select(Dominion).where(Dominion.code == domid)).scalar()
 
 
+def realm_of_dom(db, domid) -> int:
+    return dom_by_id(db, domid).realm
+
+
 def realmies(db, domid) -> list[Dominion]:
     realm_number = dom_by_id(db, domid).realm
     return db.session.execute(db.select(Dominion).where(Dominion.realm == realm_number)).scalars()

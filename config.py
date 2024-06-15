@@ -88,7 +88,7 @@ OPS_DATA_DIR = 'opsdata'
 
 # user file
 
-USERS_FILE = 'instance/users.json'
+USERS_FILE = './instance/users.json'
 
 # Knowledge of the URL structure of the OD website
 

@@ -21,6 +21,7 @@ from facade.discord import send_to_webhook
 from opsdata.ops import grab_ops, grab_my_ops, get_last_scans
 from opsdata.scrapetools import login, read_tick_time, get_soup_page
 from opsdata.updater import update_ops, update_town_crier, update_dom_index, query_stealables
+from sqlalchemy import text
 
 logger = logging.getLogger('od-info.facade')
 
@@ -78,13 +79,15 @@ class ODInfoFacade(object):
 
     def update_role(self, dom_code, role):
         logger.debug("Updating dominion %s role to %s", dom_code, role)
-        qry = f'UPDATE Dominions SET role = ? WHERE code = ?'
-        self._db.execute(qry, (role, dom_code))
+        qry = text(f'UPDATE Dominions SET role = :role WHERE code = :code')
+        self._db.session.execute(qry, {'role': role, 'code': dom_code})
+        self._db.session.commit()
 
     def update_player(self, dom_code, player_name):
         logger.debug("Updating dominion player name from %s to %s", dom_code, player_name)
-        qry = f'UPDATE Dominions SET player = ? WHERE code = ?'
-        self._db.execute(qry, (player_name, dom_code))
+        qry = text(f'UPDATE Dominions SET player = ? WHERE code = ?')
+        self._db.session.execute(qry, (player_name, dom_code))
+        self._db.session.commit()
 
     # ---------------------------------------- COMMANDS - Send out information
 

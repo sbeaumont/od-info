@@ -22,11 +22,11 @@ class Dominion(Base):
     __tablename__ = 'Dominions'
 
     code: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String)
+    name: Mapped[str] = mapped_column(String(200))
     realm: Mapped[int] = mapped_column(Integer)
     race: Mapped[str] = mapped_column('race', String)
-    player: Mapped[str] = mapped_column(String, default='?')
-    role: Mapped[str] = mapped_column(String, default='unknown')
+    player: Mapped[str] = mapped_column(String(200), default='?')
+    role: Mapped[str] = mapped_column(String(12), default='unknown')
     last_op: Mapped[Optional[datetime]] = mapped_column(DateTime)
     history: Mapped[List['DominionHistory']] = relationship('DominionHistory',
                                                             back_populates='dom',
@@ -318,7 +318,7 @@ class Revelation(Base):
     dominion_id = mapped_column('dominion', ForeignKey('Dominions.code'))
     timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow())
     dom: Mapped['Dominion'] = relationship(back_populates='revelation')
-    spell: Mapped[str] = mapped_column(String)
+    spell: Mapped[str] = mapped_column(String(80))
     duration: Mapped[int] = mapped_column(Integer)
     __mapper_args__ = {'primary_key': [dominion_id, timestamp, spell]}
 
@@ -360,12 +360,12 @@ class TownCrier(Base):
 
     timestamp: Mapped[datetime] = mapped_column(DateTime)
     origin: Mapped[int] = mapped_column(Integer)
-    origin_name: Mapped[str] = mapped_column(String)
+    origin_name: Mapped[str] = mapped_column(String(200))
     target: Mapped[int] = mapped_column(Integer)
-    target_name: Mapped[str] = mapped_column(String)
-    event_type: Mapped[str] = mapped_column(String, default='other')
+    target_name: Mapped[str] = mapped_column(String(200))
+    event_type: Mapped[str] = mapped_column(String(200), default='other')
     amount: Mapped[int] = mapped_column(Integer)
-    text: Mapped[str] = mapped_column(String)
+    text: Mapped[str] = mapped_column(String(300))
 
     __mapper_args__ = {'primary_key': [timestamp, origin, event_type, target]}
 
@@ -374,7 +374,7 @@ class SchemaVersion(Base):
     __tablename__ = 'SchemaVersion'
 
     timestamp: Mapped[datetime] = mapped_column(DateTime)
-    version: Mapped[str] = mapped_column(String)
+    version: Mapped[str] = mapped_column(String(30))
 
     __mapper_args__ = {'primary_key': [timestamp]}
 

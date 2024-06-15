@@ -1,0 +1,51 @@
+key: vampire
+name: Vampire
+alignment: evil
+description: >-
+  <p>Bathed in darkness, the Vampires are immortal predators fueled by an unquenchable thirst for the life essence of mortals. They are masters of the night, commanding legions of minions and wielding power that stretches beyond mortal comprehension.</p>
+  <p>While some perceive them as cursed, others are drawn to the allure of immortality and power that the Vampires offer. But those who dare to indulge their desires do so at their own peril, for once bitten, there is no escape from their embrace.</p>
+attacker_difficulty: 2
+explorer_difficulty: 1
+converter_difficulty: 2
+home_land_type: swamp
+perks:
+  max_population: 7.5
+  food_consumption: -75
+  immortal_wizards: 1
+units:
+  - name: Dire Bat
+    cost:
+      platinum: 275
+      mana: 15
+    power:
+      offense: 3
+      defense: 0
+    need_boat: false
+  - name: Ghoul
+    cost:
+      platinum: 275
+      mana: 0
+    power:
+      offense: 0
+      defense: 3
+  - name: Kindred
+    cost:
+      platinum: 1000
+      mana: 0
+    power:
+      offense: 2
+      defense: 5
+    perks:
+      casualties: -50
+    need_boat: false
+  - name: Bloodreaver
+    cost:
+      platinum: 1000
+      mana: 0
+    power:
+      offense: 4
+      defense: 3
+    perks:
+      immortal: 1
+      conversion: 3,22 # slot 3, one per 22 sent
+    need_boat: false

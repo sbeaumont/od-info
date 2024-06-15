@@ -1,0 +1,70 @@
+{
+    "status": null,
+    "revelation": null,
+    "castle": null,
+    "barracks": {
+        "units": {
+            "home": {
+                "draftees": 346,
+                "unit1": 0,
+                "unit2": 925,
+                "unit3": 3381,
+                "unit4": 0
+            },
+            "returning": [],
+            "training": {
+                "assassins": {
+                    "10": 4
+                },
+                "unit3": {
+                    "3": 50,
+                    "7": 71,
+                    "8": 68,
+                    "9": 68
+                }
+            }
+        },
+        "created_at": "2024-03-19T17:47:47.000000Z"
+    },
+    "survey": {
+        "constructed": {
+            "home": 189,
+            "alchemy": 125,
+            "farm": 57,
+            "smithy": 140,
+            "masonry": 0,
+            "ore_mine": 0,
+            "gryphon_nest": 0,
+            "tower": 61,
+            "wizard_guild": 0,
+            "temple": 0,
+            "diamond_mine": 0,
+            "school": 33,
+            "lumberyard": 273,
+            "factory": 0,
+            "guard_tower": 68,
+            "shrine": 0,
+            "barracks": 0,
+            "dock": 0
+        },
+        "constructing": {
+            "farm": {
+                "3": 5,
+                "6": 6
+            },
+            "lumberyard": {
+                "1": 16,
+                "3": 1
+            },
+            "school": {
+                "1": 11
+            }
+        },
+        "barren_land": 0,
+        "total_land": 985,
+        "created_at": "2024-03-19T17:48:02.000000Z"
+    },
+    "land": null,
+    "vision": null,
+    "disclosure": null
+}

@@ -24,7 +24,7 @@ class Dominion(Base):
     code: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(200))
     realm: Mapped[int] = mapped_column(Integer)
-    race: Mapped[str] = mapped_column('race', String)
+    race: Mapped[str] = mapped_column('race', String(200))
     player: Mapped[str] = mapped_column(String(200), default='?')
     role: Mapped[str] = mapped_column(String(12), default='unknown')
     last_op: Mapped[Optional[datetime]] = mapped_column(DateTime)

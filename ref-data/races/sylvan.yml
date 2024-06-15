@@ -1,0 +1,49 @@
+key: sylvan
+name: Sylvan
+alignment: good
+description: >-
+  <p>The Sylvan are descendants of elves that bonded their spirits with the forces of nature itself, transforming them into an eclectic patchwork of magical beings, from tiny sprites to massive centaurs. They share a common goal: to protect the forest and honor the Goddess.</p>
+  <p>Blessed by Gaia, nature blooms into life wherever the Sylvan set foot, transforming the land around them with their very presence into lush garden-like biomes and rich forests.</p>
+attacker_difficulty: 2
+explorer_difficulty: 1
+converter_difficulty: 3
+home_land_type: forest
+perks:
+  lumber_production: 20
+  food_production: 10
+units:
+  - name: Satyr
+    cost:
+      platinum: 275
+      lumber: 0
+    power:
+      offense: 3
+      defense: 0
+  - name: Sprite
+    cost:
+      platinum: 300
+      lumber: 0
+    power:
+      offense: 0
+      defense: 3
+  - name: Dryad
+    cost:
+      platinum: 1050
+      lumber: 0
+    power:
+      offense: 0
+      defense: 3
+    perks:
+      counts_as_wizard_offense: 0.2
+      counts_as_wizard_defense: 0.25
+      defense_from_land: forest,20,4 # land type, ratio%, max
+  - name: Centaur
+    cost:
+      platinum: 900
+      lumber: 20
+    power:
+      offense: 5.5
+      defense: 2
+    perks:
+      faster_return: 3
+      casualties: -25

@@ -38,6 +38,7 @@ db = SQLAlchemy(model_class=Base, session_options={"autoflush": False})
 db_url = load_secrets()['database_name']
 print("Database URL:", db_url)
 app.config["SQLALCHEMY_DATABASE_URI"] = db_url
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle' : 280}
 db.init_app(app)
 with app.app_context():
     db.create_all()

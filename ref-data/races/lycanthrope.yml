@@ -1,0 +1,48 @@
+key: lycanthrope
+name: Lycanthrope
+alignment: evil
+description: >-
+  <p>Once thought to be an ancient curse that transformed men into wolves under the light of a full moon, little is understood about the Lycan affliction. But one thing's for certain: once bitten, you'll never be the same again.</p>
+  <p>Subject to agonizing transformations into half-beast monsters, Lycanthropes are a hardy and fast-growing race, turning their enemies into bloodthirsty werewolves and regenerating non-lethal wounds mid-combat.</p>
+attacker_difficulty: 2
+explorer_difficulty: 3
+converter_difficulty: 3
+overall_difficulty: 3
+home_land_type: cavern
+perks:
+  max_population: 10
+  defense: 5
+units:
+  - name: Scavenger
+    cost:
+      platinum: 325
+      ore: 25
+    power:
+      offense: 3
+      defense: 0
+  - name: Ratman
+    cost:
+      platinum: 250
+      ore: 0
+    power:
+      offense: 0
+      defense: 3
+  - name: Werewolf
+    type: hybrid_elite
+    cost:
+      platinum: 850
+      ore: 55
+    power:
+      offense: 3
+      defense: 4
+    perks:
+      casualties_defense: -50
+  - name: Garou
+    cost:
+      platinum: 1115
+      ore: 110
+    power:
+      offense: 6
+      defense: 0
+    perks:
+      conversion: 3,15 # slot 3, one per 15 sent

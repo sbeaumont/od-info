@@ -1,0 +1,48 @@
+key: halfling
+name: Halfling
+alignment: good
+description: >-
+  <p>Halflings are strange little creatures, short and slight, caught somewhere between a human child and an elf in appearance, with oversized hands and long, dexterous fingers. They are almost completely nocturnal, with pale white skin and wet black eyes that shine a sickly green in the dark.</p>
+  <p>Halfling physiology makes them natural spies and thieves. Halflings can be very dangerous - particularly in groups, flying into a violent frenzy when cornered.</p>
+attacker_difficulty: 2
+explorer_difficulty: 1
+converter_difficulty: 3
+home_land_type: hill
+perks:
+  max_population: 5
+  extra_barren_max_population: 5
+  defense: 10
+  food_consumption: -30
+units:
+  - name: Slinger
+    cost:
+      platinum: 275
+      ore: 15
+    power:
+      offense: 3
+      defense: 0
+  - name: Defender
+    cost:
+      platinum: 300
+    power:
+      offense: 0
+      defense: 3
+  - name: Master Thief
+    cost:
+      platinum: 900
+      ore: 30
+    power:
+      offense: 2
+      defense: 4
+    perks:
+      counts_as_spy_offense: 0.2
+      counts_as_spy_defense: 0.25
+  - name: Staff Master
+    cost:
+      platinum: 900
+      ore: 25
+    power:
+      offense: 5
+      defense: 3
+    perks:
+      casualties_offense: -40

@@ -84,9 +84,9 @@ class ODInfoFacade(object):
         self._db.session.commit()
 
     def update_player(self, dom_code, player_name):
-        logger.debug("Updating dominion player name from %s to %s", dom_code, player_name)
-        qry = text(f'UPDATE Dominions SET player = ? WHERE code = ?')
-        self._db.session.execute(qry, (player_name, dom_code))
+        logger.debug("Updating dominion player of dominion %s to %s", dom_code, player_name)
+        qry = text(f'UPDATE Dominions SET player = :name WHERE code = :code')
+        self._db.session.execute(qry, {'name': player_name, 'code': dom_code})
         self._db.session.commit()
 
     # ---------------------------------------- COMMANDS - Send out information

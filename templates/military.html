@@ -28,8 +28,6 @@
                 <th>Paid</th>
                 <th>OP</th>
                 <th>DP</th>
-                <th>{% if versus_op == 0 %}OP (1&4){% else %}Safe OP{% endif %}</th>
-                <th>{% if versus_op == 0 %}DP (2&3){% else %}Safe DP{% endif %}</th>
                 <th>NW</th>
             </tr>
         </thead>
@@ -57,8 +55,6 @@
             <td>{{ dom.paid_until }}</td>
             <td title="Raw {{ dom.raw_op }}">{{ dom.op }}</td>
             <td title="Raw {{ dom.raw_op }}">{{ dom.dp }}</td>
-            <td>{{ dom.safe_op }}</td>
-            <td>{{ dom.safe_dp }}</td>
             <td>{{ dom.networth }}</td>
         </tr>
         {% endfor %}

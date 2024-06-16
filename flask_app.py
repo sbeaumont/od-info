@@ -174,7 +174,7 @@ def military(versus_op: int = 0):
     dom_list = facade().military_list(versus_op=versus_op, top=100)
     return render_template('military.html',
                            feature_toggles=feature_toggles,
-                           doms= dom_list,
+                           doms=dom_list,
                            ages=facade().all_doms_ops_age(),
                            top_op=facade().top_op(dom_list),
                            versus_op=int(versus_op),
@@ -186,7 +186,7 @@ def military(versus_op: int = 0):
 def realmies():
     return render_template('realmies.html',
                            feature_toggles=feature_toggles,
-                           realmies=facade().realmies())
+                           realmies=facade().doms_as_mil_calcs(facade().realmies()))
 
 
 @app.route('/stealables')

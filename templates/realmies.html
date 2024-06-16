@@ -20,17 +20,17 @@
                 <th>Ares</th>
             </tr>
         </thead>
-        {% for dom in realmies %}
+        {% for mc in realmies %}
         <tr>
             <td>
-                <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
+                <a href="{{ url_for('dominfo', domcode=mc.dom.code) }}">{{ mc.dom.name }}</a>
             </td>
-            <td>{{ dom.player }}</td>
-            <td>{{ dom.total_land }}</td>
-            <td>{{ dom.military.hittable_75_percent }}</td>
-            <td>{{ dom.military.max_sendable_op }}</td>
-            <td>{{ dom.military.dp }}</td>
-            <td>{{ dom.magic.ares }}</td>
+            <td>{{ mc.dom.player }}</td>
+            <td>{{ mc.dom.current_land }}</td>
+            <td>{{ mc.hittable_75_percent }}</td>
+            <td>{{ mc.max_sendable_op }}</td>
+            <td>{{ mc.dp }}</td>
+            <td>{{ mc.dom.magic.ares }}</td>
         </tr>
         {% endfor %}
     </table><br>

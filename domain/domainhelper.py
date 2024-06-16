@@ -1,7 +1,9 @@
 from collections import defaultdict
+from datetime import timedelta
 from math import trunc, exp
 
 from domain.refdata import TechTree, MASONRY_MULTIPLIER, IMP_FACTORS
+from domain.timeutils import hours_until
 
 NON_HOME_TYPES = (
     'alchemy',
@@ -167,3 +169,16 @@ class Castle(object):
         points = self._data(ops_field)
         maximum, factor, plus = IMP_FACTORS[imp_name]
         return round(maximum * (1 - exp(-points/(factor * self.dom.land.total + plus))) * (1 + self.mason_bonus), 4)
+
+
+class Magic(object):
+    def __init__(self, dom, data):
+        self.dom = dom
+        self.spells = data
+
+    @property
+    def ares(self) -> int | None:
+        for spell in self.spells:
+            if spell.spell == 'ares_call':
+                return hours_until(spell.timestamp + timedelta(hours=spell.duration))
+        return None

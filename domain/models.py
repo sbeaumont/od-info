@@ -4,7 +4,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from datetime import datetime
 from typing import List, Optional
 
-from domain.domainhelper import Buildings, Land, Technology
+from domain.domainhelper import Buildings, Land, Technology, Magic
 from domain.timeutils import hours_since
 
 
@@ -95,6 +95,10 @@ class Dominion(Base):
     @property
     def tech(self) -> Technology:
         return Technology(self)
+
+    @property
+    def magic(self) -> Magic:
+        return Magic(self, self.revelation)
 
     @property
     def buildings(self) -> Buildings:

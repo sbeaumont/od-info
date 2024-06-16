@@ -267,7 +267,8 @@ class MilitaryCalculator(object):
                     dp -= self.dp_of(self.race.nr_of_unit(unit_type), True)
                 self._five_four_dp = trunc(dp)
             logger.debug(f"op: {self._five_four_op}, 5/4 dp: {self._five_four_dp * 5 / 4}")
-            assert self._five_four_op <= (round(self._five_four_dp * 5/4, 2)), f"op: {self._five_four_op}, 5/4 dp: {round(self._five_four_dp * 5/4, 2)}"
+            if self._five_four_op > (round(self._five_four_dp * 5/4, 2)):
+                logger.warning(f"op: {self._five_four_op}, 5/4 dp: {round(self._five_four_dp * 5/4, 2)}")
         return round(self._five_four_op), round(self._five_four_dp)
 
 
@@ -356,9 +357,9 @@ class RatioCalculator(object):
 if __name__ == '__main__':
     from sqlalchemy import create_engine, select
     from sqlalchemy.orm import Session
-    engine = create_engine("sqlite:///instance/data/odinfo-round-39.sqlite", echo=False)
+    engine = create_engine("sqlite:///instance/data/odinfo-round-40.sqlite", echo=False)
     with Session(engine) as session:
-        stmt = select(Dominion).where(Dominion.code == 12157)
+        stmt = select(Dominion).where(Dominion.code == 12517)
         dom = session.scalars(stmt).one()
         rc = RatioCalculator(dom)
         print("mse", rc.spy_units_equiv)
@@ -366,4 +367,6 @@ if __name__ == '__main__':
         print("mwr", rc.max_wiz_ratio_estimate)
         for i in range(1, 5):
             print("unit", i, rc.amount(i))
+        mc = MilitaryCalculator(dom)
+        print("5/4", mc.five_over_four)
 

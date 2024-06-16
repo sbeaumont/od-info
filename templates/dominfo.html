@@ -76,43 +76,55 @@
             <th>Wiz Ratios Estimate</th>
         </tr>
         <tr>
-            <td>
-                {{ ratios.spy_units_equiv }}
+            <td colspan="3">
+                <tr>
+                    <td>
+                        {{ ratios.spy_units_equiv }}
+                    </td>
+                    <td>
+                        {{ ratios.wiz_units_equiv }}
+                    </td>
+                    <td>
+                        {{ ratios.spywiz_networth }}
+                    </td>
+                    <td>
+                        {{ ratios.spywiz_units }}
+                    </td>
+                    <td>
+                        {{ ratios.spy_ratio_estimate }} - {{ ratios.max_spy_ratio_estimate }}
+                    </td>
+                    <td>
+                        {{ ratios.wiz_ratio_estimate }} - {{ ratios.max_wiz_ratio_estimate }}
+                    </td>
+                </tr>
             </td>
-            <td>
-                {{ ratios.wiz_units_equiv }}
-            </td>
-            <td>
-                {{ ratios.spywiz_networth }}
-            </td>
-            <td>
-                {{ ratios.spywiz_units }}
-            </td>
-            <td>
-                {{ ratios.spy_ratio_estimate }} - {{ ratios.max_spy_ratio_estimate }}
-            </td>
-            <td>
-                {{ ratios.wiz_ratio_estimate }} - {{ ratios.max_wiz_ratio_estimate }}
-            </td>
-        </tr>
-        <tr class="w3-black">
-            <th>Unit 1</th>
-            <th>Unit 2</th>
-            <th>Unit 3</th>
-            <th>Unit 4</th>
-        </tr>
-        <tr>
-            <td>
-                {{ military.amount(1) }}
-            </td>
-            <td>
-                {{ military.amount(2) }}
-            </td>
-            <td>
-                {{ military.amount(3) }}
-            </td>
-            <td>
-                {{ military.amount(4)}}
+            <td colspan="2">
+                <table class="w3-white">
+                    <tr class="w3-black">
+                        <th>Name</th>
+                        <th>Amount</th>
+                        <th>Per Unit</th>
+                        <th>OP</th>
+                        <th>DP</th>
+                    </tr>
+                    {% for i in range(1, 5) %}
+                        <tr>
+                            <td>{{ military.unit_type(i).name }}</td>
+                            <td>
+                                {{ military.amount(i) }}
+                            </td>
+                            <td>
+                                {{ military.unit_type(i).offense }}/{{ military.unit_type(i).defense }}
+                            </td>
+                            <td>
+                                {{ military.op_of(i) }}
+                            </td>
+                            <td>
+                                {{ military.dp_of(i) }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
             </td>
         </tr>
     </table><br>

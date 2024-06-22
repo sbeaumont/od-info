@@ -1,22 +1,6 @@
 import sys
 import os
 
-# Template of the secrets.txt file that gets saved when it can't be found.
-
-SECRETS_TEMPLATE = """Remove this line and all the <...> sections to make it work.
-username = <your OD username>
-password = <your OD password>
-discord_webhook = None <An https:// URL with a discord webhook to send stuff to>
-current_player_id = <Five number id of your player this round>
-LOCAL_TIME_SHIFT = 0 <(Negative) number. If you see the timing of the app being off, this allows you to correct it.>
-feature_toggles = economy
-secret_key=<random secret key>
-database_name=odinfo-round-X (name of db without extension or path)
-"""
-
-# Utility functions
-# The getattr() in these functions checks determines whether we're running as a pyinstaller binary.
-
 
 def resource_path(rel_path: str):
     """Changes given relative path in case we're a pyinstaller binary version"""
@@ -34,15 +18,107 @@ def executable_path(rel_path: str):
         return rel_path
 
 
-def load_secrets():
-    """Load secrets.txt configuration file."""
-    secrets_filename = executable_path('instance/secret.txt')
+# The correct handling of date/timestamps in combination with the sqlite database is dependent
+# on this being set correctly. Only change this when you change underlying DB tech.
+
+DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+# Knowledge of internal directory and file structure
+
+INSTANCE_DIR = 'instance'
+OUT_DIR = './out'
+REF_DATA_DIR = './ref-data'
+OPS_DATA_DIR = 'opsdata'
+SECRET_FILE = f'{INSTANCE_DIR}/secret.txt'
+USERS_FILE = f'{INSTANCE_DIR}/users.json'
+
+# Knowledge of the URL structure of the OD website
+
+OD_BASE = 'https://www.opendominion.net'
+LOGIN_URL = f'{OD_BASE}/auth/login'
+SEARCH_PAGE = f'{OD_BASE}/dominion/search'
+OP_CENTER_URL = f'{OD_BASE}/dominion/op-center'
+TOWN_CRIER_URL = f'{OD_BASE}/dominion/town-crier'
+STATUS_URL = f'{OD_BASE}/dominion/status'
+SELECT_URL = f'{OD_BASE}/dominion/' + '{}/select'
+MY_OP_CENTER_URL = f'{OD_BASE}/dominion/advisors/op-center'
+
+# Global settings that can't be found anywhere else
+
+PLAT_PER_ALCHEMY_PER_TICK = 45
+PLAT_PER_PEASANT_PER_TICK = 2.7
+PEASANTS_PER_HOME = 30
+
+# Template of the secrets.txt file that gets saved when it can't be found.
+
+SECRETS_TEMPLATE = """Remove this line and all the <...> sections to make it work.
+username = <your OD username>
+password = <your OD password>
+discord_webhook = None <An https:// URL with a discord webhook to send stuff to. Currently only in networth tracker.>
+current_player_id = <Five number id of your player this round>
+LOCAL_TIME_SHIFT = 0 <(Negative) number. If you see the timing of the app being off, this allows you to correct it.>
+feature_toggles = economy
+secret_key=<random secret key>
+database_name=sqlite:///odinfo-round-X.sqlite <Check SQLAlchemy docs if you want to use another DB like MySQL.>
+"""
+
+USERS_JSON_TEMPLATE = """[
+  {
+    "id": "1",
+    "name": "test",
+    "password": "test",
+    "active": "true"
+  },
+  {
+    "id": "2",
+    "name": "test2",
+    "password": "test",
+    "active": "true"
+  }
+]
+"""
+
+
+def check_dirs_and_configs():
+    problems = []
+    instance_dir = executable_path(INSTANCE_DIR)
+    if not os.path.exists(instance_dir):
+        problems.append(f'Expecting "{instance_dir}" subdirectory: creating one for you now.')
+        os.makedirs(instance_dir)
+
+    secrets_filename = executable_path(SECRET_FILE)
     if not os.path.exists(secrets_filename):
+        problems.append(f'Expected {SECRET_FILE} with your configuration settings.')
         with open(secrets_filename, 'w') as f:
             f.writelines(SECRETS_TEMPLATE)
-        print("You did not have a secrets.txt file yet. Edit it and restart the application.")
-        sys.exit("Edit the secret.txt file and restart.")
+        problems.append(f"Created {SECRET_FILE} for you.")
 
+    with open(secrets_filename) as f:
+        if f.read() == SECRETS_TEMPLATE:
+            problems.append(f"You still need to change {secrets_filename}.")
+
+    users_filename = executable_path(USERS_FILE)
+    if not os.path.exists(users_filename):
+        problems.append(f'Expected {users_filename} with your login settings.')
+        with open(users_filename, 'w') as f:
+            f.write(USERS_JSON_TEMPLATE)
+        problems.append(f"Created {users_filename} for you.")
+
+    with open(users_filename) as f:
+        if f.read() == USERS_JSON_TEMPLATE:
+            problems.append(f"You still need to change {users_filename}.")
+
+
+    return problems
+
+
+def load_secrets():
+    """Load secrets.txt configuration file."""
+    problems = check_dirs_and_configs()
+    if problems:
+        sys.exit('\n'.join(problems))
+
+    secrets_filename = executable_path(SECRET_FILE)
     with open(secrets_filename) as f:
         secrets_dict = dict()
         for line in f.readlines():
@@ -51,7 +127,7 @@ def load_secrets():
         return secrets_dict
 
 
-# Make configuration in secrets.txt available to the rest of the codebase
+# Make configuration in secret.txt available to the rest of the codebase
 
 SECRETS = load_secrets()
 username = SECRETS['username']
@@ -65,49 +141,3 @@ discord_webhook = SECRETS.get('discord_webhook', None)
 feature_toggles = []
 if 'feature_toggles' in SECRETS:
     feature_toggles = [toggle.strip() for toggle in SECRETS['feature_toggles'].split(',')]
-
-# Location and name of database file. schema.sql is what initializes a new database.
-
-if getattr(sys, 'frozen', False):
-    DATABASE = executable_path('odinfo-database.sqlite')
-else:
-    DATABASE = executable_path(f"./opsdata/{SECRETS['database_name']}.sqlite")
-
-DB_SCHEMA_FILE = resource_path('./opsdata/schema.sql')
-
-# The correct handling of date/timestamps in combination with the sqlite database is dependent
-# on this being set correctly. Only change this when you change underlying DB tech.
-
-DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-
-# Knowledge of internal directory structure
-
-OUT_DIR = './out'
-REF_DATA_DIR = './ref-data'
-OPS_DATA_DIR = 'opsdata'
-
-# user file
-
-USERS_FILE = './instance/users.json'
-
-# Knowledge of the URL structure of the OD website
-
-OD_BASE = 'https://www.opendominion.net'
-LOGIN_URL = f'{OD_BASE}/auth/login'
-SEARCH_PAGE = f'{OD_BASE}/dominion/search'
-OP_CENTER_URL = f'{OD_BASE}/dominion/op-center'
-TOWN_CRIER_URL = f'{OD_BASE}/dominion/town-crier'
-STATUS_URL = f'{OD_BASE}/dominion/status'
-SELECT_URL = f'{OD_BASE}/dominion/' + '{}/select'
-MY_OP_CENTER_URL = f'{OD_BASE}/dominion/advisors/op-center'
-
-# Probably deprecated, older versions used files extensively.
-
-DOM_INDEX = f'{OUT_DIR}/dom_index.json'
-NETWORTH_FILE = f'{OUT_DIR}/nw.json'
-
-# Global settings that can't be found anywhere else
-
-PLAT_PER_ALCHEMY_PER_TICK = 45
-PLAT_PER_PEASANT_PER_TICK = 2.7
-PEASANTS_PER_HOME = 30

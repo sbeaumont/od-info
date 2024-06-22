@@ -20,6 +20,7 @@ logger = logging.getLogger('db-info.ops')
 
 
 class Ops(object):
+    """Convenience object to parse the copy_ops json structure."""
     def __init__(self, contents, dom_id):
         self.contents = contents
         self.dom_id = dom_id
@@ -144,6 +145,8 @@ def grab_search(session) -> dict:
 
 
 def get_last_scans(session) -> dict:
+    """Grabs the OP Center page and returns the doms and timestamps.
+    Used to check if any latest scans need to be updated into the tool."""
     soup = get_soup_page(session, OP_CENTER_URL)
     result = dict()
     for row in soup.tbody.find_all('tr'):

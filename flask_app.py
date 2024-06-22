@@ -3,6 +3,7 @@ Main entrypoint for the application.
 
 - Uses the ODInfo facade object for all queries and actions.
 - Knows the routing, the templates to use, which facade calls to make and which data to pass to a template.
+- Initializes Flask plugins: Flask_SQLAlchemy, Flask_Login
 
 """
 
@@ -18,32 +19,51 @@ from forms import LoginForm
 from facade.user import load_user_by_id, load_user_by_name, User
 from domain.models import *  # Ensure all models are loaded to be able to create the db.
 
-from config import feature_toggles, OP_CENTER_URL, load_secrets
+from config import feature_toggles, OP_CENTER_URL, load_secrets, check_dirs_and_configs
 from facade.odinfo import ODInfoFacade
 from facade.graphs import nw_history_graph, land_history_graph
-from facade.awardstats import AwardStats
+
+# ---------------------------------------------------------------------- Flask
+
+print("Checking directories and config files...")
+problems = check_dirs_and_configs()
+if problems:
+    sys.exit('\n'.join(problems))
+else:
+    print("Config files OK")
+
+# ---------------------------------------------------------------------- Flask
 
 if getattr(sys, 'frozen', False):
+    # When app is built with pyinstaller
     template_folder = os.path.join(sys._MEIPASS, 'templates')
     static_folder = os.path.join(sys._MEIPASS, 'static')
     app = Flask('od-info', template_folder=template_folder, static_folder=static_folder)
 else:
+    # Regular Flask startup
     app = Flask('od-info')
 
 app.logger.setLevel(logging.DEBUG)
 
-# Initialize flask_SQLAlchemy
+# ---------------------------------------------------------------------- flask_SQLAlchemy
+
 db = SQLAlchemy(model_class=Base, session_options={"autoflush": False})
 # The lib adds an "instance" folder to the URL so I have to take that into account.
 db_url = load_secrets()['database_name']
+
 print("Database URL:", db_url)
+if db_url.startswith('sqlite:'):
+    print("Note that the Flask_SQLAlchemy library inserts an 'instance' subdir into a sqlite Database URL.")
+
 app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle' : 280}
+
 db.init_app(app)
 with app.app_context():
     db.create_all()
 
-# Initialize flask_login
+# ---------------------------------------------------------------------- flask_login
+
 app.secret_key = load_secrets()['secret_key']
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -62,12 +82,16 @@ def load_user(user_id):
         return None
 
 
+# ---------------------------------------------------------------------- Facade Singleton
+
 def facade() -> ODInfoFacade:
     _facade = getattr(g, '_facade', None)
     if not _facade:
         _facade = g._facade = ODInfoFacade(db)
     return _facade
 
+
+# ---------------------------------------------------------------------- Flask Routes
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/dominfo/', methods=['GET', 'POST'])

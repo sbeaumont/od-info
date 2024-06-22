@@ -7,7 +7,8 @@ a = Analysis(
     datas=[
         ('opsdata', 'opsdata'),
         ('ref-data', 'ref-data'),
-        ('templates', 'templates')
+        ('templates', 'templates'),
+        ('instance', 'instance')
     ],
     hiddenimports=[],
     hookspath=[],
@@ -19,7 +20,8 @@ a = Analysis(
         '.venv',
         'out',
         'test',
-        'secret.txt'
+        'secret.txt',
+        'instance'
     ],
     noarchive=True,
 )

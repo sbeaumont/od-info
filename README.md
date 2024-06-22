@@ -30,31 +30,35 @@ will be part of the main Python3 installation, which is fine for this case.*
 
 In a terminal window / command prompt you'll need to "pip3 install":
 
-    pip3 install flask requests jinja2 PyYAML bs4
+    pip3 install flask requests jinja2 PyYAML bs4 pillow matplotlib
 
 This installs these libraries:
 
  - flask (webserver)
+ - flask-sqlalchemy (database stuff)
+ - flask-login (login stuff)
+ - wtforms (better forms, now only used for login)
  - requests (pull stuff from the web)
  - jinja2 (template engine for the web interface)
  - PyYAML (to load configuration files)
  - bs4 (Beautiful Soup, to scrape information from webpages)
+ - Pillow and matplotlib (for graphs)
 
 ### Download files
 Download the whole project from here and put it somewhere on your local disk.
 
-### Add secrets.txt file
-(_When you're running the binary app the secrets.txt file needs to be next to the executable.
-If you run the app the first time and it doesn't see that file it will generate a template for
-you and exit._)
-
-You'll also need to add a text file called "secrets.txt" file in the project root (or next to the executable 
-if you're using that) with contents:
+### Run and fail: add instance subdir, secret.txt and users.json file
+Do a first run: this will always exit with the message that you need to edit the config files.
+These files will have been created for you from templates.
+ 
+You will need to edit their contents. For secret.txt:
 
     username = (your OD username)
     password = (your OD password)
     discord_webhook = (Discord webhook URL, if you have one.)
     current_player_id = (Your player id. Easiest way to find out is go to Search page, hover over your dom name, and note the number at the end of the ".../op-center/<your number>" URL)
+    database_name=sqlite:///odinfo-round-<round number>.sqlite
+    secret_key=(just some random stuff)
     LOCAL_TIME_SHIFT = (Difference in hours between your local time and OD server time. Positive if your time is ahead of OD server time: e.g. if OD time is 8:21 and your local time is 10:21, you fill in 2 here)
 
 Example:
@@ -63,6 +67,8 @@ Example:
     password = thisisabadpassword123!
     discord_webhook = https://discord.com/api/webhooks/<other stuff>
     current_player_id = 99999
+    database_name=sqlite:///my-odinfo-database-for-round-40.sqlite
+    secret_key=1234p981(*&^b98g89ubsy89g
     LOCAL_TIME_SHIFT = -2
 
 You can send the networth tracking overview to Discord, but you'll need to set up a
@@ -71,8 +77,9 @@ and copy the URL from there.
 
 ### One database per round (not for binary version)
 
-You can open the config.py file with a text editor and change the DATABASE = './opsdata/odinfo-round-36.sqlite' line to
-a new round number. This way you can have a fresh database for every round.
+Tip: You can change the database_name in secret.txt to a new round number. 
+This way you can have a fresh database for every round, and you'll have a copy of the old round's data
+if you want to keep it.
 
 ### Run application
 Run the app locally from the Terminal from the root of the project:
@@ -99,7 +106,7 @@ your actions there, and then you can use the update links to pull in the latest 
 ## Stopping and resetting
 You can stop the server by shutting down the Terminal window or pressing Ctrl+C there.
 
-The database "odinfo.sqlite" is created in the folder "opsdata". This is just a file:
+The database "odinfo.sqlite" is created in the folder "instance". This is just a file:
 You can reset the whole application by just renaming, moving or deleting the database file.
 As soon as the application sees that there is no database file it will
 generate a new one and initialize it.

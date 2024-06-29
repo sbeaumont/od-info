@@ -18,6 +18,7 @@
                 <th>Food</th>
                 <th>Mana</th>
                 <th>Gems</th>
+                <th>Lumber</th>
             </tr>
         </thead>
         {% for row in stealables %}
@@ -33,6 +34,7 @@
             <td>{{ row.food }}</td>
             <td>{{ row.mana }}</td>
             <td>{{ row.gems }}</td>
+            <td>{{ row.lumber }}</td>
         </tr>
         {% endfor %}
     </table><br>
@@ -44,7 +46,7 @@
             'paging': false,
             'order': [[3, 'desc']],
             'columnDefs': [
-                { "type": "num", "targets": [1, 2, 3, 4, 5, 6]}
+                { "type": "num", "targets": [1, 2, 3, 4, 5, 6, 7]}
             ]
         });
     } );

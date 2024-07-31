@@ -86,9 +86,18 @@ def get_tc_page(session, page_nr: int) -> list:
                 raise
 
             if target_name and not target_code:
-                if not event.find(string=re.compile(re.escape(target_name))):
-                    raise Exception(f'Can not find "{target_name}" in {event}')
-                target_code = event.find(string=re.compile(re.escape(target_name))).find_parent('a').attrs['href'].split('/')[-1]
+                if target_name == "the":
+                    # Dumb hack because someone used a name that is matched earlier in the event.
+                    # TODO No time for a better fix now.
+                    target_code = '12548'
+                else:
+                    if not event.find(string=re.compile(re.escape(target_name))):
+                        raise Exception(f'Can not find "{target_name}" in {event}')
+                    parent_link = event.find(string=re.compile(re.escape(target_name))).find_parent('a')
+                    if parent_link:
+                        target_code = parent_link.attrs['href'].split('/')[-1]
+                    else:
+                        raise Exception(f'Can not find parent link for "{target_name}".', event_text)
 
             event_elements = [timestamp, event_type, dom_code, dom_name, target_code, target_name, amount, event_text]
             # list(event.children)
@@ -103,6 +112,7 @@ if __name__ == '__main__':
             for page_nr in range(1, get_number_of_tc_pages(session) + 1):
                 events = get_tc_page(session, page_nr)
                 for event in events:
+                    # print(event)
                     event_line = f'''"{'", "'.join(event)}"'''
                     f.write(event_line)
                     f.write('\n')

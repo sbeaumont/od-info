@@ -94,7 +94,6 @@ class TechTree(object):
                 tech_yaml = yaml.safe_load(f)
                 techs = defaultdict(dict)
                 for tech_name, tech in tech_yaml['techs'].items():
-                    print(tech_name, tech)
                     for perk, value in tech['perks'].items():
                         techs[perk][tech_name] = value
             TechTree.TECHS_REGISTRY = techs

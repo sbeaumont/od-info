@@ -106,7 +106,7 @@ your actions there, and then you can use the update links to pull in the latest 
 ## Stopping and resetting
 You can stop the server by shutting down the Terminal window or pressing Ctrl+C there.
 
-The database "odinfo.sqlite" is created in the folder "instance". This is just a file:
+The database "odinfo.sqlite" is created in the folder "instance ". This is just a file:
 You can reset the whole application by just renaming, moving or deleting the database file.
 As soon as the application sees that there is no database file it will
 generate a new one and initialize it.

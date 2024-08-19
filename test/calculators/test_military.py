@@ -37,6 +37,34 @@ class MilitaryCalculatorTestCase(unittest.TestCase):
         self.assertEqual(116, mc.dp)
         self.assertEqual(mc.five_over_four, (122, 98))
 
+    # def test_five_over_four_liz(self):
+    #     bs = self.dom.last_barracks
+    #     bs.draftees = 10
+    #     bs.unit1 = 10
+    #     bs.unit2 = 10
+    #     bs.unit3 = 10
+    #     bs.unit4 = 10
+    #
+    #     cs = self.dom.last_cs
+    #     cs.military_draftees = 10
+    #     cs.military_unit1 = 10
+    #     cs.military_unit2 = 10
+    #     cs.military_unit3 = 10
+    #     cs.military_unit4 = 10
+    #
+    #     unit
+    #     1
+    #     693
+    #     unit
+    #     2
+    #     3143
+    #     unit
+    #     3
+    #     491
+    #     unit
+    #     4
+    #     1905
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -67,36 +67,35 @@
             <td>{{ (military.defense_bonus * 100)|round(1) }}%</td>
             <td>{{ military.dp }}</td>
         </tr>
-        <tr class="w3-black">
-            <th>Military Spy</th>
-            <th>Military Wiz</th>
-            <th>Spywiz Networth</th>
-            <th>Spywiz Units</th>
-            <th>Spy Ratios Estimate</th>
-            <th>Wiz Ratios Estimate</th>
-        </tr>
         <tr>
             <td colspan="3">
-                <tr>
-                    <td>
-                        {{ ratios.spy_units_equiv }}
-                    </td>
-                    <td>
-                        {{ ratios.wiz_units_equiv }}
-                    </td>
-                    <td>
-                        {{ ratios.spywiz_networth }}
-                    </td>
-                    <td>
-                        {{ ratios.spywiz_units }}
-                    </td>
-                    <td>
-                        {{ ratios.spy_ratio_estimate }} - {{ ratios.max_spy_ratio_estimate }}
-                    </td>
-                    <td>
-                        {{ ratios.wiz_ratio_estimate }} - {{ ratios.max_wiz_ratio_estimate }}
-                    </td>
-                </tr>
+                <table class="w3-white">
+                    <tr class="w3-black">
+                        <th>&nbsp</th>
+                        <th>Military Units</th>
+                        <th>Ratios Estimate</th>
+                        <th>Networth</th>
+                        <th>Units</th>
+                    </tr>
+                    <tr>
+                        <td>Spies</td>
+                        <td>{{ ratios.spy_units_equiv }}</td>
+                        <td>
+                            {{ ratios.spy_ratio_estimate }} - {{ ratios.max_spy_ratio_estimate }}
+                        </td>
+                        <td>{{ ratios.spywiz_networth }}</td>
+                        <td>{{ ratios.spywiz_units }}</td>
+                    </tr>
+                    <tr>
+                        <td>Wizards</td>
+                        <td>{{ ratios.wiz_units_equiv }}</td>
+                        <td>
+                            {{ ratios.wiz_ratio_estimate }} - {{ ratios.max_wiz_ratio_estimate }}
+                        </td>
+                        <td>{{ ratios.spywiz_networth }}</td>
+                        <td>{{ ratios.spywiz_units }}</td>
+                    </tr>
+                </table>
             </td>
             <td colspan="2">
                 <table class="w3-white">

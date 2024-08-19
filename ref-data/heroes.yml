@@ -1,0 +1,87 @@
+abjuration:
+  name: Abjuration
+  level: 4
+  type: magic
+  icon: ra-book-cover
+  perks:
+    improved_energy_mirror: 5
+  active: false
+divination:
+  name: Divination
+  level: 2
+  type: magic
+  icon: ra-book-cover
+  perks:
+    info_spell_cost: -5
+evocation:
+  name: Evocation
+  level: 4
+  type: magic
+  icon: ra-book-cover
+  perks:
+    fireball_damage: 10
+  active: false
+illusion:
+  name: Illusion
+  level: 2
+  type: magic
+  icon: ra-book-cover
+  perks:
+    espionage_fails_hide_identity: 1
+iron_dagger:
+  name: Iron Dagger
+  level: 4
+  type: item
+  icon: ra-plain-dagger
+  perks:
+    assassinate_draftees_damage: 10
+  active: false
+kings_banner:
+  name: King's Banner
+  level: 2
+  type: item
+  icon: ra-knight-banner
+  perks:
+    invasion_morale: 1
+spyglass:
+  name: Spyglass
+  level: 2
+  type: item
+  icon: ra-spyglass
+  perks:
+    land_spy_strength_cost: 1
+scribes_journal:
+  name: Scribe's Journal
+  level: 2
+  type: item
+  icon: ra-scroll-quill
+  perks:
+    tech_production_invasion: 10
+disarmament:
+  name: Disarmament
+  level: 0
+  type: directive
+  icon: ra-drop-weapon
+  perks:
+    offense: -100
+    raze_mod_building_discount: 1
+  classes:
+    - scion
+martyrdom:
+  name: Martyrdom
+  level: 0
+  type: effect
+  icon: ra-angel-wings
+  perks:
+    martyrdom: 15
+  classes:
+    - scion
+revised_strategy:
+  name: Revised Strategy
+  level: 0
+  type: immediate
+  icon: ra-annexation
+  perks:
+    tech_refund: 50
+  classes:
+    - scion

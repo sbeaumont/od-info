@@ -357,9 +357,9 @@ class RatioCalculator(object):
 if __name__ == '__main__':
     from sqlalchemy import create_engine, select
     from sqlalchemy.orm import Session
-    engine = create_engine("sqlite:///instance/data/odinfo-round-40.sqlite", echo=False)
+    engine = create_engine("sqlite:///instance/odinfo-round-40.sqlite", echo=False)
     with Session(engine) as session:
-        stmt = select(Dominion).where(Dominion.code == 12517)
+        stmt = select(Dominion).where(Dominion.code == 12548)
         dom = session.scalars(stmt).one()
         rc = RatioCalculator(dom)
         print("mse", rc.spy_units_equiv)
@@ -369,4 +369,5 @@ if __name__ == '__main__':
             print("unit", i, rc.amount(i))
         mc = MilitaryCalculator(dom)
         print("5/4", mc.five_over_four)
+        print("OP/DP", mc.op, mc.dp)
 

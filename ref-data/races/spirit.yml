@@ -2,18 +2,17 @@ key: spirit-rework
 name: Spirit
 alignment: good
 description: >-
-  <p>Trapped between the realm of the living and what lies beyond, Spirits are a melancholic collection of lost souls, drifting the swamplands, forever restless.</p>
+  <p>Trapped between the realm of the living and what lies beyond, Spirits are a melancholic collection of lost souls, drifting the wetlands, forever restless.</p>
   <p>Lately, Spirit incursions into the territories of the living have become more frequent, though nobody knows why. With soul-rending wails, Spirits can strike fear in the hearts of those unprepared to face such horrors, sending many fleeing in terror before the battle even begins.</p>
 attacker_difficulty: 2
 explorer_difficulty: 2
 converter_difficulty: 3
-home_land_type: swamp
+home_land_type: water
 perks:
   food_consumption: -90
-  mana_production: 15
   immortal_wizards: 1
 units:
-  - name: Banshee
+  - name: Phantom
     cost:
       platinum: 300
       mana: 10
@@ -21,7 +20,7 @@ units:
       offense: 3
       defense: 0
     need_boat: false
-  - name: Geist
+  - name: Banshee
     cost:
       platinum: 300
       mana: 10
@@ -29,24 +28,25 @@ units:
       offense: 0
       defense: 3
     perks:
-      immortal: 1
-  - name: Phantom Knight
+      casualties_defense: -50
+  - name: Ghost
     cost:
-      platinum: 1025
-      mana: 30
+      platinum: 1100
+      mana: 25
     power:
       offense: 3
       defense: 5
     perks:
-      casualties_defense: -50
+      casualties_offense: -50
     need_boat: false
-  - name: Spectral Warrior
+  - name: Spectre
     cost:
-      platinum: 1175
-      mana: 40
+      platinum: 1075
+      mana: 30
     power:
       offense: 6
       defense: 0
     perks:
-      immortal_vs_land_range: 75
+      casualties_offense: -80
+      offense_staggered_land_range: 95;0.5
     need_boat: false

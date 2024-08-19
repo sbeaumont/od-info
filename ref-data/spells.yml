@@ -74,18 +74,18 @@ fireball:
   perks:
     destroy_peasants: 5
     destroy_resource_food: 2
-    apply_burning: 20
+    apply_burning: 200
 lightning_bolt:
   name: Lightning Bolt
   category: war
   cost_mana: 3.25
   cost_strength: 5
   perks:
-    destroy_improvement_science: 1
-    destroy_improvement_keep: 1
-    destroy_improvement_forges: 1
-    destroy_improvement_walls: 1
-    apply_burning: 10
+    destroy_improvement_science: 0.25
+    destroy_improvement_keep: 0.25
+    destroy_improvement_forges: 0.25
+    destroy_improvement_walls: 0.25
+    apply_lightning_storm: 200
 cyclone:
   name: Cyclone
   category: wonder
@@ -160,7 +160,7 @@ energy_mirror:
   duration: 12
   perks:
     enemy_spell_damage: -15
-    enemy_spell_duration: -2
+    enemy_spell_duration: -1
 amplify_magic:
   name: Amplify Magic
   category: self
@@ -179,6 +179,7 @@ crusade:
   duration: 12
   races:
     - human
+    - nomad
   perks:
     offense: 10
 favorable_terrain:
@@ -222,7 +223,7 @@ alchemist_flame:
   races:
     - firewalker
   perks:
-    platinum_production_raw: 15
+    platinum_production_raw: 12
 erosion:
   name: Erosion
   category: self
@@ -264,7 +265,7 @@ mechanical_genius:
   races:
     - gnome
   perks:
-    rezone_cost: 30
+    rezone_cost: -30
   active: false
 bloodrage:
   name: Bloodrage
@@ -284,6 +285,8 @@ unholy_ghost:
   cost_strength: 5
   duration: 12
   races:
+    - dark-elf
+    - spirit-legacy
     - spirit-rework
   perks:
     ignore_draftees: 1
@@ -359,6 +362,7 @@ parasitic_hunger:
   cost_strength: 5
   duration: 12
   races:
+    - spirit
     - undead
   perks:
     conversion_rate: 20
@@ -434,7 +438,7 @@ necromantic_ritual:
   cost_mana: 5
   cost_strength: 5
   races:
-    - undead
+    - undead-legacy
   perks:
     convert_peasants_to_self_military_unit3: 2
   active: false
@@ -445,11 +449,12 @@ cull_the_weak:
   cost_strength: 5
   duration: 12
   races:
-    - undead-rework
+    - undead-legacy
   perks:
     upgrade_specs: 1
     cancels_midas_touch: 1
     invalid_protection: 1
+  active: false
 raise_the_dead:
   name: Raise the Dead
   category: self
@@ -457,7 +462,7 @@ raise_the_dead:
   cost_strength: 5
   duration: 12
   races:
-    - undead-rework
+    - undead-legacy
   perks:
     conversions_range: 60
   active: false
@@ -466,10 +471,21 @@ burning:
   category: effect
   cost_mana: 0
   cost_strength: 0
-  duration: 24
+  duration: 20
   perks:
-    fixed_population_growth: 6
+    enemy_fireball_damage: 100
     apply_rejuvenation: 1
+    immune_lightning_storm: 1
+lightning_storm:
+  name: Lightning Storm
+  category: effect
+  cost_mana: 0
+  cost_strength: 0
+  duration: 20
+  perks:
+    lightning_storm: 50
+    apply_rejuvenation: 1
+    immune_burning: 1
 rejuvenation:
   name: Rejuvenation
   category: effect
@@ -477,15 +493,16 @@ rejuvenation:
   cost_strength: 0
   duration: 48
   perks:
-    population_growth: 200
     enemy_spell_damage: -75
+    population_growth: 200
     immune_burning: 1
+    immune_lightning_storm: 1
     war_cancels: 1
 spell_reflect:
   name: Spell Reflect
   category: friendly
   cost_mana: 2
-  cost_strength: 4
+  cost_strength: 3
   duration: 3
   cooldown: 3
   perks:
@@ -493,21 +510,21 @@ spell_reflect:
 arcane_ward:
   name: Arcane Ward
   category: friendly
-  cost_mana: 3
-  cost_strength: 4
+  cost_mana: 1.5
+  cost_strength: 3
   duration: 6
   cooldown: 3
   perks:
-    wizard_power_defense: 10
+    enemy_spell_chance: 5
 illumination:
   name: Illumination
   category: friendly
-  cost_mana: 3
-  cost_strength: 4
+  cost_mana: 1.5
+  cost_strength: 3
   duration: 6
   cooldown: 3
   perks:
-    spy_power_defense: 10
+    enemy_espionage_chance: 5
 gaias_light:
   name: Gaia's Light
   category: self
@@ -519,6 +536,7 @@ gaias_light:
   perks:
     wizard_power: 15
     cancels_gaias_shadow: 1
+  active: false
 gaias_shadow:
   name: Gaia's Shadow
   category: self
@@ -530,3 +548,37 @@ gaias_shadow:
   perks:
     spy_power: 15
     cancels_gaias_light: 1
+  active: false
+death_and_decay:
+  name: Death and Decay
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 6
+  cooldown: 48
+  races:
+    - undead-rework
+  perks:
+    food_decay: 100
+    lumber_decay: 100
+    convert_peasants_to_self_military_unit1: 1
+    invalid_protection: 1
+feast_of_blood:
+  name: Feast of Blood
+  category: self
+  cost_mana: 5
+  cost_strength: 5
+  duration: 12
+  races:
+    - vampire
+  perks:
+    cancels_immortal: 1
+    convert_vampires: 9.5
+martyrdom:
+  name: Martyrdom
+  category: effect
+  cost_mana: 0
+  cost_strength: 0
+  duration: 24
+  perks:
+    martyrdom: 15

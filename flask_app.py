@@ -56,7 +56,13 @@ if db_url.startswith('sqlite:'):
     print("Note that the Flask_SQLAlchemy library inserts an 'instance' subdir into a sqlite Database URL.")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = db_url
-app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle' : 280}
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_pre_ping": True,
+    "pool_size": 20,
+    "max_overflow": 10,
+    "pool_timeout": 10,
+    "pool_recycle": 280
+}
 
 db.init_app(app)
 with app.app_context():

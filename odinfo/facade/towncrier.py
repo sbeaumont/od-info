@@ -2,8 +2,8 @@ from bs4 import BeautifulSoup
 import re
 import logging
 
-from opsdata.scrapetools import login
-from config import OUT_DIR, TOWN_CRIER_URL
+from odinfo.opsdata.scrapetools import login
+from odinfo.config import OUT_DIR, TOWN_CRIER_URL
 
 logger = logging.getLogger('od-info.towncrier')
 

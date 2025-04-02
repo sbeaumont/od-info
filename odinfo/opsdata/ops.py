@@ -10,11 +10,11 @@ import json
 import logging
 from datetime import datetime
 
-import config
-from domain.timeutils import cleanup_timestamp
+from odinfo import config
+from odinfo.timeutils import cleanup_timestamp
 
-from opsdata.scrapetools import get_soup_page, read_server_time
-from config import OP_CENTER_URL, MY_OP_CENTER_URL, SEARCH_PAGE
+from odinfo.opsdata.scrapetools import get_soup_page, read_server_time
+from odinfo.config import OP_CENTER_URL, MY_OP_CENTER_URL, SEARCH_PAGE
 
 logger = logging.getLogger('db-info.ops')
 

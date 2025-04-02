@@ -168,7 +168,7 @@ altar_of_heroes:
   name: Altar of Heroes
   perks:
     hero_bonus: 100
-    hero_experience: 5
+    hero_experience: 10
   power: 75000
   active: true
 temple_of_the_damned:
@@ -177,4 +177,10 @@ temple_of_the_damned:
     enemy_defense: -5
     defense: -2.5
   power: 150000
+  active: false
+urg:
+  name: Urg, the Devourer
+  perks:
+    sentient: 1
+  power: 1000000
   active: false

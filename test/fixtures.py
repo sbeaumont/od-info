@@ -4,9 +4,9 @@ import json
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from domain.models import (Base, Dominion, DominionHistory, ClearSight,
-                           BarracksSpy, CastleSpy, LandSpy, Revelation,
-                           SurveyDominion, Vision, TownCrier)
+from odinfo.domain.models import (Base, Dominion, DominionHistory, ClearSight,
+                                  BarracksSpy, CastleSpy, LandSpy, Revelation,
+                                  SurveyDominion, Vision, TownCrier)
 
 
 def create_db_session() -> Session:

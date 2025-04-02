@@ -8,19 +8,19 @@ so that any ugliness is contained in this class.
 import logging
 from operator import itemgetter
 
-from calculators.economy import Economy
-from calculators.military import MilitaryCalculator, RatioCalculator
-from calculators.networthcalculator import get_networth_deltas
-from config import SEARCH_PAGE
-from config import current_player_id
-from domain.dataaccesslayer import all_doms, dom_by_id, is_database_empty, realmies, query_town_crier, realm_of_dom
-from domain.models import Dominion
-from domain.timeutils import hours_since, add_duration, current_od_time
-from facade.awardstats import AwardStats
-from facade.discord import send_to_webhook
-from opsdata.ops import grab_ops, grab_my_ops, get_last_scans
-from opsdata.scrapetools import login, read_tick_time, get_soup_page
-from opsdata.updater import update_ops, update_town_crier, update_dom_index, query_stealables
+from odinfo.calculators.economy import Economy
+from odinfo.calculators.military import MilitaryCalculator, RatioCalculator
+from odinfo.calculators.networthcalculator import get_networth_deltas
+from odinfo.config import SEARCH_PAGE
+from odinfo.config import current_player_id
+from odinfo.domain.dataaccesslayer import all_doms, dom_by_id, is_database_empty, realmies, query_town_crier, realm_of_dom
+from odinfo.domain.models import Dominion
+from odinfo.timeutils import hours_since, add_duration, current_od_time
+from odinfo.facade.awardstats import AwardStats
+from odinfo.facade.discord import send_to_webhook
+from odinfo.opsdata.ops import grab_ops, grab_my_ops, get_last_scans
+from odinfo.opsdata.scrapetools import login, read_tick_time, get_soup_page
+from odinfo.opsdata.updater import update_ops, update_town_crier, update_dom_index, query_stealables
 from sqlalchemy import text
 
 logger = logging.getLogger('od-info.facade')

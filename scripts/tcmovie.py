@@ -3,12 +3,12 @@ from math import cos, sin, radians
 
 from moviepy.editor import *
 from visualize import Visualizer, COLORS, Point
-from opsdata.db import Database
+from odinfo.opsdata import Database
 from PIL import ImageFont
-from domain.dominion import realm_of_dom
-from config import OUT_DIR
+from odinfo.domain import realm_of_dom
+from odinfo.config import OUT_DIR
 
-from config import DATABASE
+from odinfo.config import DATABASE
 
 
 def centers_for(num_factions, distance):

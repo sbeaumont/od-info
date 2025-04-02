@@ -1,0 +1,46 @@
+key: demon
+name: Demon
+alignment: evil
+description: >-
+  <p>Demons are the embodiment of chaos and destruction. From the Abyss they rise, consumed by an insatiable hunger for conquest. The land withers beneath their tread, corrupting all living things in their smoldering wake.</p>
+  <p>Mischievous Imps sow discord with trickery and flame, while Succubi whisper irresistible temptations, bending even the strongest souls to their will. At the pinnacle of their hierarchy stand the Archdemons, nightmares made flesh, ruthlessly driving their legions to endless war.</p>
+attacker_difficulty: 2
+explorer_difficulty: 1
+converter_difficulty: 2
+home_land_type: swamp
+perks:
+  offense: 5
+units:
+  - name: Imp
+    cost:
+      platinum: 260
+      mana: 20
+    power:
+      offense: 3
+      defense: 0
+    need_boat: false
+  - name: Succubus
+    cost:
+      platinum: 300
+      mana: 10
+    power:
+      offense: 0
+      defense: 3
+    perks:
+      charm_spies: 1
+  - name: Abyssal Fiend
+    cost:
+      platinum: 1050
+      mana: 10
+    power:
+      offense: 0
+      defense: 5
+    perks:
+      defense_from_building: tower,10,1 # land type, ratio%, max
+  - name: Archdemon
+    cost:
+      platinum: 860
+      mana: 30
+    power:
+      offense: 5
+      defense: 2

@@ -1,4 +1,4 @@
-from domain.models import DominionHistory
+from odinfo.domain.models import DominionHistory
 from sqlalchemy import func
 from datetime import datetime, timedelta
 import logging

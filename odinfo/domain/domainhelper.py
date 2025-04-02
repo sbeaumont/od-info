@@ -2,8 +2,8 @@ from collections import defaultdict
 from datetime import timedelta
 from math import trunc, exp
 
-from domain.refdata import TechTree, MASONRY_MULTIPLIER, IMP_FACTORS
-from domain.timeutils import hours_until
+from odinfo.domain.refdata import TechTree, MASONRY_MULTIPLIER, IMP_FACTORS
+from odinfo.timeutils import hours_until
 
 NON_HOME_TYPES = (
     'alchemy',

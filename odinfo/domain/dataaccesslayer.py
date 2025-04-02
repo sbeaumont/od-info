@@ -1,7 +1,7 @@
 import logging
 
 from sqlalchemy import literal_column, func
-from domain.models import Dominion, TownCrier
+from odinfo.domain.models import Dominion, TownCrier
 
 
 logger = logging.getLogger('od-info.dal')

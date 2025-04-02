@@ -1,26 +1,44 @@
 abjuration:
   name: Abjuration
+  level: 6
+  type: magic
+  icon: ra-book-cover
+  perks:
+    enemy_lightning_bolt_damage: -10
+    combat_defense: 1
+divination:
+  name: Divination
   level: 4
   type: magic
   icon: ra-book-cover
   perks:
-    improved_energy_mirror: 5
-  active: false
-divination:
-  name: Divination
+    info_spell_cost: -10
+    combat_focus: 5
+    combat_evasion: 2
+enchantment:
+  name: Enchantment
   level: 2
   type: magic
   icon: ra-book-cover
   perks:
-    info_spell_cost: -5
+    self_spell_strength_cost: -1
+    combat_focus: 10
 evocation:
   name: Evocation
-  level: 4
+  level: 6
   type: magic
   icon: ra-book-cover
   perks:
     fireball_damage: 10
-  active: false
+    combat_attack: 1
+hammer_of_retribution:
+  name: Hammer of Retribution
+  level: 4
+  type: item
+  icon: ra-hammer-drop
+  perks:
+    retal_prestige: 5
+    combat_counter: 15
 illusion:
   name: Illusion
   level: 2
@@ -28,6 +46,7 @@ illusion:
   icon: ra-book-cover
   perks:
     espionage_fails_hide_identity: 1
+    combat_evasion: 5
 iron_dagger:
   name: Iron Dagger
   level: 4
@@ -42,7 +61,17 @@ kings_banner:
   type: item
   icon: ra-knight-banner
   perks:
-    invasion_morale: 1
+    invasion_morale: -2
+    combat_health: 3
+orb_of_detection:
+  name: Orb of Detection
+  level: 4
+  type: item
+  icon: ra-orb-wand
+  perks:
+    enemy_spy_losses: 20
+    combat_counter: 10
+    combat_evasion: 1
 spyglass:
   name: Spyglass
   level: 2
@@ -50,6 +79,8 @@ spyglass:
   icon: ra-spyglass
   perks:
     land_spy_strength_cost: 1
+    combat_counter: 5
+    combat_evasion: 3
 scribes_journal:
   name: Scribe's Journal
   level: 2
@@ -57,6 +88,16 @@ scribes_journal:
   icon: ra-scroll-quill
   perks:
     tech_production_invasion: 10
+    combat_focus: 10
+transmutation:
+  name: Transmutation
+  level: 4
+  type: magic
+  icon: ra-book-cover
+  perks:
+    exchange_mana: 1
+    combat_focus: 5
+    combat_health: 2
 disarmament:
   name: Disarmament
   level: 0
@@ -85,3 +126,30 @@ revised_strategy:
     tech_refund: 50
   classes:
     - scion
+pursuit_of_knowledge:
+  name: Pursuit of Knowledge
+  level: 0
+  type: directive
+  icon: ra-archive-research
+  perks:
+    tech_production: 30
+    invest_bonus: -20
+  classes:
+    - scholar
+blade_of_sundering:
+  name: Blade of Sundering
+  level: 6
+  type: item
+  icon: ra-relic-blade
+  perks:
+    wonder_attack_damage: 20
+    combat_attack: 1
+staff_of_stormcaller:
+  name: Staff of the Stormcaller
+  level: 6
+  type: item
+  icon: ra-wizard-staff
+  perks:
+    cyclone_damage: 20
+    combat_focus: 10
+    combat_health: 5

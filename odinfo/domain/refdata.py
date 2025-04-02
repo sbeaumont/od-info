@@ -6,7 +6,7 @@ import yaml
 from math import erf
 from enum import Enum
 from collections import defaultdict, namedtuple
-from config import REF_DATA_DIR
+from odinfo.config import REF_DATA_DIR
 from functools import lru_cache
 
 

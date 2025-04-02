@@ -1,6 +1,6 @@
-from config import OP_CENTER_URL
-from config import current_player_id
-from opsdata.scrapetools import login, get_soup_page
+from odinfo.config import OP_CENTER_URL
+from odinfo.config import current_player_id
+from odinfo.opsdata import login, get_soup_page
 
 
 def go():

@@ -1,4 +1,4 @@
-from config import USERS_FILE
+from odinfo.config import USERS_FILE
 import json
 
 

@@ -10,7 +10,6 @@ converter_difficulty: 3
 home_land_type: cavern
 perks:
   max_population: 5
-  lumber_production: -10
   gem_production: 15
   construction_cost: -10
 units:
@@ -39,7 +38,7 @@ units:
       rebirth: 6
   - name: Salamander
     cost:
-      platinum: 950
+      platinum: 940
       ore: 0
     power:
       offense: 5

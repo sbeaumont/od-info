@@ -1,5 +1,8 @@
-from domain.models import Dominion
-from config import *
+from sqlalchemy.orm import Session
+
+from odinfo.domain.dataaccesslayer import dom_by_id
+from odinfo.domain.models import Dominion
+from odinfo.config import *
 from math import trunc
 
 
@@ -12,13 +15,13 @@ class Economy(object):
         bonus = 0
         # Assuming Midas Touch is up
         bonus += 0.10
-        bonus += self.dom.last_castle.science
+        bonus += self.dom.last_castle.science_rating
         bonus += self.dom.tech.value_for_perk('platinum_production') / 100
         return bonus
 
     @property
     def employed_peasants(self):
-        return min(self.dom.cs['peasants'], self.dom.buildings.jobs)
+        return min(self.dom.last_cs.peasants, self.dom.buildings.jobs)
 
     @property
     def free_jobs(self):
@@ -34,7 +37,7 @@ class Economy(object):
 
     @property
     def alchemy_income(self):
-        return trunc(self.dom.buildings.alchemies * PLAT_PER_ALCHEMY_PER_TICK)
+        return trunc(self.dom.last_survey.alchemy * PLAT_PER_ALCHEMY_PER_TICK)
 
     @property
     def guard_towers(self):
@@ -54,15 +57,15 @@ class Economy(object):
 
 
 if __name__ == '__main__':
-    from opsdata.db import Database
+    from sqlalchemy import create_engine, select
 
-    db = Database()
-    db.init(DATABASE)
-    # dom = Dominion(db, 10792)
-    dom = Dominion(db, current_player_id)
-    econ = Economy(dom)
+    db_name = DATABASE_NAME[:10] + 'instance/' + DATABASE_NAME[10:]
+    print(db_name)
+    with Session(create_engine(db_name)) as session:
+        dom = session.execute(select(Dominion).where(Dominion.code == current_player_id)).scalar()
+        econ = Economy(dom)
 
-    print(econ.base_plat_per_tick)
-    print(econ.plat_total_bonus)
-    print(econ.platinum_production)
+        print("Base plat per tick", econ.base_plat_per_tick)
+        print("Plat total bonus", econ.plat_total_bonus)
+        print("Platinum production", econ.platinum_production)
 

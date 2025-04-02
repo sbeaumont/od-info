@@ -1,11 +1,11 @@
 from sqlalchemy import Integer, String, DateTime, ForeignKey, Float, func, JSON
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, backref
 from datetime import datetime
 from typing import List, Optional
 
-from domain.domainhelper import Buildings, Land, Technology, Magic
-from domain.timeutils import hours_since
+from odinfo.domain.domainhelper import Buildings, Land, Technology, Magic
+from odinfo.timeutils import hours_since
 
 
 class Base(DeclarativeBase):

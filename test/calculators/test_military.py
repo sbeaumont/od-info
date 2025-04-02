@@ -1,7 +1,7 @@
 import unittest
 
-from calculators.military import MilitaryCalculator
-from domain.models import Dominion
+from odinfo.calculators.military import MilitaryCalculator
+from odinfo.domain.models import Dominion
 from test.fixtures import create_db_session, init_db
 
 

@@ -2,10 +2,10 @@ import time
 import logging
 from math import trunc
 
-from domain.models import Dominion
-from domain.refdata import Race
-from domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, Unit, Spells
-from domain.refdata import NETWORTH_VALUES, BS_UNCERTAINTY, ARES_BONUS
+from odinfo.domain.models import Dominion
+from odinfo.domain.refdata import Race
+from odinfo.domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, Unit, Spells
+from odinfo.domain.refdata import NETWORTH_VALUES, ARES_BONUS
 
 logger = logging.getLogger('od-info.military')
 

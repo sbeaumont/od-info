@@ -1,6 +1,6 @@
 import yaml
 import os
-from config import REF_DATA_DIR, OUT_DIR
+from odinfo.config import REF_DATA_DIR, OUT_DIR
 from dataclasses import dataclass, astuple
 
 

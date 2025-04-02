@@ -1,7 +1,7 @@
 import time
 
-from config import current_player_id
-from opsdata.scrapetools import login, get_soup_page
+from odinfo.config import current_player_id
+from odinfo.opsdata import login, get_soup_page
 
 FORUM_URL = 'https://www.opendominion.net/dominion/forum/330?page={}'
 
@@ -19,7 +19,7 @@ def go():
             print(comment)
             print(comment.p.text)
             comments.append(comment.p.text)
-    with open('threewordstory-R38.txt', 'w') as f:
+    with open('../out/threewordstory-R38.txt', 'w') as f:
         f.write(' '.join(comments))
 
 

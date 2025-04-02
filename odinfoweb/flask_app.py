@@ -14,14 +14,14 @@ import flask
 from flask import Flask, g, request, render_template, session
 from flask_login import LoginManager, login_user, login_required
 from flask_sqlalchemy import SQLAlchemy
-from forms import LoginForm
+from .forms import LoginForm
 
-from facade.user import load_user_by_id, load_user_by_name, User
-from domain.models import *  # Ensure all models are loaded to be able to create the db.
+from odinfo.domain.models import Base
+from odinfoweb.user import load_user_by_id, load_user_by_name, User
 
-from config import feature_toggles, OP_CENTER_URL, load_secrets, check_dirs_and_configs
-from facade.odinfo import ODInfoFacade
-from facade.graphs import nw_history_graph, land_history_graph
+from odinfo.config import feature_toggles, OP_CENTER_URL, load_secrets, check_dirs_and_configs
+from odinfo.facade.odinfo import ODInfoFacade
+from odinfo.facade.graphs import nw_history_graph, land_history_graph
 
 # ---------------------------------------------------------------------- Flask
 
@@ -41,7 +41,7 @@ if getattr(sys, 'frozen', False):
     app = Flask('od-info', template_folder=template_folder, static_folder=static_folder)
 else:
     # Regular Flask startup
-    app = Flask('od-info')
+    app = Flask('od-info', template_folder='./odinfoweb/templates')
 
 app.logger.setLevel(logging.DEBUG)
 

@@ -1,5 +1,5 @@
 import requests
-from config import discord_webhook
+from odinfo.config import discord_webhook
 
 
 def send_to_webhook(message):

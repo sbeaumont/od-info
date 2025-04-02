@@ -10,7 +10,7 @@ import requests
 import logging
 from bs4 import BeautifulSoup
 
-from config import LOGIN_URL, STATUS_URL, SELECT_URL, username, password, current_player_id
+from odinfo.config import LOGIN_URL, STATUS_URL, SELECT_URL, username, password, current_player_id
 from requests.exceptions import TooManyRedirects
 
 

@@ -4,13 +4,13 @@ Higher order update actions.
 
 import logging
 
-from opsdata.ops import grab_search
-from domain.timeutils import cleanup_timestamp
-from domain.dataaccesslayer import all_doms, dom_by_id
-from domain.models import Dominion, DominionHistory, TownCrier
-from facade.towncrier import get_number_of_tc_pages, get_tc_page
-from domain.models import (ClearSight, CastleSpy, BarracksSpy,
-                           SurveyDominion, LandSpy, Vision, Revelation)
+from odinfo.opsdata.ops import grab_search
+from odinfo.timeutils import cleanup_timestamp
+from odinfo.domain.dataaccesslayer import all_doms, dom_by_id
+from odinfo.domain.models import Dominion, DominionHistory, TownCrier
+from odinfo.facade.towncrier import get_number_of_tc_pages, get_tc_page
+from odinfo.domain.models import (ClearSight, CastleSpy, BarracksSpy,
+                                  SurveyDominion, LandSpy, Vision, Revelation)
 from sqlalchemy import text
 
 logger = logging.getLogger('od-info.updater')

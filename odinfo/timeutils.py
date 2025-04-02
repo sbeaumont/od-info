@@ -2,7 +2,7 @@ import re
 from datetime import datetime, timedelta
 from math import trunc
 
-from config import DATE_TIME_FORMAT, LOCAL_TIME_SHIFT
+from odinfo.config import DATE_TIME_FORMAT, LOCAL_TIME_SHIFT
 
 
 def cleanup_timestamp(timestamp: str) -> datetime:

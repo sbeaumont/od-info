@@ -25,7 +25,7 @@ DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # Knowledge of internal directory and file structure
 
-INSTANCE_DIR = 'instance'
+INSTANCE_DIR = './instance'
 OUT_DIR = './out'
 REF_DATA_DIR = './ref-data'
 OPS_DATA_DIR = 'opsdata'
@@ -132,6 +132,7 @@ def load_secrets():
 SECRETS = load_secrets()
 username = SECRETS['username']
 password = SECRETS['password']
+DATABASE_NAME = SECRETS['database_name']
 current_player_id = int(SECRETS['current_player_id'])
 LOCAL_TIME_SHIFT = int(SECRETS['LOCAL_TIME_SHIFT'])
 discord_webhook = SECRETS.get('discord_webhook', None)

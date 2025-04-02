@@ -1,7 +1,7 @@
 import unittest
 
 from test.fixtures import create_db_session, init_db
-from domain.models import Dominion
+from odinfo.domain.models import Dominion
 
 
 class DominionTest(unittest.TestCase):

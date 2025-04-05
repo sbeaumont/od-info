@@ -63,12 +63,16 @@ def read_server_time(soup: BeautifulSoup) -> str | None:
 
 
 def read_tick_time(soup: BeautifulSoup) -> ODTickTime:
-    timestamp_span = [s for s in soup.footer.find_all('span') if s.has_attr('title')][0]
-    hh, mm = timestamp_span['title'].split(':')[-2:]
-    strongs = timestamp_span.find_all('strong')
-    day = strongs[0].string
-    tick = strongs[1].string
-    return ODTickTime(int(day), int(tick), int(hh), int(mm))
+    timestamp_element = [s for s in soup.footer.find_all('span') if s.has_attr('title')]
+    if len(timestamp_element) > 0:
+        timestamp_span = timestamp_element[0]
+        hh, mm = timestamp_span['title'].split(':')[-2:]
+        strongs = timestamp_span.find_all('strong')
+        day = strongs[0].string
+        tick = strongs[1].string
+        return ODTickTime(int(day), int(tick), int(hh), int(mm))
+    else:
+        return ODTickTime(0, 0, 0, 0)
 
 
 def pull_csrf_token(soup):

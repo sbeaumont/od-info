@@ -8,9 +8,12 @@ from odinfo.config import DATE_TIME_FORMAT, LOCAL_TIME_SHIFT
 def cleanup_timestamp(timestamp: str) -> datetime:
     """Ensures that a timestamp has a YYYY-MM-DD HH:MM:SS format."""
     m = re.match(r"(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})", timestamp)
-    clean_ts = f"{m.group(1)} {m.group(2)}"
-    # dt = dt.replace(tzinfo=None).isoformat(sep=' ', timespec='seconds')
-    return datetime.strptime(clean_ts, DATE_TIME_FORMAT)
+    if m:
+        clean_ts = f"{m.group(1)} {m.group(2)}"
+        # dt = dt.replace(tzinfo=None).isoformat(sep=' ', timespec='seconds')
+        return datetime.strptime(clean_ts, DATE_TIME_FORMAT)
+    else:
+        return datetime.now()
 
 
 def row_s_to_dict(row_s):

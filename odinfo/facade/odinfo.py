@@ -229,10 +229,13 @@ class ODInfoFacade(object):
         return result_list
 
     def top_op(self, mil_calc_result: list):
-        topop = mil_calc_result[0]
-        for mc in mil_calc_result[1:]:
-            if mc['five_over_four_op'] > topop['five_over_four_op']:
-                topop = mc
+        if len(mil_calc_result) > 0:
+            topop = mil_calc_result[0]
+            for mc in mil_calc_result[1:]:
+                if mc['five_over_four_op'] > topop['five_over_four_op']:
+                    topop = mc
+        else:
+            topop = None
         return topop
 
     def realmie_codes(self) -> list[int]:

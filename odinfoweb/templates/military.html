@@ -8,9 +8,11 @@
 {% block content %}
   <div class="w3-container">
     <h5>Military {% if versus_op != 0 %}(VERSUS {{ versus_op }} OP){% endif %}</h5>
-    <p><b>Top OP is {{ top_op.name }} (#{{ top_op.realm }}) with {{ top_op.five_over_four_op }} OP and
-        {{ (top_op.temples * 100)|round(1) }}% Temples, in {{ top_op.paid_until }} ticks.
-    </b></p>
+    {% if top_op %}
+        <p><b>Top OP is {{ top_op.name }} (#{{ top_op.realm }}) with {{ top_op.five_over_four_op }} OP and
+            {{ (top_op.temples * 100)|round(1) }}% Temples, in {{ top_op.paid_until }} ticks.
+        </b></p>
+    {% endif %}
     <table id="military_table" class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
         <thead>
             <tr class="w3-black">

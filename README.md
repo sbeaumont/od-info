@@ -84,7 +84,7 @@ if you want to keep it.
 ### Run application
 Run the app locally from the Terminal from the root of the project:
 
-    flask --app flask_app run
+    flask --app odinfoweb.flask_app run
 
 For debugging add '--debug' but don't use the debug flag in an unsafe setting!
 If you're at home you're safe enough, just don't use it in a Starbucks or a hotel:

@@ -35,7 +35,8 @@ def update_dom_index(session, db):
                              timestamp=timestamp,
                              land=int(line['land']),
                              networth=int(line['networth']))
-        dom.history.append(dh)
+        # dom.history.append(dh)
+        db.session.add(dh)
         db.session.commit()
 
 
@@ -48,7 +49,8 @@ def update_dominion(ops, db):
         session.add(dom)
 
     dh = DominionHistory(dominion_id=dom.code, timestamp=timestamp, land=ops.land, networth=ops.networth)
-    dom.history.append(dh)
+    db.session.add(dh)
+    # dom.history.append(dh)
 
     session.commit()
 

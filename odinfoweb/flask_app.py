@@ -201,7 +201,7 @@ def ratios():
 @app.route('/military/<versus_op>')
 @login_required
 def military(versus_op: int = 0):
-    dom_list = facade().military_list(versus_op=versus_op, top=100)
+    dom_list = facade().military_list(versus_op=versus_op, top=1000)
     return render_template('military.html',
                            feature_toggles=feature_toggles,
                            doms=dom_list,

@@ -14,6 +14,8 @@ import flask
 from flask import Flask, g, request, render_template, session
 from flask_login import LoginManager, login_user, login_required
 from flask_sqlalchemy import SQLAlchemy
+
+from odinfo.timeutils import current_od_time
 from .forms import LoginForm
 
 from odinfo.domain.models import Base
@@ -123,7 +125,8 @@ def overview():
         feature_toggles=feature_toggles,
         doms=facade().dom_list(),
         nw_deltas=facade().nw_deltas(),
-        ages=facade().all_doms_ops_age())
+        ages=facade().all_doms_ops_age(),
+        current_time=current_od_time())
 
 
 @app.route('/dominfo/<domcode>')

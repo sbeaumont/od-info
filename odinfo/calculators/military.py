@@ -251,15 +251,16 @@ class MilitaryCalculator(object):
             logger.debug(f"Starting five_over_four for dom {self.dom.code} {self.dom.race} {self.dom.name}")
             if self.flex_unit:
                 flex_unit_nr = self.race.nr_of_unit(self.flex_unit)
-                k = (5 / 4) * (self.op / self.dp)
+                # k = (5 / 4) * (self.op / self.dp)
+                k = (5 / 4 * (1 + self.defense_bonus)) / (1 + self.offense_bonus)
                 op_eff = self.flex_unit.offense
                 dp_eff = self.flex_unit.defense
                 total_flex = self.amount(flex_unit_nr)
-                raw_op = self.op - self.op_of(flex_unit_nr)
-                raw_dp = self.dp - self.dp_of(flex_unit_nr)
-                dp_flex = round((raw_op + (total_flex * op_eff) - (k * raw_dp)) / (op_eff + (k * dp_eff)) + 0.5)
-                self._five_four_dp = round(self.dp - (dp_flex * dp_eff), 2)
-                self._five_four_op = round(5/4 * self._five_four_dp, 2)
+                raw_op = self.raw_op - self.op_of(flex_unit_nr, with_bonus=False)
+                raw_dp = self.raw_dp - self.dp_of(flex_unit_nr, with_bonus=False)
+                dp_flex = round((raw_op + (total_flex * op_eff) - (k * raw_dp)) / (op_eff + (k * dp_eff)))
+                self._five_four_dp = round(raw_dp + (dp_flex * dp_eff), 2)
+                self._five_four_op = round(raw_op + ((total_flex - dp_flex) * op_eff), 2)
             else:
                 self._five_four_op = trunc(self.op)
                 dp = self.dp

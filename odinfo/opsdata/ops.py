@@ -11,7 +11,7 @@ import logging
 from datetime import datetime
 
 from odinfo import config
-from odinfo.timeutils import cleanup_timestamp
+from odinfo.timeutils import cleanup_timestamp, current_od_time
 
 from odinfo.opsdata.scrapetools import get_soup_page, read_server_time
 from odinfo.config import OP_CENTER_URL, MY_OP_CENTER_URL, SEARCH_PAGE
@@ -73,7 +73,7 @@ class Ops(object):
         if ts:
             return cleanup_timestamp(self.q('status.created_at'))
         else:
-            return datetime.now()
+            return current_od_time()
 
     @property
     def has_clearsight(self) -> bool:

@@ -3,12 +3,14 @@ from sqlalchemy import func
 from datetime import datetime, timedelta
 import logging
 
+from odinfo.timeutils import current_od_time
 
 logger = logging.getLogger('od-info.calculators')
 
 
 def get_networth_deltas(db, since=12):
-    since_timestamp = datetime.now() + timedelta(hours=-since)
+    # since_timestamp = datetime.now() + timedelta(hours=-since)
+    since_timestamp = current_od_time() + timedelta(hours=-since)
     logger.debug(f"Getting networth values since {since_timestamp}")
     latest_nws = db.session.execute(db.select(DominionHistory, func.max(DominionHistory.timestamp))
                                     .filter(DominionHistory.timestamp >= since_timestamp)

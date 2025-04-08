@@ -28,8 +28,6 @@ def update_dom_index(session, db):
                            realm=int(line['realm']),
                            race=line['race'])
             db.session.add(dom)
-        else:
-            dom = doms[line['code']]
 
         dh = DominionHistory(dominion_id=int(line['code']),
                              timestamp=timestamp,
@@ -37,7 +35,7 @@ def update_dom_index(session, db):
                              networth=int(line['networth']))
         # dom.history.append(dh)
         db.session.add(dh)
-        db.session.commit()
+    db.session.commit()
 
 
 def update_dominion(ops, db):

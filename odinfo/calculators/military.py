@@ -362,9 +362,9 @@ if __name__ == '__main__':
         stmt = select(Dominion).where(Dominion.code == 14261)
         dom = session.scalars(stmt).one()
         rc = RatioCalculator(dom)
-        print("mse", rc.spy_units_equiv)
-        print("mwe", rc.wiz_units_equiv)
-        print("mwr", rc.max_wiz_ratio_estimate)
+        print("Military Spy Units Equivalent", rc.spy_units_equiv)
+        print("Military Wiz Units Equivalent", rc.wiz_units_equiv)
+        print("Wiz Ratio Estimate", rc.max_wiz_ratio_estimate)
         for i in range(1, 5):
             print("unit", i, rc.amount(i))
         mc = MilitaryCalculator(dom)

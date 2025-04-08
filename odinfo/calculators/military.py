@@ -251,7 +251,7 @@ class MilitaryCalculator(object):
             logger.debug(f"Starting five_over_four for dom {self.dom.code} {self.dom.race} {self.dom.name}")
             if self.flex_unit:
                 flex_unit_nr = self.race.nr_of_unit(self.flex_unit)
-                k = 5 / 4 * self.op / self.dp
+                k = (5 / 4) * (self.op / self.dp)
                 op_eff = self.flex_unit.offense
                 dp_eff = self.flex_unit.defense
                 total_flex = self.amount(flex_unit_nr)
@@ -357,9 +357,9 @@ class RatioCalculator(object):
 if __name__ == '__main__':
     from sqlalchemy import create_engine, select
     from sqlalchemy.orm import Session
-    engine = create_engine("sqlite:///instance/odinfo-round-40.sqlite", echo=False)
+    engine = create_engine("sqlite:///instance/odinfo-draft-round-2.sqlite", echo=False)
     with Session(engine) as session:
-        stmt = select(Dominion).where(Dominion.code == 12548)
+        stmt = select(Dominion).where(Dominion.code == 14261)
         dom = session.scalars(stmt).one()
         rc = RatioCalculator(dom)
         print("mse", rc.spy_units_equiv)

@@ -58,14 +58,14 @@
         </tr>
         <tr>
             <td>{{ (military.offense_bonus * 100) | round(3) }}%</td>
-            <td>{{ military.op }}</td>
+            <td>{{ military.op }} ({{ military.raw_op }})</td>
             {% if dominion.buildings is not none %}
                 <td>{{ (dominion.buildings.ratio_of('temple') * 100)|round(1) }}%</td>
             {% else %}
                 <td>Unknown</td>
             {% endif %}
             <td>{{ (military.defense_bonus * 100)|round(1) }}%</td>
-            <td>{{ military.dp }}</td>
+            <td>{{ military.dp }} ({{ military.raw_dp }})</td>
         </tr>
         <tr>
             <td colspan="3">

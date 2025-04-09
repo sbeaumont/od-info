@@ -69,9 +69,10 @@ class Spells(object):
                 spell_yaml = yaml.safe_load(f)
                 spells = defaultdict(dict)
                 for spell_name, spell in spell_yaml.items():
-                    for perk, value in spell['perks'].items():
-                        for race in spell.get('races', ['all']):
-                            spells[perk][race] = spells[perk].get(race, 0) + value
+                    if spell.get('active', True):
+                        for perk, value in spell['perks'].items():
+                            for race in spell.get('races', ['all']):
+                                spells[perk][race] = spells[perk].get(race, 0) + value
             Spells.SPELL_REGISTRY = spells
         return Spells.SPELL_REGISTRY
 

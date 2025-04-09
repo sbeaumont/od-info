@@ -231,17 +231,18 @@ class MilitaryCalculator(object):
             hybrid_units_sendable = dict()
             for unit_type in self.race.hybrid_units:
                 unit_nr = self.race.nr_of_unit(unit_type)
-                new_op = sendable_offense + self.op_of(unit_nr, True)
-                new_dp = home_defense - self.dp_of(unit_nr, True)
-                if new_op <= (1.25 * new_dp):
-                    # Can send all of these units
-                    hybrid_units_sendable[unit_type] = self.amount(unit_nr)
-                    sendable_offense += self.op_of(unit_nr, True)
-                    home_defense -= self.dp_of(unit_nr, True)
-                else:
-                    # Found the flex units
-                    fu = unit_type
-                    break
+                if self.amount(unit_nr) > 0:
+                    new_op = sendable_offense + self.op_of(unit_nr, True)
+                    new_dp = home_defense - self.dp_of(unit_nr, True)
+                    if new_op <= (1.25 * new_dp):
+                        # Can send all of these units
+                        hybrid_units_sendable[unit_type] = self.amount(unit_nr)
+                        sendable_offense += self.op_of(unit_nr, True)
+                        home_defense -= self.dp_of(unit_nr, True)
+                    else:
+                        # Found the flex units
+                        fu = unit_type
+                        break
             self._flex_unit = fu
         return self._flex_unit
 
@@ -252,16 +253,20 @@ class MilitaryCalculator(object):
             if self.flex_unit:
                 flex_unit_nr = self.race.nr_of_unit(self.flex_unit)
                 # k = (5 / 4) * (self.op / self.dp)
-                k = (5 / 4 * (1 + self.defense_bonus)) / (1 + self.offense_bonus)
-                op_eff = self.flex_unit.offense
-                dp_eff = self.flex_unit.defense
+                # k = (5 / 4 * (1 + self.defense_bonus)) / (1 + self.offense_bonus)
                 total_flex = self.amount(flex_unit_nr)
-                raw_op = self.raw_op - self.op_of(flex_unit_nr, with_bonus=False)
-                raw_dp = self.raw_dp - self.dp_of(flex_unit_nr, with_bonus=False)
-                dp_flex = round((raw_op + (total_flex * op_eff) - (k * raw_dp)) / (op_eff + (k * dp_eff)))
-                self._five_four_dp = round(raw_dp + (dp_flex * dp_eff), 2)
-                self._five_four_op = round(raw_op + ((total_flex - dp_flex) * op_eff), 2)
+                raw_op = self.op - self.op_of(flex_unit_nr)
+                alpha_op = self.flex_unit.offense
+                alpha_dp = self.flex_unit.defense
+                # dp_flex = round((raw_op + (total_flex * op_eff) - (k * raw_dp)) / (op_eff + (k * dp_eff)))
+                flex_to_send = trunc(((5/4 * self.dp) - raw_op) / (alpha_op + (5/4 * alpha_dp)))
+                logger.debug(f"Flex unit is {self.flex_unit.name}: can send {flex_to_send} of {total_flex}")
+                if flex_to_send < 0:
+                    flex_to_send = 0
+                self._five_four_dp = round(self.dp - self.dp_of(flex_unit_nr, partial_amount=flex_to_send))
+                self._five_four_op = round(raw_op + self.op_of(flex_unit_nr, partial_amount=flex_to_send))
             else:
+                logger.debug(f"No flex unit available for {self}")
                 self._five_four_op = trunc(self.op)
                 dp = self.dp
                 for unit_type in self.race.hybrid_units:
@@ -269,7 +274,8 @@ class MilitaryCalculator(object):
                 self._five_four_dp = trunc(dp)
             logger.debug(f"op: {self._five_four_op}, 5/4 dp: {self._five_four_dp * 5 / 4}")
             if self._five_four_op > (round(self._five_four_dp * 5/4, 2)):
-                logger.warning(f"op: {self._five_four_op}, 5/4 dp: {round(self._five_four_dp * 5/4, 2)}")
+                logger.warning(f"op: {self._five_four_op}, 5/4 dp: {round(self._five_four_dp * 5/4, 2)}, correcting OP to {self._five_four_dp * 5/4}")
+                self._five_four_op = round(self._five_four_dp * 5/4)
         return round(self._five_four_op), round(self._five_four_dp)
 
 

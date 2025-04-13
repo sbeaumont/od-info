@@ -119,12 +119,12 @@ class MilitaryCalculator(object):
     @property
     def forges_bonus(self) -> float | None:
         """Forges bonus as a decimal"""
-        return self.dom.last_castle.forges_rating if self.dom.last_castle else None
+        return self.dom.last_castle.forges_rating if self.dom.last_castle else 0
 
     @property
     def prestige_bonus(self) -> float | None:
         """Prestige bonus as a decimal"""
-        return (self.dom.last_cs.prestige / 10000) if self.dom.last_cs else None
+        return (self.dom.last_cs.prestige / 10000) if self.dom.last_cs else 0
 
     @property
     def offense_bonus(self) -> float:
@@ -133,9 +133,9 @@ class MilitaryCalculator(object):
         bonus += self.spell_offense_bonus
         # bonus += self.spell_bonus(self.dom.race.name, 'offense_from_barren_land') / 100
         bonus += self.tech_offense_bonus
-        bonus += self.forges_bonus if self.forges_bonus else 0
+        bonus += self.forges_bonus
         bonus += self.gryphon_nest_bonus
-        bonus += self.prestige_bonus if self.prestige_bonus else 0
+        bonus += self.prestige_bonus
         return bonus
 
     @property

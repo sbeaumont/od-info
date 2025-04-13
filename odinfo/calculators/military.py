@@ -102,39 +102,69 @@ class MilitaryCalculator(object):
             return 0
 
     @property
+    def racial_offense_bonus(self) -> float:
+        """Racial offense bonus as a decimal"""
+        return self.race.get_perk('offense', 0) / 100
+
+    @property
+    def spell_offense_bonus(self) -> float:
+        """Spell offense bonus as a decimal"""
+        return self.spell_bonus(self.dom.race, 'offense') / 100
+
+    @property
+    def tech_offense_bonus(self) -> float:
+        """Tech offense bonus as a decimal"""
+        return float(self.dom.tech.value_for_perk('offense')) / 100
+
+    @property
+    def forges_bonus(self) -> float | None:
+        """Forges bonus as a decimal"""
+        return self.dom.last_castle.forges_rating if self.dom.last_castle else None
+
+    @property
+    def prestige_bonus(self) -> float | None:
+        """Prestige bonus as a decimal"""
+        return (self.dom.last_cs.prestige / 10000) if self.dom.last_cs else None
+
+    @property
     def offense_bonus(self) -> float:
         bonus = 0
-        # Racial offense bonus
-        bonus += self.race.get_perk('offense', 0) / 100
-        # Spell bonus
-        bonus += self.spell_bonus(self.dom.race, 'offense') / 100
+        bonus += self.racial_offense_bonus
+        bonus += self.spell_offense_bonus
         # bonus += self.spell_bonus(self.dom.race.name, 'offense_from_barren_land') / 100
-        # Tech bonus
-        bonus += float(self.dom.tech.value_for_perk('offense')) / 100
-        # Forges bonus
-        bonus += self.dom.last_castle.forges_rating if self.dom.last_castle else 0
-        # Gryphon Nest bonus
+        bonus += self.tech_offense_bonus
+        bonus += self.forges_bonus if self.forges_bonus else 0
         bonus += self.gryphon_nest_bonus
-        # Prestige Bonus
-        bonus += (self.dom.last_cs.prestige / 10000) if self.dom.last_cs else 0
+        bonus += self.prestige_bonus if self.prestige_bonus else 0
         return bonus
+
+    @property
+    def racial_defense_bonus(self):
+        return self.race.get_perk('defense', 0) / 100
+
+    @property
+    def spell_defense_bonus(self):
+        """Spell defense bonus as a decimal, assuming Ares is up as well."""
+        return (self.spell_bonus(self.race.name, 'defense') / 100) + ARES_BONUS
+
+    @property
+    def tech_defense_bonus(self):
+        return float(self.dom.tech.value_for_perk('defense')) / 100
+
+    @property
+    def walls_bonus(self) -> float | None:
+        """Walls bonus as a decimal"""
+        return self.dom.last_castle.walls_rating if self.dom.last_castle else 0
 
     @property
     def defense_bonus(self) -> float:
         """Defense bonus as a decimal"""
         bonus = 0
-        # Racial bonus
-        bonus += self.race.get_perk('defense', 0) / 100
-        # Spell bonus
-        bonus += self.spell_bonus(self.race.name, 'defense') / 100
-        # Tech bonus
-        bonus += float(self.dom.tech.value_for_perk('defense')) / 100
-        # Walls bonus
-        bonus += self.dom.last_castle.walls_rating if self.dom.last_castle else 0
-        # Guard Tower bonus
+        bonus += self.racial_defense_bonus
+        bonus += self.spell_defense_bonus
+        bonus += self.tech_defense_bonus
+        bonus += self.walls_bonus
         bonus += self.guard_tower_bonus
-        # Assume ares is up
-        bonus += ARES_BONUS
         return bonus
 
     @property
@@ -146,10 +176,18 @@ class MilitaryCalculator(object):
         return round(self.raw_op * (1 + self.offense_bonus))
 
     @property
+    def draftees(self) -> int:
+        return self.dom.last_cs.military_draftees if self.dom.last_cs else 0
+
+    @property
+    def total_units(self) -> int:
+        return sum([self.amount(i) for i in range(1, 5)]) + self.draftees
+
+    @property
     def raw_dp(self) -> int:
         defense = 0
         defense += sum([self.dp_of(i) for i in range(1, 5)])
-        defense += self.dom.last_cs.military_draftees if self.dom.last_cs else 0
+        defense += self.draftees
         return defense
 
     @property
@@ -252,19 +290,16 @@ class MilitaryCalculator(object):
             logger.debug(f"Starting five_over_four for dom {self.dom.code} {self.dom.race} {self.dom.name}")
             if self.flex_unit:
                 flex_unit_nr = self.race.nr_of_unit(self.flex_unit)
-                # k = (5 / 4) * (self.op / self.dp)
-                # k = (5 / 4 * (1 + self.defense_bonus)) / (1 + self.offense_bonus)
                 total_flex = self.amount(flex_unit_nr)
-                raw_op = self.op - self.op_of(flex_unit_nr)
+                non_flex_op = self.op - self.op_of(flex_unit_nr, with_bonus=True)
                 alpha_op = self.flex_unit.offense
                 alpha_dp = self.flex_unit.defense
-                # dp_flex = round((raw_op + (total_flex * op_eff) - (k * raw_dp)) / (op_eff + (k * dp_eff)))
-                flex_to_send = trunc(((5/4 * self.dp) - raw_op) / (alpha_op + (5/4 * alpha_dp)))
+                flex_to_send = trunc(((5/4 * self.dp) - non_flex_op) / (alpha_op + (5/4 * alpha_dp)))
                 logger.debug(f"Flex unit is {self.flex_unit.name}: can send {flex_to_send} of {total_flex}")
                 if flex_to_send < 0:
                     flex_to_send = 0
-                self._five_four_dp = round(self.dp - self.dp_of(flex_unit_nr, partial_amount=flex_to_send))
-                self._five_four_op = round(raw_op + self.op_of(flex_unit_nr, partial_amount=flex_to_send))
+                self._five_four_dp = round(self.dp - self.dp_of(flex_unit_nr, with_bonus=True, partial_amount=flex_to_send))
+                self._five_four_op = round(non_flex_op + self.op_of(flex_unit_nr, with_bonus=True ,partial_amount=flex_to_send))
             else:
                 logger.debug(f"No flex unit available for {self}")
                 self._five_four_op = trunc(self.op)
@@ -366,7 +401,7 @@ if __name__ == '__main__':
     from sqlalchemy.orm import Session
     engine = create_engine("sqlite:///instance/odinfo-draft-round-2.sqlite", echo=False)
     with Session(engine) as session:
-        stmt = select(Dominion).where(Dominion.code == 14261)
+        stmt = select(Dominion).where(Dominion.code == 14288)
         dom = session.scalars(stmt).one()
         rc = RatioCalculator(dom)
         print("Military Spy Units Equivalent", rc.spy_units_equiv)
@@ -375,6 +410,8 @@ if __name__ == '__main__':
         for i in range(1, 5):
             print("unit", i, rc.amount(i))
         mc = MilitaryCalculator(dom)
-        print("5/4", mc.five_over_four)
+        op54, dp54 = mc.five_over_four
+        print("5/4", op54, dp54)
         print("OP/DP", mc.op, mc.dp)
+        print("5/4 of 5/4 DP", (5/4)*dp54)
 

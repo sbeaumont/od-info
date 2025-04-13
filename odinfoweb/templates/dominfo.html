@@ -49,26 +49,92 @@
                 <td>Unknown</td>
             {% endif %}
         </tr>
-        <tr class="w3-black">
-            <th>OP Bonus %</th>
-            <th>OP</th>
-            <th>Temples</th>
-            <th>DP Bonus %</th>
-            <th>DP</th>
+        <tr>
+            <td colspan="1">
+                <table class="w3-white">
+                    <tr><td class="w3-black" colspan="2">Offense</td></tr>
+                    <tr><td>OP (raw)</td><td>{{ military.op }} ({{ military.raw_op }})</td></tr>
+                    <tr><td>5/4 OP</td><td>{{ military.five_over_four[0] }}</td></tr>
+                    <tr><td>Temples</td>
+                        <td>
+                            {% if dominion.buildings is not none %}
+                                {{ (dominion.buildings.ratio_of('temple') * 100)|round(1) }}%
+                            {% else %}
+                                Unknown
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr><td class="w3-black" colspan="2">Offense Bonuses</td></tr>
+                    <tr><td>Prestige</td><td>{{(military.prestige_bonus*100)|round(2)}}%</td></tr>
+                    <tr><td>Racial</td><td>{{(military.racial_offense_bonus*100)|round(2)}}%</td></tr>
+                    <tr><td>Buildings (GN)</td><td>{{(military.gryphon_nest_bonus*100)|round(2)}}%</td></tr>
+                    <tr><td>Improvements (Forges)</td><td>{{(military.forges_bonus*100)|round(2)}}%</td></tr>
+                    <tr><td>Tech</td><td>{{(military.tech_offense_bonus*100)|round(2)}}%</td></tr>
+                    <tr><td>Spell</td><td>{{(military.spell_offense_bonus*100)|round(2)}}%</td></tr>
+                    <tr><td><em>Total</em></td><td><em>{{(military.offense_bonus*100)|round(2)}}%</em></td></tr>
+                </table>
+            </td>
+            <td colspan="1">
+                <table class="w3-white">
+                    <tr><td class="w3-black" colspan="2">Defense</td></tr>
+                    <tr><td>DP (raw)</td><td>{{ military.dp }} ({{ military.raw_dp }})</td></tr>
+                    <tr><td>5/4 DP</td><td>{{ military.five_over_four[1] }}</td></tr>
+                    <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+                    <tr><td class="w3-black" colspan="2">Defense Bonuses</td></tr>
+                    <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+                    <tr><td>Racial</td><td>{{(military.racial_defense_bonus*100)|round(2)}}%</td></tr>
+                    <tr><td>Buildings (GT)</td><td>{{(military.guard_tower_bonus*100)|round(2)}}%</td></tr>
+                    <tr><td>Improvements (Walls)</td><td>{{(military.walls_bonus*100)|round(2)}}%</td></tr>
+                    <tr><td>Tech</td><td>{{(military.tech_defense_bonus*100)|round(2)}}%</td></tr>
+                    <tr><td>Spell (+Ares)</td><td>{{(military.spell_defense_bonus*100)|round(2)}}%</td></tr>
+                    <tr><td><em>Total</em></td><td><em>{{(military.defense_bonus*100)|round(2)}}%</em></td></tr>
+                </table>
+            </td>
+            <td colspan="1">
+                <table class="w3-white">
+                    <tr class="w3-black">
+                        <th>Name</th>
+                        <th>Amount</th>
+                        <th>Per Unit</th>
+                        <th>Raw OP</th>
+                        <th>Raw DP</th>
+                    </tr>
+                    {% for i in range(1, 5) %}
+                        <tr>
+                            <td>{{ military.unit_type(i).name }}</td>
+                            <td>
+                                {{ military.amount(i) }}
+                            </td>
+                            <td>
+                                {{ military.unit_type(i).offense }}/{{ military.unit_type(i).defense }}
+                            </td>
+                            <td>
+                                {{ military.op_of(i) }}
+                            </td>
+                            <td>
+                                {{ military.dp_of(i) }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td>Draftees</td>
+                        <td>{{military.draftees}}</td>
+                        <td>0/1</td>
+                        <td>0</td>
+                        <td>{{military.draftees}}</td>
+                    </tr>
+                    <tr>
+                        <td><em>Total</em></td>
+                        <td>{{military.total_units}}</td>
+                        <td>&nbsp;</td>
+                        <td>{{military.raw_op}}</td>
+                        <td>{{military.raw_dp}}</td>
+                    </tr>
+                </table>
+            </td>
         </tr>
         <tr>
-            <td>{{ (military.offense_bonus * 100) | round(3) }}%</td>
-            <td>{{ military.op }} ({{ military.raw_op }})</td>
-            {% if dominion.buildings is not none %}
-                <td>{{ (dominion.buildings.ratio_of('temple') * 100)|round(1) }}%</td>
-            {% else %}
-                <td>Unknown</td>
-            {% endif %}
-            <td>{{ (military.defense_bonus * 100)|round(1) }}%</td>
-            <td>{{ military.dp }} ({{ military.raw_dp }})</td>
-        </tr>
-        <tr>
-            <td colspan="3">
+            <td colspan="1">
                 <table class="w3-white">
                     <tr class="w3-black">
                         <th>&nbsp</th>
@@ -95,34 +161,6 @@
                         <td>{{ ratios.spywiz_networth }}</td>
                         <td>{{ ratios.spywiz_units }}</td>
                     </tr>
-                </table>
-            </td>
-            <td colspan="2">
-                <table class="w3-white">
-                    <tr class="w3-black">
-                        <th>Name</th>
-                        <th>Amount</th>
-                        <th>Per Unit</th>
-                        <th>OP</th>
-                        <th>DP</th>
-                    </tr>
-                    {% for i in range(1, 5) %}
-                        <tr>
-                            <td>{{ military.unit_type(i).name }}</td>
-                            <td>
-                                {{ military.amount(i) }}
-                            </td>
-                            <td>
-                                {{ military.unit_type(i).offense }}/{{ military.unit_type(i).defense }}
-                            </td>
-                            <td>
-                                {{ military.op_of(i) }}
-                            </td>
-                            <td>
-                                {{ military.dp_of(i) }}
-                            </td>
-                        </tr>
-                    {% endfor %}
                 </table>
             </td>
         </tr>

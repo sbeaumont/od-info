@@ -126,7 +126,7 @@ def overview():
         doms=facade().dom_list(),
         nw_deltas=facade().nw_deltas(),
         ages=facade().all_doms_ops_age(),
-        current_time=current_od_time())
+        current_time=current_od_time(as_str=True))
 
 
 @app.route('/dominfo/<domcode>')

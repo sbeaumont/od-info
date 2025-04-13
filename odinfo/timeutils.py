@@ -10,7 +10,6 @@ def cleanup_timestamp(timestamp: str) -> datetime:
     m = re.match(r"(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})", timestamp)
     if m:
         clean_ts = f"{m.group(1)} {m.group(2)}"
-        # dt = dt.replace(tzinfo=None).isoformat(sep=' ', timespec='seconds')
         return datetime.strptime(clean_ts, DATE_TIME_FORMAT)
     else:
         return datetime.now()
@@ -27,7 +26,7 @@ def row_s_to_dict(row_s):
 
 
 def current_od_time(as_str=False) -> datetime | str:
-    dt = datetime.now() + timedelta(hours=LOCAL_TIME_SHIFT)
+    dt = datetime.now().replace(microsecond=0) + timedelta(hours=LOCAL_TIME_SHIFT)
     if as_str:
         return dt.strftime(DATE_TIME_FORMAT)
     else:

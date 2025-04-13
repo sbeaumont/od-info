@@ -10,6 +10,7 @@ from odinfo.facade.odinfo import ODInfoFacade
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("odinfo.cron")
 
+
 class EngineWrapper():
     def __init__(self, engine: Engine):
         self.engine = engine
@@ -23,6 +24,7 @@ class EngineWrapper():
         if not self._session:
             self._session = Session(bind=self.engine)
         return self._session
+
 
 def check_all_ok():
     """Check that the underlying file system is OK."""
@@ -59,6 +61,7 @@ def update_all(engine: Engine) -> None:
     facade.update_all()
     logging.info("Updating realmies...")
     facade.update_realmies()
+
 
 if __name__ == '__main__':
     check_all_ok()

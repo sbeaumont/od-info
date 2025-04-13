@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from odinfo.config import check_dirs_and_configs, load_secrets
 from odinfo.facade.odinfo import ODInfoFacade
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("odinfo.cron")
 
 class EngineWrapper():

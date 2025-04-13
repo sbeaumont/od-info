@@ -37,7 +37,7 @@ def check_all_ok():
         logger.info('All OK')
 
 
-def initialize_database() -> Engine:
+def initialize_database() -> EngineWrapper:
     """Initialize the database."""
     db_url = load_secrets()['database_name']
     if db_url.startswith('sqlite'):
@@ -49,12 +49,12 @@ def initialize_database() -> Engine:
                            max_overflow=10,
                            pool_timeout=10,
                            pool_recycle=280)
-    return engine
+    return EngineWrapper(engine)
 
 
-def update_all(engine: Engine) -> None:
+def update_all(engine: EngineWrapper) -> None:
     """Update all information from the OD into the database."""
-    facade = ODInfoFacade(EngineWrapper(engine))
+    facade = ODInfoFacade(engine)
     logging.info("Updating Dominions Index (from search page)...")
     facade.update_dom_index()
     logging.info("Updating all Dominions...")

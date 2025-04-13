@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from odinfo.domain.domainhelper import Buildings, Land, Technology, Magic
-from odinfo.timeutils import hours_since
+from odinfo.timeutils import hours_since, current_od_time
 from odinfo.domain.refdata import Race
 
 
@@ -15,7 +15,7 @@ class Base(DeclarativeBase):
 
 class TimestampedOpsMixin(object):
     dominion_id = mapped_column('dominion', ForeignKey('Dominions.code'))
-    timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow())
+    timestamp: Mapped[datetime] = mapped_column(DateTime, default=current_od_time())
     __mapper_args__ = {'primary_key': [dominion_id, timestamp]}
 
 

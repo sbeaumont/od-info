@@ -16,8 +16,9 @@ class EngineWrapper():
         self.engine = engine
         self._session = None
 
-    def select(self, query: object):
-        return select(query)
+    @property
+    def select(self):
+        return select
 
     @property
     def session(self):

@@ -43,7 +43,7 @@ def initialize_database() -> EngineWrapper:
     db_url = load_secrets()['database_name']
     if db_url.startswith('sqlite'):
         db_url = db_url.replace('sqlite:///', 'sqlite:///instance/')
-    logging.info(f"Initializing database: {db_url}")
+    logging.info(f"Initializing database")
     engine = create_engine(url=db_url,
                            pool_pre_ping=True,
                            pool_size=20,

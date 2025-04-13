@@ -208,7 +208,7 @@ class Race(object):
         for i in range(1, 5):
             unit = Unit(self.yaml['units'][i - 1], dom)
             self.units[i] = unit
-            self.reverse_units[unit] = i
+            self.reverse_units[unit.name] = i
 
     @staticmethod
     @lru_cache(maxsize=None)
@@ -226,7 +226,7 @@ class Race(object):
     def nr_of_unit(self, unit) -> int:
         if isinstance(unit, int):
             return unit
-        return self.reverse_units[unit]
+        return self.reverse_units[unit.name]
 
     def has_perk(self, name) -> bool:
         return 'perks' in self.yaml and name in self.yaml['perks']

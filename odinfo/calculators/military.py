@@ -227,30 +227,31 @@ class MilitaryCalculator(object):
         # First subtract power of all pure DP units
         dp_at_home = sum([self.dp_of(self.race.nr_of_unit(u), with_bonus=True) for u in self.race.pure_defense_units])
         dp_at_home += self.army['draftees'] * (1 + self.defense_bonus)
-        op_to_defend = enemy_op - dp_at_home
+        op_to_defend = int(enemy_op) - dp_at_home
 
         # Pure offense units don't contribute to defense, can always send
-        safe_op = sum([self.op_of(u, with_bonus=True) for u in self.dom.race.pure_offense_units])
+        safe_op = sum([self.op_of(self.race.nr_of_unit(u), with_bonus=True) for u in self.race.pure_offense_units])
 
         # Check the hybrid units
         # Most defensive hybrids first
-        for unit_type in self.dom.race.hybrids_by_dp:
+        for unit_type in self.race.hybrids_by_dp:
+            unit_nr = self.race.nr_of_unit(unit_type)
             if op_to_defend <= 0:
                 # Can use all these units to attack
                 units_needed = 0
                 dp_of_units_needed = 0
-                can_send_op = self.op_of(unit_type, with_bonus=True)
+                can_send_op = self.op_of(unit_nr, with_bonus=True)
             else:
                 units_needed = (op_to_defend // (unit_type.defense * (1 + self.defense_bonus))) + 1
-                if units_needed < self.amount(unit_type):
+                if units_needed < self.amount(unit_nr):
                     # Only need part of these hybrid units
-                    dp_of_units_needed = self.dp_of(unit_type, partial_amount=units_needed, with_bonus=True)
+                    dp_of_units_needed = self.dp_of(unit_nr, partial_amount=units_needed, with_bonus=True)
                     # Can attack with the rest
-                    remaining_units = self.amount(unit_type) - units_needed
-                    can_send_op = self.op_of(unit_type, with_bonus=True, partial_amount=remaining_units)
+                    remaining_units = self.amount(unit_nr) - units_needed
+                    can_send_op = self.op_of(unit_nr, with_bonus=True, partial_amount=remaining_units)
                 else:
                     # Need all these units to contribute to DP
-                    dp_of_units_needed = self.dp_of(unit_type, with_bonus=True)
+                    dp_of_units_needed = self.dp_of(unit_nr, with_bonus=True)
                     can_send_op = 0
             op_to_defend -= dp_of_units_needed
             dp_at_home += dp_of_units_needed

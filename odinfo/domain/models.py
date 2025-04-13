@@ -6,6 +6,7 @@ from typing import List, Optional
 
 from odinfo.domain.domainhelper import Buildings, Land, Technology, Magic
 from odinfo.timeutils import hours_since
+from odinfo.domain.refdata import Race
 
 
 class Base(DeclarativeBase):
@@ -91,6 +92,12 @@ class Dominion(Base):
             }
         else:
             return None
+
+    @property
+    def race_obj(self) -> Race:
+        if not hasattr(self, '_race_obj'):
+            self._race_obj = Race(self, self.race)
+        return self._race_obj
 
     @property
     def tech(self) -> Technology:

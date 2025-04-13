@@ -1,3 +1,9 @@
+"""
+Generates CSV export of the military units of each race.
+
+Each row is one unit type (4 rows per race)
+"""
+
 import yaml
 import os
 from odinfo.config import REF_DATA_DIR, OUT_DIR
@@ -48,8 +54,14 @@ for filename in os.listdir(race_dir):
         )
         units.append(unit)
 
-with open(os.path.join(OUT_DIR, 'unit_overview.csv'), 'w') as f:
-    f.write('"Race", "Name", "Home Land", "Platinum", "Lumber", "Ore", "Mana", "Gems", "Base Offense", "Base Defense", "Perks"\n')
+output_file = os.path.join(OUT_DIR, 'unit_overview.csv')
+print(f"Writing unit overview to {output_file}")
+
+with open(output_file, 'w') as f:
+    field_names = ["Race", "Name", "Home Land", "Platinum", "Lumber", "Ore", "Mana", "Gems", "Base Offense", "Base Defense", "Perks"]
+    title_row = f'''"{'", "'.join(field_names)}"'''
+    print(title_row)
+    f.write(f'{title_row}\n')
     for unit in units:
         fields = '", "'.join([str(fld) for fld in astuple(unit)])
         print(f'"{fields}"')

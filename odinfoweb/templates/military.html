@@ -23,6 +23,7 @@
                 <th>Land</th>
                 <th>75%</th>
                 <th>5/4 OP</th>
+                <th>5/4 OP w Temps</th>
                 <th>5/4 DP</th>
                 <th>Temples</th>
                 <th>Boats (#/prt)</th>
@@ -49,7 +50,8 @@
             </td>
             <td>{{ dom.land }}</td>
             <td>{{ dom.hittable_75_percent }}</td>
-            <td>{{ dom.five_over_four_op }} ({{ dom.five_four_op_with_temples }})</td>
+            <td>{{ dom.five_over_four_op }}</td>
+            <td>{{ dom.five_four_op_with_temples }}</td>
             <td>{{ dom.five_over_four_dp }}</td>
             <td>{{ (dom.temples * 100)|round(1) }}%</td>
             <td>{{ dom.boats_amount }}/{{ dom.boats_prt }}</td>
@@ -69,7 +71,7 @@
             'paging': false,
             'order': [[6, 'desc']],
             'columnDefs': [
-                { "type": "num", "targets": [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]}
+                { "type": "num", "targets": [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}
             ]
         });
     } );

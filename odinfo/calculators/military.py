@@ -90,7 +90,6 @@ class MilitaryCalculator(object):
     @property
     def five_four_op_with_temples(self) -> float:
         """The effective OP that a defender has to compare their DP with to see if they're safe."""
-        logger.debug(f"Calculating five four op with temples: {self.five_over_four[0] / (1 - self.temple_bonus)}")
         return round(self.five_over_four[0] / (1 - self.temple_bonus))
 
     @property

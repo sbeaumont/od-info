@@ -88,6 +88,12 @@ class MilitaryCalculator(object):
             return 0
 
     @property
+    def five_four_op_with_temples(self) -> float:
+        """The effective OP that a defender has to compare their DP with to see if they're safe."""
+        logger.debug(f"Calculating five four op with temples: {self.five_over_four[0] / (1 - self.temple_bonus)}")
+        return round(self.five_over_four[0] / (1 - self.temple_bonus))
+
+    @property
     def gryphon_nest_bonus(self) -> float:
         if self.dom.buildings:
             return self.dom.buildings.ratio_of('gryphon_nest') * GN_OFFENSE_BONUS
@@ -415,4 +421,5 @@ if __name__ == '__main__':
         print("5/4", op54, dp54)
         print("OP/DP", mc.op, mc.dp)
         print("5/4 of 5/4 DP", (5/4)*dp54)
+        print("5/4 with Temples", mc.op_with_temples)
 

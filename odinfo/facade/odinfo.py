@@ -211,6 +211,7 @@ class ODInfoFacade(object):
                 'hittable_75_percent': mc.hittable_75_percent,
                 'five_over_four_op': five_four_op,
                 'five_over_four_dp': five_four_dp,
+                'five_four_op_with_temples': mc.five_four_op_with_temples,
                 'temples': mc.temple_bonus,
                 'boats_amount': boat_stuff[0],
                 'boats_prt': boat_stuff[1],

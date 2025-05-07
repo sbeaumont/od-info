@@ -5,12 +5,29 @@ This is very much a work in progress. I've tried to make it as easy as possible 
 but there are still some quirks that I could improve in the future, like not needing to go into
 config files to change things.
 
+If you need some help or have feedback on this readme or the tool look me up in the OpenDominion Discord (AgFx).
+
+### Download files
+
+Download the whole project from here and put it somewhere on your local disk.
+
 ## Install Python 3
 
 ### Windows (direct install)
-Go to https://python.org/downloads/ and download the latest release version, install it.
+
+Option 1: Open a Command Prompt (type in search). In that command prompt type "python" and press enter. Windows
+opens up the store page if you don't have Python installed and allows you to "Get" it. This will download and install
+the Python runtime correctly.
+
+If that doesn't work for you go to https://python.org/downloads/ and download the latest release version, install it.
+Note that this is more for users who know a bit of programming and know how to set the PATH variable and such. 
+
+NOTE: If you're not used to using a command prompt, double clicking on the Python icon will not work.
+What you need to do is go to the folder where you downloaded the files from GitHub, right-click and
+choose "Open In Terminal". This will put you in a command prompt at the correct location.
 
 ### Mac or Linux (via Homebrew)
+
 To make it work you'll need Python 3 installed. If you have no clue how to do this,
 the easiest on Mac is to install the Homebrew package manager (https://brew.sh/#install). 
 It tells you to execute this in a Terminal window:
@@ -21,7 +38,8 @@ Next step is installing Python3 (also in the Terminal window):
 
     brew install python3
 
-### Python3 packages
+## (Mac and Windows) Install Python3 packages
+
 *Note that there's a whole thing about "virtual environments" that is good practice
 if you run or develop different Python applications. If this is the only Python
 application you're ever planning on running because you're not a leet hacker,
@@ -30,7 +48,9 @@ will be part of the main Python3 installation, which is fine for this case.*
 
 In a terminal window / command prompt you'll need to "pip3 install":
 
-    pip3 install flask requests jinja2 PyYAML bs4 pillow matplotlib
+    pip3 install flask requests jinja2 PyYAML bs4 pillow matplotlib flask_login flask_sqlalchemy wtforms
+
+If "pip3" does not work, try using "pip" without the 3.
 
 This installs these libraries:
 
@@ -44,12 +64,10 @@ This installs these libraries:
  - bs4 (Beautiful Soup, to scrape information from webpages)
  - Pillow and matplotlib (for graphs)
 
-### Download files
-Download the whole project from here and put it somewhere on your local disk.
-
 ### Run and fail: add instance subdir, secret.txt and users.json file
+
 Do a first run: this will always exit with the message that you need to edit the config files.
-These files will have been created for you from templates.
+These files will have been created for you from templates in a subdirectory called "instance".
  
 You will need to edit their contents. For secret.txt:
 
@@ -82,17 +100,30 @@ This way you can have a fresh database for every round, and you'll have a copy o
 if you want to keep it.
 
 ### Run application
-Run the app locally from the Terminal from the root of the project:
+
+On Windows: easiest is to double-click the "odinfo.bat" file. 
+
+Run the app locally from the Terminal from the root of the project (right click on root folder and "Open In Terminal"):
 
     flask --app odinfoweb.flask_app run
+
+If that does not work you can try:
+
+    python -m flask --app odinfoweb.flask_app run
 
 For debugging add '--debug' but don't use the debug flag in an unsafe setting!
 If you're at home you're safe enough, just don't use it in a Starbucks or a hotel:
 you're opening up a local webserver.
 
-Look in the run log for the local URL you can point in your browser, but generally it's localhost:5000 or 127.0.0.1:5000.
+### Open the browser
+
+Look in the run log of the console (command prompt) for the local URL you can point in your browser, but generally 
+it's http://localhost:5000 or http://127.0.0.1:5000.
+First time you will be asked to enter a username and password, this is NOT your OD credentials, but what you filled in
+the "users.json" file. If you have your browser remember it you won't have to deal with that anymore.
 
 ## Usage
+
 If everything is set up correctly you can press on the "update" links on the 
 respective pages to pull in new data.
 

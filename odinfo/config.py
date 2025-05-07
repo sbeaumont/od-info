@@ -51,7 +51,7 @@ PEASANTS_PER_HOME = 30
 
 # Template of the secrets.txt file that gets saved when it can't be found.
 
-SECRETS_TEMPLATE = """Remove this line and all the <...> sections to make it work.
+SECRETS_TEMPLATE = """=== Remove this section after editing. This is explanation text!
 username = <your OD username>
 password = <your OD password>
 discord_webhook = None <An https:// URL with a discord webhook to send stuff to. Currently only in networth tracker.>
@@ -60,6 +60,17 @@ LOCAL_TIME_SHIFT = 0 <(Negative) number. If you see the timing of the app being 
 feature_toggles = economy
 secret_key=<random secret key>
 database_name=sqlite:///odinfo-round-X.sqlite <Check SQLAlchemy docs if you want to use another DB like MySQL.>
+
+=== REMOVE THIS LINE AND EVERYTHING ABOVE IT WHEN YOU'RE DONE EDITING
+
+username = 
+password = 
+discord_webhook = None
+current_player_id = 
+LOCAL_TIME_SHIFT = 0
+feature_toggles = economy
+secret_key=
+database_name=sqlite:///odinfo.sqlite
 """
 
 USERS_JSON_TEMPLATE = """[

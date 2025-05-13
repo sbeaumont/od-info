@@ -1,8 +1,10 @@
 import math
 import logging
+import os
 from operator import attrgetter
 
 import yaml
+import json
 from math import erf
 from enum import Enum
 from collections import defaultdict, namedtuple
@@ -12,14 +14,15 @@ from functools import lru_cache
 
 logger = logging.getLogger('od-info.refdata')
 
+config_json = json.load(open(os.path.join(REF_DATA_DIR, 'config.json')))
 
-NON_HOME_CAPACITY = 15
-BUILD_TICKS = 12
-MASONRY_MULTIPLIER = 2.75
-GT_DEFENSE_FACTOR = 1.6
-GN_OFFENSE_BONUS = 1.6
-BS_UNCERTAINTY = 1.15
-ARES_BONUS = 0.1
+NON_HOME_CAPACITY = config_json['NON_HOME_CAPACITY']
+BUILD_TICKS = config_json['BUILD_TICKS']
+MASONRY_MULTIPLIER = config_json['MASONRY_MULTIPLIER']
+GT_DEFENSE_FACTOR = config_json['GT_DEFENSE_FACTOR']
+GN_OFFENSE_BONUS = config_json['GN_OFFENSE_BONUS']
+BS_UNCERTAINTY = config_json['BS_UNCERTAINTY']
+ARES_BONUS = config_json['ARES_BONUS']
 
 ImpFactor = namedtuple('ImpFactor', 'max factor plus')
 
@@ -171,6 +174,13 @@ class Unit(object):
                 if wpa_bonus > float(max_bonus):
                     wpa_bonus = float(max_bonus)
                 op += wpa_bonus
+        if self.has_perk('offense_from_prestige'):
+            percent_per_prestige, max_bonus = self.get_perk('offense_from_prestige')
+            if self.dom.last_cs and self.dom.last_cs.prestige:
+                prestige_bonus = float(self.dom.last_cs.prestige) / float(percent_per_prestige)
+                if prestige_bonus > float(max_bonus):
+                    prestige_bonus = float(max_bonus)
+                op += prestige_bonus
         return op
 
     @property

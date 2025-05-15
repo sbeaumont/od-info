@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
 
-from odinfo.domain.dataaccesslayer import dom_by_id
 from odinfo.domain.models import Dominion
 from odinfo.config import *
 from math import trunc
+
+from odinfo.domain.refdata import GT_DEFENSE_FACTOR
 
 
 class Economy(object):
@@ -33,7 +34,10 @@ class Economy(object):
 
     @property
     def plat_per_home(self):
-        return (PEASANTS_PER_HOME * (1 + self.dom.castle.keep)) * PLAT_PER_PEASANT_PER_TICK
+        if self.dom.last_castle:
+            return (PEASANTS_PER_HOME * (1 + self.dom.last_castle.keep_rating)) * PLAT_PER_PEASANT_PER_TICK
+        else:
+            return -1
 
     @property
     def alchemy_income(self):
@@ -41,8 +45,8 @@ class Economy(object):
 
     @property
     def guard_towers(self):
-        gt_ratio = self.dom.buildings.ratio_of('guard_tower') * 1.75
-        new_ratio = (self.dom.buildings.guard_towers + 1) / self.dom.total_land * 1.75
+        gt_ratio = self.dom.buildings.ratio_of('guard_tower') * GT_DEFENSE_FACTOR
+        new_ratio = (self.dom.buildings.ratio_of('guard_tower') + 1) / self.dom.land.total * GT_DEFENSE_FACTOR
         extra_dp_percentage = new_ratio - gt_ratio
         extra_dp = self.dom.military.dp * extra_dp_percentage
         return extra_dp

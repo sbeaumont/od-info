@@ -1,0 +1,32 @@
+{
+  "non_home_types": [
+    "alchemy",
+    "farm",
+    "smithy",
+    "masonry",
+    "ore_mine",
+    "gryphon_nest",
+    "tower",
+    "wizard_guild",
+    "temple",
+    "diamond_mine",
+    "school",
+    "lumberyard",
+    "factory",
+    "guard_tower",
+    "shrine",
+    "barracks",
+    "dock"
+  ],
+  "jobs_per_building": 20,
+  "pop_per_home": 30,
+  "pop_per_non_home": 15,
+  "pop_per_barren": 5,
+  "NON_HOME_CAPACITY": 15,
+  "BUILD_TICKS": 12,
+  "MASONRY_MULTIPLIER": 2.6,
+  "GT_DEFENSE_FACTOR": 1.6,
+  "GN_OFFENSE_BONUS": 1.6,
+  "BS_UNCERTAINTY": 1.15,
+  "ARES_BONUS": 0.1
+}

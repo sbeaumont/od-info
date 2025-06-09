@@ -4,7 +4,7 @@ from math import trunc
 
 from odinfo.domain.models import Dominion
 from odinfo.domain.refdata import Race
-from odinfo.domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, Unit, Spells
+from odinfo.domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, TEMPLE_BONUS_PER_PERC, Unit, Spells, MAX_TEMPLE_BONUS
 from odinfo.domain.refdata import NETWORTH_VALUES, ARES_BONUS
 
 logger = logging.getLogger('od-info.military')
@@ -83,7 +83,7 @@ class MilitaryCalculator(object):
     @property
     def temple_bonus(self) -> float:
         if self.dom.buildings:
-            return self.dom.buildings.ratio_of('temple')
+            return min(MAX_TEMPLE_BONUS, self.dom.buildings.ratio_of('temple') * TEMPLE_BONUS_PER_PERC)
         else:
             return 0
 

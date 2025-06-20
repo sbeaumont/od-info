@@ -92,6 +92,10 @@ class MilitaryCalculator(object):
         """The effective OP that a defender has to compare their DP with to see if they're safe."""
         return round(self.five_over_four[0] / (1 - self.temple_bonus))
 
+    def safe_op_with_temples(self, versus_op: int) -> float:
+        """The effective OP that a defender has to compare their DP with to see if they're safe."""
+        return round(self.safe_op_versus(versus_op)[0] / (1 - self.temple_bonus))
+
     @property
     def gryphon_nest_bonus(self) -> float:
         if self.dom.buildings:

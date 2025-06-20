@@ -22,9 +22,9 @@
                 <th>Ops Age</th>
                 <th>Land</th>
                 <th>75%</th>
-                <th>5/4 OP</th>
+                <th>{% if versus_op != 0 %}Safe OP{% else %}5/4 OP{% endif %}</th>
                 <th>+Tmps</th>
-                <th>5/4 DP</th>
+                <th>{% if versus_op != 0 %}Safe DP{% else %}5/4 DP{% endif %}</th>
                 <th>Temples</th>
                 <th>Boats (#/prt)</th>
                 <th>Sendable (#/cap)</th>
@@ -50,9 +50,9 @@
             </td>
             <td>{{ dom.land }}</td>
             <td>{{ dom.hittable_75_percent }}</td>
-            <td>{{ dom.five_over_four_op }}</td>
-            <td>{{ dom.five_four_op_with_temples }}</td>
-            <td>{{ dom.five_over_four_dp }}</td>
+            <td>{% if versus_op != 0 %}{{dom.safe_op}}{% else %}{{ dom.five_over_four_op }}{% endif %}</td>
+            <td>{% if versus_op != 0 %}{{dom.safe_op_with_temples}}{% else %}{{ dom.five_four_op_with_temples }}{% endif %}</td>
+            <td>{% if versus_op != 0 %}{{dom.safe_dp}}{% else %}{{ dom.five_over_four_dp }}{% endif %}</td>
             <td>{{ (dom.temples * 100)|round(1) }}%</td>
             <td>{{ dom.boats_amount }}/{{ dom.boats_prt }}</td>
             <td>{{ dom.boats_sendable }}/{{ dom.boats_capacity }}</td>

@@ -66,7 +66,12 @@ This installs these libraries:
 
 ### Run and fail: add instance subdir, secret.txt and users.json file
 
-Do a first run: this will always exit with the message that you need to edit the config files.
+Do a first run: this will always exit with the message that you need to edit the config files. In a terminal in the root directory of the tool, run:
+
+```bash
+    python -m flask --app odinfoweb.flask_app run
+```
+
 These files will have been created for you from templates in a subdirectory called "instance".
  
 You will need to edit their contents. For secret.txt:

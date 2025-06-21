@@ -1,0 +1,17 @@
+[project]
+name = "OD-Info"
+version = "0.5.0"
+description = "Information tool for the OpenDominion game."
+requires-python = ">=3.10"
+dependencies = [
+    "flask",
+    "requests",
+    "jinja2",
+    "PyYAML",
+    "bs4",
+    "pillow",
+    "matplotlib",
+    "flask_login",
+    "flask_sqlalchemy",
+    "wtforms"
+]

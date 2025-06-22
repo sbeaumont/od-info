@@ -226,6 +226,7 @@ where
     (c.dominion = d.code)
     and (d.realm != :realm)
     and (c.timestamp > :timestamp)
+    and (d.realm != 0)
 group by
     c.dominion
 order by
@@ -238,6 +239,7 @@ order by
 
 
 def query_stealables(db, timestamp, my_realm: int):
+    """Query where the stealables are, while filtering out the bots."""
     params = {
         'timestamp': cleanup_timestamp(timestamp),
         'realm': my_realm

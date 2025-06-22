@@ -331,7 +331,7 @@ SURVEY_DOMINION_MAPPING = {
 VISION_MAPPING = {
     'dominion': None,
     'timestamp': None,
-    'techs': 'vision.techs|tojson',
+    'techs': 'vision.techs',
 }
 
 # ------------------------------------------------------------ Revelation

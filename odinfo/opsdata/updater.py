@@ -73,9 +73,11 @@ def update_obj(ops, obj, mapping):
 
 def update_ops(ops, db, dom_code):
     logger.debug("Updating ops for dominion %s", dom_code)
-    timestamp = ops.timestamp
     dom = dom_by_id(db, dom_code)
+    # Ensure the dominion object is tracked by the session so last_op changes get saved
+    db.session.add(dom)
     if ops.has_clearsight:
+        timestamp = cleanup_timestamp(ops.q('status.created_at'))
         if not db.session.get(ClearSight, [dom_code, timestamp]):
             obj = ClearSight(dominion_id=dom_code, timestamp=timestamp)
             update_obj(ops, obj, CLEARSIGHT_MAPPING)
@@ -84,6 +86,7 @@ def update_ops(ops, db, dom_code):
         else:
             logger.debug(f"Already had ClearSight for {dom_code} at {timestamp}")
     if ops.has_castle:
+        timestamp = cleanup_timestamp(ops.q('castle.created_at'))
         if not db.session.get(CastleSpy, [dom_code, timestamp]):
             obj = CastleSpy(dominion_id=dom_code, timestamp=timestamp)
             update_obj(ops, obj, CASTLE_SPY_MAPPING)
@@ -92,6 +95,7 @@ def update_ops(ops, db, dom_code):
         else:
             logger.debug(f"Already had Castle Spy for {dom_code} at {timestamp}")
     if ops.has_barracks:
+        timestamp = cleanup_timestamp(ops.q('barracks.created_at'))
         if not db.session.get(BarracksSpy, [dom_code, timestamp]):
             obj = BarracksSpy(dominion_id=dom_code, timestamp=timestamp)
             update_obj(ops, obj, BARRACKS_SPY_MAPPING)
@@ -100,6 +104,7 @@ def update_ops(ops, db, dom_code):
         else:
             logger.debug(f"Already had Barracks Spy for {dom_code} at {timestamp}")
     if ops.has_survey:
+        timestamp = cleanup_timestamp(ops.q('survey.created_at'))
         if not db.session.get(SurveyDominion, [dom_code, timestamp]):
             obj = SurveyDominion(dominion_id=dom_code, timestamp=timestamp)
             update_obj(ops, obj, SURVEY_DOMINION_MAPPING)
@@ -108,6 +113,7 @@ def update_ops(ops, db, dom_code):
         else:
             logger.debug(f"Already had SurveyDominion for {dom_code} at {timestamp}")
     if ops.has_land:
+        timestamp = cleanup_timestamp(ops.q('land.created_at'))
         if not db.session.get(LandSpy, [dom_code, timestamp]):
             obj = LandSpy(dominion_id=dom_code, timestamp=timestamp)
             update_obj(ops, obj, LAND_SPY_MAPPING)
@@ -116,6 +122,7 @@ def update_ops(ops, db, dom_code):
         else:
             logger.debug(f"Already had LandSpy for {dom_code} at {timestamp}")
     if ops.has_vision:
+        timestamp = cleanup_timestamp(ops.q('vision.created_at'))
         if not db.session.get(Vision, [dom_code, timestamp]):
             obj = Vision(dominion_id=dom_code, timestamp=timestamp)
             update_obj(ops, obj, VISION_MAPPING)
@@ -173,7 +180,6 @@ DOMINION_MAPPING = {
 }
 
 # ------------------------------------------------------------ ClearSight
-
 
 CLEARSIGHT_MAPPING = {
     'dominion': None,

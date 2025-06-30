@@ -219,7 +219,7 @@ def military(versus_op: int = 0):
 def realmies():
     return render_template('realmies.html',
                            feature_toggles=feature_toggles,
-                           realmies=facade().doms_as_mil_calcs(facade().realmies()))
+                           realmies=facade().realmies_with_blops_info())
 
 
 @app.route('/stealables')

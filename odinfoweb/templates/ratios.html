@@ -19,10 +19,10 @@
                 <th>Networth</th>
                 <th>Military Spy</th>
                 <th>Military Wiz</th>
+                <th>WPA</th>
                 <th>Spywiz Networth</th>
                 <th>Spywiz Units</th>
-                <th>Spy Ratios Estimate</th>
-                <th>Wiz Ratios Estimate</th>
+                <th>SPA</th>
             </tr>
         </thead>
         {% for dom in doms %}
@@ -30,36 +30,32 @@
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
-            <td  {% if 1 < dom.ops_age <= 12 %}class="stale"{% elif dom.ops_age > 12 %}class="invalid"{% endif %}>
+            <td {% if 1 < dom.ops_age <= 12 %}class="stale"{% elif dom.ops_age > 12 %}class="invalid"{% endif %}>
                 {{ dom.ops_age }}
             </td>
             <td>{{ dom.realm }}</td>
+            <td>{{ dom.land }}</td>
+            <td>{{ dom.race }}</td>
+            <td>{{ dom.networth }}</td>
+            <td>{{ dom.spy_units_equiv }}</td>
+            <td>{{ dom.wiz_units_equiv }}</td>
             <td>
-                {{ dom.land }}
+                {% if dom.wpa is not none %}
+                    {{ "%.3f"|format(dom.wpa) }}
+                {% else %}
+                    ?
+                {% endif %}
             </td>
+            <td>{{ dom.spywiz_networth }}</td>
+            <td>{{ dom.spywiz_units }}</td>
             <td>
-                {{ dom.race }}
-            </td>
-            <td>
-                {{ dom.networth }}
-            </td>
-            <td>
-                {{ dom.spy_units_equiv }}
-            </td>
-            <td>
-                {{ dom.wiz_units_equiv }}
-            </td>
-            <td>
-                {{ dom.spywiz_networth }}
-            </td>
-            <td>
-                {{ dom.spywiz_units }}
-            </td>
-            <td>
-                {{ dom.spy_ratio_estimate }} - {{ dom.max_spy_ratio_estimate }}
-            </td>
-            <td>
-                {{ dom.wiz_ratio_estimate }} - {{ dom.max_wiz_ratio_estimate }}
+                {% if dom.spy_ratio_actual is not none %}
+                    <strong>{{ "%.3f"|format(dom.spy_ratio_actual) }}</strong>
+                {% elif dom.spy_ratio_range %}
+                    {{ dom.spy_ratio_range }}
+                {% else %}
+                    ?
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -70,7 +66,10 @@
     $(document).ready( function () {
         $('#ratios_table').DataTable({
             'paging': false,
-            'order': [[8, 'desc']]
+            'order': [[11, 'desc']], // Sort by SPA column by default
+            'columnDefs': [
+                { "type": "num", "targets": [1, 3, 5, 6, 7, 8, 9, 10, 11] } // Numeric columns
+            ]
         });
     } );
 </script>

@@ -176,6 +176,7 @@ class ODInfoFacade(object):
                 'networth': rc.dom.current_networth,
                 'spy_units_equiv': rc.spy_units_equiv,
                 'wiz_units_equiv': rc.wiz_units_equiv,
+                'wpa': rc.dom.current_wpa,
                 'spywiz_networth': rc.spywiz_networth,
                 'spywiz_units': rc.spywiz_units,
                 'ratio_estimate': rc.ratio_estimate,
@@ -183,6 +184,8 @@ class ODInfoFacade(object):
                 'max_spy_ratio_estimate': rc.max_spy_ratio_estimate,
                 'wiz_ratio_estimate': rc.wiz_ratio_estimate,
                 'max_wiz_ratio_estimate': rc.max_wiz_ratio_estimate,
+                'spy_ratio_actual': rc.spy_ratio_estimate,
+                'spy_ratio_range': f"{rc.spy_ratio_estimate:.3f} - {rc.max_spy_ratio_estimate:.3f}",
                 'ops_age': hours_since(rc.dom.last_op)
             })
         return sorted(result, key=lambda d: d['ratio_estimate'], reverse=True)
@@ -247,6 +250,44 @@ class ODInfoFacade(object):
     def realmies(self) -> list[Dominion]:
         logger.debug("Getting Realmies")
         return realmies(self._db, current_player_id)
+
+    def realmies_with_blops_info(self):
+        """Get realmies with military calculator info including blops (boats)."""
+        logger.debug("Getting Realmies with blops info")
+        realmie_doms = self.realmies()
+        mc_list = [MilitaryCalculator(dom) for dom in realmie_doms if dom.last_cs]
+        result_list = list()
+        current_day = self.current_tick.day
+        
+        for mc in mc_list:
+            boat_info = mc.boats(current_day)
+            
+            # For realmies, use RatioCalculator for proper SPA calculation
+            rc = RatioCalculator(mc.dom)
+            if rc.spy_ratio_actual is not None:
+                # Use actual spy ratio when clear sight data is available
+                spa_actual = rc.spy_ratio_actual
+                spa_range = None  # No range needed for actual data
+            else:
+                # Fall back to estimates
+                spa_actual = rc.spy_ratio_estimate if rc.can_calculate else None
+                spa_range = f"{rc.spy_ratio_estimate:.3f} - {rc.max_spy_ratio_estimate:.3f}" if rc.can_calculate else None
+            
+            realmie_result = {
+                'dom': mc.dom,
+                'land': mc.dom.current_land,
+                'hittable_75_percent': mc.hittable_75_percent,
+                'max_sendable_op': boat_info[2] if boat_info else 0,  # boats_sendable
+                'dp': mc.dp,
+                'wpa': mc.dom.current_wpa,
+                'spa': spa_actual,
+                'spa_range': spa_range,
+                'boats_protected': boat_info[1] if boat_info else 0,  # boats_prt
+                'boats_total': boat_info[0] if boat_info else 0,  # total boats
+            }
+            result_list.append(realmie_result)
+        
+        return sorted(result_list, key=lambda x: x['land'], reverse=True)
 
     def stealables(self) -> list:
         logger.debug("Listing stealables")

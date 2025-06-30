@@ -388,6 +388,30 @@ class RatioCalculator(object):
         return round(self.max_ratio_estimate + (self.wiz_units_equiv / self.land), 3)
 
     @property
+    def spy_ratio_actual(self) -> float | None:
+        """Calculate actual spy ratio from clear sight data if available."""
+        if not self.dom.last_cs:
+            return None
+        
+        # Account for strength multipliers: spies=1x, assassins=2x
+        effective_spy_strength = (self.dom.last_cs.military_spies * 1) + (self.dom.last_cs.military_assassins * 2)
+        cs_land = self.dom.last_cs.land
+        
+        return round(effective_spy_strength / cs_land, 3) if cs_land > 0 else 0
+
+    @property
+    def wiz_ratio_actual(self) -> float | None:
+        """Calculate actual wizard ratio from clear sight data if available."""
+        if not self.dom.last_cs:
+            return None
+        
+        # Account for strength multipliers: wizards=1x, archmages=2x
+        effective_wiz_strength = (self.dom.last_cs.military_wizards * 1) + (self.dom.last_cs.military_archmages * 2)
+        cs_land = self.dom.last_cs.land
+        
+        return round(effective_wiz_strength / cs_land, 3) if cs_land > 0 else 0
+
+    @property
     def spy_units_equiv(self) -> int:
         result = 0
         for i in range(1, 5):

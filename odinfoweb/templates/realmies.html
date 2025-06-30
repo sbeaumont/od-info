@@ -14,23 +14,45 @@
                 <th>Dominion</th>
                 <th>Player</th>
                 <th>Land</th>
-                <td>75%</td>
+                <th>75%</th>
                 <th>Max Sendable</th>
                 <th>DP</th>
+                <th>WPA</th>
+                <th>SPA</th>
+                <th>Docks</th>
+                <th>Protected Boats</th>
                 <th>Ares</th>
             </tr>
         </thead>
-        {% for mc in realmies %}
+        {% for realmie in realmies %}
         <tr>
             <td>
-                <a href="{{ url_for('dominfo', domcode=mc.dom.code) }}">{{ mc.dom.name }}</a>
+                <a href="{{ url_for('dominfo', domcode=realmie.dom.code) }}">{{ realmie.dom.name }}</a>
             </td>
-            <td>{{ mc.dom.player }}</td>
-            <td>{{ mc.dom.current_land }}</td>
-            <td>{{ mc.hittable_75_percent }}</td>
-            <td>{{ mc.max_sendable_op }}</td>
-            <td>{{ mc.dp }}</td>
-            <td>{{ mc.dom.magic.ares }}</td>
+            <td>{{ realmie.dom.player }}</td>
+            <td>{{ realmie.land }}</td>
+            <td>{{ realmie.hittable_75_percent }}</td>
+            <td>{{ realmie.max_sendable_op }}</td>
+            <td>{{ realmie.dp }}</td>
+            <td>
+                {% if realmie.wpa is not none %}
+                    {{ "%.3f"|format(realmie.wpa) }}
+                {% else %}
+                    ?
+                {% endif %}
+            </td>
+            <td>
+                {% if realmie.spa is not none %}
+                    {{ "%.3f"|format(realmie.spa) }}
+                {% elif realmie.spa_range %}
+                    {{ realmie.spa_range }}
+                {% else %}
+                    ?
+                {% endif %}
+            </td>
+            <td>{{ realmie.dom.navy.docks if realmie.dom.navy else '?' }}</td>
+            <td>{{ "%.1f"|format(realmie.boats_protected) }}/{{ "%.1f"|format(realmie.boats_total) }}</td>
+            <td>{{ realmie.dom.magic.ares }}</td>
         </tr>
         {% endfor %}
     </table><br>
@@ -40,9 +62,9 @@
     $(document).ready( function () {
         $('#realmies_table').DataTable({
             'paging': false,
-            'order': [[6, 'asc']],
+            'order': [[10, 'asc']],
             'columnDefs': [
-                { "type": "num", "targets": [2, 3, 4, 5, 6]}
+                { "type": "num", "targets": [2, 3, 4, 5, 6, 7, 8, 10]}
             ]
         });
     } );

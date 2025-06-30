@@ -1,8 +1,9 @@
+from datetime import datetime, timedelta
+from typing import List, Optional
+
 from sqlalchemy import Integer, String, DateTime, ForeignKey, Float, func, JSON
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, backref
-from datetime import datetime
-from typing import List, Optional
 
 from odinfo.domain.domainhelper import Buildings, Land, Technology, Magic
 from odinfo.timeutils import hours_since, current_od_time
@@ -61,6 +62,10 @@ class Dominion(Base):
     @property
     def current_networth(self) -> int:
         return self.history[0].networth
+
+    @property
+    def current_wpa(self) -> float:
+        return self.last_cs.wpa if self.last_cs else 0.0
 
     @property
     def military(self) -> dict | None:
@@ -234,6 +239,20 @@ class BarracksSpy(TimestampedOpsMixin, Base):
     def paid_until(self) -> int:
         return max([self.paid_until_for_unit(i) for i in range(1, 5)])
 
+    def paid_until_for_unit_at_time(self, nr: int, target_time) -> int:
+        """Calculate paid_until for a unit as it was at a specific time."""
+        from odinfo.timeutils import hours_since
+        age_at_time = hours_since(self.timestamp, target_time)
+        max_ticks = 0
+        key = f'unit{nr}'
+        if key in self.training:
+            max_ticks = max(max_ticks, max([int(t) for t in self.training[key]]))
+        return max(0, max_ticks - age_at_time)
+
+    def paid_until_at_time(self, target_time) -> int:
+        """Calculate paid_until as it was at a specific time."""
+        return max([self.paid_until_for_unit_at_time(i, target_time) for i in range(1, 5)])
+
     def __repr__(self):
         return (f'BarracksSpy({self.dominion_id}, '
                 f'{self.timestamp}, {self.draftees}, '
@@ -283,7 +302,7 @@ class ClearSight(TimestampedOpsMixin, Base):
     military_wizards: Mapped[int] = mapped_column(Integer, default=0)
     military_archmages: Mapped[int] = mapped_column(Integer, default=0)
     clear_sight_accuracy: Mapped[float] = mapped_column(Float, default=0.85)
-    wpa: Mapped[Optional[float]] = mapped_column(Float)
+    wpa: Mapped[float] = mapped_column(Float, default=0)
 
     @hybrid_property
     def military(self) -> dict:

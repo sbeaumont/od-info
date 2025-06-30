@@ -304,12 +304,70 @@ class MilitaryCalculator(object):
                 non_flex_op = self.op - self.op_of(flex_unit_nr, with_bonus=True)
                 alpha_op = self.flex_unit.offense
                 alpha_dp = self.flex_unit.defense
-                flex_to_send = trunc(((5/4 * self.dp) - non_flex_op) / (alpha_op + (5/4 * alpha_dp)))
+                # Calculate with proper bonuses: x * (alpha_op * off_bonus + 5/4 * alpha_dp * def_bonus) <= 5/4 * total_dp - non_flex_op
+                off_bonus = 1 + self.offense_bonus
+                def_bonus = 1 + self.defense_bonus
+                flex_to_send = trunc(((5/4 * self.dp) - non_flex_op) / (alpha_op * off_bonus + (5/4 * alpha_dp * def_bonus)))
                 logger.debug(f"Flex unit is {self.flex_unit.name}: can send {flex_to_send} of {total_flex}")
                 if flex_to_send < 0:
                     flex_to_send = 0
+                
+                # Log detailed 5/4 attack composition
+                logger.debug("=== 5/4 ATTACK COMPOSITION ===")
+                
+                # Show all unit types and their composition
+                for unit_nr in range(1, 5):
+                    unit = self.race.unit(unit_nr)
+                    total_units = self.amount(unit_nr)
+                    if total_units > 0:
+                        if unit_nr == flex_unit_nr:
+                            # This is the flex unit
+                            units_sent = flex_to_send
+                            units_home = total_units - flex_to_send
+                        elif unit in self.race.pure_offense_units:
+                            # Pure offense units - send all
+                            units_sent = total_units
+                            units_home = 0
+                        elif unit in self.race.pure_defense_units:
+                            # Pure defense units - send none
+                            units_sent = 0
+                            units_home = total_units
+                        else:
+                            # For hybrid units, determine if they come before the flex unit in the algorithm
+                            # (meaning they can be fully sent) or after (meaning none are sent)
+                            can_send_all = True
+                            for hybrid_unit in self.race.hybrid_units:
+                                hybrid_nr = self.race.nr_of_unit(hybrid_unit)
+                                if hybrid_nr == flex_unit_nr:
+                                    # We've reached the flex unit, so this unit comes after
+                                    can_send_all = False
+                                    break
+                                elif hybrid_nr == unit_nr:
+                                    # This unit comes before the flex unit, so it can be fully sent
+                                    break
+                            
+                            if can_send_all:
+                                units_sent = total_units
+                                units_home = 0
+                            else:
+                                units_sent = 0
+                                units_home = total_units
+                        
+                        op_sent = self.op_of(unit_nr, with_bonus=True, partial_amount=units_sent)
+                        dp_home = self.dp_of(unit_nr, with_bonus=True, partial_amount=units_home)
+                        
+                        logger.debug(f"  {unit.name}: {units_sent:,} sent (OP: {op_sent:,}), {units_home:,} home (DP: {dp_home:,})")
+                
+                # Add draftees (always stay home)
+                draftees = self.draftees
+                if draftees > 0:
+                    draftees_dp = draftees * def_bonus
+                    logger.debug(f"  Draftees: 0 sent (OP: 0), {draftees:,} home (DP: {draftees_dp:,.0f})")
+                
                 self._five_four_dp = round(self.dp - self.dp_of(flex_unit_nr, with_bonus=True, partial_amount=flex_to_send))
                 self._five_four_op = round(non_flex_op + self.op_of(flex_unit_nr, with_bonus=True ,partial_amount=flex_to_send))
+                
+                logger.debug(f"=== TOTALS: Sending {self._five_four_op:,} OP, Leaving {self._five_four_dp:,} DP at home ===")
             else:
                 logger.debug(f"No flex unit available for {self}")
                 self._five_four_op = trunc(self.op)
@@ -318,8 +376,10 @@ class MilitaryCalculator(object):
                     dp -= self.dp_of(self.race.nr_of_unit(unit_type), True)
                 self._five_four_dp = trunc(dp)
             logger.debug(f"op: {self._five_four_op}, 5/4 dp: {self._five_four_dp * 5 / 4}")
+            # The corrected formula should ensure the constraint is satisfied automatically
             if self._five_four_op > (round(self._five_four_dp * 5/4, 2)):
-                logger.warning(f"op: {self._five_four_op}, 5/4 dp: {round(self._five_four_dp * 5/4, 2)}, correcting OP to {self._five_four_dp * 5/4}")
+                logger.warning(f"5/4 constraint still violated: op: {self._five_four_op}, 5/4 dp: {round(self._five_four_dp * 5/4, 2)}")
+                # This should no longer happen with the corrected formula, but keep as safety fallback
                 self._five_four_op = round(self._five_four_dp * 5/4)
         return round(self._five_four_op), round(self._five_four_dp)
 

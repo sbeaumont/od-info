@@ -19,6 +19,7 @@ class MilitaryCalculator(object):
         self.spells = None
         self._five_four_op = None
         self._five_four_dp = None
+        self._five_four_breakdown = None
 
     def __str__(self):
         unit_txt = [f"{self.amount(i)} {self.unit_type(i).name} {self.unit_type(i).offense}/{self.unit_type(i).defense}" for i in range(1, 5)]
@@ -298,90 +299,127 @@ class MilitaryCalculator(object):
     def five_over_four(self) -> tuple:
         if not self._five_four_dp:
             logger.debug(f"Starting five_over_four for dom {self.dom.code} {self.dom.race} {self.dom.name}")
-            if self.flex_unit:
-                flex_unit_nr = self.race.nr_of_unit(self.flex_unit)
-                total_flex = self.amount(flex_unit_nr)
-                non_flex_op = self.op - self.op_of(flex_unit_nr, with_bonus=True)
-                alpha_op = self.flex_unit.offense
-                alpha_dp = self.flex_unit.defense
-                # Calculate with proper bonuses: x * (alpha_op * off_bonus + 5/4 * alpha_dp * def_bonus) <= 5/4 * total_dp - non_flex_op
-                off_bonus = 1 + self.offense_bonus
-                def_bonus = 1 + self.defense_bonus
-                flex_to_send = trunc(((5/4 * self.dp) - non_flex_op) / (alpha_op * off_bonus + (5/4 * alpha_dp * def_bonus)))
-                logger.debug(f"Flex unit is {self.flex_unit.name}: can send {flex_to_send} of {total_flex}")
-                if flex_to_send < 0:
-                    flex_to_send = 0
+            
+            # Initialize breakdown tracking
+            self._five_four_breakdown = {'sent': [], 'stayed_home': []}
+            
+            # Start with all units at home
+            remaining_dp = self.dp
+            sendable_op = 0
+            
+            # First, send all pure offense units (they don't affect DP)
+            for unit_type in self.race.pure_offense_units:
+                unit_nr = self.race.nr_of_unit(unit_type)
+                amount = self.amount(unit_nr)
+                if amount > 0:
+                    op_contribution = self.op_of(unit_nr, with_bonus=True)
+                    sendable_op += op_contribution
+                    logger.debug(f"Sending all {amount} {unit_type.name} (pure offense)")
+                    
+                    self._five_four_breakdown['sent'].append({
+                        'unit_name': unit_type.name,
+                        'unit_type': f"{unit_type.offense}/{unit_type.defense}",
+                        'amount_sent': amount,
+                        'amount_home': 0,
+                        'op_contribution': round(op_contribution),
+                        'dp_lost': 0
+                    })
+            
+            # Then process hybrid units in order of efficiency (highest OP/DP ratio first)
+            for unit_type in self.race.hybrid_units:
+                unit_nr = self.race.nr_of_unit(unit_type)
+                available = self.amount(unit_nr)
                 
-                # Log detailed 5/4 attack composition
-                logger.debug("=== 5/4 ATTACK COMPOSITION ===")
-                
-                # Show all unit types and their composition
-                for unit_nr in range(1, 5):
-                    unit = self.race.unit(unit_nr)
-                    total_units = self.amount(unit_nr)
-                    if total_units > 0:
-                        if unit_nr == flex_unit_nr:
-                            # This is the flex unit
-                            units_sent = flex_to_send
-                            units_home = total_units - flex_to_send
-                        elif unit in self.race.pure_offense_units:
-                            # Pure offense units - send all
-                            units_sent = total_units
-                            units_home = 0
-                        elif unit in self.race.pure_defense_units:
-                            # Pure defense units - send none
-                            units_sent = 0
-                            units_home = total_units
-                        else:
-                            # For hybrid units, determine if they come before the flex unit in the algorithm
-                            # (meaning they can be fully sent) or after (meaning none are sent)
-                            can_send_all = True
-                            for hybrid_unit in self.race.hybrid_units:
-                                hybrid_nr = self.race.nr_of_unit(hybrid_unit)
-                                if hybrid_nr == flex_unit_nr:
-                                    # We've reached the flex unit, so this unit comes after
-                                    can_send_all = False
-                                    break
-                                elif hybrid_nr == unit_nr:
-                                    # This unit comes before the flex unit, so it can be fully sent
-                                    break
-                            
-                            if can_send_all:
-                                units_sent = total_units
-                                units_home = 0
-                            else:
-                                units_sent = 0
-                                units_home = total_units
+                if available > 0:
+                    op_per_unit = self.op_of(unit_nr, with_bonus=True, partial_amount=1)
+                    dp_per_unit = self.dp_of(unit_nr, with_bonus=True, partial_amount=1)
+                    
+                    # Calculate max units we can send while maintaining 5/4 constraint:
+                    # Formula: to_send ≤ (5/4 × remaining_DP - sendable_OP) / (OP_per_unit + 5/4 × DP_per_unit)
+                    numerator = 5/4 * remaining_dp - sendable_op
+                    denominator = op_per_unit + 5/4 * dp_per_unit
+                    
+                    if denominator > 0 and numerator > 0:
+                        max_sendable = numerator / denominator
+                        to_send = min(available, max(0, trunc(max_sendable)))
+                    else:
+                        to_send = 0
+                    
+                    staying_home = available - to_send
+                    
+                    if to_send > 0:
+                        op_contribution = self.op_of(unit_nr, with_bonus=True, partial_amount=to_send)
+                        dp_contribution = self.dp_of(unit_nr, with_bonus=True, partial_amount=to_send)
                         
-                        op_sent = self.op_of(unit_nr, with_bonus=True, partial_amount=units_sent)
-                        dp_home = self.dp_of(unit_nr, with_bonus=True, partial_amount=units_home)
+                        sendable_op += op_contribution
+                        remaining_dp -= dp_contribution
                         
-                        logger.debug(f"  {unit.name}: {units_sent:,} sent (OP: {op_sent:,}), {units_home:,} home (DP: {dp_home:,})")
+                        logger.debug(f"Sending {to_send}/{available} {unit_type.name} (ratio: {unit_type.offense}/{unit_type.defense})")
+                    else:
+                        op_contribution = 0
+                        dp_contribution = 0
+                        logger.debug(f"Cannot send any {unit_type.name} without violating 5/4 constraint")
+                    
+                    self._five_four_breakdown['sent'].append({
+                        'unit_name': unit_type.name,
+                        'unit_type': f"{unit_type.offense}/{unit_type.defense}",
+                        'amount_sent': to_send,
+                        'amount_home': staying_home,
+                        'op_contribution': round(op_contribution),
+                        'dp_lost': round(dp_contribution)
+                    })
+            
+            # Track pure defense units and draftees (all stay home)
+            for unit_type in self.race.pure_defense_units:
+                unit_nr = self.race.nr_of_unit(unit_type)
+                amount = self.amount(unit_nr)
+                if amount > 0:
+                    dp_contribution = self.dp_of(unit_nr, with_bonus=True)
+                    self._five_four_breakdown['stayed_home'].append({
+                        'unit_name': unit_type.name,
+                        'unit_type': f"{unit_type.offense}/{unit_type.defense}",
+                        'amount_home': amount,
+                        'dp_contribution': round(dp_contribution)
+                    })
+            
+            if self.draftees > 0:
+                draftee_dp = self.draftees * (1 + self.defense_bonus)
+                self._five_four_breakdown['stayed_home'].append({
+                    'unit_name': 'Draftees',
+                    'unit_type': '0/1',
+                    'amount_home': self.draftees,
+                    'dp_contribution': round(draftee_dp)
+                })
+            
+            self._five_four_op = round(sendable_op)
+            self._five_four_dp = round(remaining_dp)
+            
+            logger.debug(f"Final result: OP={self._five_four_op}, DP={self._five_four_dp}, 5/4*DP={round(self._five_four_dp * 5/4)}")
+            
+            # Verify constraint is satisfied
+            constraint_limit = round(self._five_four_dp * 5/4)
+            if self._five_four_op > constraint_limit:
+                logger.warning(f"Constraint violated: OP {self._five_four_op} > 5/4*DP {constraint_limit}, capping OP")
+                self._five_four_op = constraint_limit
                 
-                # Add draftees (always stay home)
-                draftees = self.draftees
-                if draftees > 0:
-                    draftees_dp = draftees * def_bonus
-                    logger.debug(f"  Draftees: 0 sent (OP: 0), {draftees:,} home (DP: {draftees_dp:,.0f})")
-                
-                self._five_four_dp = round(self.dp - self.dp_of(flex_unit_nr, with_bonus=True, partial_amount=flex_to_send))
-                self._five_four_op = round(non_flex_op + self.op_of(flex_unit_nr, with_bonus=True ,partial_amount=flex_to_send))
-                
-                logger.debug(f"=== TOTALS: Sending {self._five_four_op:,} OP, Leaving {self._five_four_dp:,} DP at home ===")
-            else:
-                logger.debug(f"No flex unit available for {self}")
-                self._five_four_op = trunc(self.op)
-                dp = self.dp
-                for unit_type in self.race.hybrid_units:
-                    dp -= self.dp_of(self.race.nr_of_unit(unit_type), True)
-                self._five_four_dp = trunc(dp)
-            logger.debug(f"op: {self._five_four_op}, 5/4 dp: {self._five_four_dp * 5 / 4}")
-            # The corrected formula should ensure the constraint is satisfied automatically
-            if self._five_four_op > (round(self._five_four_dp * 5/4, 2)):
-                logger.warning(f"5/4 constraint still violated: op: {self._five_four_op}, 5/4 dp: {round(self._five_four_dp * 5/4, 2)}")
-                # This should no longer happen with the corrected formula, but keep as safety fallback
-                self._five_four_op = round(self._five_four_dp * 5/4)
         return round(self._five_four_op), round(self._five_four_dp)
+
+    def five_over_four_breakdown(self) -> dict:
+        """Returns detailed breakdown of what units are sent vs. stayed home in 5/4 attack"""
+        # Ensure five_over_four has been calculated
+        self.five_over_four
+        
+        return {
+            'sent': self._five_four_breakdown['sent'],
+            'stayed_home': self._five_four_breakdown['stayed_home'],
+            'summary': {
+                'total_op': self.op,
+                'total_dp': self.dp,
+                'sendable_op': self._five_four_op,
+                'remaining_dp': self._five_four_dp,
+                'constraint_ratio': round(self._five_four_op / (self._five_four_dp * 5/4), 3) if self._five_four_dp > 0 else 0
+            }
+        }
 
 
 class RatioCalculator(object):

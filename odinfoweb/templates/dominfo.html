@@ -165,6 +165,71 @@
             </td>
         </tr>
     </table><br>
+    
+    <!-- 5/4 Attack Breakdown -->
+    <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+        <tr class="w3-black">
+            <th colspan="4">5/4 Attack Breakdown</th>
+        </tr>
+        <tr class="w3-dark-grey">
+            <th>Units Sent</th>
+            <th>Amount</th>
+            <th>OP Contribution</th>
+            <th>DP Lost</th>
+        </tr>
+        {% for unit in military.five_over_four_breakdown()['sent'] %}
+            {% if unit['amount_sent'] > 0 %}
+            <tr>
+                <td>{{ unit['unit_name'] }} ({{ unit['unit_type'] }})</td>
+                <td>{{ unit['amount_sent'] }}</td>
+                <td>{{ unit['op_contribution'] }}</td>
+                <td>{{ unit['dp_lost'] }}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+        <tr class="w3-dark-grey">
+            <th>Units Staying Home</th>
+            <th>Amount</th>
+            <th>Type</th>
+            <th>DP Contribution</th>
+        </tr>
+        {% for unit in military.five_over_four_breakdown()['sent'] %}
+            {% if unit['amount_home'] > 0 %}
+            <tr>
+                <td>{{ unit['unit_name'] }} ({{ unit['unit_type'] }})</td>
+                <td>{{ unit['amount_home'] }}</td>
+                <td>Hybrid (partial)</td>
+                <td>-</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+        {% for unit in military.five_over_four_breakdown()['stayed_home'] %}
+            <tr>
+                <td>{{ unit['unit_name'] }} ({{ unit['unit_type'] }})</td>
+                <td>{{ unit['amount_home'] }}</td>
+                <td>{% if unit['unit_name'] == 'Draftees' %}Draftees{% else %}Pure Defense{% endif %}</td>
+                <td>{{ unit['dp_contribution'] }}</td>
+            </tr>
+        {% endfor %}
+        <tr class="w3-light-grey">
+            <td><strong>Totals</strong></td>
+            <td>-</td>
+            <td><strong>{{ military.five_over_four_breakdown()['summary']['sendable_op'] }} OP</strong></td>
+            <td><strong>{{ military.five_over_four_breakdown()['summary']['remaining_dp'] }} DP</strong></td>
+        </tr>
+        <tr class="w3-pale-yellow">
+            <td colspan="2"><strong>5/4 Constraint Check</strong></td>
+            <td colspan="2">
+                <strong>{{ military.five_over_four_breakdown()['summary']['sendable_op'] }} ≤ {{ (military.five_over_four_breakdown()['summary']['remaining_dp'] * 5/4)|round }} 
+                {% if military.five_over_four_breakdown()['summary']['sendable_op'] <= (military.five_over_four_breakdown()['summary']['remaining_dp'] * 5/4)|round %}
+                ✓ Valid
+                {% else %}
+                ✗ Violated
+                {% endif %}
+                </strong>
+            </td>
+        </tr>
+    </table><br>
   </div>
   <div class="w3-container">
       {{ nw_history_graph|safe }} {{ land_history_graph|safe }}

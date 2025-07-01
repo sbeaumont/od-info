@@ -107,7 +107,6 @@ def facade() -> ODInfoFacade:
 def overview():
     if request.args.get('update'):
         facade().update_dom_index()
-    elif request.args.get('update_all'):
         facade().update_all()
         facade().update_realmies()
     if request.method == 'POST':

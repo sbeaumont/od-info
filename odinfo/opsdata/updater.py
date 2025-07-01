@@ -277,7 +277,7 @@ BARRACKS_SPY_MAPPING = {
     'home_unit3': 'barracks.units.home.unit3',
     'home_unit4': 'barracks.units.home.unit4',
     'training':   'barracks.units.training|optional',
-    'return':     'barracks.units.returning|optional',
+    'returning':  'barracks.units.returning|optional',
 }
 
 # ------------------------------------------------------------ LandSpy

@@ -5,6 +5,9 @@ on:
     tags: ['r*']  # Round-based tags (r46, r46.1, etc.)
   workflow_dispatch:  # Allow manual trigger for testing
 
+permissions:
+  contents: write  # Required for creating releases
+
 jobs:
   build:
     name: Build on ${{ matrix.os }}

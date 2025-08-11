@@ -2,7 +2,7 @@ name: Build and Release ODInfo
 
 on:
   push:
-    tags: ['v*']
+    tags: ['r*']  # Round-based tags (r46, r46.1, etc.)
   workflow_dispatch:  # Allow manual trigger for testing
 
 jobs:

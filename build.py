@@ -16,14 +16,17 @@ import subprocess
 import platform
 from pathlib import Path
 
-def run_command(cmd, description):
+def run_command(cmd, description, timeout=600):
     """Run a command and handle errors."""
     print(f"\n{description}...")
     try:
-        result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+        result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True, timeout=timeout)
         if result.stdout:
             print(result.stdout)
         return True
+    except subprocess.TimeoutExpired:
+        print(f"ERROR: {description} timed out after {timeout} seconds!")
+        return False
     except subprocess.CalledProcessError as e:
         print(f"ERROR: {description} failed!")
         print(f"Command: {cmd}")
@@ -32,6 +35,9 @@ def run_command(cmd, description):
             print(f"Stdout: {e.stdout}")
         if e.stderr:
             print(f"Stderr: {e.stderr}")
+        return False
+    except KeyboardInterrupt:
+        print(f"ERROR: {description} was interrupted!")
         return False
 
 def check_dependencies():

@@ -52,7 +52,10 @@ jobs:
       shell: bash
       run: |
         ls -la publish/odinfo/
-        ls -la publish/odinfo/instance/
+        echo "Verifying required files exist:"
+        test -f publish/odinfo/odinfo || test -f publish/odinfo/odinfo.exe
+        test -f publish/odinfo/README.md
+        echo "Build verification passed!"
     
     - name: Create release archive
       shell: bash

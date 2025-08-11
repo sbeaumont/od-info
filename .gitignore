@@ -1,16 +1,13 @@
 /.venv/
 /out/**
 /.idea/
-/instance/secret.txt
 **/__pycache__
 /odinfo/opsdata/copy_ops*.txt
 /opsdata/*.sqlite
 /scripts/threewordstory-R36.txt
 /dist/
 /build/
-**/secret.txt
-/instance/users.json
 /instance/
 /dbexports/
-/uv.lock
 /CLAUDE.md
+/publish/

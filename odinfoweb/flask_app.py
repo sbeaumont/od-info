@@ -39,11 +39,28 @@ else:
 if getattr(sys, 'frozen', False):
     # When app is built with pyinstaller
     template_folder = os.path.join(sys._MEIPASS, 'templates')
+    if not os.path.exists(template_folder):
+        sys.exit(f"ERROR: PyInstaller bundle missing required templates folder at: {template_folder}")
+    
     static_folder = os.path.join(sys._MEIPASS, 'static')
+    # Static folder is optional, but if it doesn't exist, set to None
+    if not os.path.exists(static_folder):
+        static_folder = None
+        print(f"WARNING: No static folder found in PyInstaller bundle at: {static_folder}")
+    
     app = Flask('od-info', template_folder=template_folder, static_folder=static_folder)
 else:
     # Regular Flask startup
-    app = Flask('od-info', template_folder='./odinfoweb/templates')
+    template_folder = './odinfoweb/templates'
+    if not os.path.exists(template_folder):
+        sys.exit(f"ERROR: Templates folder not found at: {template_folder}")
+    
+    static_folder = './odinfoweb/static'
+    if not os.path.exists(static_folder):
+        static_folder = None
+        print(f"WARNING: No static folder found at: {static_folder}")
+    
+    app = Flask('od-info', template_folder=template_folder, static_folder=static_folder)
 
 app.logger.setLevel(logging.DEBUG)
 

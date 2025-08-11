@@ -27,7 +27,7 @@ DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 INSTANCE_DIR = './instance'
 OUT_DIR = './out'
-REF_DATA_DIR = './ref-data'
+REF_DATA_DIR = resource_path('ref-data')
 OPS_DATA_DIR = 'opsdata'
 SECRET_FILE = f'{INSTANCE_DIR}/secret.txt'
 USERS_FILE = f'{INSTANCE_DIR}/users.json'
@@ -132,8 +132,18 @@ def load_secrets():
     secrets_filename = executable_path(SECRET_FILE)
     with open(secrets_filename) as f:
         secrets_dict = dict()
-        for line in f.readlines():
+        for line_num, line in enumerate(f.readlines(), 1):
+            line = line.strip()
+            # Skip empty lines and comments
+            if not line or line.startswith('#'):
+                continue
+            # Check for malformed config lines
+            if '=' not in line:
+                sys.exit(f"ERROR: Invalid configuration line {line_num} in {secrets_filename}: '{line}'\nExpected format: key = value")
             key, value = [part.strip() for part in line.split('=', 1)]
+            # Check for template placeholder values
+            if value == 'EDIT_THIS':
+                sys.exit(f"ERROR: Please edit {secrets_filename} and replace 'EDIT_THIS' with actual values for: {key}")
             secrets_dict[key] = value
         return secrets_dict
 

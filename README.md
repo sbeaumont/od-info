@@ -155,14 +155,41 @@ updated files from the ref-data folder in this project, or go straight to the so
 at https://github.com/OpenDominion/OpenDominion/tree/develop/app/data and
 replace them in the ref-data folder.
 
-## Packaging the app to your own architecture
+## Creating a Distribution Package
 
-If you also install PyInstaller, 
+To create a standalone executable for distribution to non-technical users:
 
-    pip3 install pyinstaller
+### Automated Build (Recommended)
 
-you can use
+1. Install PyInstaller:
+   ```bash
+   pip install pyinstaller
+   ```
 
-    pyinstaller odinfo.spec
+2. Run the build script:
+   ```bash
+   python build.py
+   ```
 
-to build an executable that will run on your architecture.
+This creates a `publish/` folder with:
+- The standalone executable
+- Template configuration files in `instance/`
+- User documentation
+
+### Manual Build
+
+Alternatively, you can build manually:
+
+```bash
+pip install pyinstaller
+pyinstaller odinfo.spec
+```
+
+Then manually copy the executable from `dist/` and create the external `instance/` folder structure.
+
+### Distribution Notes
+
+- The `instance/` folder MUST be distributed alongside the executable
+- Users need to edit `instance/secret.txt` and `instance/users.json` before first run
+- The SQLite database will be created automatically in the `instance/` folder
+- All user data (config, database) stays external to the executable for easy updates

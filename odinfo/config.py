@@ -51,39 +51,39 @@ PEASANTS_PER_HOME = 30
 
 # Template of the secrets.txt file that gets saved when it can't be found.
 
-SECRETS_TEMPLATE = """=== Remove this section after editing. This is explanation text!
-username = <your OD username>
-password = <your OD password>
-discord_webhook = None <An https:// URL with a discord webhook to send stuff to. Currently only in networth tracker.>
-current_player_id = <Five number id of your player this round>
-LOCAL_TIME_SHIFT = 0 <(Negative) number. If you see the timing of the app being off, this allows you to correct it.>
-feature_toggles = economy
-secret_key=<random secret key>
-database_name=sqlite:///odinfo-round-X.sqlite <Check SQLAlchemy docs if you want to use another DB like MySQL.>
+SECRETS_TEMPLATE = """# ODInfo Configuration File
+# Edit the values below with your actual information
 
-=== REMOVE THIS LINE AND EVERYTHING ABOVE IT WHEN YOU'RE DONE EDITING
+# Your OpenDominion credentials (REQUIRED)
+username = EDIT_THIS
+password = EDIT_THIS
 
-username = 
-password = 
-discord_webhook = None
-current_player_id = 
+# Optional Discord webhook URL for notifications
+#discord_webhook = None
+
+# Your player ID - find this by hovering over your dominion name in search (REQUIRED)
+current_player_id = EDIT_THIS
+
+# Time adjustment: hours to add/subtract from your time to get OD server time
+# If OD shows 10:00 and your clock shows 12:00, use -2
+# If OD shows 10:00 and your clock shows 8:00, use 2
 LOCAL_TIME_SHIFT = 0
-feature_toggles = economy
-secret_key=
-database_name=sqlite:///odinfo.sqlite
+
+# Optional: feature toggles for experimental features (comma-separated list)
+#feature_toggles = economy
+
+# Random secret key for web sessions (REQUIRED)
+secret_key = EDIT_THIS
+
+# Database file name - change round number as needed (REQUIRED)
+database_name = sqlite:///odinfo-round-45.sqlite
 """
 
 USERS_JSON_TEMPLATE = """[
   {
     "id": "1",
-    "name": "test",
-    "password": "test",
-    "active": "true"
-  },
-  {
-    "id": "2",
-    "name": "test2",
-    "password": "test",
+    "name": "admin",
+    "password": "CHANGE_THIS_PASSWORD",
     "active": "true"
   }
 ]

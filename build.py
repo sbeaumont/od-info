@@ -78,96 +78,46 @@ def create_distribution():
     shutil.copy2(dist_exe_path, odinfo_folder)
     print(f"Copied executable to {odinfo_folder}/")
     
-    # Create instance folder structure
-    instance_folder = os.path.join(odinfo_folder, "instance")
-    os.makedirs(instance_folder)
-    
-    # Create template config files
-    secret_template = '''# ODInfo Configuration File
-# Edit the values below with your actual information
-
-# Your OpenDominion credentials (REQUIRED)
-username = EDIT_THIS
-password = EDIT_THIS
-
-# Optional Discord webhook URL for notifications
-discord_webhook = None
-
-# Your player ID - find this by hovering over your dominion name in search (REQUIRED)
-current_player_id = EDIT_THIS
-
-# Time adjustment: hours to add/subtract from your time to get OD server time
-# If OD shows 10:00 and your clock shows 12:00, use -2
-# If OD shows 10:00 and your clock shows 8:00, use 2
-LOCAL_TIME_SHIFT = 0
-
-# Optional: feature toggles for experimental features (comma-separated list)
-#feature_toggles = economy
-
-# Random secret key for web sessions (REQUIRED)
-secret_key = EDIT_THIS
-
-# Database file name - change round number as needed (REQUIRED)
-database_name = sqlite:///odinfo-round-45.sqlite
-'''
-    
-    users_template = '''[
-  {
-    "id": "1",
-    "name": "admin",
-    "password": "change_this_password",
-    "active": "true"
-  }
-]
-'''
-    
-    with open(os.path.join(instance_folder, "secret.txt"), "w") as f:
-        f.write(secret_template)
-    
-    with open(os.path.join(instance_folder, "users.json"), "w") as f:
-        f.write(users_template)
-    
-    print("Created template configuration files in instance/")
-    
     # Create README for distribution
     readme_content = '''# ODInfo - Packaged Application
 
 ## First Time Setup
 
-1. Edit the configuration files:
+1. **Run the application once** - It will create template configuration files for you
+2. **Edit the configuration files**:
    - `instance/secret.txt` - Add your OpenDominion credentials and settings
    - `instance/users.json` - Set your web interface login credentials
-
-2. Update the round number in secret.txt:
-   - Change `database_name=sqlite:///odinfo-round-45.sqlite` to the current round
+3. **Update the round number** in secret.txt to match the current OpenDominion round
 
 ## Running the Application
 
 Double-click the odinfo executable (or run from command line).
 
 The application will:
-- Check your configuration files
+- Create an `instance/` folder with template config files (first run only)
+- Check your configuration files and prompt you to edit them if needed
 - Create the database if it doesn't exist  
 - Start the web server (usually at http://localhost:5000)
 
-## Important Notes
+## Upgrading
 
-- The `instance/` folder contains your personal data and must stay next to the executable
-- Your SQLite database will be created in the `instance/` folder
-- You can create separate databases for different rounds by changing the database name
+When upgrading to a new version:
+- Your existing `instance/` folder (with config and database) will be preserved
+- Simply replace the old executable with the new one
+- Your settings and data will remain intact
 
 ## Troubleshooting
 
 - If the app exits immediately, check that you've edited the config files
+- Look for error messages - they will guide you to what needs to be fixed
 - Database files are created automatically - don't delete them unless you want to reset
 - For help, check the original project documentation or OpenDominion Discord
 
-## Files in this distribution:
+## What's in the instance folder:
 
-- `odinfo` (or `odinfo.exe`) - The main application
-- `instance/secret.txt` - Your configuration (EDIT THIS)
-- `instance/users.json` - Web login settings (EDIT THIS)
-- `README.md` - This file
+- `secret.txt` - Your personal configuration (credentials, settings)
+- `users.json` - Web interface login settings
+- `*.sqlite` - Your game data database(s)
 '''
     
     with open(os.path.join(odinfo_folder, "README.md"), "w") as f:

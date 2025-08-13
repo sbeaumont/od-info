@@ -13,24 +13,51 @@
             {{ (top_op.temples * 100)|round(1) }}% Temples, in {{ top_op.paid_until }} ticks.
         </b></p>
     {% endif %}
-    <table id="military_table" class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+    
+    <!-- Column View Selector -->
+    <div class="w3-panel w3-card-2 w3-dark-grey" style="margin-bottom: 10px; padding: 8px;">
+        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <span><strong>Send Type:</strong></span>
+            <label style="cursor: pointer;">
+                <input type="radio" name="send_type" value="safe" checked> Normal Send
+            </label>
+            <label style="cursor: pointer;">
+                <input type="radio" name="send_type" value="54"> 5/4 Send
+            </label>
+            <span style="margin-left: 20px;"><strong>Show:</strong></span>
+            <label style="cursor: pointer;">
+                <input type="checkbox" class="column-toggle" data-group="boats"> Boats
+            </label>
+            <label style="cursor: pointer;">
+                <input type="checkbox" class="column-toggle" data-group="basic"> Raw OP/DP
+            </label>
+        </div>
+    </div>
+    
+    <div style="overflow-x: auto;">
+        <table id="military_table" class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white" style="min-width: 100%; white-space: nowrap;">
         <thead>
             <tr class="w3-black">
+                <!-- Always visible -->
                 <th>Dominion</th>
                 <th>Realm</th>
                 <th>Race</th>
                 <th>Ops Age</th>
                 <th>Land</th>
                 <th>75%</th>
-                <th>{% if versus_op != 0 %}Safe OP{% else %}5/4 OP{% endif %}</th>
-                <th>+Tmps</th>
-                <th>{% if versus_op != 0 %}Safe DP{% else %}5/4 DP{% endif %}</th>
+                <!-- Dynamic Send columns -->
+                <th class="send-col" id="send-op-header">Send OP</th>
+                <th class="send-col" id="send-tmps-header">+Tmps</th>
+                <th class="send-col" id="send-dp-header">Send DP</th>
+                <!-- Always visible -->
                 <th>Temples</th>
-                <th>Boats (#/prt)</th>
-                <th>Sendable (#/cap)</th>
                 <th>Paid</th>
-                <th>OP</th>
-                <th>DP</th>
+                <!-- Optional columns -->
+                <th class="col-boats">Boats (#/prt)</th>
+                <th class="col-boats">Sendable (#/cap)</th>
+                <th class="col-basic">Raw OP</th>
+                <th class="col-basic">Raw DP</th>
+                <!-- Always visible -->
                 <th>NW</th>
             </tr>
         </thead>
@@ -50,30 +77,147 @@
             </td>
             <td>{{ dom.land }}</td>
             <td>{{ dom.hittable_75_percent }}</td>
-            <td>{% if versus_op != 0 %}{{dom.safe_op}}{% else %}{{ dom.five_over_four_op }}{% endif %}</td>
-            <td>{% if versus_op != 0 %}{{dom.safe_op_with_temples}}{% else %}{{ dom.five_four_op_with_temples }}{% endif %}</td>
-            <td>{% if versus_op != 0 %}{{dom.safe_dp}}{% else %}{{ dom.five_over_four_dp }}{% endif %}</td>
+            <!-- Dynamic Send columns -->
+            <td class="send-col send-op" data-safe="{{ dom.safe_op }}" data-54="{{ dom.five_over_four_op }}">{{ dom.safe_op }}</td>
+            <td class="send-col send-tmps" data-safe="{{ dom.safe_op_with_temples }}" data-54="{{ dom.five_four_op_with_temples }}">{{ dom.safe_op_with_temples }}</td>
+            <td class="send-col send-dp" data-safe="{{ dom.safe_dp }}" data-54="{{ dom.five_over_four_dp }}">{{ dom.safe_dp }}</td>
+            <!-- Always visible -->
             <td>{{ (dom.temples * 100)|round(1) }}%</td>
-            <td>{{ dom.boats_amount }}/{{ dom.boats_prt }}</td>
-            <td>{{ dom.boats_sendable }}/{{ dom.boats_capacity }}</td>
             <td>{{ dom.paid_until }}</td>
-            <td title="Raw {{ dom.raw_op }}">{{ dom.op }}</td>
-            <td title="Raw {{ dom.raw_op }}">{{ dom.dp }}</td>
+            <!-- Optional columns -->
+            <td class="col-boats">{{ dom.boats_amount }}/{{ dom.boats_prt }}</td>
+            <td class="col-boats">{{ dom.boats_sendable }}/{{ dom.boats_capacity }}</td>
+            <td class="col-basic" title="Raw {{ dom.raw_op }}">{{ dom.op }}</td>
+            <td class="col-basic" title="Raw {{ dom.raw_dp }}">{{ dom.dp }}</td>
+            <!-- Always visible -->
             <td>{{ dom.networth }}</td>
         </tr>
         {% endfor %}
-    </table><br>
+        </table>
+    </div><br>
   </div>
 
 <script>
-    $(document).ready( function () {
-        $('#military_table').DataTable({
-            'paging': false,
-            'order': [[7, 'desc']],
-            'columnDefs': [
-                { "type": "num", "targets": [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}
-            ]
+    var militaryTable;
+    
+    // Column indices for DataTable (0-based)
+    const columnGroups = {
+        'send': [6, 7, 8],    // Send OP, +Tmps, Send DP
+        'boats': [11, 12],    // Boats, Sendable
+        'basic': [13, 14]     // Raw OP, DP
+    };
+    
+    function loadColumnPreferences() {
+        const saved = localStorage.getItem('military_columns');
+        if (saved) {
+            return JSON.parse(saved);
+        }
+        // Default: show Safe/Normal columns only
+        return { preset: 'safe', toggles: {} };
+    }
+    
+    function saveColumnPreferences(preset, toggles) {
+        localStorage.setItem('military_columns', JSON.stringify({ preset, toggles }));
+    }
+    
+    function updateColumnVisibility() {
+        const preset = $('input[name="send_type"]:checked').val();
+        
+        // Update column headers based on mode (keep +Tmps constant)
+        if (preset === '54') {
+            $('#send-op-header').text('5/4 OP');
+            $('#send-dp-header').text('5/4 DP');
+        } else {
+            $('#send-op-header').text('Send OP');
+            $('#send-dp-header').text('Send DP');
+        }
+        
+        // Update cell values based on mode
+        $('.send-col').each(function() {
+            const val = $(this).data(preset);
+            if (val !== undefined) {
+                $(this).text(val);
+            }
         });
-    } );
+        
+        // Handle optional columns based on checkboxes
+        $('.column-toggle').each(function() {
+            const group = $(this).data('group');
+            const isChecked = $(this).is(':checked');
+            
+            if (columnGroups[group] && militaryTable) {
+                columnGroups[group].forEach(idx => {
+                    militaryTable.column(idx).visible(isChecked);
+                });
+            }
+        });
+        
+        // Invalidate DataTable cache and re-sort
+        if (militaryTable) {
+            // Tell DataTable that the data has changed
+            militaryTable.rows().invalidate('dom');
+            // Re-sort by +Tmps column (column 7) after data update
+            militaryTable.order([7, 'desc']).draw();
+        }
+    }
+    
+    $(document).ready(function() {
+        // Load preferences
+        const prefs = loadColumnPreferences();
+        
+        // Set initial radio button state - force safe as default
+        $('input[name="send_type"][value="safe"]').prop('checked', true);
+        
+        // Set initial checkbox states
+        Object.keys(prefs.toggles || {}).forEach(group => {
+            if (prefs.toggles[group]) {
+                $('.column-toggle[data-group="' + group + '"]').prop('checked', true);
+            }
+        });
+        
+        // Initialize DataTable with all columns visible initially
+        militaryTable = $('#military_table').DataTable({
+            'paging': false,
+            'order': [[7, 'desc']], // Sort by +Tmps column by default
+            'columnDefs': [
+                { "type": "num", "targets": [1, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15]}
+            ],
+            'autoWidth': false,
+            'scrollX': true
+        });
+        
+        // Apply initial visibility after DataTable is ready
+        setTimeout(function() {
+            updateColumnVisibility();
+        }, 100);
+        
+        // Handle radio button changes
+        $('input[name="send_type"]').on('change', function() {
+            console.log('Radio button changed to:', $(this).val());
+            updateColumnVisibility();
+            
+            // Save preferences
+            const preset = $(this).val();
+            const toggles = {};
+            $('.column-toggle').each(function() {
+                toggles[$(this).data('group')] = $(this).is(':checked');
+            });
+            saveColumnPreferences(preset, toggles);
+        });
+        
+        // Handle checkbox changes
+        $('.column-toggle').on('change', function() {
+            console.log('Checkbox changed:', $(this).data('group'), $(this).is(':checked'));
+            updateColumnVisibility();
+            
+            // Save preferences
+            const preset = $('input[name="send_type"]:checked').val();
+            const toggles = {};
+            $('.column-toggle').each(function() {
+                toggles[$(this).data('group')] = $(this).is(':checked');
+            });
+            saveColumnPreferences(preset, toggles);
+        });
+    });
 </script>
 {% endblock %}

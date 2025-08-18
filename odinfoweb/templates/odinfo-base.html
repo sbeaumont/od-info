@@ -58,6 +58,35 @@
   <header class="w3-container" style="padding-top:22px">
     <h5><b><i class="fa fa-dashboard"></i> {% block title %}My Dashboard{% endblock %}</b></h5>
   </header>
+  
+  <!-- Error Display -->
+  {% if error %}
+  <div class="w3-container">
+    <div class="w3-panel w3-red w3-display-container w3-card-4" style="padding-bottom: 16px;">
+      <span onclick="this.parentElement.style.display='none'"
+            class="w3-button w3-large w3-display-topright">&times;</span>
+      <h3>Error (Send details to AgFx)</h3>
+      <p>{{ error.message }}</p>
+      {% if error.details %}
+      <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer;">Show Details</summary>
+        <div style="background-color: rgba(0,0,0,0.2); padding: 10px; margin-top: 10px;">
+          {% if error.details.event_text %}
+          <p><strong>Event Text:</strong></p>
+          <pre style="white-space: pre-wrap; word-wrap: break-word;">{{ error.details.event_text }}</pre>
+          {% endif %}
+          {% if error.__cause__ %}
+          <p><strong>Original Error:</strong> {{ error.__cause__ }}</p>
+          {% endif %}
+          <p><strong>Stack Trace:</strong></p>
+          <pre style="white-space: pre-wrap; word-wrap: break-word; font-size: 0.8em;">{{ error_traceback }}</pre>
+        </div>
+      </details>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+  
   {% block content %}{% endblock %}
   <!-- End page content -->
 </div>

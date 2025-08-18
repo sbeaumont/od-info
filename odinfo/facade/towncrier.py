@@ -4,8 +4,17 @@ import logging
 
 from odinfo.opsdata.scrapetools import login
 from odinfo.config import OUT_DIR, TOWN_CRIER_URL
+from odinfo.exceptions import ODInfoException
 
 logger = logging.getLogger('od-info.towncrier')
+
+
+class TownCrierParseError(ODInfoException):
+    """Exception raised when Town Crier event text cannot be parsed."""
+    
+    def __init__(self, event_text):
+        message = f"Did not recognize Town Crier event format: {event_text[:200]}{'...' if len(event_text) > 200 else ''}"
+        super().__init__(message, {'event_text': event_text})
 
 
 def get_number_of_tc_pages(session) -> int:
@@ -58,18 +67,34 @@ def get_tc_page(session, page_nr: int) -> list:
                     target_name, dom_name, dom_code = re.search(r'(.*) has been destroyed and rebuilt by (.*) \(#(\d+)', event_text).group(1, 2, 3)
                     target_code = ' '
                 elif 'has attacked' in event_text:
-                    event_type = 'wonder_attack'
                     event_text = ' '.join([el.strip() for el in event_text.split('\n')])
                     if 'a neutral wonder' in event_text:
+                        event_type = 'wonder_attack'
                         target_name = 'a neutral wonder'
                         target_code = ' '
                     else:
+                        # Try wonder attack with dominion code
                         wonder_with_target = re.search(r'has attacked the (.*) \(#(\d+)', event_text)
                         if wonder_with_target:
+                            event_type = 'wonder_attack'
                             target_name, target_code = wonder_with_target.group(1, 2)
                         else:
-                            target_name = re.search(r'has attacked the (.*)!', event_text).group(1)
-                            target_code = ' '
+                            # Try wonder attack without code (ends with !)
+                            wonder_attack = re.search(r'has attacked the (.*)!', event_text)
+                            if wonder_attack:
+                                event_type = 'wonder_attack'
+                                target_name = wonder_attack.group(1)
+                                target_code = ' '
+                            else:
+                                # Try raid attack format (no "the", ends with .)
+                                raid_attack = re.search(r'has attacked ([^.]+)\.', event_text)
+                                if raid_attack:
+                                    event_type = 'raid_attack'
+                                    target_name = raid_attack.group(1)
+                                    target_code = ' '
+                                else:
+                                    # Couldn't parse - will be caught by AttributeError handler
+                                    raise AttributeError(f"No matching attack pattern found")
                 elif 'CANCELED' in event_text:
                     event_type = 'war_cancel'
                     target_name, target_code = re.search(r'has CANCELED war against (.*) \(#(\d+)', event_text).group(1, 2)
@@ -81,9 +106,9 @@ def get_tc_page(session, page_nr: int) -> list:
                     target_code = re.search(r'\(#(\d+)', event_text).group(1)
                 else:
                     event_type = 'other'
-            except AttributeError:
+            except AttributeError as e:
                 logger.error(f'Error while parsing event text: {event_text}')
-                raise
+                raise TownCrierParseError(event_text) from e
 
             if target_name and not target_code:
                 if not event.find(string=re.compile(re.escape(target_name))):

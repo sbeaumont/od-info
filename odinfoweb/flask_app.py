@@ -24,6 +24,7 @@ from odinfoweb.user import load_user_by_id, load_user_by_name, User
 from odinfo.config import feature_toggles, OP_CENTER_URL, load_secrets, check_dirs_and_configs
 from odinfo.facade.odinfo import ODInfoFacade
 from odinfo.facade.graphs import nw_history_graph, land_history_graph
+from odinfo.exceptions import ODInfoException
 
 # ---------------------------------------------------------------------- Flask
 
@@ -114,6 +115,78 @@ def facade() -> ODInfoFacade:
     if not _facade:
         _facade = g._facade = ODInfoFacade(db)
     return _facade
+
+
+# ---------------------------------------------------------------------- Error Handlers
+
+@app.errorhandler(ODInfoException)
+def handle_odinfo_error(error):
+    """Handle ODInfo-specific errors gracefully."""
+    import traceback
+    error_traceback = traceback.format_exc()
+    
+    # Try to render the appropriate template with error info
+    # Use the referrer to determine which page to show
+    template = 'odinfo-base.html'
+    if request.endpoint:
+        # Map endpoints to their templates
+        template_map = {
+            'overview': 'overview.html',
+            'towncrier': 'towncrier.html',
+            'stats': 'stats.html',
+            'nw_tracker': 'nwtracker.html',
+            'economy': 'economy.html',
+            'ratios': 'ratios.html',
+            'military': 'military.html',
+            'realmies': 'realmies.html',
+            'stealables': 'stealables.html',
+        }
+        template = template_map.get(request.endpoint, 'odinfo-base.html')
+    
+    return render_template(template,
+                          feature_toggles=feature_toggles,
+                          error=error,
+                          error_traceback=error_traceback), 500
+
+
+@app.errorhandler(Exception)
+def handle_general_error(error):
+    """Handle all other errors gracefully."""
+    # In debug mode, let Flask/Werkzeug handle it for better debugging
+    if app.debug:
+        raise
+    
+    import traceback
+    error_traceback = traceback.format_exc()
+    
+    # Wrap the error in ODInfoException for consistent handling
+    wrapped_error = ODInfoException(
+        message=f"{error.__class__.__name__}: {str(error)}",
+        details={'original_error': str(error)}
+    )
+    wrapped_error.__cause__ = error
+    
+    # Try to render the appropriate template with error info
+    template = 'odinfo-base.html'
+    if request.endpoint:
+        # Map endpoints to their templates
+        template_map = {
+            'overview': 'overview.html',
+            'towncrier': 'towncrier.html',
+            'stats': 'stats.html',
+            'nw_tracker': 'nwtracker.html',
+            'economy': 'economy.html',
+            'ratios': 'ratios.html',
+            'military': 'military.html',
+            'realmies': 'realmies.html',
+            'stealables': 'stealables.html',
+        }
+        template = template_map.get(request.endpoint, 'odinfo-base.html')
+    
+    return render_template(template,
+                          feature_toggles=feature_toggles,
+                          error=wrapped_error,
+                          error_traceback=error_traceback), 500
 
 
 # ---------------------------------------------------------------------- Flask Routes
@@ -217,7 +290,7 @@ def ratios():
 
 
 @app.route('/military', defaults={'versus_op': 0})
-@app.route('/military/<versus_op>')
+@app.route('/military/<int:versus_op>')
 @login_required
 def military(versus_op: int = 0):
     dom_list = facade().military_list(versus_op=versus_op, top=1000)
@@ -226,7 +299,7 @@ def military(versus_op: int = 0):
                            doms=dom_list,
                            ages=facade().all_doms_ops_age(),
                            top_op=facade().top_op(dom_list),
-                           versus_op=int(versus_op),
+                           versus_op=versus_op,
                            current_day=facade().current_tick.day)
 
 

@@ -16,7 +16,7 @@ from flask_login import LoginManager, login_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 
 from odinfo.timeutils import current_od_time
-from .forms import LoginForm
+from odinfoweb.forms import LoginForm
 
 from odinfo.domain.models import Base
 from odinfoweb.user import load_user_by_id, load_user_by_name, User

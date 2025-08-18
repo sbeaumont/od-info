@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.abspath('.'))
 
 a = Analysis(
     ['odinfoweb/flask_app.py'],
-    pathex=[],
+    pathex=['.'],
     binaries=[],
     datas=[
         # Include templates directory - Flask needs this

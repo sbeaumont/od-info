@@ -303,6 +303,7 @@ class ClearSight(TimestampedOpsMixin, Base):
     military_archmages: Mapped[int] = mapped_column(Integer, default=0)
     clear_sight_accuracy: Mapped[float] = mapped_column(Float, default=0.85)
     wpa: Mapped[float] = mapped_column(Float, default=0)
+    spa: Mapped[float] = mapped_column(Float, default=0)
 
     @hybrid_property
     def military(self) -> dict:

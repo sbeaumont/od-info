@@ -96,7 +96,7 @@ class TechTree(object):
     @lru_cache(maxsize=None)
     def _load_techs() -> dict:
         if not TechTree.TECHS_REGISTRY:
-            with open(f'{REF_DATA_DIR}/techs.yml', 'r') as f:
+            with open(f'{REF_DATA_DIR}/techs/v2.yml', 'r') as f:
                 tech_yaml = yaml.safe_load(f)
                 techs = defaultdict(dict)
                 for tech_name, tech in tech_yaml['techs'].items():

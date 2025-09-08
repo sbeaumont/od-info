@@ -174,21 +174,11 @@ class ODInfoFacade(object):
                 'land': rc.dom.current_land,
                 'race': rc.dom.race,
                 'networth': rc.dom.current_networth,
-                'spy_units_equiv': rc.spy_units_equiv,
-                'wiz_units_equiv': rc.wiz_units_equiv,
                 'wpa': rc.dom.current_wpa,
-                'spywiz_networth': rc.spywiz_networth,
-                'spywiz_units': rc.spywiz_units,
-                'ratio_estimate': rc.ratio_estimate,
-                'spy_ratio_estimate': rc.spy_ratio_estimate,
-                'max_spy_ratio_estimate': rc.max_spy_ratio_estimate,
-                'wiz_ratio_estimate': rc.wiz_ratio_estimate,
-                'max_wiz_ratio_estimate': rc.max_wiz_ratio_estimate,
-                'spy_ratio_actual': rc.spy_ratio_estimate,
-                'spy_ratio_range': f"{rc.spy_ratio_estimate:.3f} - {rc.max_spy_ratio_estimate:.3f}",
+                'spy_ratio_actual': rc.spy_ratio_actual,
                 'ops_age': hours_since(rc.dom.last_op)
             })
-        return sorted(result, key=lambda d: d['ratio_estimate'], reverse=True)
+        return sorted(result, key=lambda d: d['spy_ratio_actual'], reverse=True)
 
     def all_doms_ops_age(self):
         return {dom.code: hours_since(dom.last_op) for dom in all_doms(self._db)}

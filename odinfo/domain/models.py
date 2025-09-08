@@ -75,9 +75,9 @@ class Dominion(Base):
             bs_age = hours_since(self.last_barracks.timestamp)
             if (cs_age < 1) or (cs_age <= bs_age):
                 result = self.last_cs.military
-                # Add remaining training troops from last BS
+                # Add remaining training troops from last BS that hadn't completed by CS time
                 for i in range(1, 5):
-                    result[f'unit{i}'] += self.last_barracks.aged_amount_training_for_unit(i)
+                    result[f'unit{i}'] += self.last_barracks.aged_amount_training_for_unit_at_time(i, self.last_cs.timestamp)
                 result['paid_until'] = self.last_barracks.paid_until
             else:
                 result = self.last_barracks.military
@@ -195,6 +195,18 @@ class BarracksSpy(TimestampedOpsMixin, Base):
         age = hours_since(self.timestamp)
         if self.training and key in self.training:
             return sum([amount for tick, amount in self.training[key].items() if int(tick) - age > 0])
+        else:
+            return 0
+    
+    def aged_amount_training_for_unit_at_time(self, unit_type_nr: int, reference_time) -> int:
+        """Calculate training units that hadn't completed by reference_time."""
+        key = f'unit{unit_type_nr}'
+        if self.training and key in self.training:
+            # Calculate hours between BarracksSpy and reference time (e.g., ClearSight)
+            time_diff = (reference_time - self.timestamp).total_seconds() / 3600
+            # Include units whose training tick is greater than the time difference
+            # i.e., units that hadn't completed by reference_time
+            return sum([amount for tick, amount in self.training[key].items() if int(tick) > time_diff])
         else:
             return 0
 

@@ -45,7 +45,7 @@ class MilitaryCalculator(object):
 
         # Pairing perk (e.g. kobold)
         if self.unit_type(unit_nr).has_perk('offense_from_pairing'):
-            slot, op_buff, num_required = self.unit_type(unit_nr).get_perk('offense_from_pairing')
+            slot, num_required, op_buff = self.unit_type(unit_nr).get_perk('offense_from_pairing')
             pairable_amount = min(self.amount(int(slot)) // int(num_required), amount)
             op += pairable_amount * int(op_buff)
 
@@ -434,60 +434,6 @@ class RatioCalculator(object):
     @property
     def can_calculate(self) -> bool:
         return self.dom.last_cs is not None
-        # return ((self.army is not None) and
-        #         (self.dom.buildings is not None))
-
-    # def amount(self, unit_nr: int) -> int:
-    #     # return self.army.get(f'unit{unit_nr}', 0) * BS_UNCERTAINTY
-    #     return self.army.get(f'unit{unit_nr}', 0)
-    #
-    # @property
-    # def land(self) -> int:
-    #     return self.dom.current_land
-    #
-    # @property
-    # def buildings(self) -> int:
-    #     return self.dom.buildings.total
-    #
-    # @property
-    # def spywiz_networth(self) -> float:
-    #     networth = self.dom.current_networth
-    #     networth -= self.land * NETWORTH_VALUES['land']
-    #     networth -= self.buildings * NETWORTH_VALUES['buildings']
-    #
-    #     networth -= self.amount(1) * NETWORTH_VALUES['specs']
-    #     networth -= self.amount(2) * NETWORTH_VALUES['specs']
-    #     networth -= self.amount(3) * self.race.unit(3).networth
-    #     networth -= self.amount(4) * self.race.unit(4).networth
-    #     return round(networth, 1)
-    #
-    # @property
-    # def spywiz_units(self) -> int:
-    #     return round(self.spywiz_networth / NETWORTH_VALUES['spywiz'])
-    #
-    # @property
-    # def ratio_estimate(self) -> float:
-    #     return round(self.spywiz_units / (2 * self.land), 3)
-    #
-    # @property
-    # def max_ratio_estimate(self) -> float:
-    #     return round(self.spywiz_units / self.land, 3)
-    #
-    # @property
-    # def spy_ratio_estimate(self) -> float:
-    #     return round(self.ratio_estimate + (self.spy_units_equiv / self.land), 3)
-    #
-    # @property
-    # def max_spy_ratio_estimate(self) -> float:
-    #     return round(self.max_ratio_estimate + (self.spy_units_equiv / self.land), 3)
-    #
-    # @property
-    # def wiz_ratio_estimate(self) -> float:
-    #     return round(self.ratio_estimate + (self.wiz_units_equiv / self.land), 3)
-    #
-    # @property
-    # def max_wiz_ratio_estimate(self) -> float:
-    #     return round(self.max_ratio_estimate + (self.wiz_units_equiv / self.land), 3)
 
     @property
     def spy_ratio_actual(self) -> float | None:
@@ -497,12 +443,6 @@ class RatioCalculator(object):
         else:
             return self.dom.last_cs.spa
         
-        # Account for strength multipliers: spies=1x, assassins=2x
-        # effective_spy_strength = (self.dom.last_cs.military_spies * 1) + (self.dom.last_cs.military_assassins * 2)
-        # cs_land = self.dom.last_cs.land
-        #
-        # return round(effective_spy_strength / cs_land, 3) if cs_land > 0 else 0
-
     @property
     def wiz_ratio_actual(self) -> float | None:
         """Calculate actual wizard ratio from clear sight data if available."""
@@ -510,30 +450,6 @@ class RatioCalculator(object):
             return None
         else:
             return self.dom.last_cs.wpa
-        
-        # Account for strength multipliers: wizards=1x, archmages=2x
-        # effective_wiz_strength = (self.dom.last_cs.military_wizards * 1) + (self.dom.last_cs.military_archmages * 2)
-        # cs_land = self.dom.last_cs.land
-        #
-        # return round(effective_wiz_strength / cs_land, 3) if cs_land > 0 else 0
-
-    # @property
-    # def spy_units_equiv(self) -> int:
-    #     result = 0
-    #     for i in range(1, 5):
-    #         unit_ratios = self.race.unit(i).ratios
-    #         spy_per_unit = max(unit_ratios['spy_offense'], unit_ratios['spy_defense'])
-    #         result += trunc(self.amount(i) * spy_per_unit)
-    #     return result
-
-    # @property
-    # def wiz_units_equiv(self) -> int:
-    #     result = 0
-    #     for i in range(1, 5):
-    #         unit_ratios = self.race.unit(i).ratios
-    #         wiz_per_unit = max(unit_ratios['wiz_offense'], unit_ratios['wiz_defense'])
-    #         result += trunc(self.amount(i) * wiz_per_unit)
-    #     return result
 
 
 if __name__ == '__main__':

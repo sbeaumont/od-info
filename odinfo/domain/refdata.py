@@ -121,6 +121,26 @@ class Unit(object):
         else:
             return 0
 
+    def required_intel_for_stats(self) -> dict:
+        """Returns dict of {stat_type: set of required intel types} based on perks.
+        Example: {'offense': {'clear_sight'}, 'defense': {'land_spy'}}
+        """
+        required = {'offense': set(), 'defense': set()}
+        if 'perks' not in self._data:
+            return required
+
+        for perk_name in self._data['perks'].keys():
+            if 'offense_from_land' in perk_name:
+                required['offense'].add('land_spy')
+            elif 'defense_from_land' in perk_name:
+                required['defense'].add('land_spy')
+            elif '_wizard_ratio' in perk_name:
+                required['offense'].add('clear_sight')
+            elif '_from_prestige' in perk_name:
+                required['offense'].add('clear_sight')
+
+        return required
+
     @property
     def name(self) -> str:
         return self._data['name']

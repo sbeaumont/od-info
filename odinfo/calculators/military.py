@@ -34,6 +34,48 @@ class MilitaryCalculator(object):
         else:
             return 0
 
+    def unit_missing_intel(self, unit_nr: int) -> dict:
+        """Returns dict of {stat_type: list of missing intel types} for a specific unit.
+        Example: {'offense': ['clear_sight'], 'defense': ['land_spy']}
+        """
+        # Map intel type names to actual dominion attributes
+        intel_map = {
+            'land_spy': self.dom.last_land,
+            'clear_sight': self.dom.last_cs
+        }
+
+        unit = self.unit_type(unit_nr)
+        required = unit.required_intel_for_stats()
+        missing = {'offense': [], 'defense': []}
+
+        for stat_type in ['offense', 'defense']:
+            for intel_type in required[stat_type]:
+                if intel_map.get(intel_type) is None:
+                    missing[stat_type].append(intel_type)
+
+        return missing
+
+    def missing_intel_for_stats(self) -> dict:
+        """Returns dict of {stat_type: list of missing intel types} aggregated across all units.
+        Example: {'offense': ['clear_sight'], 'defense': ['land_spy']}
+        """
+        missing = {'offense': set(), 'defense': set()}
+
+        for unit_nr in range(1, 5):
+            unit_missing = self.unit_missing_intel(unit_nr)
+            missing['offense'].update(unit_missing['offense'])
+            missing['defense'].update(unit_missing['defense'])
+
+        return {
+            'offense': list(missing['offense']),
+            'defense': list(missing['defense'])
+        }
+
+    def has_incomplete_intel(self) -> bool:
+        """Returns True if any stat has missing intel"""
+        missing = self.missing_intel_for_stats()
+        return len(missing['offense']) > 0 or len(missing['defense']) > 0
+
     @property
     def hittable_75_percent(self):
         return trunc(self.dom.current_land * 3 / 4)

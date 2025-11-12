@@ -73,7 +73,7 @@
                 </a>
             </td>
             <td  {% if 1 < dom.ops_age <= 12 %}class="stale"{% elif dom.ops_age > 12 %}class="invalid"{% endif %}>
-                {{ dom.ops_age }}
+                {{ dom.ops_age }}{% if dom.has_incomplete_intel %} !{% endif %}
             </td>
             <td>{{ dom.land }}</td>
             <td>{{ dom.hittable_75_percent }}</td>

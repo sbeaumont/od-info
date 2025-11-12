@@ -218,7 +218,8 @@ class ODInfoFacade(object):
                 'safe_op': mc.safe_op if versus_op == 0 else mc.safe_op_versus(versus_op)[0],
                 'safe_dp': mc.safe_dp if versus_op == 0 else mc.safe_op_versus(versus_op)[1],
                 'safe_op_with_temples': mc.safe_op_with_temples(versus_op),
-                'networth': mc.dom.current_networth
+                'networth': mc.dom.current_networth,
+                'has_incomplete_intel': mc.has_incomplete_intel()
             }
             result_list.append(dom_result)
         return result_list

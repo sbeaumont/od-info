@@ -106,13 +106,13 @@
                                 {{ military.amount(i) }}
                             </td>
                             <td>
-                                {{ military.unit_type(i).offense }}/{{ military.unit_type(i).defense }}
+                                {{ military.unit_type(i).offense|round }}{% if military.unit_missing_intel(i)['offense'] %} !{% endif %}/{{ military.unit_type(i).defense|round }}{% if military.unit_missing_intel(i)['defense'] %} !{% endif %}
                             </td>
                             <td>
-                                {{ military.op_of(i) }}
+                                {{ military.op_of(i)|round }}{% if military.unit_missing_intel(i)['offense'] %} !{% endif %}
                             </td>
                             <td>
-                                {{ military.dp_of(i) }}
+                                {{ military.dp_of(i)|round }}{% if military.unit_missing_intel(i)['defense'] %} !{% endif %}
                             </td>
                         </tr>
                     {% endfor %}

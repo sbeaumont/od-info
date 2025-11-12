@@ -53,8 +53,8 @@
             <td colspan="1">
                 <table class="w3-white">
                     <tr><td class="w3-black" colspan="2">Offense</td></tr>
-                    <tr><td>OP (raw)</td><td>{{ military.op }} ({{ military.raw_op }})</td></tr>
-                    <tr><td>5/4 OP</td><td>{{ military.five_over_four[0] }}</td></tr>
+                    <tr><td>OP (raw)</td><td>{{ military.op|round }} ({{ military.raw_op|round }})</td></tr>
+                    <tr><td>5/4 OP</td><td>{{ military.five_over_four[0]|round }}</td></tr>
                     <tr><td>Temples</td>
                         <td>
                             {% if dominion.buildings is not none %}
@@ -77,8 +77,8 @@
             <td colspan="1">
                 <table class="w3-white">
                     <tr><td class="w3-black" colspan="2">Defense</td></tr>
-                    <tr><td>DP (raw)</td><td>{{ military.dp }} ({{ military.raw_dp }})</td></tr>
-                    <tr><td>5/4 DP</td><td>{{ military.five_over_four[1] }}</td></tr>
+                    <tr><td>DP (raw)</td><td>{{ military.dp|round }} ({{ military.raw_dp|round }})</td></tr>
+                    <tr><td>5/4 DP</td><td>{{ military.five_over_four[1]|round }}</td></tr>
                     <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
                     <tr><td class="w3-black" colspan="2">Defense Bonuses</td></tr>
                     <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -106,7 +106,7 @@
                                 {{ military.amount(i) }}
                             </td>
                             <td>
-                                {{ military.unit_type(i).offense|round }}{% if military.unit_missing_intel(i)['offense'] %} !{% endif %}/{{ military.unit_type(i).defense|round }}{% if military.unit_missing_intel(i)['defense'] %} !{% endif %}
+                                {{ military.unit_type(i).offense|round(1) }}{% if military.unit_missing_intel(i)['offense'] %} !{% endif %}/{{ military.unit_type(i).defense|round(1) }}{% if military.unit_missing_intel(i)['defense'] %} !{% endif %}
                             </td>
                             <td>
                                 {{ military.op_of(i)|round }}{% if military.unit_missing_intel(i)['offense'] %} !{% endif %}
@@ -127,8 +127,8 @@
                         <td><em>Total</em></td>
                         <td>{{military.total_units}}</td>
                         <td>&nbsp;</td>
-                        <td>{{military.raw_op}}</td>
-                        <td>{{military.raw_dp}}</td>
+                        <td>{{military.raw_op|round}}</td>
+                        <td>{{military.raw_dp|round}}</td>
                     </tr>
                 </table>
             </td>
@@ -182,8 +182,8 @@
             <tr>
                 <td>{{ unit['unit_name'] }} ({{ unit['unit_type'] }})</td>
                 <td>{{ unit['amount_sent'] }}</td>
-                <td>{{ unit['op_contribution'] }}</td>
-                <td>{{ unit['dp_lost'] }}</td>
+                <td>{{ unit['op_contribution']|round }}</td>
+                <td>{{ unit['dp_lost']|round }}</td>
             </tr>
             {% endif %}
         {% endfor %}
@@ -208,19 +208,19 @@
                 <td>{{ unit['unit_name'] }} ({{ unit['unit_type'] }})</td>
                 <td>{{ unit['amount_home'] }}</td>
                 <td>{% if unit['unit_name'] == 'Draftees' %}Draftees{% else %}Pure Defense{% endif %}</td>
-                <td>{{ unit['dp_contribution'] }}</td>
+                <td>{{ unit['dp_contribution']|round }}</td>
             </tr>
         {% endfor %}
         <tr class="w3-light-grey">
             <td><strong>Totals</strong></td>
             <td>-</td>
-            <td><strong>{{ military.five_over_four_breakdown()['summary']['sendable_op'] }} OP</strong></td>
-            <td><strong>{{ military.five_over_four_breakdown()['summary']['remaining_dp'] }} DP</strong></td>
+            <td><strong>{{ military.five_over_four_breakdown()['summary']['sendable_op']|round }} OP</strong></td>
+            <td><strong>{{ military.five_over_four_breakdown()['summary']['remaining_dp']|round }} DP</strong></td>
         </tr>
         <tr class="w3-pale-yellow">
             <td colspan="2"><strong>5/4 Constraint Check</strong></td>
             <td colspan="2">
-                <strong>{{ military.five_over_four_breakdown()['summary']['sendable_op'] }} ≤ {{ (military.five_over_four_breakdown()['summary']['remaining_dp'] * 5/4)|round }} 
+                <strong>{{ military.five_over_four_breakdown()['summary']['sendable_op']|round }} ≤ {{ (military.five_over_four_breakdown()['summary']['remaining_dp'] * 5/4)|round }} 
                 {% if military.five_over_four_breakdown()['summary']['sendable_op'] <= (military.five_over_four_breakdown()['summary']['remaining_dp'] * 5/4)|round %}
                 ✓ Valid
                 {% else %}

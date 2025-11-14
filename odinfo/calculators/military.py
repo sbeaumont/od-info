@@ -85,6 +85,11 @@ class MilitaryCalculator(object):
         amount = partial_amount if partial_amount else self.amount(unit_nr)
         op = amount * self.unit_type(unit_nr).offense
 
+        # Unit-specific spell bonuses (e.g. Infernal Command for Demon Imps)
+        unit_spell_bonus = self.spell_bonus(self.dom.race, f'offense_unit{unit_nr}')
+        if unit_spell_bonus:
+            op += amount * unit_spell_bonus
+
         # Pairing perk (e.g. kobold)
         if self.unit_type(unit_nr).has_perk('offense_from_pairing'):
             slot, num_required, op_buff = self.unit_type(unit_nr).get_perk('offense_from_pairing')

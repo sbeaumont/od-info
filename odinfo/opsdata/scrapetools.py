@@ -45,9 +45,15 @@ def get_soup_page(session: requests.Session, url: str) -> BeautifulSoup | None:
     logger.debug(f"Getting page {url}")
     try:
         response = session.get(url)
+        if response.status_code >= 500:
+            raise ConnectionError(f"OpenDominion server error (HTTP {response.status_code})")
+        if response.status_code >= 400:
+            raise ConnectionError(f"Cannot reach OpenDominion: HTTP {response.status_code}")
         return BeautifulSoup(response.content, "html.parser")
     except TooManyRedirects:
-        return None
+        raise ConnectionError("Cannot reach OpenDominion: too many redirects")
+    except requests.exceptions.RequestException as e:
+        raise ConnectionError(f"Cannot reach OpenDominion: {e}")
 
 
 def read_server_time(soup: BeautifulSoup) -> str | None:
@@ -77,10 +83,10 @@ def read_tick_time(soup: BeautifulSoup) -> ODTickTime:
 
 def pull_csrf_token(soup):
     if soup is None:
-        raise ValueError("Cannot extract CSRF token: soup is None")
+        raise ConnectionError("Cannot update data: OpenDominion page did not load")
     csrf_element = soup.select_one('meta[name="csrf-token"]')
     if csrf_element is None:
-        raise ValueError("CSRF token not found in page HTML")
+        raise ConnectionError("Cannot update data: OpenDominion returned unexpected page content")
     return csrf_element['content']
 
 

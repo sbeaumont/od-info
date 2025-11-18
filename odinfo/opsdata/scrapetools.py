@@ -51,7 +51,8 @@ def get_soup_page(session: requests.Session, url: str) -> BeautifulSoup | None:
             raise ConnectionError(f"Cannot reach OpenDominion: HTTP {response.status_code}")
         return BeautifulSoup(response.content, "html.parser")
     except TooManyRedirects:
-        raise ConnectionError("Cannot reach OpenDominion: too many redirects")
+        logger.warning(f"Too many redirects for {url} - likely session expired or page not accessible")
+        return None
     except requests.exceptions.RequestException as e:
         raise ConnectionError(f"Cannot reach OpenDominion: {e}")
 

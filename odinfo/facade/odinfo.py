@@ -40,7 +40,8 @@ class ODInfoFacade(object):
         return self._session
 
     def teardown(self):
-        self.session.close()
+        if self._session is not None:
+            self._session.close()
 
     def update_all(self):
         last_scans = get_last_scans(self.session)

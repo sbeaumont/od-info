@@ -76,7 +76,12 @@ def read_tick_time(soup: BeautifulSoup) -> ODTickTime:
 
 
 def pull_csrf_token(soup):
-    return soup.select_one('meta[name="csrf-token"]')['content']
+    if soup is None:
+        raise ValueError("Cannot extract CSRF token: soup is None")
+    csrf_element = soup.select_one('meta[name="csrf-token"]')
+    if csrf_element is None:
+        raise ValueError("CSRF token not found in page HTML")
+    return csrf_element['content']
 
 
 def login(for_player_id=None) -> requests.Session | None:

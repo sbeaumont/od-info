@@ -212,6 +212,7 @@ class ODInfoFacade(object):
                 'boats_sendable': boat_stuff[2],
                 'boats_capacity': boat_stuff[3],
                 'paid_until': mc.army.get('paid_until', '?'),
+                'draftees': mc.draftees,
                 'raw_op': mc.raw_op,
                 'op': mc.op,
                 'raw_dp': mc.raw_dp,

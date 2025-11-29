@@ -26,6 +26,9 @@
             </label>
             <span style="margin-left: 20px;"><strong>Show:</strong></span>
             <label style="cursor: pointer;">
+                <input type="checkbox" class="column-toggle" data-group="draftees"> Draftees
+            </label>
+            <label style="cursor: pointer;">
                 <input type="checkbox" class="column-toggle" data-group="boats"> Boats
             </label>
             <label style="cursor: pointer;">
@@ -53,6 +56,7 @@
                 <th>Temples</th>
                 <th>Paid</th>
                 <!-- Optional columns -->
+                <th class="col-draftees">Draftees</th>
                 <th class="col-boats">Boats (#/prt)</th>
                 <th class="col-boats">Sendable (#/cap)</th>
                 <th class="col-basic">Raw OP</th>
@@ -85,6 +89,7 @@
             <td>{{ (dom.temples * 100)|round(1) }}%</td>
             <td>{{ dom.paid_until }}</td>
             <!-- Optional columns -->
+            <td class="col-draftees">{{ dom.draftees }}</td>
             <td class="col-boats">{{ dom.boats_amount }}/{{ dom.boats_prt }}</td>
             <td class="col-boats">{{ dom.boats_sendable }}/{{ dom.boats_capacity }}</td>
             <td class="col-basic" title="Raw {{ dom.raw_op }}">{{ dom.op }}</td>
@@ -103,8 +108,9 @@
     // Column indices for DataTable (0-based)
     const columnGroups = {
         'send': [6, 7, 8],    // Send OP, +Tmps, Send DP
-        'boats': [11, 12],    // Boats, Sendable
-        'basic': [13, 14]     // Raw OP, DP
+        'draftees': [11],     // Draftees
+        'boats': [12, 13],    // Boats, Sendable
+        'basic': [14, 15]     // Raw OP, DP
     };
     
     function loadColumnPreferences() {
@@ -180,7 +186,7 @@
             'paging': false,
             'order': [[7, 'desc']], // Sort by +Tmps column by default
             'columnDefs': [
-                { "type": "num", "targets": [1, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15]}
+                { "type": "num", "targets": [1, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16]}
             ],
             'autoWidth': false,
             'scrollX': true

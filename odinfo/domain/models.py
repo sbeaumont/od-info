@@ -122,7 +122,13 @@ class Dominion(Base):
 
     @property
     def last_barracks(self):
-        return self.barracks_spy[0] if self.barracks_spy else None
+        session = object_session(self)
+        if session is None:
+            return None
+        return session.query(BarracksSpy)\
+            .filter(BarracksSpy.dominion_id == self.code)\
+            .order_by(BarracksSpy.timestamp.desc())\
+            .first()
 
     @property
     def last_castle(self):
@@ -148,7 +154,13 @@ class Dominion(Base):
 
     @property
     def last_survey(self):
-        return self.survey_dominion[0] if self.survey_dominion else None
+        session = object_session(self)
+        if session is None:
+            return None
+        return session.query(SurveyDominion)\
+            .filter(SurveyDominion.dominion_id == self.code)\
+            .order_by(SurveyDominion.timestamp.desc())\
+            .first()
 
     @property
     def last_vision(self):

@@ -37,7 +37,7 @@ class ODInfoFacade(object):
 
     def clear_cache(self):
         logger.debug("Cache cleared (had %d entries)", len(self._cache))
-        self._cache = {}
+        self._cache.clear()
 
     @property
     def session(self):

@@ -3,6 +3,7 @@
 
 {% block content %}
   <div class="w3-container">
+    <h3>{{ dominion.name }} (#{{ dominion.realm }})</h3>
     <a href="{{ url_for('dominfo', domcode=dominion.code, update='update' ) }}">Update</a> |
       <a href="{{ op_center_url }}/{{ dominion.code }}" target="_blank">OP Center</a>
     <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">

@@ -39,6 +39,12 @@ class ODInfoFacade(object):
         logger.debug("Cache cleared (had %d entries)", len(self._cache))
         self._cache.clear()
 
+    def invalidate_cache(self, prefix: str):
+        keys_to_remove = [k for k in self._cache if k.startswith(prefix)]
+        for k in keys_to_remove:
+            del self._cache[k]
+        logger.debug("Cache invalidated for prefix '%s' (%d entries removed)", prefix, len(keys_to_remove))
+
     @property
     def session(self):
         if not self._session:
@@ -93,12 +99,14 @@ class ODInfoFacade(object):
         qry = text(f'UPDATE Dominions SET role = :role WHERE code = :code')
         self._db.session.execute(qry, {'role': role, 'code': dom_code})
         self._db.session.commit()
+        self.invalidate_cache('dom_list')
 
     def update_player(self, dom_code, player_name):
         logger.debug("Updating dominion player of dominion %s to %s", dom_code, player_name)
         qry = text(f'UPDATE Dominions SET player = :name WHERE code = :code')
         self._db.session.execute(qry, {'name': player_name, 'code': dom_code})
         self._db.session.commit()
+        self.invalidate_cache('dom_list')
 
     # ---------------------------------------- COMMANDS - Send out information
 

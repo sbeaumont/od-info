@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from sqlalchemy import Integer, String, DateTime, ForeignKey, Float, func, JSON, Index
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, object_session, relationship
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from odinfo.domain.domainhelper import Buildings, Land, Technology, Magic
 from odinfo.timeutils import hours_since, current_od_time
@@ -122,13 +122,7 @@ class Dominion(Base):
 
     @property
     def last_barracks(self):
-        session = object_session(self)
-        if session is None:
-            return None
-        return session.query(BarracksSpy)\
-            .filter(BarracksSpy.dominion_id == self.code)\
-            .order_by(BarracksSpy.timestamp.desc())\
-            .first()
+        return self.barracks_spy[0] if self.barracks_spy else None
 
     @property
     def last_castle(self):
@@ -136,13 +130,7 @@ class Dominion(Base):
 
     @property
     def last_cs(self):
-        session = object_session(self)
-        if session is None:
-            return None
-        return session.query(ClearSight)\
-            .filter(ClearSight.dominion_id == self.code)\
-            .order_by(ClearSight.timestamp.desc())\
-            .first()
+        return self.clear_sight[0] if self.clear_sight else None
 
     @property
     def last_land(self):
@@ -154,13 +142,7 @@ class Dominion(Base):
 
     @property
     def last_survey(self):
-        session = object_session(self)
-        if session is None:
-            return None
-        return session.query(SurveyDominion)\
-            .filter(SurveyDominion.dominion_id == self.code)\
-            .order_by(SurveyDominion.timestamp.desc())\
-            .first()
+        return self.survey_dominion[0] if self.survey_dominion else None
 
     @property
     def last_vision(self):

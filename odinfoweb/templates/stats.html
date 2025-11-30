@@ -1,22 +1,40 @@
 {% extends "odinfo-base.html" %}
 {% block title %}Bunch 'O Stats{% endblock %}
 
+{% block extrascripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
+{% endblock %}
+
 {% block content %}
   <div class="w3-container">
+    <div class="w3-panel w3-card-2 w3-dark-grey" style="margin-bottom: 10px; padding: 8px;">
+      <label style="cursor: pointer;">
+        <input type="checkbox" id="hide-bots" checked> Hide Bots (Realm 0)
+      </label>
+    </div>
+  </div>
+
+  <div class="w3-container">
     <h5>Top Doms who caused bounces (Made Of Rubber Award)</h5>
-    <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
+    <table id="bouncy_castle_table" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable stats-table">
         <thead>
             <tr class="w3-black">
                 <th>Dominion</th>
+                <th>Race</th>
+                <th>Realm</th>
                 <th>Bounces</th>
             </tr>
         </thead>
         <tbody>
         {% for dom in stats.bouncy_castle_award %}
-        <tr>
+        <tr data-realm="{{ dom.realm }}">
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
+            <td>{{ dom.race }}</td>
+            <td>{{ dom.realm }}</td>
             <td>{{ dom.amount }}</td>
         </tr>
         {% endfor %}
@@ -26,19 +44,23 @@
   </div>
   <div class="w3-container">
     <h5>Top Doms who bounced (Bouncy Castle Award)</h5>
-    <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
+    <table id="bouncy_loser_table" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable stats-table">
         <thead>
             <tr class="w3-black">
                 <th>Dominion</th>
+                <th>Race</th>
+                <th>Realm</th>
                 <th>Bounces</th>
             </tr>
         </thead>
         <tbody>
         {% for dom in stats.bouncy_loser_award %}
-        <tr>
+        <tr data-realm="{{ dom.realm }}">
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
+            <td>{{ dom.race }}</td>
+            <td>{{ dom.realm }}</td>
             <td>{{ dom.amount }}</td>
         </tr>
         {% endfor %}
@@ -48,22 +70,20 @@
   </div>
   <div class="w3-container">
     <h5>Realms that declared war (Warmonger Award)</h5>
-    <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
+    <table id="war_declarations_table" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable stats-table">
         <thead>
             <tr class="w3-black">
                 <th>Realm</th>
-                <th>Number</th>
+                <th>Realm #</th>
                 <th>War Declarations</th>
             </tr>
         </thead>
         <tbody>
-        {% for dom in stats.war_declarations %}
-        <tr>
-            <td>
-                <a href="{{ url_for('dominfo', domcode=dom.origin) }}">{{ dom.origin_name }}</a>
-            </td>
-            <td>{{ dom.origin }}</td>
-            <td>{{ dom.declarations }}</td>
+        {% for item in stats.war_declarations %}
+        <tr data-realm="{{ item.realm }}">
+            <td>{{ item.name }}</td>
+            <td>{{ item.realm }}</td>
+            <td>{{ item.declarations }}</td>
         </tr>
         {% endfor %}
         </tbody>
@@ -72,22 +92,20 @@
   </div>
   <div class="w3-container">
     <h5>Realms were declared on (Lightning Rod Award)</h5>
-    <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
+    <table id="declared_on_table" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable stats-table">
         <thead>
             <tr class="w3-black">
                 <th>Realm</th>
-                <th>Number</th>
+                <th>Realm #</th>
                 <th>War Declarations</th>
             </tr>
         </thead>
         <tbody>
-        {% for dom in stats.declared_on %}
-        <tr>
-            <td>
-                <a href="{{ url_for('dominfo', domcode=dom.target) }}">{{ dom.target_name }}</a>
-            </td>
-            <td>{{ dom.target }}</td>
-            <td>{{ dom.declared_on }}</td>
+        {% for item in stats.declared_on %}
+        <tr data-realm="{{ item.realm }}">
+            <td>{{ item.name }}</td>
+            <td>{{ item.realm }}</td>
+            <td>{{ item.declared_on }}</td>
         </tr>
         {% endfor %}
         </tbody>
@@ -96,21 +114,25 @@
   </div>
   <div class="w3-container">
     <h5>Hits done by dominions (Nom Nom Nom Award) (Conqueror Award)</h5>
-    <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
+    <table id="hits_done_table" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable stats-table">
         <thead>
             <tr class="w3-black">
                 <th>Dominion</th>
+                <th>Race</th>
+                <th>Realm</th>
                 <th>Total Land</th>
                 <th>Number of Hits</th>
             </tr>
         </thead>
         <tbody>
         {% for dom in stats.hits_done %}
-        <tr>
+        <tr data-realm="{{ dom.realm }}">
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
-            <td>{{ dom.total_land }}</td>
+            <td>{{ dom.race }}</td>
+            <td>{{ dom.realm }}</td>
+            <td>{{ dom.total_land|int }}</td>
             <td>{{ dom.total_hits }}</td>
         </tr>
         {% endfor %}
@@ -120,21 +142,25 @@
   </div>
   <div class="w3-container">
     <h5>Hits taken by dominions (Zooj Award: hits) (Salty Merf Award: land)</h5>
-    <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
+    <table id="hits_taken_table" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable stats-table">
         <thead>
             <tr class="w3-black">
                 <th>Dominion</th>
+                <th>Race</th>
+                <th>Realm</th>
                 <th>Land Lost</th>
                 <th>Number of Hits</th>
             </tr>
         </thead>
         <tbody>
         {% for dom in stats.hits_taken %}
-        <tr>
+        <tr data-realm="{{ dom.realm }}">
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
-            <td>{{ dom.total_land }}</td>
+            <td>{{ dom.race }}</td>
+            <td>{{ dom.realm }}</td>
+            <td>{{ dom.total_land|int }}</td>
             <td>{{ dom.total_hits }}</td>
         </tr>
         {% endfor %}
@@ -144,19 +170,21 @@
   </div>
   <div class="w3-container">
     <h5>Abandons (Kool-Aid Award)</h5>
-    <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
+    <table id="abandons_table" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable stats-table">
         <thead>
             <tr class="w3-black">
                 <th>Dominion</th>
+                <th>Race</th>
                 <th>Realm</th>
             </tr>
         </thead>
         <tbody>
         {% for dom in stats.abandons %}
-        <tr>
+        <tr data-realm="{{ dom.realm }}">
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
+            <td>{{ dom.race }}</td>
             <td>{{ dom.realm }}</td>
         </tr>
         {% endfor %}
@@ -164,4 +192,82 @@
     </table>
     <br>
   </div>
+
+<script>
+    var statsTables = [];
+
+    // Custom filtering function for realm 0
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        if (!$('#hide-bots').is(':checked')) {
+            return true;
+        }
+        var table = $(settings.nTable);
+        var row = table.DataTable().row(dataIndex).node();
+        var realm = $(row).data('realm');
+        return realm !== 0;
+    });
+
+    $(document).ready(function() {
+        // Bouncy castle table - sort by Bounces (col 3) desc
+        statsTables.push($('#bouncy_castle_table').DataTable({
+            paging: false,
+            order: [[3, 'desc']],
+            columnDefs: [{ type: "num", targets: [2, 3] }]
+        }));
+
+        // Bouncy loser table - sort by Bounces (col 3) desc
+        statsTables.push($('#bouncy_loser_table').DataTable({
+            paging: false,
+            order: [[3, 'desc']],
+            columnDefs: [{ type: "num", targets: [2, 3] }]
+        }));
+
+        // War declarations table - sort by War Declarations (col 2) desc
+        statsTables.push($('#war_declarations_table').DataTable({
+            paging: false,
+            order: [[2, 'desc']],
+            columnDefs: [{ type: "num", targets: [1, 2] }]
+        }));
+
+        // Declared on table - sort by War Declarations (col 2) desc
+        statsTables.push($('#declared_on_table').DataTable({
+            paging: false,
+            order: [[2, 'desc']],
+            columnDefs: [{ type: "num", targets: [1, 2] }]
+        }));
+
+        // Hits done table - sort by Total Land (col 3) desc
+        statsTables.push($('#hits_done_table').DataTable({
+            paging: false,
+            order: [[3, 'desc']],
+            columnDefs: [{ type: "num", targets: [2, 3, 4] }]
+        }));
+
+        // Hits taken table - sort by Land Lost (col 3) desc
+        statsTables.push($('#hits_taken_table').DataTable({
+            paging: false,
+            order: [[3, 'desc']],
+            columnDefs: [{ type: "num", targets: [2, 3, 4] }]
+        }));
+
+        // Abandons table - no default sort
+        statsTables.push($('#abandons_table').DataTable({
+            paging: false,
+            order: [],
+            columnDefs: [{ type: "num", targets: [2] }]
+        }));
+
+        // Handle hide bots checkbox
+        $('#hide-bots').on('change', function() {
+            statsTables.forEach(function(table) {
+                table.draw();
+            });
+        });
+
+        // Trigger initial filter
+        statsTables.forEach(function(table) {
+            table.draw();
+        });
+    });
+</script>
 {% endblock %}

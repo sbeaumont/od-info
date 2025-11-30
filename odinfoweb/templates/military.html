@@ -27,13 +27,6 @@
 
 {% block content %}
   <div class="w3-container">
-    <h5>Military {% if versus_op != 0 %}(VERSUS {{ versus_op }} OP){% endif %}</h5>
-    {% if top_op %}
-        <p><b>Top OP is {{ top_op.name }} (#{{ top_op.realm }}) with {{ top_op.five_over_four_op }} OP and
-            {{ (top_op.temples * 100)|round(1) }}% Temples, in {{ top_op.paid_until }} ticks.
-        </b></p>
-    {% endif %}
-    
     <!-- Column View Selector -->
     <div class="w3-panel w3-card-2 w3-dark-grey" style="margin-bottom: 10px; padding: 8px;">
         <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
@@ -52,6 +45,9 @@
             </label>
             <span id="colvis-container" style="margin-left: 10px;"></span>
             <a href="#" id="reset-columns" style="font-size: 0.8em; color: #aaa;">reset</a>
+            <label style="margin-left: 20px;">
+                vs OP: <input type="number" id="versus-op" value="{{ versus_op or '' }}" placeholder="0" style="width: 70px; padding: 2px 4px;">
+            </label>
         </div>
     </div>
     
@@ -213,6 +209,16 @@
             e.preventDefault();
             militaryTable.state.clear();
             location.reload();
+        });
+
+        // Handle VS OP input
+        $('#versus-op').on('change', function() {
+            const val = $(this).val();
+            if (val && val > 0) {
+                window.location.href = '{{ url_for("military") }}?versus_op=' + val;
+            } else {
+                window.location.href = '{{ url_for("military") }}';
+            }
         });
     });
 </script>

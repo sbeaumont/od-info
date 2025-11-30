@@ -72,9 +72,12 @@ class ODInfoFacade(object):
             ops = grab_ops(self.session, dom_code)
         if ops:
             update_ops(ops, self._db, dom_code)
-            # TODO Calculate the expensive stuff like military calcs and cache them.
         else:
             logger.warning(f"Can't get ops for dominion {dom_code}")
+
+    def update_single_dom(self, dom_code):
+        self.update_ops(dom_code)
+        self.clear_cache()
 
     def update_town_crier(self):
         update_town_crier(self.session, self._db)

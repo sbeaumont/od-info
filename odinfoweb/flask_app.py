@@ -226,7 +226,7 @@ def overview():
 @login_required
 def dominfo(domcode: int, update=None):
     if update == 'update':
-        facade().update_ops(domcode)
+        facade().update_single_dom(domcode)
     nw_history = facade().nw_history(domcode)
     dominion = facade().dominion(domcode)
     return render_template(

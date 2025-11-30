@@ -12,18 +12,18 @@
   <div class="w3-container">
       <a href="/?update=true">Refresh Known Ops</a> | OD Time: {{ current_time }}
     <form action="{{ url_for('overview') }}" method="post" id="domform">
-    <table id="myTable" class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+    <table id="myTable" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
         <thead>
             <tr class="w3-black">
                 <th>Name</th>
+                <th>Race</th>
+                <th>Realm</th>
                 <th>Ops Age</th>
                 <th>Land</th>
                 <th>Networth</th>
                 <th>NW Delta (12h)</th>
-                <th>Role</th>
-                <th>Realm</th>
                 <th>Player?</th>
-                <th>Race</th>
+                <th>Role</th>
             </tr>
         </thead>
         <tbody>
@@ -32,20 +32,20 @@
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
+            <td>{{ dom.race }}</td>
+            <td>{{ dom.realm }}</td>
             <td  {% if 1 < ages[dom.code] <= 12 %}class="stale"{% elif ages[dom.code] > 12 %}class="invalid"{% endif %}>{{ ages[dom.code] }}</td>
             <td>{{ dom.current_land }}</td>
             <td>{{ dom.current_networth }}</td>
             <td>{{ nw_deltas[dom.code] }}</td>
+            <td><input type="text" name="name.{{dom.code}}.{{dom.player}}" onfocusout="this.form.submit()" value="{{ dom.player }}"></td>
             <td>
                 <select name="role.{{dom.code}}.{{dom.role}}" onchange="this.form.submit()" form="domform">
                     {% for option in ('unknown', 'attacker', 'explorer', 'blopper') %}
                     <option value="{{option}}" {% if dom.role == option %}selected{% endif %}>{{option}}</option>
-                    {% endfor %}}
+                    {% endfor %}
                 </select>
             </td>
-            <td>{{ dom.realm }}</td>
-            <td><input type="text" name="name.{{dom.code}}.{{dom.player}}" onfocusout="this.form.submit()" value="{{ dom.player }}"></td>
-            <td>{{ dom.race }}</td>
         </tr>
         {% endfor %}
         </tbody>
@@ -57,9 +57,9 @@
     $(document).ready( function () {
         $('#myTable').DataTable({
             'paging': false,
-            'order': [[2, 'desc']],
+            'order': [[4, 'desc']],
             'columnDefs': [
-                { "type": "num", "targets": [1, 2, 3, 4, 6]}
+                { "type": "num", "targets": [2, 3, 4, 5, 6]}
             ]
         });
     } );

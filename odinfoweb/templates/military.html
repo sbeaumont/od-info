@@ -3,6 +3,26 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
 <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css"/>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
+<script src="https://cdn.datatables.net/colreorder/1.7.0/js/dataTables.colReorder.min.js"></script>
+<style>
+    /* Fix ColVis dropdown to match w3-css dark theme */
+    .dt-button-collection {
+        background-color: #616161 !important; /* w3-dark-grey */
+    }
+    .dt-button-collection .dt-button {
+        color: #fff !important;
+        background: transparent !important;
+    }
+    .dt-button-collection .dt-button:hover {
+        background-color: #000 !important; /* w3-black */
+    }
+    .dt-button-collection .dt-button.active {
+        background-color: #000 !important; /* w3-black */
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -24,16 +44,14 @@
             <label style="cursor: pointer;">
                 <input type="radio" name="send_type" value="54"> 5/4 Send
             </label>
-            <span style="margin-left: 20px;"><strong>Show:</strong></span>
-            <label style="cursor: pointer;">
-                <input type="checkbox" class="column-toggle" data-group="draftees"> Draftees
+            <label style="cursor: pointer; margin-left: 20px;">
+                <input type="checkbox" id="toggle-draftees"> Draftees
             </label>
             <label style="cursor: pointer;">
-                <input type="checkbox" class="column-toggle" data-group="boats"> Boats
+                <input type="checkbox" id="toggle-boats"> Boats
             </label>
-            <label style="cursor: pointer;">
-                <input type="checkbox" class="column-toggle" data-group="basic"> Raw OP/DP
-            </label>
+            <span id="colvis-container" style="margin-left: 10px;"></span>
+            <a href="#" id="reset-columns" style="font-size: 0.8em; color: #aaa;">reset</a>
         </div>
     </div>
     
@@ -104,32 +122,11 @@
 
 <script>
     var militaryTable;
-    
-    // Column indices for DataTable (0-based)
-    const columnGroups = {
-        'send': [6, 7, 8],    // Send OP, +Tmps, Send DP
-        'draftees': [11],     // Draftees
-        'boats': [12, 13],    // Boats, Sendable
-        'basic': [14, 15]     // Raw OP, DP
-    };
-    
-    function loadColumnPreferences() {
-        const saved = localStorage.getItem('military_columns');
-        if (saved) {
-            return JSON.parse(saved);
-        }
-        // Default: show Safe/Normal columns only
-        return { preset: 'safe', toggles: {} };
-    }
-    
-    function saveColumnPreferences(preset, toggles) {
-        localStorage.setItem('military_columns', JSON.stringify({ preset, toggles }));
-    }
-    
-    function updateColumnVisibility() {
+
+    function updateSendType() {
         const preset = $('input[name="send_type"]:checked').val();
-        
-        // Update column headers based on mode (keep +Tmps constant)
+
+        // Update column headers based on mode
         if (preset === '54') {
             $('#send-op-header').text('5/4 OP');
             $('#send-dp-header').text('5/4 DP');
@@ -137,7 +134,7 @@
             $('#send-op-header').text('Send OP');
             $('#send-dp-header').text('Send DP');
         }
-        
+
         // Update cell values based on mode
         $('.send-col').each(function() {
             const val = $(this).data(preset);
@@ -145,84 +142,77 @@
                 $(this).text(val);
             }
         });
-        
-        // Handle optional columns based on checkboxes
-        $('.column-toggle').each(function() {
-            const group = $(this).data('group');
-            const isChecked = $(this).is(':checked');
-            
-            if (columnGroups[group] && militaryTable) {
-                columnGroups[group].forEach(idx => {
-                    militaryTable.column(idx).visible(isChecked);
-                });
-            }
-        });
-        
-        // Invalidate DataTable cache and re-sort
+
+        // Invalidate DataTable cache and redraw
         if (militaryTable) {
-            // Tell DataTable that the data has changed
-            militaryTable.rows().invalidate('dom');
-            // Re-sort by +Tmps column (column 7) after data update
-            militaryTable.order([7, 'desc']).draw();
+            militaryTable.rows().invalidate('dom').draw();
         }
     }
-    
+
     $(document).ready(function() {
-        // Load preferences
-        const prefs = loadColumnPreferences();
-        
-        // Set initial radio button state - force safe as default
-        $('input[name="send_type"][value="safe"]').prop('checked', true);
-        
-        // Set initial checkbox states
-        Object.keys(prefs.toggles || {}).forEach(group => {
-            if (prefs.toggles[group]) {
-                $('.column-toggle[data-group="' + group + '"]').prop('checked', true);
-            }
-        });
-        
-        // Initialize DataTable with all columns visible initially
+        // Initialize DataTable with ColVis and ColReorder
         militaryTable = $('#military_table').DataTable({
-            'paging': false,
-            'order': [[7, 'desc']], // Sort by +Tmps column by default
-            'columnDefs': [
-                { "type": "num", "targets": [1, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16]}
+            paging: false,
+            order: [[7, 'desc']], // Sort by +Tmps column by default
+            columnDefs: [
+                { type: "num", targets: [1, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16] },
+                { visible: false, targets: [11, 12, 13, 14, 15] } // Hide Draftees, Boats, Raw OP/DP by default
             ],
-            'autoWidth': false,
-            'scrollX': true
+            autoWidth: false,
+            scrollX: true,
+            colReorder: true,
+            stateSave: true,
+            stateDuration: -1, // Use localStorage (persists across sessions)
+            buttons: [
+                {
+                    extend: 'colvis',
+                    text: 'Columns ▼',
+                    columns: ':not(:first-child)' // All except Dominion
+                }
+            ]
         });
-        
-        // Apply initial visibility after DataTable is ready
-        setTimeout(function() {
-            updateColumnVisibility();
-        }, 100);
-        
-        // Handle radio button changes
+
+        // Move the Columns button to our container
+        militaryTable.buttons().container().appendTo('#colvis-container');
+
+        // Column indices for quick toggles
+        const drafteesCols = [11];
+        const boatsCols = [12, 13];
+
+        // Sync checkboxes with current column visibility
+        function syncCheckboxes() {
+            $('#toggle-draftees').prop('checked', militaryTable.column(11).visible());
+            $('#toggle-boats').prop('checked', militaryTable.column(12).visible());
+        }
+        syncCheckboxes();
+
+        // Handle Draftees checkbox
+        $('#toggle-draftees').on('change', function() {
+            const visible = $(this).is(':checked');
+            drafteesCols.forEach(idx => militaryTable.column(idx).visible(visible));
+        });
+
+        // Handle Boats checkbox
+        $('#toggle-boats').on('change', function() {
+            const visible = $(this).is(':checked');
+            boatsCols.forEach(idx => militaryTable.column(idx).visible(visible));
+        });
+
+        // Sync checkboxes when ColVis dropdown changes visibility
+        militaryTable.on('column-visibility.dt', function() {
+            syncCheckboxes();
+        });
+
+        // Handle radio button changes for Send Type
         $('input[name="send_type"]').on('change', function() {
-            console.log('Radio button changed to:', $(this).val());
-            updateColumnVisibility();
-            
-            // Save preferences
-            const preset = $(this).val();
-            const toggles = {};
-            $('.column-toggle').each(function() {
-                toggles[$(this).data('group')] = $(this).is(':checked');
-            });
-            saveColumnPreferences(preset, toggles);
+            updateSendType();
         });
-        
-        // Handle checkbox changes
-        $('.column-toggle').on('change', function() {
-            console.log('Checkbox changed:', $(this).data('group'), $(this).is(':checked'));
-            updateColumnVisibility();
-            
-            // Save preferences
-            const preset = $('input[name="send_type"]:checked').val();
-            const toggles = {};
-            $('.column-toggle').each(function() {
-                toggles[$(this).data('group')] = $(this).is(':checked');
-            });
-            saveColumnPreferences(preset, toggles);
+
+        // Reset to defaults
+        $('#reset-columns').on('click', function(e) {
+            e.preventDefault();
+            militaryTable.state.clear();
+            location.reload();
         });
     });
 </script>

@@ -156,14 +156,28 @@ class ODInfoFacade(object):
 
     def dom_list(self, since='-12 hours'):
         """Get overview information of all dominions."""
-        logger.debug("Getting dom list since %s", since)
+        cache_key = f'dom_list_{since}'
+        if cache_key in self._cache:
+            logger.debug("Returning cached dom_list for %s", cache_key)
+            return self._cache[cache_key]
+
+        logger.debug("Computing dom_list for %s", cache_key)
         doms = all_doms(self._db)
-        return sorted(doms, key=lambda x: x.current_land, reverse=True)
+        result = sorted(doms, key=lambda x: x.current_land, reverse=True)
+        self._cache[cache_key] = result
+        return result
 
     def nw_deltas(self):
         """Get overview information of all dominions."""
-        logger.debug("Getting NW deltas")
-        return get_networth_deltas(self._db)
+        cache_key = 'nw_deltas'
+        if cache_key in self._cache:
+            logger.debug("Returning cached nw_deltas")
+            return self._cache[cache_key]
+
+        logger.debug("Computing nw_deltas")
+        result = get_networth_deltas(self._db)
+        self._cache[cache_key] = result
+        return result
 
     def get_town_crier(self):
         logger.debug("Getting Town Crier")
@@ -171,6 +185,12 @@ class ODInfoFacade(object):
 
     def ratio_list(self):
         """Overview of the ratios of all dominions."""
+        cache_key = 'ratio_list'
+        if cache_key in self._cache:
+            logger.debug("Returning cached ratio_list")
+            return self._cache[cache_key]
+
+        logger.debug("Computing ratio_list")
         rc_list = [RatioCalculator(dom) for dom in all_doms(self._db)]
         rc_list = [rc for rc in rc_list if rc.can_calculate and (hours_since(rc.dom.last_op) < 100)]
         result = list()
@@ -186,10 +206,20 @@ class ODInfoFacade(object):
                 'spy_ratio_actual': rc.spy_ratio_actual,
                 'ops_age': hours_since(rc.dom.last_op)
             })
-        return sorted(result, key=lambda d: d['spy_ratio_actual'], reverse=True)
+        result = sorted(result, key=lambda d: d['spy_ratio_actual'], reverse=True)
+        self._cache[cache_key] = result
+        return result
 
     def all_doms_ops_age(self):
-        return {dom.code: hours_since(dom.last_op) for dom in all_doms(self._db)}
+        cache_key = 'all_doms_ops_age'
+        if cache_key in self._cache:
+            logger.debug("Returning cached all_doms_ops_age")
+            return self._cache[cache_key]
+
+        logger.debug("Computing all_doms_ops_age")
+        result = {dom.code: hours_since(dom.last_op) for dom in all_doms(self._db)}
+        self._cache[cache_key] = result
+        return result
 
     def doms_as_mil_calcs(self, dom_list: list) -> list:
         mil_calcs = [MilitaryCalculator(dom) for dom in dom_list]

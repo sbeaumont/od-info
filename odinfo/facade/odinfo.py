@@ -27,14 +27,16 @@ logger = logging.getLogger('od-info.facade')
 
 
 class ODInfoFacade(object):
-    def __init__(self, db):
+    def __init__(self, db, cache: dict):
         self._session = None
         self._db = db
-        self._cache = {}
+        self._cache = cache
+        logger.debug("ODInfoFacade created (id=%s), using cache (id=%s)", id(self), id(cache))
         if is_database_empty(self._db):
             update_dom_index(self.session, self._db)
 
     def clear_cache(self):
+        logger.debug("Cache cleared (had %d entries)", len(self._cache))
         self._cache = {}
 
     @property

@@ -55,7 +55,8 @@ def initialize_database() -> EngineWrapper:
 
 def update_all(engine: EngineWrapper) -> None:
     """Update all information from the OD into the database."""
-    facade = ODInfoFacade(engine)
+    cache = {}
+    facade = ODInfoFacade(engine, cache)
     logging.info("Updating Dominions Index (from search page)...")
     facade.update_dom_index()
     logging.info("Updating all Dominions...")

@@ -110,10 +110,13 @@ def load_user(user_id):
 
 # ---------------------------------------------------------------------- Facade Singleton
 
+app.facade_cache = {}
+
+
 def facade() -> ODInfoFacade:
     _facade = getattr(g, '_facade', None)
     if not _facade:
-        _facade = g._facade = ODInfoFacade(db)
+        _facade = g._facade = ODInfoFacade(db, app.facade_cache)
     return _facade
 
 

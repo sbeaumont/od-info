@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-from sqlalchemy import Integer, String, DateTime, ForeignKey, Float, func, JSON
+from sqlalchemy import Integer, String, DateTime, ForeignKey, Float, func, JSON, Index
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, backref
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, object_session, relationship
 
 from odinfo.domain.domainhelper import Buildings, Land, Technology, Magic
 from odinfo.timeutils import hours_since, current_od_time
@@ -25,7 +25,7 @@ class Dominion(Base):
 
     code: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(200))
-    realm: Mapped[int] = mapped_column(Integer)
+    realm: Mapped[int] = mapped_column(Integer, index=True)
     race: Mapped[str] = mapped_column('race', String(200))
     player: Mapped[str] = mapped_column(String(200), default='?')
     role: Mapped[str] = mapped_column(String(12), default='unknown')
@@ -130,7 +130,13 @@ class Dominion(Base):
 
     @property
     def last_cs(self):
-        return self.clear_sight[0] if self.clear_sight else None
+        session = object_session(self)
+        if session is None:
+            return None
+        return session.query(ClearSight)\
+            .filter(ClearSight.dominion_id == self.code)\
+            .order_by(ClearSight.timestamp.desc())\
+            .first()
 
     @property
     def last_land(self):
@@ -162,6 +168,8 @@ class Dominion(Base):
 
 class DominionHistory(TimestampedOpsMixin, Base):
     __tablename__ = 'DominionHistory'
+    __table_args__ = (Index('idx_DominionHistory_dom_ts', 'dominion', 'timestamp'),)
+
     dom: Mapped['Dominion'] = relationship(back_populates='history')
     land: Mapped[int] = mapped_column(Integer)
     networth: Mapped[int] = mapped_column(Integer)
@@ -174,6 +182,8 @@ class BarracksSpy(TimestampedOpsMixin, Base):
     BS_UNCERTAINTY: float = 0.85
 
     __tablename__ = 'BarracksSpy'
+    __table_args__ = (Index('idx_BarracksSpy_dom_ts', 'dominion', 'timestamp'),)
+
     dom: Mapped['Dominion'] = relationship(back_populates='barracks_spy')
     draftees: Mapped[int] = mapped_column(Integer, default=0)
     home_unit1: Mapped[int] = mapped_column(Integer, default=0)
@@ -275,6 +285,8 @@ class BarracksSpy(TimestampedOpsMixin, Base):
 
 class CastleSpy(TimestampedOpsMixin, Base):
     __tablename__ = 'CastleSpy'
+    __table_args__ = (Index('idx_CastleSpy_dom_ts', 'dominion', 'timestamp'),)
+
     dom: Mapped['Dominion'] = relationship(back_populates='castle_spy')
     science_points: Mapped[int] = mapped_column(Integer, default=0)
     science_rating: Mapped[float] = mapped_column(Float, default=0)
@@ -292,6 +304,8 @@ class CastleSpy(TimestampedOpsMixin, Base):
 
 class ClearSight(TimestampedOpsMixin, Base):
     __tablename__ = 'ClearSight'
+    __table_args__ = (Index('idx_ClearSight_dom_ts', 'dominion', 'timestamp'),)
+
     dom: Mapped['Dominion'] = relationship(back_populates='clear_sight')
     land: Mapped[int] = mapped_column(Integer)
     peasants: Mapped[int] = mapped_column(Integer)
@@ -335,6 +349,8 @@ class ClearSight(TimestampedOpsMixin, Base):
 
 class LandSpy(TimestampedOpsMixin, Base):
     __tablename__ = 'LandSpy'
+    __table_args__ = (Index('idx_LandSpy_dom_ts', 'dominion', 'timestamp'),)
+
     dom: Mapped['Dominion'] = relationship(back_populates='land_spy')
     total: Mapped[int] = mapped_column(Integer)
     barren: Mapped[int] = mapped_column(Integer)
@@ -358,7 +374,9 @@ class LandSpy(TimestampedOpsMixin, Base):
 
 class Revelation(Base):
     __tablename__ = 'Revelation'
-    dominion_id = mapped_column('dominion', ForeignKey('Dominions.code'))
+    __table_args__ = (Index('idx_Revelation_dom_ts', 'dominion', 'timestamp'),)
+
+    dominion_id = mapped_column('dominion', ForeignKey('Dominions.code'), index=True)
     timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow())
     dom: Mapped['Dominion'] = relationship(back_populates='revelation')
     spell: Mapped[str] = mapped_column(String(80))
@@ -368,6 +386,8 @@ class Revelation(Base):
 
 class SurveyDominion(TimestampedOpsMixin, Base):
     __tablename__ = 'SurveyDominion'
+    __table_args__ = (Index('idx_SurveyDominion_dom_ts', 'dominion', 'timestamp'),)
+
     dom: Mapped['Dominion'] = relationship(back_populates='survey_dominion')
     home: Mapped[int] = mapped_column(Integer)
     alchemy: Mapped[int] = mapped_column(Integer, default=0)
@@ -394,6 +414,8 @@ class SurveyDominion(TimestampedOpsMixin, Base):
 
 class Vision(TimestampedOpsMixin, Base):
     __tablename__ = 'Vision'
+    __table_args__ = (Index('idx_Vision_dom_ts', 'dominion', 'timestamp'),)
+
     dom: Mapped['Dominion'] = relationship(back_populates='vision')
     techs: Mapped[Optional[dict]] = mapped_column(JSON, default=JSON.NULL)
 

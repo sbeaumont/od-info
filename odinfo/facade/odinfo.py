@@ -30,8 +30,12 @@ class ODInfoFacade(object):
     def __init__(self, db):
         self._session = None
         self._db = db
+        self._cache = {}
         if is_database_empty(self._db):
             update_dom_index(self.session, self._db)
+
+    def clear_cache(self):
+        self._cache = {}
 
     @property
     def session(self):
@@ -51,6 +55,7 @@ class ODInfoFacade(object):
                     (dom.last_op is None) or
                     (dom.last_op < last_scans[domcode])):
                 self.update_ops(domcode)
+        self.clear_cache()
 
     # ---------------------------------------- COMMANDS - Update from OpenDominion.net
 
@@ -189,6 +194,12 @@ class ODInfoFacade(object):
         return sorted(mil_calcs, key=lambda d: d.dom.current_networth, reverse=True)
 
     def military_list(self, versus_op=0, top=20):
+        cache_key = f'military_list_{versus_op}_{top}'
+        if cache_key in self._cache:
+            logger.debug("Returning cached military_list for %s", cache_key)
+            return self._cache[cache_key]
+
+        logger.debug("Computing military_list for %s", cache_key)
         mc_list = [d for d in self.doms_as_mil_calcs(all_doms(self._db).all()[:top]) if d.army]
         result_list = list()
         current_day = self.current_tick.day
@@ -224,6 +235,8 @@ class ODInfoFacade(object):
                 'has_incomplete_intel': mc.has_incomplete_intel()
             }
             result_list.append(dom_result)
+
+        self._cache[cache_key] = result_list
         return result_list
 
     def top_op(self, mil_calc_result: list):

@@ -22,6 +22,7 @@ from odinfo.domain.models import Base
 from odinfoweb.user import load_user_by_id, load_user_by_name, User
 
 from odinfo.config import feature_toggles, OP_CENTER_URL, load_secrets, check_dirs_and_configs
+from odinfo.facade.cache import FacadeCache
 from odinfo.facade.odinfo import ODInfoFacade
 from odinfo.facade.graphs import nw_history_graph, land_history_graph
 from odinfo.exceptions import ODInfoException
@@ -110,7 +111,7 @@ def load_user(user_id):
 
 # ---------------------------------------------------------------------- Facade Singleton
 
-app.facade_cache = {}
+app.facade_cache = FacadeCache()
 
 
 def facade() -> ODInfoFacade:

@@ -17,6 +17,7 @@ from odinfo.domain.dataaccesslayer import all_doms, dom_by_id, is_database_empty
 from odinfo.domain.models import Dominion
 from odinfo.timeutils import hours_since, add_duration, current_od_time
 from odinfo.facade.awardstats import AwardStats
+from odinfo.facade.cache import FacadeCache
 from odinfo.facade.discord import send_to_webhook
 from odinfo.opsdata.ops import grab_ops, grab_my_ops, get_last_scans
 from odinfo.opsdata.scrapetools import login, read_tick_time, get_soup_page
@@ -27,11 +28,10 @@ logger = logging.getLogger('od-info.facade')
 
 
 class ODInfoFacade(object):
-    def __init__(self, db, cache: dict):
+    def __init__(self, db, cache: FacadeCache):
         self._session = None
         self._db = db
         self._cache = cache
-        logger.debug("ODInfoFacade created (id=%s), using cache (id=%s)", id(self), id(cache))
         if is_database_empty(self._db):
             update_dom_index(self.session, self._db)
 
@@ -40,10 +40,8 @@ class ODInfoFacade(object):
         self._cache.clear()
 
     def invalidate_cache(self, prefix: str):
-        keys_to_remove = [k for k in self._cache if k.startswith(prefix)]
-        for k in keys_to_remove:
-            del self._cache[k]
-        logger.debug("Cache invalidated for prefix '%s' (%d entries removed)", prefix, len(keys_to_remove))
+        removed = self._cache.invalidate_prefix(prefix)
+        logger.debug("Cache invalidated for prefix '%s' (%d entries removed)", prefix, removed)
 
     @property
     def session(self):

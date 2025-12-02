@@ -5,6 +5,7 @@ from sqlalchemy import create_engine, Engine, select
 from sqlalchemy.orm import Session
 
 from odinfo.config import check_dirs_and_configs, load_secrets
+from odinfo.facade.cache import FacadeCache
 from odinfo.facade.odinfo import ODInfoFacade
 
 logging.basicConfig(level=logging.INFO)
@@ -55,7 +56,7 @@ def initialize_database() -> EngineWrapper:
 
 def update_all(engine: EngineWrapper) -> None:
     """Update all information from the OD into the database."""
-    cache = {}
+    cache = FacadeCache()
     facade = ODInfoFacade(engine, cache)
     logging.info("Updating Dominions Index (from search page)...")
     facade.update_dom_index()

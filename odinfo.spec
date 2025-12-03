@@ -71,6 +71,8 @@ a = Analysis(
         'odinfo.opsdata.ops',
         'odinfo.opsdata.scrapetools',
         'odinfo.opsdata.updater',
+        'odinfo.services',
+        'odinfo.services.od_session',
         'odinfo.sim',
         'odinfo.sim.simulator',
         'odinfo.sim.commands',

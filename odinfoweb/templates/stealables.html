@@ -3,6 +3,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
 <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css"/>
+<script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -46,7 +48,11 @@
             'order': [[3, 'desc']],
             'columnDefs': [
                 { "type": "num", "targets": [1, 2, 3, 4, 5, 6, 7]}
-            ]
+            ],
+            fixedHeader: {
+                header: true,
+                headerOffset: 43
+            }
         });
     } );
 </script>

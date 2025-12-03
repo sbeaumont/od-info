@@ -7,6 +7,8 @@
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
 <script src="https://cdn.datatables.net/colreorder/1.7.0/js/dataTables.colReorder.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css"/>
+<script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
 <style>
     /* Fix ColVis dropdown to match w3-css dark theme */
     .dt-button-collection {
@@ -159,6 +161,10 @@
             colReorder: true,
             stateSave: true,
             stateDuration: -1, // Use localStorage (persists across sessions)
+            fixedHeader: {
+                header: true,
+                headerOffset: 43 // Height of the top bar
+            },
             buttons: [
                 {
                     extend: 'colvis',

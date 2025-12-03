@@ -1,19 +1,13 @@
+{% set use_datatables = true %}
 {% extends "odinfo-base.html" %}
 
 {% block title %}Overview{% endblock %}
-
-{% block extrascripts %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
-<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css"/>
-<script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
-{% endblock %}
 
 {% block content %}
   <div class="w3-container">
       <a href="/?update=true">Refresh Known Ops</a> | OD Time: {{ current_time }}
     <form action="{{ url_for('overview') }}" method="post" id="domform">
+    <div class="table-container">
     <table id="myTable" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
         <thead>
             <tr class="w3-black">
@@ -51,7 +45,8 @@
         </tr>
         {% endfor %}
         </tbody>
-    </table><br>
+    </table>
+    </div><br>
         </form>
   </div>
 

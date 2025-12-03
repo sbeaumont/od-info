@@ -1,35 +1,10 @@
+{% set use_datatables = true %}
 {% extends "odinfo-base.html" %}
 {% block extrascripts %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
-<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css"/>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
 <script src="https://cdn.datatables.net/colreorder/1.7.0/js/dataTables.colReorder.min.js"></script>
-<style>
-    /* Fix ColVis dropdown to match w3-css dark theme */
-    .dt-button-collection {
-        background-color: #616161 !important; /* w3-dark-grey */
-    }
-    .dt-button-collection .dt-button {
-        color: #fff !important;
-        background: transparent !important;
-    }
-    .dt-button-collection .dt-button:hover {
-        background-color: #000 !important; /* w3-black */
-    }
-    .dt-button-collection .dt-button.active {
-        background-color: #000 !important; /* w3-black */
-    }
-    /* Sticky header that works with horizontal scrolling */
-    #military_table thead th {
-        position: sticky;
-        top: 43px; /* Height of the top bar */
-        background-color: #000 !important; /* w3-black */
-        z-index: 2;
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -57,7 +32,7 @@
             </label>
         </div>
     </div>
-    
+
     <div style="overflow-x: auto;">
         <table id="military_table" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
         <thead>
@@ -171,7 +146,11 @@
                     text: 'Columns ▼',
                     columns: ':not(:first-child)' // All except Dominion
                 }
-            ]
+            ],
+            fixedHeader: {
+                header: true,
+                headerOffset: 43
+            }
         });
 
         // Move the Columns button to our container

@@ -1,16 +1,15 @@
 """
 Core of the webscraping functionality.
 
-- Knows how to create a valid OD session for the user
 - Pulls in whole page for other code to parse
 - Knows how to deal with OD time versus "real"/system time.
+
+Note: Session management is in odinfo.services.od_session.ODSession.
 """
 
 import requests
 import logging
 from bs4 import BeautifulSoup
-
-from odinfo.config import LOGIN_URL, STATUS_URL, SELECT_URL, username, password, current_player_id
 from requests.exceptions import TooManyRedirects
 
 
@@ -82,55 +81,4 @@ def read_tick_time(soup: BeautifulSoup) -> ODTickTime:
         return ODTickTime(0, 0, 0, 0)
 
 
-def pull_csrf_token(soup):
-    if soup is None:
-        raise ConnectionError("Cannot update data: OpenDominion page did not load")
-    csrf_element = soup.select_one('meta[name="csrf-token"]')
-    if csrf_element is None:
-        raise ConnectionError("Cannot update data: OpenDominion returned unexpected page content")
-    return csrf_element['content']
-
-
-def login(for_player_id=None) -> requests.Session | None:
-    session = requests.session()
-    session.auth = (username, password)
-
-    soup = get_soup_page(session, LOGIN_URL)
-    payload = {
-        '_token': pull_csrf_token(soup),
-        'email': username,
-        'password': password
-    }
-    response = session.post(LOGIN_URL, data=payload)
-
-    if response.status_code == 200:
-        if for_player_id:
-            s2 = BeautifulSoup(response.content, "html.parser")
-            response = select_current_dominion(session, pull_csrf_token(s2), current_player_id)
-            if response.status_code != 200:
-                print("Could not switch to other player")
-                return None
-        return session
-    else:
-        print(f"Login Failed. {response.status_code}, {response.text}")
-        return None
-
-
-def select_current_dominion(session, csrf_token, player_id):
-    payload = {
-        '_token': csrf_token
-    }
-    return session.post(SELECT_URL.format(str(player_id)), data=payload)
-
-
-def test_ok():
-    session = login(current_player_id)
-    soup = get_soup_page(session, STATUS_URL)
-    print(soup.contents)
-    print("Server time is:", read_server_time(soup))
-    print("Tick time is:", read_tick_time(soup), repr(read_tick_time(soup)))
-
-
-if __name__ == '__main__':
-    test_ok()
 

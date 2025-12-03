@@ -20,8 +20,9 @@ from odinfo.facade.awardstats import AwardStats
 from odinfo.facade.cache import FacadeCache
 from odinfo.facade.discord import send_to_webhook
 from odinfo.opsdata.ops import grab_ops, grab_my_ops, get_last_scans
-from odinfo.opsdata.scrapetools import login, read_tick_time, get_soup_page
+from odinfo.opsdata.scrapetools import read_tick_time, get_soup_page
 from odinfo.opsdata.updater import update_ops, update_town_crier, update_dom_index, query_stealables
+from odinfo.services.od_session import ODSession
 
 logger = logging.getLogger('od-info.facade')
 
@@ -46,8 +47,8 @@ class ODInfoFacade(object):
     def od_session(self):
         """Session for OpenDominion website (not database)."""
         if not self._od_session:
-            self._od_session = login(current_player_id)
-        return self._od_session
+            self._od_session = ODSession(current_player_id)
+        return self._od_session.session
 
     def teardown(self):
         if self._od_session is not None:

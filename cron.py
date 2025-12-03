@@ -4,7 +4,7 @@ import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from odinfo.config import check_dirs_and_configs, load_secrets
+from odinfo.config import check_dirs_and_configs, get_config
 from odinfo.facade.cache import FacadeCache
 from odinfo.facade.odinfo import ODInfoFacade
 from odinfo.repositories.game import GameRepository
@@ -24,9 +24,9 @@ def check_all_ok():
         logger.info('All OK')
 
 
-def initialize_database() -> GameRepository:
+def initialize_database(config) -> GameRepository:
     """Initialize the database and return a repository."""
-    db_url = load_secrets()['database_name']
+    db_url = config.database_name
     if db_url.startswith('sqlite'):
         db_url = db_url.replace('sqlite:///', 'sqlite:///instance/')
     logging.info("Initializing database")
@@ -40,10 +40,10 @@ def initialize_database() -> GameRepository:
     return GameRepository(session)
 
 
-def update_all(repo: GameRepository) -> None:
+def update_all(config, repo: GameRepository) -> None:
     """Update all information from the OD into the database."""
     cache = FacadeCache()
-    facade = ODInfoFacade(repo, cache)
+    facade = ODInfoFacade(config, repo, cache)
     logging.info("Updating Dominions Index (from search page)...")
     facade.update_dom_index()
     logging.info("Updating all Dominions...")
@@ -54,4 +54,5 @@ def update_all(repo: GameRepository) -> None:
 
 if __name__ == '__main__':
     check_all_ok()
-    update_all(initialize_database())
+    config = get_config()
+    update_all(config, initialize_database(config))

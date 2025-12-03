@@ -21,7 +21,7 @@ from odinfoweb.forms import LoginForm
 from odinfo.domain.models import Base
 from odinfoweb.user import load_user_by_id, load_user_by_name, User
 
-from odinfo.config import feature_toggles, OP_CENTER_URL, load_secrets, check_dirs_and_configs
+from odinfo.config import feature_toggles, OP_CENTER_URL, load_secrets, check_dirs_and_configs, get_config
 from odinfo.facade.cache import FacadeCache
 from odinfo.facade.odinfo import ODInfoFacade
 from odinfo.facade.graphs import nw_history_graph, land_history_graph
@@ -119,7 +119,7 @@ def facade() -> ODInfoFacade:
     _facade = getattr(g, '_facade', None)
     if not _facade:
         repo = GameRepository(db.session)
-        _facade = g._facade = ODInfoFacade(repo, app.facade_cache)
+        _facade = g._facade = ODInfoFacade(get_config(), repo, app.facade_cache)
     return _facade
 
 

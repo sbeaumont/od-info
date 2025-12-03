@@ -1,5 +1,6 @@
 import sys
 import os
+from dataclasses import dataclass, field
 
 
 def resource_path(rel_path: str):
@@ -148,18 +149,62 @@ def load_secrets():
         return secrets_dict
 
 
-# Make configuration in secret.txt available to the rest of the codebase
+# Injectable configuration class
 
-SECRETS = load_secrets()
-username = SECRETS['username']
-password = SECRETS['password']
-DATABASE_NAME = SECRETS['database_name']
-current_player_id = int(SECRETS['current_player_id'])
-LOCAL_TIME_SHIFT = int(SECRETS['LOCAL_TIME_SHIFT'])
-discord_webhook = SECRETS.get('discord_webhook', None)
 
-# Use this to make features toggleable (typically screens in development)
+@dataclass
+class Config:
+    """Runtime configuration for od-info application.
 
-feature_toggles = []
-if 'feature_toggles' in SECRETS:
-    feature_toggles = [toggle.strip() for toggle in SECRETS['feature_toggles'].split(',')]
+    This class holds all user-specific configuration that can vary between
+    environments (production, testing, etc.). Infrastructure constants like
+    URLs and paths remain as module-level constants.
+    """
+    username: str
+    password: str
+    current_player_id: int
+    database_name: str
+    local_time_shift: int = 0
+    discord_webhook: str | None = None
+    feature_toggles: list[str] = field(default_factory=list)
+    secret_key: str = ''
+
+    @classmethod
+    def from_secrets_file(cls) -> 'Config':
+        """Load configuration from secrets.txt file."""
+        secrets = load_secrets()
+
+        toggles = []
+        if 'feature_toggles' in secrets:
+            toggles = [t.strip() for t in secrets['feature_toggles'].split(',')]
+
+        return cls(
+            username=secrets['username'],
+            password=secrets['password'],
+            current_player_id=int(secrets['current_player_id']),
+            database_name=secrets['database_name'],
+            local_time_shift=int(secrets.get('LOCAL_TIME_SHIFT', '0')),
+            discord_webhook=secrets.get('discord_webhook'),
+            feature_toggles=toggles,
+            secret_key=secrets.get('secret_key', ''),
+        )
+
+
+# Default configuration instance, loaded at import time
+_default_config = Config.from_secrets_file()
+
+
+def get_config() -> Config:
+    """Get the default configuration instance."""
+    return _default_config
+
+
+# Legacy module-level variables for backward compatibility during migration
+# These will be removed as code is updated to use Config directly
+username = _default_config.username
+password = _default_config.password
+DATABASE_NAME = _default_config.database_name
+current_player_id = _default_config.current_player_id
+LOCAL_TIME_SHIFT = _default_config.local_time_shift
+discord_webhook = _default_config.discord_webhook
+feature_toggles = _default_config.feature_toggles

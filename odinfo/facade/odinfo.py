@@ -11,8 +11,7 @@ from operator import itemgetter
 from odinfo.calculators.economy import Economy
 from odinfo.calculators.military import MilitaryCalculator, RatioCalculator
 from odinfo.calculators.networthcalculator import get_networth_deltas
-from odinfo.config import SEARCH_PAGE
-from odinfo.config import current_player_id
+from odinfo.config import Config, SEARCH_PAGE
 from odinfo.repositories.game import GameRepository
 from odinfo.domain.models import Dominion
 from odinfo.timeutils import hours_since, add_duration, current_od_time
@@ -28,7 +27,8 @@ logger = logging.getLogger('od-info.facade')
 
 
 class ODInfoFacade(object):
-    def __init__(self, repo: GameRepository, cache: FacadeCache):
+    def __init__(self, config: Config, repo: GameRepository, cache: FacadeCache):
+        self._config = config
         self._od_session = None
         self._repo = repo
         self._cache = cache
@@ -47,7 +47,7 @@ class ODInfoFacade(object):
     def od_session(self):
         """Session for OpenDominion website (not database)."""
         if not self._od_session:
-            self._od_session = ODSession(current_player_id)
+            self._od_session = ODSession(self._config)
         return self._od_session.session
 
     def teardown(self):
@@ -71,7 +71,7 @@ class ODInfoFacade(object):
 
     def update_ops(self, dom_code):
         logger.debug("Updating ops for dominion %s", dom_code)
-        if int(dom_code) == int(current_player_id):
+        if int(dom_code) == int(self._config.current_player_id):
             ops = grab_my_ops(self.od_session)
         else:
             ops = grab_ops(self.od_session, dom_code)
@@ -290,7 +290,7 @@ class ODInfoFacade(object):
 
     def realmies(self) -> list[Dominion]:
         logger.debug("Getting Realmies")
-        return list(self._repo.get_realmies(current_player_id))
+        return list(self._repo.get_realmies(self._config.current_player_id))
 
     def realmies_with_blops_info(self):
         """Get realmies with military calculator info including blops (boats)."""
@@ -333,7 +333,7 @@ class ODInfoFacade(object):
     def stealables(self) -> list:
         logger.debug("Listing stealables")
         since = add_duration(current_od_time(as_str=True), -12, True)
-        result = query_stealables(self._repo, since, self._repo.get_realm_of_dominion(current_player_id))
+        result = query_stealables(self._repo, since, self._repo.get_realm_of_dominion(self._config.current_player_id))
         return result
 
     # ---------------------------------------- QUERIES - Utility
@@ -392,8 +392,8 @@ class ODInfoFacade(object):
         return sorted(result, key=itemgetter('nwdelta'), reverse=top)
 
     def economy(self):
-        self.update_ops(current_player_id)
-        return Economy(self.dominion(current_player_id))
+        self.update_ops(self._config.current_player_id)
+        return Economy(self.dominion(self._config.current_player_id))
 
     def award_stats(self):
         # self.update_town_crier()

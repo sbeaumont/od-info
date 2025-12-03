@@ -132,8 +132,9 @@ def get_tc_page(session, page_nr: int) -> list:
 
 
 if __name__ == '__main__':
+    from odinfo.config import get_config
     from odinfo.services.od_session import ODSession
-    with ODSession() as od_session:
+    with ODSession(get_config()) as od_session:
         with open(f'{OUT_DIR}/all_tc.txt', 'w') as f:
             for page_nr in range(1, get_number_of_tc_pages(od_session.session) + 1):
                 events = get_tc_page(od_session.session, page_nr)

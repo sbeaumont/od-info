@@ -8,7 +8,7 @@ import logging
 import requests
 from bs4 import BeautifulSoup
 
-from odinfo.config import LOGIN_URL, SELECT_URL, username, password
+from odinfo.config import Config, LOGIN_URL, SELECT_URL
 
 logger = logging.getLogger('od-info.session')
 
@@ -16,15 +16,18 @@ logger = logging.getLogger('od-info.session')
 class ODSession:
     """Manages an authenticated session with the OpenDominion website."""
 
-    def __init__(self, player_id: int | None = None):
+    def __init__(self, config: Config, player_id: int | None = None):
         """
         Create a new session manager.
 
         Args:
+            config: Application configuration with credentials.
             player_id: If provided, switch to this dominion after login.
+                      If None, uses config.current_player_id.
         """
         self._session: requests.Session | None = None
-        self._player_id = player_id
+        self._config = config
+        self._player_id = player_id if player_id is not None else config.current_player_id
 
     @property
     def session(self) -> requests.Session:
@@ -36,15 +39,15 @@ class ODSession:
     def _login(self) -> requests.Session:
         """Perform login and return authenticated session."""
         session = requests.session()
-        session.auth = (username, password)
+        session.auth = (self._config.username, self._config.password)
 
         soup = self._get_soup(session, LOGIN_URL)
         csrf_token = self._pull_csrf_token(soup)
 
         payload = {
             '_token': csrf_token,
-            'email': username,
-            'password': password
+            'email': self._config.username,
+            'password': self._config.password
         }
         response = session.post(LOGIN_URL, data=payload)
 

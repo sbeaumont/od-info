@@ -7,8 +7,6 @@
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
 <script src="https://cdn.datatables.net/colreorder/1.7.0/js/dataTables.colReorder.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css"/>
-<script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
 <style>
     /* Fix ColVis dropdown to match w3-css dark theme */
     .dt-button-collection {
@@ -23,6 +21,13 @@
     }
     .dt-button-collection .dt-button.active {
         background-color: #000 !important; /* w3-black */
+    }
+    /* Sticky header that works with horizontal scrolling */
+    #military_table thead th {
+        position: sticky;
+        top: 43px; /* Height of the top bar */
+        background-color: #000 !important; /* w3-black */
+        z-index: 2;
     }
 </style>
 {% endblock %}
@@ -157,14 +162,9 @@
                 { visible: false, targets: [11, 12, 13, 14, 15] } // Hide Draftees, Boats, Raw OP/DP by default
             ],
             autoWidth: false,
-            scrollX: true,
             colReorder: true,
             stateSave: true,
             stateDuration: -1, // Use localStorage (persists across sessions)
-            fixedHeader: {
-                header: true,
-                headerOffset: 43 // Height of the top bar
-            },
             buttons: [
                 {
                     extend: 'colvis',

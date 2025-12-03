@@ -135,8 +135,10 @@
     </div>
   </div>
   {% endif %}
-  
+
+  {% if not error %}
   {% block content %}{% endblock %}
+  {% endif %}
   <!-- End page content -->
 </div>
 

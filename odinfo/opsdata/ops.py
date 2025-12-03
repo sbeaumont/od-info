@@ -10,11 +10,10 @@ import json
 import logging
 from datetime import datetime
 
-from odinfo import config
 from odinfo.timeutils import cleanup_timestamp, current_od_time
 
 from odinfo.opsdata.scrapetools import get_soup_page, read_server_time
-from odinfo.config import OP_CENTER_URL, MY_OP_CENTER_URL, SEARCH_PAGE
+from odinfo.config import OP_CENTER_URL, MY_OP_CENTER_URL, SEARCH_PAGE, get_config
 
 logger = logging.getLogger('db-info.ops')
 
@@ -118,7 +117,7 @@ def grab_my_ops(session) -> Ops:
     """Grabs the copy_ops JSON file for the player's dominion."""
     soup = get_soup_page(session, f'{MY_OP_CENTER_URL}')
     ops_json = soup.find('textarea', id='ops_json').string
-    return Ops(json.loads(ops_json), config.current_player_id)
+    return Ops(json.loads(ops_json), get_config().current_player_id)
 
 
 def grab_search(session) -> dict:

@@ -1,9 +1,9 @@
+from math import trunc
+
 from sqlalchemy.orm import Session
 
 from odinfo.domain.models import Dominion
-from odinfo.config import *
-from math import trunc
-
+from odinfo.config import PLAT_PER_ALCHEMY_PER_TICK, PLAT_PER_PEASANT_PER_TICK, PEASANTS_PER_HOME
 from odinfo.domain.refdata import GT_DEFENSE_FACTOR
 
 
@@ -44,14 +44,6 @@ class Economy(object):
         return trunc(self.dom.last_survey.alchemy * PLAT_PER_ALCHEMY_PER_TICK)
 
     @property
-    def guard_towers(self):
-        gt_ratio = self.dom.buildings.ratio_of('guard_tower') * GT_DEFENSE_FACTOR
-        new_ratio = (self.dom.buildings.ratio_of('guard_tower') + 1) / self.dom.land.total * GT_DEFENSE_FACTOR
-        extra_dp_percentage = new_ratio - gt_ratio
-        extra_dp = self.dom.military.dp * extra_dp_percentage
-        return extra_dp
-
-    @property
     def base_plat_per_tick(self):
         return trunc(self.peasant_income + self.alchemy_income)
 
@@ -62,11 +54,13 @@ class Economy(object):
 
 if __name__ == '__main__':
     from sqlalchemy import create_engine, select
+    from odinfo.config import get_config
 
-    db_name = DATABASE_NAME[:10] + 'instance/' + DATABASE_NAME[10:]
+    config = get_config()
+    db_name = config.database_name[:10] + 'instance/' + config.database_name[10:]
     print(db_name)
     with Session(create_engine(db_name)) as session:
-        dom = session.execute(select(Dominion).where(Dominion.code == current_player_id)).scalar()
+        dom = session.execute(select(Dominion).where(Dominion.code == config.current_player_id)).scalar()
         econ = Economy(dom)
 
         print("Base plat per tick", econ.base_plat_per_tick)

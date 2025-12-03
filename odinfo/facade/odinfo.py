@@ -134,6 +134,9 @@ class ODInfoFacade(object):
     def dominion(self, dom_code):
         return self._repo.get_dominion(dom_code)
 
+    def economy(self):
+        return Economy(self._repo.get_dominion(self._config.current_player_id))
+
     def military(self, dom: Dominion):
         return MilitaryCalculator(dom)
 

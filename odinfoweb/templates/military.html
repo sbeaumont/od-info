@@ -33,8 +33,8 @@
         </div>
     </div>
 
-    <div style="overflow-x: auto;">
-        <table id="military_table" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
+    <div class="od-table-container">
+        <table id="mainContentTable" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
         <thead>
             <tr class="w3-black">
                 <!-- Always visible -->
@@ -129,7 +129,7 @@
 
     $(document).ready(function() {
         // Initialize DataTable with ColVis and ColReorder
-        militaryTable = $('#military_table').DataTable({
+        militaryTable = $('#mainContentTable').DataTable({
             paging: false,
             order: [[7, 'desc']], // Sort by +Tmps column by default
             columnDefs: [
@@ -146,11 +146,7 @@
                     text: 'Columns ▼',
                     columns: ':not(:first-child)' // All except Dominion
                 }
-            ],
-            fixedHeader: {
-                header: true,
-                headerOffset: 43
-            }
+            ]
         });
 
         // Move the Columns button to our container
@@ -163,7 +159,7 @@
         // Sync checkboxes with current column visibility
         function syncCheckboxes() {
             $('#toggle-draftees').prop('checked', militaryTable.column(11).visible());
-            $('#toggle-boats').prop('checked', militaryTable.column(12).visible());
+            $('#toggle-boots').prop('checked', militaryTable.column(12).visible());
         }
         syncCheckboxes();
 

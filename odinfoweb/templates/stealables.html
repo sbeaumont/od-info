@@ -3,8 +3,8 @@
 
 {% block content %}
   <div class="w3-container">
-    <div class="table-container">
-    <table id="stealables_table" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
+    <div class="od-table-container">
+    <table id="mainContentTable" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
         <thead>
             <tr class="w3-black">
                 <th>Dominion</th>
@@ -39,16 +39,12 @@
 
 <script>
     $(document).ready( function () {
-        $('#stealables_table').DataTable({
+        $('#mainContentTable').DataTable({
             'paging': false,
             'order': [[3, 'desc']],
             'columnDefs': [
                 { "type": "num", "targets": [1, 2, 3, 4, 5, 6, 7]}
-            ],
-            fixedHeader: {
-                header: true,
-                headerOffset: 43
-            }
+            ]
         });
     } );
 </script>

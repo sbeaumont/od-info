@@ -28,8 +28,17 @@
   .dataTables_wrapper { width: fit-content; max-width: 100%; }
   .dataTables_filter { float: none !important; text-align: left !important; margin: 8px 0; }
 
-  /* Sticky header within scrollable container */
-  .sticky-table thead th {
+  /* Scrollable table container with sticky header and hidden scrollbar */
+  .od-table-container {
+    overflow: auto;
+    max-height: calc(100vh - 150px);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .od-table-container::-webkit-scrollbar {
+    display: none;
+  }
+  #mainContentTable thead th {
     position: sticky;
     top: 0;
     background-color: #000 !important;

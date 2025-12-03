@@ -13,7 +13,7 @@ from odinfo.calculators.military import MilitaryCalculator, RatioCalculator
 from odinfo.calculators.networthcalculator import get_networth_deltas
 from odinfo.config import SEARCH_PAGE
 from odinfo.config import current_player_id
-from odinfo.domain.dataaccesslayer import all_doms, dom_by_id, is_database_empty, realmies, query_town_crier, realm_of_dom
+from odinfo.repositories.game import GameRepository
 from odinfo.domain.models import Dominion
 from odinfo.timeutils import hours_since, add_duration, current_od_time
 from odinfo.facade.awardstats import AwardStats
@@ -22,18 +22,17 @@ from odinfo.facade.discord import send_to_webhook
 from odinfo.opsdata.ops import grab_ops, grab_my_ops, get_last_scans
 from odinfo.opsdata.scrapetools import login, read_tick_time, get_soup_page
 from odinfo.opsdata.updater import update_ops, update_town_crier, update_dom_index, query_stealables
-from sqlalchemy import text
 
 logger = logging.getLogger('od-info.facade')
 
 
 class ODInfoFacade(object):
-    def __init__(self, db, cache: FacadeCache):
-        self._session = None
-        self._db = db
+    def __init__(self, repo: GameRepository, cache: FacadeCache):
+        self._od_session = None
+        self._repo = repo
         self._cache = cache
-        if is_database_empty(self._db):
-            update_dom_index(self.session, self._db)
+        if self._repo.is_empty():
+            update_dom_index(self.od_session, self._repo)
 
     def clear_cache(self):
         logger.debug("Cache cleared (had %d entries)", len(self._cache))
@@ -44,18 +43,19 @@ class ODInfoFacade(object):
         logger.debug("Cache invalidated for prefix '%s' (%d entries removed)", prefix, removed)
 
     @property
-    def session(self):
-        if not self._session:
-            self._session = login(current_player_id)
-        return self._session
+    def od_session(self):
+        """Session for OpenDominion website (not database)."""
+        if not self._od_session:
+            self._od_session = login(current_player_id)
+        return self._od_session
 
     def teardown(self):
-        if self._session is not None:
-            self._session.close()
+        if self._od_session is not None:
+            self._od_session.close()
 
     def update_all(self):
-        last_scans = get_last_scans(self.session)
-        for dom in all_doms(self._db):
+        last_scans = get_last_scans(self.od_session)
+        for dom in self._repo.all_dominions():
             domcode = dom.code
             if (domcode in last_scans) and (
                     (dom.last_op is None) or
@@ -66,16 +66,16 @@ class ODInfoFacade(object):
     # ---------------------------------------- COMMANDS - Update from OpenDominion.net
 
     def update_dom_index(self):
-        update_dom_index(self.session, self._db)
+        update_dom_index(self.od_session, self._repo)
 
     def update_ops(self, dom_code):
         logger.debug("Updating ops for dominion %s", dom_code)
         if int(dom_code) == int(current_player_id):
-            ops = grab_my_ops(self.session)
+            ops = grab_my_ops(self.od_session)
         else:
-            ops = grab_ops(self.session, dom_code)
+            ops = grab_ops(self.od_session, dom_code)
         if ops:
-            update_ops(ops, self._db, dom_code)
+            update_ops(ops, self._repo, dom_code)
         else:
             logger.warning(f"Can't get ops for dominion {dom_code}")
 
@@ -84,7 +84,7 @@ class ODInfoFacade(object):
         self.clear_cache()
 
     def update_town_crier(self):
-        update_town_crier(self.session, self._db)
+        update_town_crier(self.od_session, self._repo)
 
     def update_realmies(self):
         for dom_code in self.realmie_codes():
@@ -94,16 +94,12 @@ class ODInfoFacade(object):
 
     def update_role(self, dom_code, role):
         logger.debug("Updating dominion %s role to %s", dom_code, role)
-        qry = text(f'UPDATE Dominions SET role = :role WHERE code = :code')
-        self._db.session.execute(qry, {'role': role, 'code': dom_code})
-        self._db.session.commit()
+        self._repo.update_dominion_role(dom_code, role)
         self.invalidate_cache('dom_list')
 
     def update_player(self, dom_code, player_name):
         logger.debug("Updating dominion player of dominion %s to %s", dom_code, player_name)
-        qry = text(f'UPDATE Dominions SET player = :name WHERE code = :code')
-        self._db.session.execute(qry, {'name': player_name, 'code': dom_code})
-        self._db.session.commit()
+        self._repo.update_dominion_player(dom_code, player_name)
         self.invalidate_cache('dom_list')
 
     # ---------------------------------------- COMMANDS - Send out information
@@ -135,8 +131,7 @@ class ODInfoFacade(object):
     # ---------------------------------------- QUERIES - Single Dominion
 
     def dominion(self, dom_code):
-        return dom_by_id(self._db, dom_code)
-        # return Dominion(self._db, dom_code)
+        return self._repo.get_dominion(dom_code)
 
     def military(self, dom: Dominion):
         return MilitaryCalculator(dom)
@@ -152,14 +147,12 @@ class ODInfoFacade(object):
         logger.debug("Getting dom status for %s", dom_code)
         if update:
             self.update_ops(dom_code)
-        return dom_by_id(self._db, dom_code).last_cs
-        # return query_clearsight(self._db, dom_code)
+        return self._repo.get_dominion(dom_code).last_cs
 
     def nw_history(self, dom_code):
         """Get the networth history of a specific dominion."""
         logger.debug("Getting NW history for %s", dom_code)
-        return dom_by_id(self._db, dom_code).history
-        # return query_dom_history(self._db, dom_code)
+        return self._repo.get_dominion(dom_code).history
 
     # ---------------------------------------- QUERIES - Lists
 
@@ -171,7 +164,7 @@ class ODInfoFacade(object):
             return self._cache[cache_key]
 
         logger.debug("Computing dom_list for %s", cache_key)
-        doms = all_doms(self._db)
+        doms = self._repo.all_dominions()
         result = sorted(doms, key=lambda x: x.current_land, reverse=True)
         self._cache[cache_key] = result
         return result
@@ -184,13 +177,13 @@ class ODInfoFacade(object):
             return self._cache[cache_key]
 
         logger.debug("Computing nw_deltas")
-        result = get_networth_deltas(self._db)
+        result = get_networth_deltas(self._repo)
         self._cache[cache_key] = result
         return result
 
     def get_town_crier(self):
         logger.debug("Getting Town Crier")
-        return query_town_crier(self._db)
+        return self._repo.all_town_crier_events()
 
     def ratio_list(self):
         """Overview of the ratios of all dominions."""
@@ -200,7 +193,7 @@ class ODInfoFacade(object):
             return self._cache[cache_key]
 
         logger.debug("Computing ratio_list")
-        rc_list = [RatioCalculator(dom) for dom in all_doms(self._db)]
+        rc_list = [RatioCalculator(dom) for dom in self._repo.all_dominions()]
         rc_list = [rc for rc in rc_list if rc.can_calculate and (hours_since(rc.dom.last_op) < 100)]
         result = list()
         for rc in rc_list:
@@ -226,7 +219,7 @@ class ODInfoFacade(object):
             return self._cache[cache_key]
 
         logger.debug("Computing all_doms_ops_age")
-        result = {dom.code: hours_since(dom.last_op) for dom in all_doms(self._db)}
+        result = {dom.code: hours_since(dom.last_op) for dom in self._repo.all_dominions()}
         self._cache[cache_key] = result
         return result
 
@@ -241,7 +234,7 @@ class ODInfoFacade(object):
             return self._cache[cache_key]
 
         logger.debug("Computing military_list for %s", cache_key)
-        mc_list = [d for d in self.doms_as_mil_calcs(all_doms(self._db).all()[:top]) if d.army]
+        mc_list = [d for d in self.doms_as_mil_calcs(list(self._repo.all_dominions())[:top]) if d.army]
         result_list = list()
         current_day = self.current_tick.day
         for mc in mc_list:
@@ -296,7 +289,7 @@ class ODInfoFacade(object):
 
     def realmies(self) -> list[Dominion]:
         logger.debug("Getting Realmies")
-        return realmies(self._db, current_player_id)
+        return list(self._repo.get_realmies(current_player_id))
 
     def realmies_with_blops_info(self):
         """Get realmies with military calculator info including blops (boats)."""
@@ -339,7 +332,7 @@ class ODInfoFacade(object):
     def stealables(self) -> list:
         logger.debug("Listing stealables")
         since = add_duration(current_od_time(as_str=True), -12, True)
-        result = query_stealables(self._db, since, realm_of_dom(self._db, current_player_id))
+        result = query_stealables(self._repo, since, self._repo.get_realm_of_dominion(current_player_id))
         return result
 
     # ---------------------------------------- QUERIES - Utility
@@ -347,11 +340,11 @@ class ODInfoFacade(object):
     def name_for_dom_code(self, domcode):
         """Get the name connected with a dominion code."""
         logger.debug("Getting name for %s", domcode)
-        return dom_by_id(self._db, domcode).name
+        return self._repo.get_dominion(domcode).name
 
     @property
     def current_tick(self):
-        soup = get_soup_page(self.session, SEARCH_PAGE)
+        soup = get_soup_page(self.od_session, SEARCH_PAGE)
         return read_tick_time(soup)
 
     # ---------------------------------------- QUERIES - Reports
@@ -403,4 +396,4 @@ class ODInfoFacade(object):
 
     def award_stats(self):
         # self.update_town_crier()
-        return AwardStats(self._db)
+        return AwardStats(self._repo.session)

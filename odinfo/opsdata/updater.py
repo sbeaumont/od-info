@@ -4,53 +4,46 @@ Higher order update actions.
 
 import logging
 
+from sqlalchemy import text
+
 from odinfo.opsdata.ops import grab_search
 from odinfo.timeutils import cleanup_timestamp
-from odinfo.domain.dataaccesslayer import all_doms, dom_by_id
 from odinfo.domain.models import Dominion, DominionHistory, TownCrier
 from odinfo.facade.towncrier import get_number_of_tc_pages, get_tc_page
 from odinfo.domain.models import (ClearSight, CastleSpy, BarracksSpy,
                                   SurveyDominion, LandSpy, Vision, Revelation)
-from sqlalchemy import text
+from odinfo.repositories.game import GameRepository
 
 logger = logging.getLogger('od-info.updater')
 
 # ---------------------------------------------------------------------- Updaters Ops => DB
 
 
-def update_dom_index(session, db):
-    doms = {d.code: d for d in all_doms(db)}
-    for code, line in grab_search(session).items():
+def update_dom_index(od_session, repo: GameRepository):
+    """Update the dominion index from OpenDominion search page."""
+    doms = {d.code: d for d in repo.all_dominions()}
+    new_doms = []
+    new_history = []
+    for code, line in grab_search(od_session).items():
         timestamp = cleanup_timestamp(line['timestamp'])
         if code not in doms:
             dom = Dominion(code=int(line['code']),
                            name=line['name'],
                            realm=int(line['realm']),
                            race=line['race'])
-            db.session.add(dom)
+            new_doms.append(dom)
 
         dh = DominionHistory(dominion_id=int(line['code']),
                              timestamp=timestamp,
                              land=int(line['land']),
                              networth=int(line['networth']))
-        # dom.history.append(dh)
-        db.session.add(dh)
-    db.session.commit()
+        new_history.append(dh)
 
-
-def update_dominion(ops, db):
-    session = db.session
-    dom = session.scalar(db.select(Dominion).where(ops.dom_id))
-    timestamp = ops.timestamp
-    if not dom:
-        dom = Dominion(code=ops.dom_id, name=ops.name, realm=ops.realm, _race=ops.race)
-        session.add(dom)
-
-    dh = DominionHistory(dominion_id=dom.code, timestamp=timestamp, land=ops.land, networth=ops.networth)
-    db.session.add(dh)
-    # dom.history.append(dh)
-
-    session.commit()
+    with repo.transaction():
+        for dom in new_doms:
+            repo.session.add(dom)
+        for dh in new_history:
+            repo.session.add(dh)
 
 
 def update_obj(ops, obj, mapping):
@@ -71,77 +64,78 @@ def update_obj(ops, obj, mapping):
                 setattr(obj, fld, ops.q(path_part))
 
 
-def update_ops(ops, db, dom_code):
+def update_ops(ops, repo: GameRepository, dom_code):
+    """Update ops data for a single dominion."""
     logger.debug("Updating ops for dominion %s", dom_code)
-    dom = dom_by_id(db, dom_code)
+    dom = repo.get_dominion(dom_code)
+    session = repo.session
     # Ensure the dominion object is tracked by the session so last_op changes get saved
-    db.session.add(dom)
+    session.add(dom)
     if ops.has_clearsight:
         timestamp = cleanup_timestamp(ops.q('status.created_at'))
-        if not db.session.get(ClearSight, [dom_code, timestamp]):
+        if not session.get(ClearSight, [dom_code, timestamp]):
             obj = ClearSight(dominion_id=dom_code, timestamp=timestamp)
             update_obj(ops, obj, CLEARSIGHT_MAPPING)
-            db.session.add(obj)
+            session.add(obj)
             dom.add_last_op(timestamp)
         else:
             logger.debug(f"Already had ClearSight for {dom_code} at {timestamp}")
     if ops.has_castle:
         timestamp = cleanup_timestamp(ops.q('castle.created_at'))
-        if not db.session.get(CastleSpy, [dom_code, timestamp]):
+        if not session.get(CastleSpy, [dom_code, timestamp]):
             obj = CastleSpy(dominion_id=dom_code, timestamp=timestamp)
             update_obj(ops, obj, CASTLE_SPY_MAPPING)
-            db.session.add(obj)
+            session.add(obj)
             dom.add_last_op(timestamp)
         else:
             logger.debug(f"Already had Castle Spy for {dom_code} at {timestamp}")
     if ops.has_barracks:
         timestamp = cleanup_timestamp(ops.q('barracks.created_at'))
-        if not db.session.get(BarracksSpy, [dom_code, timestamp]):
+        if not session.get(BarracksSpy, [dom_code, timestamp]):
             obj = BarracksSpy(dominion_id=dom_code, timestamp=timestamp)
             update_obj(ops, obj, BARRACKS_SPY_MAPPING)
-            db.session.add(obj)
+            session.add(obj)
             dom.add_last_op(timestamp)
         else:
             logger.debug(f"Already had Barracks Spy for {dom_code} at {timestamp}")
     if ops.has_survey:
         timestamp = cleanup_timestamp(ops.q('survey.created_at'))
-        if not db.session.get(SurveyDominion, [dom_code, timestamp]):
+        if not session.get(SurveyDominion, [dom_code, timestamp]):
             obj = SurveyDominion(dominion_id=dom_code, timestamp=timestamp)
             update_obj(ops, obj, SURVEY_DOMINION_MAPPING)
-            db.session.add(obj)
+            session.add(obj)
             dom.add_last_op(timestamp)
         else:
             logger.debug(f"Already had SurveyDominion for {dom_code} at {timestamp}")
     if ops.has_land:
         timestamp = cleanup_timestamp(ops.q('land.created_at'))
-        if not db.session.get(LandSpy, [dom_code, timestamp]):
+        if not session.get(LandSpy, [dom_code, timestamp]):
             obj = LandSpy(dominion_id=dom_code, timestamp=timestamp)
             update_obj(ops, obj, LAND_SPY_MAPPING)
-            db.session.add(obj)
+            session.add(obj)
             dom.add_last_op(timestamp)
         else:
             logger.debug(f"Already had LandSpy for {dom_code} at {timestamp}")
     if ops.has_vision:
         timestamp = cleanup_timestamp(ops.q('vision.created_at'))
-        if not db.session.get(Vision, [dom_code, timestamp]):
+        if not session.get(Vision, [dom_code, timestamp]):
             obj = Vision(dominion_id=dom_code, timestamp=timestamp)
             update_obj(ops, obj, VISION_MAPPING)
-            db.session.add(obj)
+            session.add(obj)
             dom.add_last_op(timestamp)
         else:
             logger.debug(f"Already had Vision for {dom_code} at {timestamp}")
     if ops.has_revelation:
-        update_revelation(db, ops, dom)
-    db.session.commit()
+        update_revelation(session, ops, dom)
+    session.commit()
 
 
-def update_town_crier(session, db):
+def update_town_crier(od_session, repo: GameRepository):
+    """Update all Town Crier records from OpenDominion."""
     logger.debug("Updating all TC records.")
-    db.session.query(TownCrier).delete()
-    db.session.commit()
-
-    for page_nr in range(1, get_number_of_tc_pages(session) + 1):
-        events = get_tc_page(session, page_nr)
+    all_events = []
+    for page_nr in range(1, get_number_of_tc_pages(od_session) + 1):
+        events = get_tc_page(od_session, page_nr)
         for event in events:
             tc_event = TownCrier(timestamp=cleanup_timestamp(event[0]),
                               origin=event[2],
@@ -151,8 +145,8 @@ def update_town_crier(session, db):
                               event_type=event[1],
                               amount=event[6],
                               text=event[7])
-            db.session.add(tc_event)
-        db.session.commit()
+            all_events.append(tc_event)
+    repo.replace_all_town_crier_events(all_events)
 
 
 """
@@ -239,13 +233,13 @@ order by
 """
 
 
-def query_stealables(db, timestamp, my_realm: int):
+def query_stealables(repo: GameRepository, timestamp, my_realm: int):
     """Query where the stealables are, while filtering out the bots."""
     params = {
         'timestamp': cleanup_timestamp(timestamp),
         'realm': my_realm
     }
-    return db.session.execute(text(qry_stealables), params)
+    return repo.session.execute(text(qry_stealables), params)
 
 
 # ------------------------------------------------------------ CastleSpy
@@ -346,9 +340,10 @@ VISION_MAPPING = {
 # ------------------------------------------------------------ Revelation
 
 
-def update_revelation(db, ops, dom):
+def update_revelation(session, ops, dom):
+    """Update revelation spells for a dominion."""
     for spell in ops.q('revelation.spells'):
-        if not db.session.get(Revelation, [dom.code, ops.timestamp, spell['spell']]):
+        if not session.get(Revelation, [dom.code, ops.timestamp, spell['spell']]):
             obj = Revelation(dominion_id=dom.code,
                              timestamp=ops.timestamp,
                              spell=spell['spell'],
@@ -356,7 +351,7 @@ def update_revelation(db, ops, dom):
             dom.revelation.append(obj)
             dom.add_last_op(ops.timestamp)
         else:
-            logger.debug(f"Already had Vision for {dom.code} at {ops.timestamp}")
+            logger.debug(f"Already had Revelation for {dom.code} at {ops.timestamp}")
 
 
 # ------------------------------------------------------------ Town Crier

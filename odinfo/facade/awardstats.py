@@ -1,9 +1,10 @@
 from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 
 class AwardStats(object):
-    def __init__(self, db):
-        self.db = db
+    def __init__(self, session: Session):
+        self._session = session
 
     @property
     def bouncy_castle_award(self):
@@ -19,7 +20,7 @@ class AwardStats(object):
             where tc.event_type = 'bounce'
             group by tc.target
             order by amount desc""")
-        return self.db.session.execute(query)
+        return self._session.execute(query)
 
     @property
     def bouncy_loser_award(self):
@@ -35,7 +36,7 @@ class AwardStats(object):
             where tc.event_type = 'bounce'
             group by tc.origin
             order by amount desc""")
-        return self.db.session.execute(query)
+        return self._session.execute(query)
 
     @property
     def war_declarations(self):
@@ -48,7 +49,7 @@ class AwardStats(object):
             where tc.event_type like 'war_declare'
             group by tc.origin
             order by declarations desc""")
-        return self.db.session.execute(query)
+        return self._session.execute(query)
 
     @property
     def declared_on(self):
@@ -61,7 +62,7 @@ class AwardStats(object):
             where tc.event_type like 'war_declare'
             group by tc.target
             order by declared_on desc""")
-        return self.db.session.execute(query)
+        return self._session.execute(query)
 
     @property
     def hits_taken(self):
@@ -78,7 +79,7 @@ class AwardStats(object):
             group by tc.target
             having total_land > 0
             order by total_land desc""")
-        return self.db.session.execute(query)
+        return self._session.execute(query)
 
     @property
     def hits_done(self):
@@ -95,7 +96,7 @@ class AwardStats(object):
             group by tc.origin
             having total_land > 0
             order by total_land desc""")
-        return self.db.session.execute(query)
+        return self._session.execute(query)
 
     @property
     def abandons(self):
@@ -109,4 +110,4 @@ class AwardStats(object):
             left join Dominions d on tc.origin = d.code
             where tc.event_type like 'abandon'
             group by tc.target""")
-        return self.db.session.execute(query)
+        return self._session.execute(query)

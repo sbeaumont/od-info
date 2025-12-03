@@ -26,6 +26,7 @@ from odinfo.facade.cache import FacadeCache
 from odinfo.facade.odinfo import ODInfoFacade
 from odinfo.facade.graphs import nw_history_graph, land_history_graph
 from odinfo.exceptions import ODInfoException
+from odinfo.repositories.game import GameRepository
 
 # ---------------------------------------------------------------------- Flask
 
@@ -117,7 +118,8 @@ app.facade_cache = FacadeCache()
 def facade() -> ODInfoFacade:
     _facade = getattr(g, '_facade', None)
     if not _facade:
-        _facade = g._facade = ODInfoFacade(db, app.facade_cache)
+        repo = GameRepository(db.session)
+        _facade = g._facade = ODInfoFacade(repo, app.facade_cache)
     return _facade
 
 

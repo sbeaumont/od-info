@@ -199,12 +199,3 @@ def get_config() -> Config:
     return _default_config
 
 
-# Legacy module-level variables for backward compatibility during migration
-# These will be removed as code is updated to use Config directly
-username = _default_config.username
-password = _default_config.password
-DATABASE_NAME = _default_config.database_name
-current_player_id = _default_config.current_player_id
-LOCAL_TIME_SHIFT = _default_config.local_time_shift
-discord_webhook = _default_config.discord_webhook
-feature_toggles = _default_config.feature_toggles

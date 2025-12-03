@@ -1,5 +1,5 @@
 import requests
-from odinfo.config import discord_webhook
+from odinfo.config import get_config
 
 
 def send_to_webhook(message):
@@ -7,4 +7,4 @@ def send_to_webhook(message):
         'username': 'OD Info',
         'content': message
     }
-    return requests.post(discord_webhook, json=content)
+    return requests.post(get_config().discord_webhook, json=content)

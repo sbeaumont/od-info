@@ -1,14 +1,15 @@
 import time
 
-from odinfo.config import current_player_id
-from odinfo.opsdata import login, get_soup_page
+from odinfo.config import get_config
+from odinfo.services.od_session import ODSession
+from odinfo.opsdata.scrapetools import get_soup_page
 
 FORUM_URL = 'https://www.opendominion.net/dominion/forum/330?page={}'
 
 
 def go():
     comments = list()
-    session = login(current_player_id)
+    session = ODSession(get_config()).session
     for page_nr in range(1, 99):
         url = FORUM_URL.format(page_nr)
         print(f"Loading page {url}")

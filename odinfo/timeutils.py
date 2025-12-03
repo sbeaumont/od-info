@@ -2,7 +2,7 @@ import re
 from datetime import datetime, timedelta
 from math import trunc
 
-from odinfo.config import DATE_TIME_FORMAT, LOCAL_TIME_SHIFT
+from odinfo.config import DATE_TIME_FORMAT, get_config
 
 
 def cleanup_timestamp(timestamp: str) -> datetime:
@@ -26,7 +26,7 @@ def row_s_to_dict(row_s):
 
 
 def current_od_time(as_str=False) -> datetime | str:
-    dt = datetime.now().replace(microsecond=0) + timedelta(hours=LOCAL_TIME_SHIFT)
+    dt = datetime.now().replace(microsecond=0) + timedelta(hours=get_config().local_time_shift)
     if as_str:
         return dt.strftime(DATE_TIME_FORMAT)
     else:

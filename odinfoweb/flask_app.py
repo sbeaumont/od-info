@@ -21,7 +21,7 @@ from odinfoweb.forms import LoginForm
 from odinfo.domain.models import Base
 from odinfoweb.user import load_user_by_id, load_user_by_name, User
 
-from odinfo.config import feature_toggles, OP_CENTER_URL, load_secrets, check_dirs_and_configs, get_config
+from odinfo.config import OP_CENTER_URL, load_secrets, check_dirs_and_configs, get_config
 from odinfo.facade.cache import FacadeCache
 from odinfo.facade.odinfo import ODInfoFacade
 from odinfo.facade.graphs import nw_history_graph, land_history_graph
@@ -123,6 +123,14 @@ def facade() -> ODInfoFacade:
     return _facade
 
 
+# ---------------------------------------------------------------------- Template Context
+
+@app.context_processor
+def inject_config():
+    """Inject config values into all templates."""
+    return {'feature_toggles': get_config().feature_toggles}
+
+
 # ---------------------------------------------------------------------- Error Handlers
 
 @app.errorhandler(ODInfoException)
@@ -150,7 +158,6 @@ def handle_odinfo_error(error):
         template = template_map.get(request.endpoint, 'odinfo-base.html')
     
     return render_template(template,
-                          feature_toggles=feature_toggles,
                           error=error,
                           error_traceback=error_traceback), 500
 
@@ -161,17 +168,17 @@ def handle_general_error(error):
     # In debug mode, let Flask/Werkzeug handle it for better debugging
     if app.debug:
         raise
-    
+
     import traceback
     error_traceback = traceback.format_exc()
-    
+
     # Wrap the error in ODInfoException for consistent handling
     wrapped_error = ODInfoException(
         message=f"{error.__class__.__name__}: {str(error)}",
         details={'original_error': str(error)}
     )
     wrapped_error.__cause__ = error
-    
+
     # Try to render the appropriate template with error info
     template = 'odinfo-base.html'
     if request.endpoint:
@@ -188,9 +195,8 @@ def handle_general_error(error):
             'stealables': 'stealables.html',
         }
         template = template_map.get(request.endpoint, 'odinfo-base.html')
-    
+
     return render_template(template,
-                          feature_toggles=feature_toggles,
                           error=wrapped_error,
                           error_traceback=error_traceback), 500
 
@@ -217,7 +223,6 @@ def overview():
                     facade().update_player(dom, v)
     return render_template(
         'overview.html',
-        feature_toggles=feature_toggles,
         doms=facade().dom_list(),
         nw_deltas=facade().nw_deltas(),
         ages=facade().all_doms_ops_age(),
@@ -234,8 +239,7 @@ def dominfo(domcode: int, update=None):
     dominion = facade().dominion(domcode)
     return render_template(
         'dominfo.html',
-        feature_toggles=feature_toggles,
-        dominion=dominion,
+                dominion=dominion,
         military=facade().military(dominion),
         ratios=facade().ratios(dominion),
         ops_age=facade().ops_age(dominion),
@@ -250,8 +254,7 @@ def towncrier():
     if request.args.get('update'):
         facade().update_town_crier()
     return render_template('towncrier.html',
-                           feature_toggles=feature_toggles,
-                           towncrier=facade().get_town_crier())
+                            towncrier=facade().get_town_crier())
 
 
 @app.route('/stats')
@@ -260,8 +263,7 @@ def stats():
     if request.args.get('update'):
         facade().update_town_crier()
     return render_template('stats.html',
-                           feature_toggles=feature_toggles,
-                           stats=facade().award_stats())
+                            stats=facade().award_stats())
 
 
 @app.route('/nwtracker/<send>')
@@ -272,7 +274,6 @@ def nw_tracker(send=None):
     if send == 'send':
         result_of_send = facade().send_top_bot_nw_to_discord()
     return render_template('nwtracker.html',
-                           feature_toggles=feature_toggles,
                            top_nw=facade().get_top_bot_nw(filter_zeroes=True),
                            bot_nw=facade().get_top_bot_nw(top=False, filter_zeroes=True),
                            unchanged_nw=facade().get_unchanged_nw(),
@@ -283,16 +284,14 @@ def nw_tracker(send=None):
 @login_required
 def economy():
     return render_template('economy.html',
-                           feature_toggles=feature_toggles,
-                           economy=facade().economy())
+                            economy=facade().economy())
 
 
 @app.route('/ratios')
 @login_required
 def ratios():
     return render_template('ratios.html',
-                           feature_toggles=feature_toggles,
-                           doms=facade().ratio_list())
+                            doms=facade().ratio_list())
 
 
 @app.route('/military', defaults={'versus_op': 0})
@@ -301,7 +300,6 @@ def ratios():
 def military(versus_op: int = 0):
     dom_list = facade().military_list(versus_op=versus_op, top=1000)
     return render_template('military.html',
-                           feature_toggles=feature_toggles,
                            doms=dom_list,
                            ages=facade().all_doms_ops_age(),
                            top_op=facade().top_op(dom_list),
@@ -313,15 +311,13 @@ def military(versus_op: int = 0):
 @login_required
 def realmies():
     return render_template('realmies.html',
-                           feature_toggles=feature_toggles,
-                           realmies=facade().realmies_with_blops_info())
+                            realmies=facade().realmies_with_blops_info())
 
 
 @app.route('/stealables')
 @login_required
 def stealables():
     return render_template('stealables.html',
-                           feature_toggles=feature_toggles,
                            stealables = facade().stealables(),
                            ages=facade().all_doms_ops_age())
 

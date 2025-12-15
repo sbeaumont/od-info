@@ -9,10 +9,15 @@ import logging
 from contextlib import contextmanager
 from typing import Iterator
 
-from sqlalchemy import select, func, update
+from datetime import datetime
+
+from sqlalchemy import select, func, update, delete
 from sqlalchemy.orm import Session
 
-from odinfo.domain.models import Dominion, TownCrier
+from odinfo.domain.models import (
+    Dominion, TownCrier, ClearSight, BarracksSpy, CastleSpy,
+    LandSpy, SurveyDominion, Vision, Revelation
+)
 
 
 logger = logging.getLogger('od-info.repository')
@@ -139,3 +144,54 @@ class GameRepository:
     def commit(self) -> None:
         """Commit the current transaction."""
         self._session.commit()
+
+    # ----------------------------- Ops cleanup
+
+    def cleanup_old_ops(self, cutoff_time: datetime) -> dict[str, int]:
+        """
+        Delete ops entries older than cutoff_time.
+
+        Preserves DominionHistory (for land/networth graphs) and TownCrier.
+        Returns a dict mapping table name to number of deleted rows.
+        """
+        ops_tables = [
+            ClearSight,
+            BarracksSpy,
+            CastleSpy,
+            LandSpy,
+            SurveyDominion,
+            Vision,
+            Revelation,
+        ]
+
+        deleted_counts = {}
+        with self.transaction():
+            for table in ops_tables:
+                result = self._session.execute(
+                    delete(table).where(table.timestamp < cutoff_time)
+                )
+                deleted_counts[table.__tablename__] = result.rowcount
+                logger.info(f"Deleted {result.rowcount} rows from {table.__tablename__}")
+
+        return deleted_counts
+
+    def count_ops(self) -> dict[str, int]:
+        """Count rows in each ops table."""
+        ops_tables = [
+            ClearSight,
+            BarracksSpy,
+            CastleSpy,
+            LandSpy,
+            SurveyDominion,
+            Vision,
+            Revelation,
+        ]
+
+        counts = {}
+        for table in ops_tables:
+            count = self._session.execute(
+                select(func.count()).select_from(table)
+            ).scalar()
+            counts[table.__tablename__] = count
+
+        return counts

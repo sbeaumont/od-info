@@ -401,3 +401,22 @@ class ODInfoFacade(object):
     def award_stats(self):
         # self.update_town_crier()
         return AwardStats(self._repo.session)
+
+    # ---------------------------------------- COMMANDS - Database Maintenance
+
+    def cleanup_old_ops(self, hours: int = 72) -> dict[str, int]:
+        """
+        Delete ops older than specified hours.
+
+        Preserves DominionHistory (for graphs) and TownCrier.
+        Returns dict of table name -> deleted row count.
+        """
+        cutoff = add_duration(current_od_time(as_str=True), -hours, True)
+        logger.info(f"Cleaning up ops older than {cutoff} ({hours} hours)")
+        deleted = self._repo.cleanup_old_ops(cutoff)
+        self.clear_cache()
+        return deleted
+
+    def get_ops_counts(self) -> dict[str, int]:
+        """Get current row counts for all ops tables."""
+        return self._repo.count_ops()

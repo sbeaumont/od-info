@@ -322,6 +322,13 @@ def stealables():
                            ages=facade().all_doms_ops_age())
 
 
+@app.route('/cleanup')
+@login_required
+def cleanup():
+    deleted = facade().cleanup_old_ops(hours=48)
+    return render_template('cleanup.html', deleted=deleted)
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm(request.form)

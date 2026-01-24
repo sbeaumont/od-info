@@ -35,8 +35,8 @@
                 {% endif %}
             </td>
             <td>
-                {% if dom.spy_ratio_actual is not none %}
-                    {{ "%.3f"|format(dom.spy_ratio_actual) }}
+                {% if dom.spa is not none %}
+                    {{ "%.3f"|format(dom.spa) }}
                 {% else %}
                     ?
                 {% endif %}

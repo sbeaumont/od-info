@@ -82,7 +82,7 @@
             <td class="send-col send-tmps" data-safe="{{ dom.safe_op_with_temples }}" data-54="{{ dom.five_four_op_with_temples }}">{{ dom.safe_op_with_temples }}</td>
             <td class="send-col send-dp" data-safe="{{ dom.safe_dp }}" data-54="{{ dom.five_over_four_dp }}">{{ dom.safe_dp }}</td>
             <!-- Always visible -->
-            <td>{{ (dom.temples * 100)|round(1) }}%</td>
+            <td>{{ dom.temples_percent }}%</td>
             <td>{{ dom.paid_until }}</td>
             <!-- Optional columns -->
             <td class="col-draftees">{{ dom.draftees }}</td>

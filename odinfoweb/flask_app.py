@@ -27,6 +27,8 @@ from odinfo.facade.odinfo import ODInfoFacade
 from odinfo.facade.graphs import nw_history_graph, land_history_graph
 from odinfo.exceptions import ODInfoException
 from odinfo.repositories.game import GameRepository
+from odinfoweb.viewmodels.dominfo import build_dominfo_vm
+from odinfoweb.viewmodels.economy import build_economy_vm
 
 # ---------------------------------------------------------------------- Flask
 
@@ -224,8 +226,6 @@ def overview():
     return render_template(
         'overview.html',
         doms=facade().dom_list(),
-        nw_deltas=facade().nw_deltas(),
-        ages=facade().all_doms_ops_age(),
         current_time=current_od_time(as_str=True))
 
 
@@ -237,12 +237,10 @@ def dominfo(domcode: int, update=None):
         facade().update_single_dom(domcode)
     nw_history = facade().nw_history(domcode)
     dominion = facade().dominion(domcode)
+    dom_vm = build_dominfo_vm(dominion)
     return render_template(
         'dominfo.html',
-                dominion=dominion,
-        military=facade().military(dominion),
-        ratios=facade().ratios(dominion),
-        ops_age=facade().ops_age(dominion),
+        dom_vm=dom_vm,
         nw_history_graph=nw_history_graph(nw_history),
         land_history_graph=land_history_graph(nw_history),
         op_center_url=OP_CENTER_URL)
@@ -283,15 +281,17 @@ def nw_tracker(send=None):
 @app.route('/economy')
 @login_required
 def economy():
+    dom = facade().current_player_dominion()
+    econ_vm = build_economy_vm(dom)
     return render_template('economy.html',
-                            economy=facade().economy())
+                           econ_vm=econ_vm,
+                           op_center_url=OP_CENTER_URL)
 
 
 @app.route('/ratios')
 @login_required
 def ratios():
-    return render_template('ratios.html',
-                            doms=facade().ratio_list())
+    return render_template('ratios.html', doms=facade().ratio_list())
 
 
 @app.route('/military', defaults={'versus_op': 0})

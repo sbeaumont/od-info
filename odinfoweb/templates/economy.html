@@ -1,9 +1,9 @@
 {% extends "odinfo-base.html" %}
-{% block title %}Dominion {{ domname }}{% endblock %}
+{% block title %}Dominion {{ econ_vm.domname }}{% endblock %}
 
 {% block content %}
   <div class="w3-container">
-      <a href="{{ op_center_url }}/{{ domcode }}" target="_blank">OP Center</a>
+      <a href="{{ op_center_url }}/{{ econ_vm.domcode }}" target="_blank">OP Center</a>
     <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
         <tr class="w3-dark-grey">
             <th>Jobs</th>
@@ -13,17 +13,17 @@
         </tr>
         <tr>
             <td>
-                Employed: {{ economy.employed_peasants }}<br/>
-                Free: {{ economy.free_jobs }}
+                Employed: {{ econ_vm.employed_peasants }}<br/>
+                Free: {{ econ_vm.free_jobs }}
             </td>
             <td>
-                Peasants: {{ economy.peasant_income }}<br/>
-                Alchemies: {{ economy.alchemy_income }}<br/>
-                Bonus %: {{ (economy.plat_total_bonus * 100) |round(3) }}<br/>
-                Total: {{ economy.platinum_production }}
+                Peasants: {{ econ_vm.peasant_income }}<br/>
+                Alchemies: {{ econ_vm.alchemy_income }}<br/>
+                Bonus %: {{ econ_vm.plat_total_bonus }}<br/>
+                Total: {{ econ_vm.platinum_production }}
             </td>
             <td>
-                Home: {{ economy.plat_per_home|round(2) }}<br/>
+                Home: {{ econ_vm.plat_per_home }}<br/>
                 Alchemy: {{ 45 }}<br/>
             </td>
             <td>

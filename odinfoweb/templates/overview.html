@@ -30,10 +30,10 @@
             </td>
             <td>{{ dom.race }}</td>
             <td>{{ dom.realm }}</td>
-            <td  {% if 1 < ages[dom.code] <= 12 %}class="stale"{% elif ages[dom.code] > 12 %}class="invalid"{% endif %}>{{ ages[dom.code] }}</td>
-            <td>{{ dom.current_land }}</td>
-            <td>{{ dom.current_networth }}</td>
-            <td>{{ nw_deltas[dom.code] }}</td>
+            <td  {% if 1 < dom.ops_age <= 12 %}class="stale"{% elif dom.ops_age > 12 %}class="invalid"{% endif %}>{{ dom.ops_age }}</td>
+            <td>{{ dom.land }}</td>
+            <td>{{ dom.networth }}</td>
+            <td>{{ dom.nw_delta }}</td>
             <td><input type="text" name="name.{{dom.code}}.{{dom.player}}" onfocusout="this.form.submit()" value="{{ dom.player }}"></td>
             <td>
                 <select name="role.{{dom.code}}.{{dom.role}}" onchange="this.form.submit()" form="domform">

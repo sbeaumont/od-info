@@ -1,11 +1,11 @@
 {% extends "odinfo-base.html" %}
-{% block title %}Dominion {{ dominion.name }} ({{ dominion.code }}){% endblock %}
+{% block title %}Dominion {{ dom_vm.name }} ({{ dom_vm.code }}){% endblock %}
 
 {% block content %}
   <div class="w3-container">
-    <h3>{{ dominion.name }} (#{{ dominion.realm }})</h3>
-    <a href="{{ url_for('dominfo', domcode=dominion.code, update='update' ) }}">Update</a> |
-      <a href="{{ op_center_url }}/{{ dominion.code }}" target="_blank">OP Center</a>
+    <h3>{{ dom_vm.name }} (#{{ dom_vm.realm }})</h3>
+    <a href="{{ url_for('dominfo', domcode=dom_vm.code, update='update' ) }}">Update</a> |
+      <a href="{{ op_center_url }}/{{ dom_vm.code }}" target="_blank">OP Center</a>
     <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
         <tr class="w3-black">
             <th>Ops Age</th>
@@ -15,20 +15,20 @@
             <th>Population</th>
         </tr>
         <tr>
-            <td  {% if 1 < ops_age <= 12 %}class="stale"{% elif ops_age > 12 %}class="invalid"{% endif %}>
-                {{ ops_age }}
+            <td  {% if 1 < dom_vm.ops_age <= 12 %}class="stale"{% elif dom_vm.ops_age > 12 %}class="invalid"{% endif %}>
+                {{ dom_vm.ops_age }}
             </td>
             <td>
-                {{ dominion.current_land }}
+                {{ dom_vm.land }}
             </td>
             <td>
-                {{ dominion.race }}
+                {{ dom_vm.race }}
             </td>
             <td>
-                {{ dominion.current_networth }}
+                {{ dom_vm.networth }}
             </td>
             <td>
-                {{ dominion.last_cs.peasants }}
+                {{ dom_vm.population }}
             </td>
         </tr>
         <tr class="w3-black">
@@ -38,11 +38,11 @@
             <th>Forges Rating</th>
         </tr>
         <tr>
-            {% if dominion.last_castle is not none %}
-                <td>{{dominion.last_castle.science_rating | round(3) }}</td>
-                <td>{{dominion.last_castle.keep_rating | round(3) }}</td>
-                <td>{{dominion.last_castle.spires_rating | round(3) }}</td>
-                <td>{{dominion.last_castle.forges_rating | round(3) }}</td>
+            {% if dom_vm.science_rating is not none %}
+                <td>{{ dom_vm.science_rating }}</td>
+                <td>{{ dom_vm.keep_rating }}</td>
+                <td>{{ dom_vm.spires_rating }}</td>
+                <td>{{ dom_vm.forges_rating }}</td>
             {% else %}
                 <td>Unknown</td>
                 <td>Unknown</td>
@@ -54,41 +54,41 @@
             <td colspan="1">
                 <table class="w3-white">
                     <tr><td class="w3-black" colspan="2">Offense</td></tr>
-                    <tr><td>OP (raw)</td><td>{{ military.op|round }} ({{ military.raw_op|round }})</td></tr>
-                    <tr><td>5/4 OP</td><td>{{ military.five_over_four[0]|round }}</td></tr>
+                    <tr><td>OP (raw)</td><td>{{ dom_vm.military.op }} ({{ dom_vm.military.raw_op }})</td></tr>
+                    <tr><td>5/4 OP</td><td>{{ dom_vm.military.five_over_four_op }}</td></tr>
                     <tr><td>Temples</td>
                         <td>
-                            {% if dominion.buildings is not none %}
-                                {{ (dominion.buildings.ratio_of('temple') * 100)|round(1) }}%
+                            {% if dom_vm.temple_ratio is not none %}
+                                {{ dom_vm.temple_ratio }}%
                             {% else %}
                                 Unknown
                             {% endif %}
                         </td>
                     </tr>
                     <tr><td class="w3-black" colspan="2">Offense Bonuses</td></tr>
-                    <tr><td>Prestige</td><td>{{(military.prestige_bonus*100)|round(2)}}%</td></tr>
-                    <tr><td>Racial</td><td>{{(military.racial_offense_bonus*100)|round(2)}}%</td></tr>
-                    <tr><td>Buildings (GN)</td><td>{{(military.gryphon_nest_bonus*100)|round(2)}}%</td></tr>
-                    <tr><td>Improvements (Forges)</td><td>{{(military.forges_bonus*100)|round(2)}}%</td></tr>
-                    <tr><td>Tech</td><td>{{(military.tech_offense_bonus*100)|round(2)}}%</td></tr>
-                    <tr><td>Spell</td><td>{{(military.spell_offense_bonus*100)|round(2)}}%</td></tr>
-                    <tr><td><em>Total</em></td><td><em>{{(military.offense_bonus*100)|round(2)}}%</em></td></tr>
+                    <tr><td>Prestige</td><td>{{ dom_vm.military.offense_bonuses.prestige }}%</td></tr>
+                    <tr><td>Racial</td><td>{{ dom_vm.military.offense_bonuses.racial }}%</td></tr>
+                    <tr><td>Buildings (GN)</td><td>{{ dom_vm.military.offense_bonuses.buildings }}%</td></tr>
+                    <tr><td>Improvements (Forges)</td><td>{{ dom_vm.military.offense_bonuses.improvements }}%</td></tr>
+                    <tr><td>Tech</td><td>{{ dom_vm.military.offense_bonuses.tech }}%</td></tr>
+                    <tr><td>Spell</td><td>{{ dom_vm.military.offense_bonuses.spell }}%</td></tr>
+                    <tr><td><em>Total</em></td><td><em>{{ dom_vm.military.offense_bonuses.total }}%</em></td></tr>
                 </table>
             </td>
             <td colspan="1">
                 <table class="w3-white">
                     <tr><td class="w3-black" colspan="2">Defense</td></tr>
-                    <tr><td>DP (raw)</td><td>{{ military.dp|round }} ({{ military.raw_dp|round }})</td></tr>
-                    <tr><td>5/4 DP</td><td>{{ military.five_over_four[1]|round }}</td></tr>
+                    <tr><td>DP (raw)</td><td>{{ dom_vm.military.dp }} ({{ dom_vm.military.raw_dp }})</td></tr>
+                    <tr><td>5/4 DP</td><td>{{ dom_vm.military.five_over_four_dp }}</td></tr>
                     <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
                     <tr><td class="w3-black" colspan="2">Defense Bonuses</td></tr>
                     <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
-                    <tr><td>Racial</td><td>{{(military.racial_defense_bonus*100)|round(2)}}%</td></tr>
-                    <tr><td>Buildings (GT)</td><td>{{(military.guard_tower_bonus*100)|round(2)}}%</td></tr>
-                    <tr><td>Improvements (Walls)</td><td>{{(military.walls_bonus*100)|round(2)}}%</td></tr>
-                    <tr><td>Tech</td><td>{{(military.tech_defense_bonus*100)|round(2)}}%</td></tr>
-                    <tr><td>Spell (+Ares)</td><td>{{(military.spell_defense_bonus*100)|round(2)}}%</td></tr>
-                    <tr><td><em>Total</em></td><td><em>{{(military.defense_bonus*100)|round(2)}}%</em></td></tr>
+                    <tr><td>Racial</td><td>{{ dom_vm.military.defense_bonuses.racial }}%</td></tr>
+                    <tr><td>Buildings (GT)</td><td>{{ dom_vm.military.defense_bonuses.buildings }}%</td></tr>
+                    <tr><td>Improvements (Walls)</td><td>{{ dom_vm.military.defense_bonuses.improvements }}%</td></tr>
+                    <tr><td>Tech</td><td>{{ dom_vm.military.defense_bonuses.tech }}%</td></tr>
+                    <tr><td>Spell (+Ares)</td><td>{{ dom_vm.military.defense_bonuses.spell }}%</td></tr>
+                    <tr><td><em>Total</em></td><td><em>{{ dom_vm.military.defense_bonuses.total }}%</em></td></tr>
                 </table>
             </td>
             <td colspan="1">
@@ -100,36 +100,34 @@
                         <th>Raw OP</th>
                         <th>Raw DP</th>
                     </tr>
-                    {% for i in range(1, 5) %}
+                    {% for unit in dom_vm.military.units %}
                         <tr>
-                            <td>{{ military.unit_type(i).name }}</td>
+                            <td>{{ unit.name }}</td>
+                            <td>{{ unit.amount }}</td>
                             <td>
-                                {{ military.amount(i) }}
+                                {{ unit.offense_per_unit }}{% if unit.offense_missing_intel %} !{% endif %}/{{ unit.defense_per_unit }}{% if unit.defense_missing_intel %} !{% endif %}
                             </td>
                             <td>
-                                {{ military.unit_type(i).offense|round(1) }}{% if military.unit_missing_intel(i)['offense'] %} !{% endif %}/{{ military.unit_type(i).defense|round(1) }}{% if military.unit_missing_intel(i)['defense'] %} !{% endif %}
+                                {{ unit.raw_op }}{% if unit.offense_missing_intel %} !{% endif %}
                             </td>
                             <td>
-                                {{ military.op_of(i)|round }}{% if military.unit_missing_intel(i)['offense'] %} !{% endif %}
-                            </td>
-                            <td>
-                                {{ military.dp_of(i)|round }}{% if military.unit_missing_intel(i)['defense'] %} !{% endif %}
+                                {{ unit.raw_dp }}{% if unit.defense_missing_intel %} !{% endif %}
                             </td>
                         </tr>
                     {% endfor %}
                     <tr>
                         <td>Draftees</td>
-                        <td>{{military.draftees}}</td>
+                        <td>{{ dom_vm.military.draftees }}</td>
                         <td>0/1</td>
                         <td>0</td>
-                        <td>{{military.draftees}}</td>
+                        <td>{{ dom_vm.military.draftees }}</td>
                     </tr>
                     <tr>
                         <td><em>Total</em></td>
-                        <td>{{military.total_units}}</td>
+                        <td>{{ dom_vm.military.total_units }}</td>
                         <td>&nbsp;</td>
-                        <td>{{military.raw_op|round}}</td>
-                        <td>{{military.raw_dp|round}}</td>
+                        <td>{{ dom_vm.military.raw_op }}</td>
+                        <td>{{ dom_vm.military.raw_dp }}</td>
                     </tr>
                 </table>
             </td>
@@ -146,27 +144,27 @@
                     </tr>
                     <tr>
                         <td>Spies</td>
-                        <td>{{ ratios.spy_units_equiv }}</td>
+                        <td>{{ dom_vm.ratios.spy_units_equiv }}</td>
                         <td>
-                            {{ ratios.spy_ratio_estimate }} - {{ ratios.max_spy_ratio_estimate }}
+                            {{ dom_vm.ratios.spy_ratio_estimate }} - {{ dom_vm.ratios.max_spy_ratio_estimate }}
                         </td>
-                        <td>{{ ratios.spywiz_networth }}</td>
-                        <td>{{ ratios.spywiz_units }}</td>
+                        <td>{{ dom_vm.ratios.spywiz_networth }}</td>
+                        <td>{{ dom_vm.ratios.spywiz_units }}</td>
                     </tr>
                     <tr>
                         <td>Wizards</td>
-                        <td>{{ ratios.wiz_units_equiv }}</td>
+                        <td>{{ dom_vm.ratios.wiz_units_equiv }}</td>
                         <td>
-                            {{ ratios.wiz_ratio_estimate }} - {{ ratios.max_wiz_ratio_estimate }}
+                            {{ dom_vm.ratios.wiz_ratio_estimate }} - {{ dom_vm.ratios.max_wiz_ratio_estimate }}
                         </td>
-                        <td>{{ ratios.spywiz_networth }}</td>
-                        <td>{{ ratios.spywiz_units }}</td>
+                        <td>{{ dom_vm.ratios.spywiz_networth }}</td>
+                        <td>{{ dom_vm.ratios.spywiz_units }}</td>
                     </tr>
                 </table>
             </td>
         </tr>
     </table><br>
-    
+
     <!-- 5/4 Attack Breakdown -->
     <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
         <tr class="w3-black">
@@ -178,13 +176,13 @@
             <th>OP Contribution</th>
             <th>DP Lost</th>
         </tr>
-        {% for unit in military.five_over_four_breakdown()['sent'] %}
-            {% if unit['amount_sent'] > 0 %}
+        {% for unit in dom_vm.military.five_over_four_breakdown.sent_units %}
+            {% if unit.amount_sent > 0 %}
             <tr>
-                <td>{{ unit['unit_name'] }} ({{ unit['unit_type'] }})</td>
-                <td>{{ unit['amount_sent'] }}</td>
-                <td>{{ unit['op_contribution']|round }}</td>
-                <td>{{ unit['dp_lost']|round }}</td>
+                <td>{{ unit.unit_name }} ({{ unit.unit_type }})</td>
+                <td>{{ unit.amount_sent }}</td>
+                <td>{{ unit.op_contribution }}</td>
+                <td>{{ unit.dp_lost }}</td>
             </tr>
             {% endif %}
         {% endfor %}
@@ -194,35 +192,35 @@
             <th>Type</th>
             <th>DP Contribution</th>
         </tr>
-        {% for unit in military.five_over_four_breakdown()['sent'] %}
-            {% if unit['amount_home'] > 0 %}
+        {% for unit in dom_vm.military.five_over_four_breakdown.sent_units %}
+            {% if unit.amount_home > 0 %}
             <tr>
-                <td>{{ unit['unit_name'] }} ({{ unit['unit_type'] }})</td>
-                <td>{{ unit['amount_home'] }}</td>
+                <td>{{ unit.unit_name }} ({{ unit.unit_type }})</td>
+                <td>{{ unit.amount_home }}</td>
                 <td>Hybrid (partial)</td>
                 <td>-</td>
             </tr>
             {% endif %}
         {% endfor %}
-        {% for unit in military.five_over_four_breakdown()['stayed_home'] %}
+        {% for unit in dom_vm.military.five_over_four_breakdown.stayed_home_units %}
             <tr>
-                <td>{{ unit['unit_name'] }} ({{ unit['unit_type'] }})</td>
-                <td>{{ unit['amount_home'] }}</td>
-                <td>{% if unit['unit_name'] == 'Draftees' %}Draftees{% else %}Pure Defense{% endif %}</td>
-                <td>{{ unit['dp_contribution']|round }}</td>
+                <td>{{ unit.unit_name }} ({{ unit.unit_type }})</td>
+                <td>{{ unit.amount_home }}</td>
+                <td>{% if unit.unit_name == 'Draftees' %}Draftees{% else %}Pure Defense{% endif %}</td>
+                <td>{{ unit.dp_contribution }}</td>
             </tr>
         {% endfor %}
         <tr class="w3-light-grey">
             <td><strong>Totals</strong></td>
             <td>-</td>
-            <td><strong>{{ military.five_over_four_breakdown()['summary']['sendable_op']|round }} OP</strong></td>
-            <td><strong>{{ military.five_over_four_breakdown()['summary']['remaining_dp']|round }} DP</strong></td>
+            <td><strong>{{ dom_vm.military.five_over_four_breakdown.sendable_op }} OP</strong></td>
+            <td><strong>{{ dom_vm.military.five_over_four_breakdown.remaining_dp }} DP</strong></td>
         </tr>
         <tr class="w3-pale-yellow">
             <td colspan="2"><strong>5/4 Constraint Check</strong></td>
             <td colspan="2">
-                <strong>{{ military.five_over_four_breakdown()['summary']['sendable_op']|round }} ≤ {{ (military.five_over_four_breakdown()['summary']['remaining_dp'] * 5/4)|round }} 
-                {% if military.five_over_four_breakdown()['summary']['sendable_op'] <= (military.five_over_four_breakdown()['summary']['remaining_dp'] * 5/4)|round %}
+                <strong>{{ dom_vm.military.five_over_four_breakdown.sendable_op }} ≤ {{ (dom_vm.military.five_over_four_breakdown.remaining_dp * 5/4)|round }}
+                {% if dom_vm.military.five_over_four_breakdown.is_valid %}
                 ✓ Valid
                 {% else %}
                 ✗ Violated

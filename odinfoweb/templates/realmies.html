@@ -23,9 +23,9 @@
         {% for realmie in realmies %}
         <tr>
             <td>
-                <a href="{{ url_for('dominfo', domcode=realmie.dom.code) }}">{{ realmie.dom.name }}</a>
+                <a href="{{ url_for('dominfo', domcode=realmie.code) }}">{{ realmie.name }}</a>
             </td>
-            <td>{{ realmie.dom.player }}</td>
+            <td>{{ realmie.player }}</td>
             <td>{{ realmie.land }}</td>
             <td>{{ realmie.hittable_75_percent }}</td>
             <td>{{ realmie.max_sendable_op }}</td>
@@ -46,9 +46,9 @@
                     ?
                 {% endif %}
             </td>
-            <td>{{ realmie.dom.navy.docks if realmie.dom.navy else '?' }}</td>
+            <td>{{ realmie.docks if realmie.docks is not none else '?' }}</td>
             <td>{{ "%.1f"|format(realmie.boats_protected) }}/{{ "%.1f"|format(realmie.boats_total) }}</td>
-            <td>{{ realmie.dom.magic.ares }}</td>
+            <td>{{ realmie.ares if realmie.ares is not none else '?' }}</td>
         </tr>
         {% endfor %}
     </table>

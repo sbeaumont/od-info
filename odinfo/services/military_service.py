@@ -72,7 +72,7 @@ class MilitaryService:
 
             # Calculate current strength only if requested
             if include_current_strength:
-                current_op, current_dp, confidence = self.calculate_current_strength(mc)
+                current_op, current_dp, confidence = self.calculate_current_strength(mc.dom)
             else:
                 current_op, current_dp, confidence = None, None, None
 

@@ -41,8 +41,9 @@ SEARCH_PAGE = f'{OD_BASE}/dominion/search'
 OP_CENTER_URL = f'{OD_BASE}/dominion/op-center'
 TOWN_CRIER_URL = f'{OD_BASE}/dominion/town-crier'
 STATUS_URL = f'{OD_BASE}/dominion/status'
-SELECT_URL = f'{OD_BASE}/dominion/' + '{}/select'
+SELECT_URL = f'{OD_BASE}/dominion/{{}}/select'
 MY_OP_CENTER_URL = f'{OD_BASE}/dominion/advisors/op-center'
+BARRACKS_ARCHIVE_URL = f'{OP_CENTER_URL}/{{}}/barracks_spy'
 
 # Global settings that can't be found anywhere else
 

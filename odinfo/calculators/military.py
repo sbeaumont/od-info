@@ -23,7 +23,7 @@ class MilitaryCalculator(object):
 
     def __str__(self):
         unit_txt = [f"{self.amount(i)} {self.unit_type(i).name} {self.unit_type(i).offense}/{self.unit_type(i).defense}" for i in range(1, 5)]
-        return f"Military({'|'.join(unit_txt)}, {self.op}OP, {self.dp}DP)"
+        return f"Military({'|'.join(unit_txt)}, {self.paid_op}OP, {self.paid_dp}DP)"
 
     def unit_type(self, unit_nr: int) -> Unit:
         return self.race.unit(unit_nr)
@@ -232,7 +232,7 @@ class MilitaryCalculator(object):
         return sum([self.op_of(i) for i in range(1, 5)])
 
     @property
-    def op(self) -> int:
+    def paid_op(self) -> int:
         return round(self.raw_op * (1 + self.offense_bonus))
 
     @property
@@ -251,8 +251,127 @@ class MilitaryCalculator(object):
         return defense
 
     @property
-    def dp(self) -> int:
+    def paid_dp(self) -> int:
         return round(self.raw_dp * (1 + self.defense_bonus))
+
+    # BS fuzz constants from OD source (InfoMapper.php)
+    # Observed value is in range [true * 0.85, true / 0.85]
+    BS_FUZZ_LOW = 0.85      # observed can be as low as true * 0.85
+    BS_FUZZ_HIGH = 1 / 0.85  # observed can be as high as true * 1.176
+    BS_LOCKED_RATIO = BS_FUZZ_HIGH / BS_FUZZ_LOW  # ~1.38 - if spread exceeds this, value is locked
+
+    @staticmethod
+    def refine_unit_estimate(observations: list[int]) -> tuple[float, float, bool]:
+        """Combine multiple BS observations to get tighter bounds on true value.
+
+        Args:
+            observations: List of observed values for a single unit type.
+
+        Returns:
+            Tuple of (lower_bound, upper_bound, is_locked).
+            is_locked is True if the value is effectively pinpointed (spread >= 1.38).
+        """
+        if not observations:
+            return (0, 0, False)
+
+        if len(observations) == 1:
+            obs = observations[0]
+            return (obs / MilitaryCalculator.BS_FUZZ_HIGH, obs / MilitaryCalculator.BS_FUZZ_LOW, False)
+
+        min_obs = min(observations)
+        max_obs = max(observations)
+
+        lower_bound = max_obs / MilitaryCalculator.BS_FUZZ_HIGH
+        upper_bound = min_obs / MilitaryCalculator.BS_FUZZ_LOW
+
+        # Check if "locked" (spread covers full fuzz range)
+        ratio = max_obs / min_obs if min_obs > 0 else 0
+        is_locked = ratio >= MilitaryCalculator.BS_LOCKED_RATIO
+
+        return (lower_bound, upper_bound, is_locked)
+
+    def refined_home_units(self, barracks_spies: list) -> dict:
+        """Get refined home unit estimates from multiple BS observations.
+
+        Args:
+            barracks_spies: List of BarracksSpy objects from the same tick.
+
+        Returns:
+            Dict with keys 'draftees', 'unit1'-'unit4', each containing
+            (lower, upper, is_locked) tuple.
+        """
+        if not barracks_spies:
+            return {}
+
+        result = {}
+
+        # Gather observations for each unit type
+        draftee_obs = [bs.draftees for bs in barracks_spies]
+        result['draftees'] = self.refine_unit_estimate(draftee_obs)
+
+        for i in range(1, 5):
+            unit_obs = [getattr(bs, f'home_unit{i}') for bs in barracks_spies]
+            result[f'unit{i}'] = self.refine_unit_estimate(unit_obs)
+
+        return result
+
+    def current_raw_op(self, refined_units: dict) -> int:
+        """Calculate raw OP from refined home unit estimates (no training/returning).
+
+        Args:
+            refined_units: Dict from refined_home_units().
+
+        Returns:
+            Raw OP using midpoint of refined estimates.
+        """
+        if not refined_units:
+            return self.raw_op
+
+        op = 0
+        for i in range(1, 5):
+            key = f'unit{i}'
+            if key in refined_units:
+                lower, upper, _ = refined_units[key]
+                # Use midpoint of estimate
+                amount = (lower + upper) / 2
+                unit = self.unit_type(i)
+                op += amount * unit.offense
+        return round(op)
+
+    def current_raw_dp(self, refined_units: dict) -> int:
+        """Calculate raw DP from refined home unit estimates (no training/returning).
+
+        Args:
+            refined_units: Dict from refined_home_units().
+
+        Returns:
+            Raw DP using midpoint of refined estimates.
+        """
+        if not refined_units:
+            return self.raw_dp
+
+        dp = 0
+        # Draftees
+        if 'draftees' in refined_units:
+            lower, upper, _ = refined_units['draftees']
+            dp += (lower + upper) / 2
+
+        for i in range(1, 5):
+            key = f'unit{i}'
+            if key in refined_units:
+                lower, upper, _ = refined_units[key]
+                amount = (lower + upper) / 2
+                unit = self.unit_type(i)
+                dp += amount * unit.defense
+        return round(dp)
+
+    def current_op(self, refined_units: dict) -> int:
+        """Calculate OP with bonuses from refined home units (no training/returning)."""
+        return round(self.current_raw_op(refined_units) * (1 + self.offense_bonus))
+
+    def current_dp(self, refined_units: dict) -> int:
+        """Calculate DP with bonuses from refined home units (no training/returning)."""
+        return round(self.current_raw_dp(refined_units) * (1 + self.defense_bonus))
 
     @property
     def max_sendable_op(self) -> int:
@@ -326,7 +445,7 @@ class MilitaryCalculator(object):
             fu = None
             pure_offense = sum([self.op_of(self.race.nr_of_unit(u)) for u in self.race.pure_offense_units])
             sendable_offense = pure_offense
-            home_defense = self.dp
+            home_defense = self.paid_dp
             hybrid_units_sendable = dict()
             for unit_type in self.race.hybrid_units:
                 unit_nr = self.race.nr_of_unit(unit_type)
@@ -354,7 +473,7 @@ class MilitaryCalculator(object):
             self._five_four_breakdown = {'sent': [], 'stayed_home': []}
             
             # Start with all units at home
-            remaining_dp = self.dp
+            remaining_dp = self.paid_dp
             sendable_op = 0
             
             # First, send all pure offense units (they don't affect DP)
@@ -463,8 +582,8 @@ class MilitaryCalculator(object):
             'sent': self._five_four_breakdown['sent'],
             'stayed_home': self._five_four_breakdown['stayed_home'],
             'summary': {
-                'total_op': self.op,
-                'total_dp': self.dp,
+                'total_op': self.paid_op,
+                'total_dp': self.paid_dp,
                 'sendable_op': self._five_four_op,
                 'remaining_dp': self._five_four_dp,
                 'constraint_ratio': round(self._five_four_op / (self._five_four_dp * 5/4), 3) if self._five_four_dp > 0 else 0

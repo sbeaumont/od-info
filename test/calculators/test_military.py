@@ -27,14 +27,14 @@ class MilitaryCalculatorTestCase(unittest.TestCase):
         cs.military_unit4 = 10
 
         mc = MilitaryCalculator(self.dom)
-        fnork = mc.dp
-        print(mc.raw_op, mc.op, mc.offense_bonus)
-        print(mc.raw_dp, mc.dp, mc.defense_bonus)
+        fnork = mc.paid_dp
+        print(mc.raw_op, mc.paid_op, mc.offense_bonus)
+        print(mc.raw_dp, mc.paid_dp, mc.defense_bonus)
         print(mc.flex_unit)
         print([str(unit) for unit in mc.race.units.values()])
 
-        self.assertEqual(144, mc.op)
-        self.assertEqual(116, mc.dp)
+        self.assertEqual(144, mc.paid_op)
+        self.assertEqual(116, mc.paid_dp)
         self.assertEqual(mc.five_over_four, (122, 98))
 
     # def test_five_over_four_liz(self):

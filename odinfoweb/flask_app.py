@@ -237,7 +237,8 @@ def dominfo(domcode: int, update=None):
         facade().update_single_dom(domcode)
     nw_history = facade().nw_history(domcode)
     dominion = facade().dominion(domcode)
-    dom_vm = build_dominfo_vm(dominion)
+    current_strength = facade().current_strength(dominion)
+    dom_vm = build_dominfo_vm(dominion, current_strength)
     return render_template(
         'dominfo.html',
         dom_vm=dom_vm,
@@ -298,12 +299,15 @@ def ratios():
 @app.route('/military/<int:versus_op>')
 @login_required
 def military(versus_op: int = 0):
-    dom_list = facade().military_list(versus_op=versus_op, top=1000)
+    include_current = request.args.get('current', '').lower() == 'true'
+    dom_list = facade().military_list(versus_op=versus_op, top=1000,
+                                       include_current_strength=include_current)
     return render_template('military.html',
                            doms=dom_list,
                            ages=facade().all_doms_ops_age(),
                            top_op=facade().top_op(dom_list),
                            versus_op=versus_op,
+                           include_current=include_current,
                            current_day=facade().current_tick.day)
 
 

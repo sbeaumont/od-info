@@ -11,10 +11,12 @@ Design principles:
 """
 
 import logging
+from datetime import timedelta
 
 from odinfo.calculators.military import MilitaryCalculator, RatioCalculator
+from odinfo.domain.models import Dominion, BarracksSpy
 from odinfo.repositories.game import GameRepository
-from odinfo.timeutils import hours_since
+from odinfo.timeutils import hours_since, truncate_to_tick
 from odinfoweb.viewmodels.military import MilitaryRowVM, RealmieRowVM
 
 logger = logging.getLogger('od-info.military_service')
@@ -38,7 +40,8 @@ class MilitaryService:
         """
         self._repo = repo
 
-    def military_list(self, current_day: int, versus_op: int = 0, top: int = 20) -> list[MilitaryRowVM]:
+    def military_list(self, current_day: int, versus_op: int = 0, top: int = 20,
+                      include_current_strength: bool = False) -> list[MilitaryRowVM]:
         """
         Get military overview for top dominions.
 
@@ -46,11 +49,14 @@ class MilitaryService:
             current_day: Current game day (for boat protection calculations).
             versus_op: OP value to calculate safe OP/DP against (0 for default).
             top: Number of top dominions to include.
+            include_current_strength: If True, calculate current strength from
+                refined BS data. This is expensive (queries archives).
 
         Returns:
             List of MilitaryRowVM view models for each dominion.
         """
-        logger.debug("Computing military_list for versus_op=%s, top=%s", versus_op, top)
+        logger.debug("Computing military_list for versus_op=%s, top=%s, current=%s",
+                     versus_op, top, include_current_strength)
         all_doms = list(self._repo.all_dominions())[:top]
         mil_calcs = sorted(
             [MilitaryCalculator(dom) for dom in all_doms],
@@ -63,6 +69,13 @@ class MilitaryService:
         for mc in mc_list:
             five_four_op, five_four_dp = mc.five_over_four
             boat_stuff = mc.boats(current_day)
+
+            # Calculate current strength only if requested
+            if include_current_strength:
+                current_op, current_dp, confidence = self.calculate_current_strength(mc)
+            else:
+                current_op, current_dp, confidence = None, None, None
+
             row = MilitaryRowVM(
                 code=mc.dom.code,
                 name=mc.dom.name,
@@ -82,18 +95,75 @@ class MilitaryService:
                 paid_until=mc.army.get('paid_until', '?'),
                 draftees=mc.draftees,
                 raw_op=mc.raw_op,
-                op=mc.op,
+                paid_op=mc.paid_op,
                 raw_dp=mc.raw_dp,
-                dp=mc.dp,
+                paid_dp=mc.paid_dp,
                 safe_op=mc.safe_op if versus_op == 0 else mc.safe_op_versus(versus_op)[0],
                 safe_dp=mc.safe_dp if versus_op == 0 else mc.safe_op_versus(versus_op)[1],
                 safe_op_with_temples=mc.safe_op_with_temples(versus_op),
                 networth=mc.dom.current_networth,
-                has_incomplete_intel=mc.has_incomplete_intel()
+                has_incomplete_intel=mc.has_incomplete_intel(),
+                current_op=current_op,
+                current_dp=current_dp,
+                confidence=confidence,
             )
             result_list.append(row)
 
         return result_list
+
+    def calculate_current_strength(self, mc: MilitaryCalculator) -> tuple[int | None, int | None, str | None]:
+        """Calculate current strength from refined BS data.
+
+        Returns:
+            Tuple of (current_op, current_dp, confidence_string).
+            Returns (None, None, None) if no BS data available.
+        """
+        # Get the latest BS timestamp
+        last_bs = mc.dom.last_barracks
+        if not last_bs:
+            return None, None, None
+
+        # Get all BSes in that tick
+        bs_list = self.get_barracks_spies_in_tick(mc.dom, last_bs.timestamp)
+        if not bs_list:
+            return None, None, None
+
+        # Get refined estimates
+        refined = mc.refined_home_units(bs_list)
+        if not refined:
+            return None, None, None
+
+        current_op = mc.current_op(refined)
+        current_dp = mc.current_dp(refined)
+
+        # Calculate confidence string
+        confidence = self._calculate_confidence(refined)
+
+        return current_op, current_dp, confidence
+
+    def _calculate_confidence(self, refined: dict) -> str:
+        """Calculate confidence string from refined estimates.
+
+        Returns "locked" if all values are locked, otherwise the max error margin.
+        """
+        all_locked = True
+        max_error = 0.0
+
+        for key, (lower, upper, is_locked) in refined.items():
+            if not is_locked:
+                all_locked = False
+                if lower > 0:
+                    # Error is the range as percentage of midpoint
+                    midpoint = (lower + upper) / 2
+                    error = (upper - lower) / midpoint * 100 / 2
+                    max_error = max(max_error, error)
+
+        if all_locked:
+            return "locked"
+        elif max_error > 0:
+            return f"±{round(max_error)}%"
+        else:
+            return "±16%"  # Default single observation error (range is 0.85 to 1.176)
 
     def top_op(self, mil_calc_result: list[MilitaryRowVM]) -> MilitaryRowVM | None:
         """
@@ -142,7 +212,7 @@ class MilitaryService:
                 land=mc.dom.current_land,
                 hittable_75_percent=mc.hittable_75_percent,
                 max_sendable_op=boat_info[2] if boat_info else 0,
-                dp=mc.dp,
+                paid_dp=mc.paid_dp,
                 wpa=mc.dom.current_wpa,
                 spa=rc.spy_ratio_actual,
                 docks=mc.dom.navy['docks'] if mc.dom.navy else None,
@@ -153,3 +223,21 @@ class MilitaryService:
             result_list.append(row)
 
         return sorted(result_list, key=lambda x: x.land, reverse=True)
+
+    def get_barracks_spies_in_tick(self, dom: Dominion, tick_time) -> list[BarracksSpy]:
+        """Get all BarracksSpy records for a dominion within a specific tick.
+
+        Args:
+            dom: Dominion to query.
+            tick_time: Any timestamp within the desired tick.
+
+        Returns:
+            List of BarracksSpy records with timestamps in the same tick (hour).
+        """
+        tick_start = truncate_to_tick(tick_time)
+        tick_end = tick_start + timedelta(hours=1)
+
+        return [
+            bs for bs in dom.barracks_spy
+            if tick_start <= bs.timestamp < tick_end
+        ]

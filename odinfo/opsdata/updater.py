@@ -6,7 +6,7 @@ import logging
 
 from sqlalchemy import text
 
-from odinfo.opsdata.ops import grab_search
+from odinfo.opsdata.ops import grab_search, BarracksArchive
 from odinfo.timeutils import cleanup_timestamp
 from odinfo.domain.models import Dominion, DominionHistory, TownCrier
 from odinfo.facade.towncrier import get_number_of_tc_pages, get_tc_page
@@ -128,6 +128,48 @@ def update_ops(ops, repo: GameRepository, dom_code):
     if ops.has_revelation:
         update_revelation(session, ops, dom)
     session.commit()
+
+
+def update_barracks_archive(od_session, repo: GameRepository, dom_code: int) -> int:
+    """Scrape and store all barracks spy entries from the archive.
+
+    Args:
+        od_session: Authenticated OD session.
+        repo: Game repository for database access.
+        dom_code: Dominion code to scrape.
+
+    Returns:
+        Number of new entries added.
+    """
+    logger.debug(f"Updating barracks archive for dom {dom_code}")
+    dom = repo.get_dominion(dom_code)
+    session = repo.session
+
+    archive = BarracksArchive(od_session.session, dom_code)
+    entries = archive.scrape()
+
+    added = 0
+    for entry in entries:
+        timestamp = cleanup_timestamp(entry['timestamp'])
+        if not session.get(BarracksSpy, [dom_code, timestamp]):
+            bs = BarracksSpy(
+                dominion_id=dom_code,
+                timestamp=timestamp,
+                draftees=entry['draftees'],
+                home_unit1=entry['home_unit1'],
+                home_unit2=entry['home_unit2'],
+                home_unit3=entry['home_unit3'],
+                home_unit4=entry['home_unit4'],
+                training=entry['training'],
+                returning=entry['returning'],
+            )
+            session.add(bs)
+            dom.add_last_op(timestamp)
+            added += 1
+
+    session.commit()
+    logger.info(f"Added {added} new barracks spy entries for dom {dom_code}")
+    return added
 
 
 def update_town_crier(od_session, repo: GameRepository):

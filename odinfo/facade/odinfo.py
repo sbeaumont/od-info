@@ -10,6 +10,7 @@ Domain-specific operations are delegated to specialized services.
 
 import logging
 
+from odinfo.calculators.military import MilitaryCalculator
 from odinfo.calculators.networthcalculator import get_networth_deltas
 from odinfo.config import Config, SEARCH_PAGE
 from odinfo.repositories.game import GameRepository
@@ -172,21 +173,27 @@ class ODInfoFacade(object):
         self._cache[cache_key] = result
         return result
 
-    def military_list(self, versus_op=0, top=20):
+    def military_list(self, versus_op=0, top=20, include_current_strength=False):
         """Get military overview for top dominions."""
-        cache_key = f'military_list_{versus_op}_{top}'
+        cache_key = f'military_list_{versus_op}_{top}_{include_current_strength}'
         if cache_key in self._cache:
             logger.debug("Returning cached military_list for %s", cache_key)
             return self._cache[cache_key]
 
         current_day = self.current_tick.day
-        result_list = self._military_service.military_list(current_day, versus_op, top)
+        result_list = self._military_service.military_list(
+            current_day, versus_op, top, include_current_strength)
         self._cache[cache_key] = result_list
         return result_list
 
     def top_op(self, mil_calc_result: list):
         """Find the dominion with highest 5/4 OP from a military list."""
         return self._military_service.top_op(mil_calc_result)
+
+    def current_strength(self, dom: Dominion) -> tuple[int | None, int | None, str | None]:
+        """Get current strength (refined) for a single dominion."""
+        mc = MilitaryCalculator(dom)
+        return self._military_service.calculate_current_strength(mc)
 
     def realmie_codes(self) -> list[int]:
         logger.debug("Getting Realmies")

@@ -54,7 +54,8 @@
             <td colspan="1">
                 <table class="w3-white">
                     <tr><td class="w3-black" colspan="2">Offense</td></tr>
-                    <tr><td>OP (raw)</td><td>{{ dom_vm.military.op }} ({{ dom_vm.military.raw_op }})</td></tr>
+                    <tr><td>OP (raw)</td><td>{{ dom_vm.military.paid_op }} ({{ dom_vm.military.raw_op }})</td></tr>
+                    <tr><td>Current OP</td><td>{{ dom_vm.military.current_op if dom_vm.military.current_op is not none else '-' }} {% if dom_vm.military.confidence %}({{ dom_vm.military.confidence }}){% endif %}</td></tr>
                     <tr><td>5/4 OP</td><td>{{ dom_vm.military.five_over_four_op }}</td></tr>
                     <tr><td>Temples</td>
                         <td>
@@ -78,9 +79,9 @@
             <td colspan="1">
                 <table class="w3-white">
                     <tr><td class="w3-black" colspan="2">Defense</td></tr>
-                    <tr><td>DP (raw)</td><td>{{ dom_vm.military.dp }} ({{ dom_vm.military.raw_dp }})</td></tr>
+                    <tr><td>DP (raw)</td><td>{{ dom_vm.military.paid_dp }} ({{ dom_vm.military.raw_dp }})</td></tr>
+                    <tr><td>Current DP</td><td>{{ dom_vm.military.current_dp if dom_vm.military.current_dp is not none else '-' }} {% if dom_vm.military.confidence %}({{ dom_vm.military.confidence }}){% endif %}</td></tr>
                     <tr><td>5/4 DP</td><td>{{ dom_vm.military.five_over_four_dp }}</td></tr>
-                    <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
                     <tr><td class="w3-black" colspan="2">Defense Bonuses</td></tr>
                     <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
                     <tr><td>Racial</td><td>{{ dom_vm.military.defense_bonuses.racial }}%</td></tr>

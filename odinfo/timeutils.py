@@ -56,3 +56,8 @@ def add_duration(timestamp: str, duration: int, whole_hour=False) -> str:
     if whole_hour:
         new_dt = new_dt.replace(minute=0, second=0)
     return new_dt.strftime(DATE_TIME_FORMAT)
+
+
+def truncate_to_tick(timestamp: datetime) -> datetime:
+    """Floor a timestamp to the start of its tick (hour boundary)."""
+    return timestamp.replace(minute=0, second=0, microsecond=0)

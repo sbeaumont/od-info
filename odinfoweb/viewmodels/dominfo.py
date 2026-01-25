@@ -74,14 +74,19 @@ class FiveOverFourBreakdownVM:
 class MilitaryInfoVM:
     """View model for military info on dominfo page."""
     # Main stats
-    op: int
+    paid_op: int
     raw_op: int
-    dp: int
+    paid_dp: int
     raw_dp: int
     five_over_four_op: int
     five_over_four_dp: int
     draftees: int
     total_units: int
+
+    # Current strength (refined from multiple BS observations)
+    current_op: int | None
+    current_dp: int | None
+    confidence: str | None  # "locked", "±X%", or None
 
     # Bonuses
     offense_bonuses: OffenseBonusesVM
@@ -128,15 +133,22 @@ class DomInfoVM:
     ratios: RatioInfoVM
 
 
-def build_dominfo_vm(dom: Dominion) -> DomInfoVM:
+def build_dominfo_vm(dom: Dominion,
+                     current_strength: tuple[int | None, int | None, str | None] = (None, None, None)
+                     ) -> DomInfoVM:
     """
     Build a DomInfoVM from a Dominion object.
 
     This factory function creates all the necessary calculators internally
     and flattens their data into view models.
+
+    Args:
+        dom: The dominion to build the view model for.
+        current_strength: Tuple of (current_op, current_dp, confidence) from refinement.
     """
     mc = MilitaryCalculator(dom)
     rc = RatioCalculator(dom)
+    current_op, current_dp, confidence = current_strength
 
     # Build unit rows
     units = []
@@ -216,14 +228,17 @@ def build_dominfo_vm(dom: Dominion) -> DomInfoVM:
     # Build military info
     five_four = mc.five_over_four
     military = MilitaryInfoVM(
-        op=round(mc.op),
+        paid_op=round(mc.paid_op),
         raw_op=round(mc.raw_op),
-        dp=round(mc.dp),
+        paid_dp=round(mc.paid_dp),
         raw_dp=round(mc.raw_dp),
         five_over_four_op=round(five_four[0]),
         five_over_four_dp=round(five_four[1]),
         draftees=mc.draftees,
         total_units=mc.total_units,
+        current_op=current_op,
+        current_dp=current_dp,
+        confidence=confidence,
         offense_bonuses=offense_bonuses,
         defense_bonuses=defense_bonuses,
         units=units,

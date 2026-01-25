@@ -32,14 +32,18 @@ class MilitaryRowVM:
     paid_until: str
     draftees: int
     raw_op: int
-    op: int
+    paid_op: int
     raw_dp: int
-    dp: int
+    paid_dp: int
     safe_op: int
     safe_dp: int
     safe_op_with_temples: int
     networth: int
     has_incomplete_intel: bool
+    # Current strength (home units only, refined if multiple BSes available)
+    current_op: int | None
+    current_dp: int | None
+    confidence: str | None  # "locked", "±X%", or None if no refinement
 
     @property
     def temples_percent(self) -> float:
@@ -56,7 +60,7 @@ class RealmieRowVM:
     land: int
     hittable_75_percent: int
     max_sendable_op: int
-    dp: int
+    paid_dp: int
     wpa: float | None
     spa: float | None
     docks: int | None

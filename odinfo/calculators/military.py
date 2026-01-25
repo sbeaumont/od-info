@@ -256,27 +256,29 @@ class MilitaryCalculator(object):
 
     # BS fuzz constants from OD source (InfoMapper.php)
     # Observed value is in range [true * 0.85, true / 0.85]
-    BS_FUZZ_LOW = 0.85      # observed can be as low as true * 0.85
+    BS_FUZZ_LOW = 0.85       # observed can be as low as true * 0.85
     BS_FUZZ_HIGH = 1 / 0.85  # observed can be as high as true * 1.176
-    BS_LOCKED_RATIO = BS_FUZZ_HIGH / BS_FUZZ_LOW  # ~1.38 - if spread exceeds this, value is locked
+    BS_DEFAULT_ERROR = 16.0  # default error percentage for single observation
 
     @staticmethod
-    def refine_unit_estimate(observations: list[int]) -> tuple[float, float, bool]:
+    def refine_unit_estimate(observations: list[int]) -> tuple[float, float, float]:
         """Combine multiple BS observations to get tighter bounds on true value.
 
         Args:
             observations: List of observed values for a single unit type.
 
         Returns:
-            Tuple of (lower_bound, upper_bound, is_locked).
-            is_locked is True if the value is effectively pinpointed (spread >= 1.38).
+            Tuple of (lower_bound, upper_bound, error_pct).
+            error_pct is the percentage error (half the range as % of midpoint).
         """
         if not observations:
-            return (0, 0, False)
+            return (0, 0, 0)
 
         if len(observations) == 1:
             obs = observations[0]
-            return (obs / MilitaryCalculator.BS_FUZZ_HIGH, obs / MilitaryCalculator.BS_FUZZ_LOW, False)
+            lower = obs / MilitaryCalculator.BS_FUZZ_HIGH
+            upper = obs / MilitaryCalculator.BS_FUZZ_LOW
+            return (lower, upper, MilitaryCalculator.BS_DEFAULT_ERROR)
 
         min_obs = min(observations)
         max_obs = max(observations)
@@ -284,11 +286,14 @@ class MilitaryCalculator(object):
         lower_bound = max_obs / MilitaryCalculator.BS_FUZZ_HIGH
         upper_bound = min_obs / MilitaryCalculator.BS_FUZZ_LOW
 
-        # Check if "locked" (spread covers full fuzz range)
-        ratio = max_obs / min_obs if min_obs > 0 else 0
-        is_locked = ratio >= MilitaryCalculator.BS_LOCKED_RATIO
+        # Calculate error percentage
+        if lower_bound > 0:
+            midpoint = (lower_bound + upper_bound) / 2
+            error_pct = (upper_bound - lower_bound) / midpoint * 100 / 2
+        else:
+            error_pct = MilitaryCalculator.BS_DEFAULT_ERROR
 
-        return (lower_bound, upper_bound, is_locked)
+        return (lower_bound, upper_bound, max(0, error_pct))
 
     def refined_home_units(self, barracks_spies: list) -> dict:
         """Get refined home unit estimates from multiple BS observations.
@@ -298,7 +303,7 @@ class MilitaryCalculator(object):
 
         Returns:
             Dict with keys 'draftees', 'unit1'-'unit4', each containing
-            (lower, upper, is_locked) tuple.
+            (lower, upper, error_pct) tuple.
         """
         if not barracks_spies:
             return {}
@@ -315,63 +320,171 @@ class MilitaryCalculator(object):
 
         return result
 
-    def current_raw_op(self, refined_units: dict) -> int:
-        """Calculate raw OP from refined home unit estimates (no training/returning).
+    def arrived_returning_units(self, barracks_spies: list, ticks_since_bs: int) -> dict:
+        """Get refined returning units that have arrived home since BS was taken.
 
         Args:
-            refined_units: Dict from refined_home_units().
+            barracks_spies: List of BarracksSpy objects from the same tick.
+            ticks_since_bs: Hours elapsed since the BS was taken.
 
         Returns:
-            Raw OP using midpoint of refined estimates.
+            Dict with keys 'unit1'-'unit4', each containing
+            (lower, upper, error_pct) tuple for total arrived units.
         """
-        if not refined_units:
+        if not barracks_spies:
+            return {}
+
+        result = {}
+
+        for i in range(1, 5):
+            unit_key = f'unit{i}'
+
+            # Collect all ticks that have arrived (tick <= age)
+            arrived_ticks = set()
+            for bs in barracks_spies:
+                if bs.returning and unit_key in bs.returning:
+                    for tick in bs.returning[unit_key].keys():
+                        if int(tick) <= ticks_since_bs:
+                            arrived_ticks.add(tick)
+
+            # Sum up refined values for all arrived ticks
+            total_lower = 0
+            total_upper = 0
+            max_error = 0
+
+            for tick in arrived_ticks:
+                observations = []
+                for bs in barracks_spies:
+                    if bs.returning and unit_key in bs.returning:
+                        val = bs.returning[unit_key].get(tick, 0)
+                        if val > 0:
+                            observations.append(val)
+                if observations:
+                    lower, upper, error = self.refine_unit_estimate(observations)
+                    total_lower += lower
+                    total_upper += upper
+                    max_error = max(max_error, error)
+
+            if total_lower > 0 or total_upper > 0:
+                result[unit_key] = (total_lower, total_upper, max_error)
+
+        return result
+
+    def arrived_training_units(self, latest_bs, ticks_since_bs: int) -> dict:
+        """Get training units that have arrived home since BS was taken.
+
+        Args:
+            latest_bs: BarracksSpy object.
+            ticks_since_bs: Hours elapsed since the BS was taken.
+
+        Returns:
+            Dict with keys 'unit1'-'unit4' containing exact arrived amounts.
+        """
+        if not latest_bs:
+            return {}
+
+        result = {}
+        for i in range(1, 5):
+            unit_key = f'unit{i}'
+            key = f'unit{i}'
+            if latest_bs.training and key in latest_bs.training:
+                arrived = sum(
+                    amount for tick, amount in latest_bs.training[key].items()
+                    if int(tick) <= ticks_since_bs
+                )
+                if arrived > 0:
+                    result[unit_key] = arrived
+        return result
+
+    def current_raw_op(self, refined_home: dict, arrived_returning: dict, arrived_training: dict) -> int:
+        """Calculate raw OP from refined home + arrived training + arrived returning.
+
+        Args:
+            refined_home: Dict from refined_home_units().
+            arrived_returning: Dict from arrived_returning_units().
+            arrived_training: Dict from arrived_training_units().
+
+        Returns:
+            Raw OP using midpoint of refined estimates plus arrivals.
+        """
+        if not refined_home:
             return self.raw_op
 
         op = 0
         for i in range(1, 5):
             key = f'unit{i}'
-            if key in refined_units:
-                lower, upper, _ = refined_units[key]
-                # Use midpoint of estimate
+            unit = self.unit_type(i)
+
+            # Refined home (midpoint)
+            amount = 0
+            if key in refined_home:
+                lower, upper, _ = refined_home[key]
                 amount = (lower + upper) / 2
-                unit = self.unit_type(i)
-                op += amount * unit.offense
+
+            # Arrived training (exact)
+            if key in arrived_training:
+                amount += arrived_training[key]
+
+            # Arrived returning (refined midpoint)
+            if key in arrived_returning:
+                lower, upper, _ = arrived_returning[key]
+                amount += (lower + upper) / 2
+
+            op += amount * unit.offense
+
         return round(op)
 
-    def current_raw_dp(self, refined_units: dict) -> int:
-        """Calculate raw DP from refined home unit estimates (no training/returning).
+    def current_raw_dp(self, refined_home: dict, arrived_returning: dict, arrived_training: dict) -> int:
+        """Calculate raw DP from refined home + arrived training + arrived returning.
 
         Args:
-            refined_units: Dict from refined_home_units().
+            refined_home: Dict from refined_home_units().
+            arrived_returning: Dict from arrived_returning_units().
+            arrived_training: Dict from arrived_training_units().
 
         Returns:
-            Raw DP using midpoint of refined estimates.
+            Raw DP using midpoint of refined estimates plus arrivals.
         """
-        if not refined_units:
+        if not refined_home:
             return self.raw_dp
 
         dp = 0
-        # Draftees
-        if 'draftees' in refined_units:
-            lower, upper, _ = refined_units['draftees']
+
+        # Draftees (no training/returning for draftees)
+        if 'draftees' in refined_home:
+            lower, upper, _ = refined_home['draftees']
             dp += (lower + upper) / 2
 
         for i in range(1, 5):
             key = f'unit{i}'
-            if key in refined_units:
-                lower, upper, _ = refined_units[key]
+            unit = self.unit_type(i)
+
+            # Refined home (midpoint)
+            amount = 0
+            if key in refined_home:
+                lower, upper, _ = refined_home[key]
                 amount = (lower + upper) / 2
-                unit = self.unit_type(i)
-                dp += amount * unit.defense
+
+            # Arrived training (exact)
+            if key in arrived_training:
+                amount += arrived_training[key]
+
+            # Arrived returning (refined midpoint)
+            if key in arrived_returning:
+                lower, upper, _ = arrived_returning[key]
+                amount += (lower + upper) / 2
+
+            dp += amount * unit.defense
+
         return round(dp)
 
-    def current_op(self, refined_units: dict) -> int:
-        """Calculate OP with bonuses from refined home units (no training/returning)."""
-        return round(self.current_raw_op(refined_units) * (1 + self.offense_bonus))
+    def current_op(self, refined_home: dict, arrived_returning: dict, arrived_training: dict) -> int:
+        """Calculate OP with bonuses from current strength."""
+        return round(self.current_raw_op(refined_home, arrived_returning, arrived_training) * (1 + self.offense_bonus))
 
-    def current_dp(self, refined_units: dict) -> int:
-        """Calculate DP with bonuses from refined home units (no training/returning)."""
-        return round(self.current_raw_dp(refined_units) * (1 + self.defense_bonus))
+    def current_dp(self, refined_home: dict, arrived_returning: dict, arrived_training: dict) -> int:
+        """Calculate DP with bonuses from current strength."""
+        return round(self.current_raw_dp(refined_home, arrived_returning, arrived_training) * (1 + self.defense_bonus))
 
     @property
     def max_sendable_op(self) -> int:

@@ -88,6 +88,9 @@ class MilitaryInfoVM:
     current_dp: int | None
     confidence: str | None  # "locked", "±X%", or None
 
+    # 12-tick forecast: list of (tick, op, dp) tuples
+    strength_forecast: list[tuple[int, int, int]]
+
     # Bonuses
     offense_bonuses: OffenseBonusesVM
     defense_bonuses: DefenseBonusesVM
@@ -134,7 +137,8 @@ class DomInfoVM:
 
 
 def build_dominfo_vm(dom: Dominion,
-                     current_strength: tuple[int | None, int | None, str | None] = (None, None, None)
+                     current_strength: tuple[int | None, int | None, str | None] = (None, None, None),
+                     strength_forecast: list[tuple[int, int, int]] = None
                      ) -> DomInfoVM:
     """
     Build a DomInfoVM from a Dominion object.
@@ -145,10 +149,13 @@ def build_dominfo_vm(dom: Dominion,
     Args:
         dom: The dominion to build the view model for.
         current_strength: Tuple of (current_op, current_dp, confidence) from refinement.
+        strength_forecast: List of (tick, op, dp) tuples for 12-tick forecast.
     """
     mc = MilitaryCalculator(dom)
     rc = RatioCalculator(dom)
     current_op, current_dp, confidence = current_strength
+    if strength_forecast is None:
+        strength_forecast = []
 
     # Build unit rows
     units = []
@@ -239,6 +246,7 @@ def build_dominfo_vm(dom: Dominion,
         current_op=current_op,
         current_dp=current_dp,
         confidence=confidence,
+        strength_forecast=strength_forecast,
         offense_bonuses=offense_bonuses,
         defense_bonuses=defense_bonuses,
         units=units,

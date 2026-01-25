@@ -31,7 +31,12 @@ Given multiple observations:
 
 The more observations, the tighter the bounds (statistically likely to capture more of the range).
 
-**Special case - "Locked" value**: If observations span the full fuzz range (ratio of max/min >= 1.38), we've captured both extremes. The true value can be calculated exactly:
+**Error percentage**: The refinement returns `(lower, upper, error_pct)` where error_pct indicates precision:
+- Single observation: ~16% error (the full fuzz range)
+- Multiple observations: error decreases as bounds tighten
+- "Locked" (ratio >= 1.38): error < 1%, effectively exact
+
+When locked:
 ```
 T = max(observations) / 1.176 ≈ min(observations) / 0.85
 ```
@@ -50,13 +55,16 @@ With one more low observation that pushes ratio to 1.38+, value would be fully l
 ## Two Strength Calculations
 
 ### Current Strength (new)
-What they have *right now*:
-- Home units (with refined estimates)
-- Units that have already returned
+What they have *right now*, calculated from BS data adjusted for elapsed time:
+- Home units (refined estimates from multiple BS observations)
+- Training units that have arrived since BS (exact - training is not fuzzed)
+- Returning units that have arrived since BS (refined estimates)
 
 Does NOT include:
-- Training units (12 ticks away)
+- Training units still in queue
 - Units still returning
+
+The calculation accounts for BS age: if a BS is 3 ticks old, training in ticks 1-3 has arrived, and returning in ticks 1-3 has arrived.
 
 Use case: "Can I hit them right now?"
 
@@ -229,19 +237,26 @@ Scrape BS archive pages and store as standard BarracksSpy objects.
 **MilitaryService** (data retrieval):
 - [x] Add `truncate_to_tick(timestamp)` helper in `timeutils.py`
 - [x] Add `get_barracks_spies_in_tick(dom, tick_time)` to MilitaryService
-- [x] Pass list of BSes to calculator for refinement
+- [x] Add `calculate_current_strength(mc)` to orchestrate refinement
+- [x] Pass list of BSes and ticks_since_bs to calculator for refinement
 
 **MilitaryCalculator** (calculations):
-- [x] Add `refine_unit_estimate(observations)` static method
+- [x] Add `refine_unit_estimate(observations)` → returns `(lower, upper, error_pct)`
 - [x] Add `refined_home_units(barracks_spies)` method
-- [x] Add `current_op(refined_units)`, `current_dp(refined_units)` methods
+- [x] Add `arrived_returning_units(barracks_spies, ticks_since_bs)` method
+- [x] Add `arrived_training_units(latest_bs, ticks_since_bs)` method
+- [x] Add `current_op/dp(refined_home, arrived_returning, arrived_training)` methods
 - [x] Existing `paid_op`, `paid_dp` remain as paid values
+
+**BarracksSpy model**:
+- [x] Add `arrived_training_for_unit(unit_nr)` method
 
 ### Phase 3: View Model & Template Changes ✓
 - [x] Add `current_op`, `current_dp`, `confidence` fields to MilitaryRowVM
 - [x] Add `include_current_strength` parameter to facade and service
 - [x] Add "Current Strength" checkbox to military template
-- [x] Add Cur OP, Cur DP, Conf columns (shown when checkbox enabled)
+- [x] Add Cur OP, Cur DP, Conf columns (hidden by default, shown when checkbox enabled)
+- [x] Add Current OP/DP with confidence to dominfo page
 - [ ] Color code based on confidence (optional, deferred)
 
 ## Open Questions

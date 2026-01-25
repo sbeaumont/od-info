@@ -10,7 +10,6 @@ Domain-specific operations are delegated to specialized services.
 
 import logging
 
-from odinfo.calculators.military import MilitaryCalculator
 from odinfo.calculators.networthcalculator import get_networth_deltas
 from odinfo.config import Config, SEARCH_PAGE
 from odinfo.repositories.game import GameRepository
@@ -192,8 +191,11 @@ class ODInfoFacade(object):
 
     def current_strength(self, dom: Dominion) -> tuple[int | None, int | None, str | None]:
         """Get current strength (refined) for a single dominion."""
-        mc = MilitaryCalculator(dom)
-        return self._military_service.calculate_current_strength(mc)
+        return self._military_service.calculate_current_strength(dom)
+
+    def strength_forecast(self, dom: Dominion) -> list[tuple[int, int, int]]:
+        """Get 12-tick strength forecast for a single dominion."""
+        return self._military_service.strength_forecast(dom)
 
     def realmie_codes(self) -> list[int]:
         logger.debug("Getting Realmies")

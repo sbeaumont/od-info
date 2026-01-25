@@ -111,59 +111,96 @@ class MilitaryService:
 
         return result_list
 
-    def calculate_current_strength(self, mc: MilitaryCalculator) -> tuple[int | None, int | None, str | None]:
+    def calculate_current_strength(self, dom: Dominion) -> tuple[int | None, int | None, str | None]:
         """Calculate current strength from refined BS data.
+
+        Args:
+            dom: Dominion to calculate current strength for.
 
         Returns:
             Tuple of (current_op, current_dp, confidence_string).
             Returns (None, None, None) if no BS data available.
         """
-        # Get the latest BS timestamp
-        last_bs = mc.dom.last_barracks
+        last_bs = dom.last_barracks
         if not last_bs:
             return None, None, None
 
-        # Get all BSes in that tick
-        bs_list = self.get_barracks_spies_in_tick(mc.dom, last_bs.timestamp)
+        bs_list = self.get_barracks_spies_in_tick(dom, last_bs.timestamp)
         if not bs_list:
             return None, None, None
 
-        # Get refined estimates
-        refined = mc.refined_home_units(bs_list)
-        if not refined:
+        mc = MilitaryCalculator(dom)
+        ticks_since_bs = int(hours_since(last_bs.timestamp))
+
+        refined_home = mc.refined_home_units(bs_list)
+        if not refined_home:
             return None, None, None
 
-        current_op = mc.current_op(refined)
-        current_dp = mc.current_dp(refined)
+        arrived_returning = mc.arrived_returning_units(bs_list, ticks_since_bs)
+        arrived_training = mc.arrived_training_units(last_bs, ticks_since_bs)
 
-        # Calculate confidence string
-        confidence = self._calculate_confidence(refined)
+        current_op = mc.current_op(refined_home, arrived_returning, arrived_training)
+        current_dp = mc.current_dp(refined_home, arrived_returning, arrived_training)
+
+        confidence = self._calculate_confidence(refined_home, arrived_returning)
 
         return current_op, current_dp, confidence
 
-    def _calculate_confidence(self, refined: dict) -> str:
+    def strength_forecast(self, dom: Dominion) -> list[tuple[int, int, int]]:
+        """Project OP and DP for the next 12 ticks.
+
+        Args:
+            dom: Dominion to forecast.
+
+        Returns:
+            List of (tick, op, dp) tuples for ticks 0-12 from now.
+        """
+        last_bs = dom.last_barracks
+        if not last_bs:
+            return []
+
+        bs_list = self.get_barracks_spies_in_tick(dom, last_bs.timestamp)
+        if not bs_list:
+            return []
+
+        mc = MilitaryCalculator(dom)
+        ticks_since_bs = int(hours_since(last_bs.timestamp))
+
+        refined_home = mc.refined_home_units(bs_list)
+        if not refined_home:
+            return []
+
+        forecast = []
+        for future_tick in range(13):
+            total_elapsed = ticks_since_bs + future_tick
+
+            arrived_returning = mc.arrived_returning_units(bs_list, total_elapsed)
+            arrived_training = mc.arrived_training_units(last_bs, total_elapsed)
+
+            op = mc.current_op(refined_home, arrived_returning, arrived_training)
+            dp = mc.current_dp(refined_home, arrived_returning, arrived_training)
+
+            forecast.append((future_tick, op, dp))
+
+        return forecast
+
+    def _calculate_confidence(self, refined_home: dict, arrived_returning: dict) -> str:
         """Calculate confidence string from refined estimates.
 
-        Returns "locked" if all values are locked, otherwise the max error margin.
+        Returns the max error percentage across all refined values.
         """
-        all_locked = True
         max_error = 0.0
 
-        for key, (lower, upper, is_locked) in refined.items():
-            if not is_locked:
-                all_locked = False
-                if lower > 0:
-                    # Error is the range as percentage of midpoint
-                    midpoint = (lower + upper) / 2
-                    error = (upper - lower) / midpoint * 100 / 2
-                    max_error = max(max_error, error)
+        for key, (lower, upper, error_pct) in refined_home.items():
+            max_error = max(max_error, error_pct)
 
-        if all_locked:
+        for key, (lower, upper, error_pct) in arrived_returning.items():
+            max_error = max(max_error, error_pct)
+
+        if max_error < 1:
             return "locked"
-        elif max_error > 0:
-            return f"±{round(max_error)}%"
         else:
-            return "±16%"  # Default single observation error (range is 0.85 to 1.176)
+            return f"±{round(max_error)}%"
 
     def top_op(self, mil_calc_result: list[MilitaryRowVM]) -> MilitaryRowVM | None:
         """

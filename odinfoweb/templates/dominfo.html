@@ -6,6 +6,7 @@
     <h3>{{ dom_vm.name }} (#{{ dom_vm.realm }})</h3>
     <a href="{{ url_for('dominfo', domcode=dom_vm.code, update='update' ) }}">Update</a> |
       <a href="{{ op_center_url }}/{{ dom_vm.code }}" target="_blank">OP Center</a>
+    <div style="max-width: 80%;">
     <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
         <tr class="w3-black">
             <th>Ops Age</th>
@@ -142,14 +143,39 @@
                         <th>Networth</th>
                     </tr>
                     <tr>
-                        <td>{{ dom_vm.ratios.spa }}</td>
-                        <td>{{ dom_vm.ratios.wpa }}</td>
+                        <td>{{ "%.3f"|format(dom_vm.ratios.spa) if dom_vm.ratios.spa else '-' }}</td>
+                        <td>{{ "%.3f"|format(dom_vm.ratios.wpa) if dom_vm.ratios.wpa else '-' }}</td>
                         <td>{{ dom_vm.networth }}</td>
                     </tr>
                 </table>
             </td>
         </tr>
     </table><br>
+
+    <!-- Strength Forecast -->
+    {% if dom_vm.military.strength_forecast %}
+    <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable" style="table-layout: fixed; width: 100%;">
+        <tr class="w3-black">
+            <th style="width: 50px;">Tick</th>
+            {% for tick, op, dp in dom_vm.military.strength_forecast %}
+            <th>{{ tick }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td><strong>OP</strong></td>
+            {% for tick, op, dp in dom_vm.military.strength_forecast %}
+            <td>{{ op }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td><strong>DP</strong></td>
+            {% for tick, op, dp in dom_vm.military.strength_forecast %}
+            <td>{{ dp }}</td>
+            {% endfor %}
+        </tr>
+    </table><br>
+    {% endif %}
+    </div>
 
     <!-- 5/4 Attack Breakdown -->
     <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">

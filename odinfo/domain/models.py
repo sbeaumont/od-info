@@ -225,6 +225,10 @@ class BarracksSpy(TimestampedOpsMixin, Base):
         else:
             return 0
 
+    def arrived_training_for_unit(self, unit_type_nr: int) -> int:
+        """Training units that have arrived home since this BS was taken."""
+        return self.amount_training(unit_type_nr) - self.aged_amount_training_for_unit(unit_type_nr)
+
     @property
     def military(self) -> dict:
         def calc_unit(nr: int):

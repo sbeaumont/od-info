@@ -97,14 +97,8 @@ class MilitaryInfoVM:
 @dataclass
 class RatioInfoVM:
     """View model for ratio info on dominfo page."""
-    spy_units_equiv: int | None
-    spy_ratio_estimate: float | None
-    max_spy_ratio_estimate: float | None
-    wiz_units_equiv: int | None
-    wiz_ratio_estimate: float | None
-    max_wiz_ratio_estimate: float | None
-    spywiz_networth: int | None
-    spywiz_units: int | None
+    spa: float | None  # Actual spy ratio from ClearSight
+    wpa: float | None  # Actual wizard ratio from ClearSight
 
 
 @dataclass
@@ -236,16 +230,10 @@ def build_dominfo_vm(dom: Dominion) -> DomInfoVM:
         five_over_four_breakdown=five_over_four_breakdown,
     )
 
-    # Build ratio info
+    # Build ratio info from actual ClearSight data
     ratios = RatioInfoVM(
-        spy_units_equiv=rc.spy_units_equiv,
-        spy_ratio_estimate=rc.spy_ratio_estimate,
-        max_spy_ratio_estimate=rc.max_spy_ratio_estimate,
-        wiz_units_equiv=rc.wiz_units_equiv,
-        wiz_ratio_estimate=rc.wiz_ratio_estimate,
-        max_wiz_ratio_estimate=rc.max_wiz_ratio_estimate,
-        spywiz_networth=rc.spywiz_networth,
-        spywiz_units=rc.spywiz_units,
+        spa=rc.spy_ratio_actual,
+        wpa=rc.wiz_ratio_actual,
     )
 
     # Castle ratings

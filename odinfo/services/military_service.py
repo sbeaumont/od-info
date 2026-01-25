@@ -132,16 +132,8 @@ class MilitaryService:
         for mc in mc_list:
             boat_info = mc.boats(current_day)
 
-            # For realmies, use RatioCalculator for proper SPA calculation
+            # SPA from ClearSight (may be None if no ClearSight available)
             rc = RatioCalculator(mc.dom)
-            if rc.spy_ratio_actual is not None:
-                # Use actual spy ratio when clear sight data is available
-                spa_actual = rc.spy_ratio_actual
-                spa_range = None  # No range needed for actual data
-            else:
-                # Fall back to estimates
-                spa_actual = rc.spy_ratio_estimate if rc.can_calculate else None
-                spa_range = f"{rc.spy_ratio_estimate:.3f} - {rc.max_spy_ratio_estimate:.3f}" if rc.can_calculate else None
 
             row = RealmieRowVM(
                 code=mc.dom.code,
@@ -152,9 +144,8 @@ class MilitaryService:
                 max_sendable_op=boat_info[2] if boat_info else 0,
                 dp=mc.dp,
                 wpa=mc.dom.current_wpa,
-                spa=spa_actual,
-                spa_range=spa_range,
-                docks=mc.dom.navy.docks if mc.dom.navy else None,
+                spa=rc.spy_ratio_actual,
+                docks=mc.dom.navy['docks'] if mc.dom.navy else None,
                 boats_protected=boat_info[1] if boat_info else 0,
                 boats_total=boat_info[0] if boat_info else 0,
                 ares=mc.dom.magic.ares if mc.dom.magic else None,

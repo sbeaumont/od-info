@@ -136,29 +136,14 @@
             <td colspan="1">
                 <table class="w3-white">
                     <tr class="w3-black">
-                        <th>&nbsp</th>
-                        <th>Military Units</th>
-                        <th>Ratios Estimate</th>
+                        <th>SPA</th>
+                        <th>WPA</th>
                         <th>Networth</th>
-                        <th>Units</th>
                     </tr>
                     <tr>
-                        <td>Spies</td>
-                        <td>{{ dom_vm.ratios.spy_units_equiv }}</td>
-                        <td>
-                            {{ dom_vm.ratios.spy_ratio_estimate }} - {{ dom_vm.ratios.max_spy_ratio_estimate }}
-                        </td>
-                        <td>{{ dom_vm.ratios.spywiz_networth }}</td>
-                        <td>{{ dom_vm.ratios.spywiz_units }}</td>
-                    </tr>
-                    <tr>
-                        <td>Wizards</td>
-                        <td>{{ dom_vm.ratios.wiz_units_equiv }}</td>
-                        <td>
-                            {{ dom_vm.ratios.wiz_ratio_estimate }} - {{ dom_vm.ratios.max_wiz_ratio_estimate }}
-                        </td>
-                        <td>{{ dom_vm.ratios.spywiz_networth }}</td>
-                        <td>{{ dom_vm.ratios.spywiz_units }}</td>
+                        <td>{{ dom_vm.ratios.spa }}</td>
+                        <td>{{ dom_vm.ratios.wpa }}</td>
+                        <td>{{ dom_vm.networth }}</td>
                     </tr>
                 </table>
             </td>

@@ -498,24 +498,3 @@ class RatioCalculator(object):
         else:
             return self.dom.last_cs.wpa
 
-
-if __name__ == '__main__':
-    from sqlalchemy import create_engine, select
-    from sqlalchemy.orm import Session
-    engine = create_engine("sqlite:///instance/odinfo-draft-round-2.sqlite", echo=False)
-    with Session(engine) as session:
-        stmt = select(Dominion).where(Dominion.code == 14288)
-        dom = session.scalars(stmt).one()
-        rc = RatioCalculator(dom)
-        print("Military Spy Units Equivalent", rc.spy_units_equiv)
-        print("Military Wiz Units Equivalent", rc.wiz_units_equiv)
-        print("Wiz Ratio Estimate", rc.max_wiz_ratio_estimate)
-        for i in range(1, 5):
-            print("unit", i, rc.amount(i))
-        mc = MilitaryCalculator(dom)
-        op54, dp54 = mc.five_over_four
-        print("5/4", op54, dp54)
-        print("OP/DP", mc.op, mc.dp)
-        print("5/4 of 5/4 DP", (5/4)*dp54)
-        print("5/4 with Temples", mc.op_with_temples)
-

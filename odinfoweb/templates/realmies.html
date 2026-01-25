@@ -40,8 +40,6 @@
             <td>
                 {% if realmie.spa is not none %}
                     {{ "%.3f"|format(realmie.spa) }}
-                {% elif realmie.spa_range %}
-                    {{ realmie.spa_range }}
                 {% else %}
                     ?
                 {% endif %}

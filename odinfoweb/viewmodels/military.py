@@ -59,7 +59,6 @@ class RealmieRowVM:
     dp: int
     wpa: float | None
     spa: float | None
-    spa_range: str | None
     docks: int | None
     boats_protected: float
     boats_total: float

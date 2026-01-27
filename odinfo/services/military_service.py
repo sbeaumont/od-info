@@ -70,11 +70,16 @@ class MilitaryService:
             five_four_op, five_four_dp = mc.five_over_four
             boat_stuff = mc.boats(current_day)
 
+            # Get refined paid strength (uses midpoint estimates)
+            refined_paid_op, refined_paid_dp, confidence = self.refine_paid_strength(mc.dom)
+            paid_op = refined_paid_op if refined_paid_op is not None else mc.paid_op
+            paid_dp = refined_paid_dp if refined_paid_dp is not None else mc.paid_dp
+
             # Calculate current strength only if requested
             if include_current_strength:
-                current_op, current_dp, confidence = self.calculate_current_strength(mc.dom)
+                current_op, current_dp, _ = self.calculate_current_strength(mc.dom)
             else:
-                current_op, current_dp, confidence = None, None, None
+                current_op, current_dp = None, None
 
             row = MilitaryRowVM(
                 code=mc.dom.code,
@@ -95,9 +100,9 @@ class MilitaryService:
                 paid_until=mc.army.get('paid_until', '?'),
                 draftees=mc.draftees,
                 raw_op=mc.raw_op,
-                paid_op=mc.paid_op,
+                paid_op=paid_op,
                 raw_dp=mc.raw_dp,
-                paid_dp=mc.paid_dp,
+                paid_dp=paid_dp,
                 safe_op=mc.safe_op if versus_op == 0 else mc.safe_op_versus(versus_op)[0],
                 safe_dp=mc.safe_dp if versus_op == 0 else mc.safe_op_versus(versus_op)[1],
                 safe_op_with_temples=mc.safe_op_with_temples(versus_op),
@@ -145,6 +150,48 @@ class MilitaryService:
         confidence = self._calculate_confidence(refined_home, arrived_returning)
 
         return current_op, current_dp, confidence
+
+    def refine_paid_strength(self, dom: Dominion) -> tuple[int | None, int | None, str | None]:
+        """Calculate refined OP/DP at the paid_until tick.
+
+        This gives a better estimate than the conservative BarracksSpy.military
+        calculation by using midpoint estimates instead of worst-case factors.
+
+        Args:
+            dom: Dominion to calculate paid strength for.
+
+        Returns:
+            Tuple of (paid_op, paid_dp, confidence_string).
+            Returns (None, None, None) if no BS data available for refinement.
+        """
+        last_bs = dom.last_barracks
+        if not last_bs:
+            return None, None, None
+
+        bs_list = self.get_barracks_spies_in_tick(dom, last_bs.timestamp)
+        if not bs_list:
+            return None, None, None
+
+        mc = MilitaryCalculator(dom)
+        ticks_since_bs = int(hours_since(last_bs.timestamp))
+
+        refined_home = mc.refined_home_units(bs_list)
+        if not refined_home:
+            return None, None, None
+
+        # Calculate at the paid_until tick (when all training completes)
+        paid_until = last_bs.paid_until
+        total_elapsed = ticks_since_bs + paid_until
+
+        arrived_returning = mc.arrived_returning_units(bs_list, total_elapsed)
+        arrived_training = mc.arrived_training_units(last_bs, total_elapsed)
+
+        paid_op = mc.current_op(refined_home, arrived_returning, arrived_training)
+        paid_dp = mc.current_dp(refined_home, arrived_returning, arrived_training)
+
+        confidence = self._calculate_confidence(refined_home, arrived_returning)
+
+        return paid_op, paid_dp, confidence
 
     def strength_forecast(self, dom: Dominion) -> list[tuple[int, int, int]]:
         """Project OP and DP for the next 12 ticks.

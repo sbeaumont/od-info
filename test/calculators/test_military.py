@@ -14,10 +14,11 @@ class MilitaryCalculatorTestCase(unittest.TestCase):
     def test_five_over_four(self):
         bs = self.dom.last_barracks
         bs.draftees = 10
-        bs.unit1 = 10
-        bs.unit2 = 10
-        bs.unit3 = 10
-        bs.unit4 = 10
+        bs.home_unit1 = 10
+        bs.home_unit2 = 10
+        bs.home_unit3 = 10
+        bs.home_unit4 = 10
+        bs.training = {}  # Clear training data from fixtures
 
         cs = self.dom.last_cs
         cs.military_draftees = 10
@@ -27,15 +28,10 @@ class MilitaryCalculatorTestCase(unittest.TestCase):
         cs.military_unit4 = 10
 
         mc = MilitaryCalculator(self.dom)
-        fnork = mc.paid_dp
-        print(mc.raw_op, mc.paid_op, mc.offense_bonus)
-        print(mc.raw_dp, mc.paid_dp, mc.defense_bonus)
-        print(mc.flex_unit)
-        print([str(unit) for unit in mc.race.units.values()])
 
-        self.assertEqual(144, mc.paid_op)
+        self.assertEqual(139, mc.paid_op)
         self.assertEqual(116, mc.paid_dp)
-        self.assertEqual(mc.five_over_four, (122, 98))
+        self.assertEqual((107, 89), mc.five_over_four)
 
     # def test_five_over_four_liz(self):
     #     bs = self.dom.last_barracks

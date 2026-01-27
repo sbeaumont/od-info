@@ -193,6 +193,10 @@ class ODInfoFacade(object):
         """Get current strength (refined) for a single dominion."""
         return self._military_service.calculate_current_strength(dom)
 
+    def refine_paid_strength(self, dom: Dominion) -> tuple[int | None, int | None, str | None]:
+        """Get refined paid strength (at paid_until tick) for a single dominion."""
+        return self._military_service.refine_paid_strength(dom)
+
     def strength_forecast(self, dom: Dominion) -> list[tuple[int, int, int]]:
         """Get 12-tick strength forecast for a single dominion."""
         return self._military_service.strength_forecast(dom)

@@ -7,7 +7,7 @@
     <a href="{{ url_for('dominfo', domcode=dom_vm.code, update='update' ) }}">Update</a> |
       <a href="{{ op_center_url }}/{{ dom_vm.code }}" target="_blank">OP Center</a>
     <div style="max-width: 80%;">
-    <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
+    <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable" style="width: 100%;">
         <tr class="w3-black">
             <th>Ops Age</th>
             <th>Land</th>
@@ -37,6 +37,7 @@
             <th>Keep Rating</th>
             <th>Spires Rating</th>
             <th>Forges Rating</th>
+            <th></th>
         </tr>
         <tr>
             {% if dom_vm.science_rating is not none %}
@@ -44,15 +45,17 @@
                 <td>{{ dom_vm.keep_rating }}</td>
                 <td>{{ dom_vm.spires_rating }}</td>
                 <td>{{ dom_vm.forges_rating }}</td>
+                <td></td>
             {% else %}
                 <td>Unknown</td>
                 <td>Unknown</td>
                 <td>Unknown</td>
                 <td>Unknown</td>
+                <td></td>
             {% endif %}
         </tr>
         <tr>
-            <td colspan="1">
+            <td colspan="2">
                 <table class="w3-white">
                     <tr><td class="w3-black" colspan="2">Offense</td></tr>
                     <tr><td>OP (raw)</td><td>{{ dom_vm.military.paid_op }} ({{ dom_vm.military.raw_op }})</td></tr>
@@ -93,7 +96,7 @@
                     <tr><td><em>Total</em></td><td><em>{{ dom_vm.military.defense_bonuses.total }}%</em></td></tr>
                 </table>
             </td>
-            <td colspan="1">
+            <td colspan="2">
                 <table class="w3-white">
                     <tr class="w3-black">
                         <th>Name</th>
@@ -135,7 +138,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="1">
+            <td colspan="5">
                 <table class="w3-white">
                     <tr class="w3-black">
                         <th>SPA</th>

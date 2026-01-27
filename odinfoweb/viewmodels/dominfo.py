@@ -138,6 +138,7 @@ class DomInfoVM:
 
 def build_dominfo_vm(dom: Dominion,
                      current_strength: tuple[int | None, int | None, str | None] = (None, None, None),
+                     paid_strength: tuple[int | None, int | None, str | None] = (None, None, None),
                      strength_forecast: list[tuple[int, int, int]] = None
                      ) -> DomInfoVM:
     """
@@ -149,11 +150,13 @@ def build_dominfo_vm(dom: Dominion,
     Args:
         dom: The dominion to build the view model for.
         current_strength: Tuple of (current_op, current_dp, confidence) from refinement.
+        paid_strength: Tuple of (paid_op, paid_dp, confidence) from refinement at paid_until tick.
         strength_forecast: List of (tick, op, dp) tuples for 12-tick forecast.
     """
     mc = MilitaryCalculator(dom)
     rc = RatioCalculator(dom)
-    current_op, current_dp, confidence = current_strength
+    current_op, current_dp, _ = current_strength
+    refined_paid_op, refined_paid_dp, confidence = paid_strength
     if strength_forecast is None:
         strength_forecast = []
 
@@ -233,12 +236,16 @@ def build_dominfo_vm(dom: Dominion,
     )
 
     # Build military info
+    # Use refined paid strength when available
+    paid_op = refined_paid_op if refined_paid_op is not None else mc.paid_op
+    paid_dp = refined_paid_dp if refined_paid_dp is not None else mc.paid_dp
+
     five_four = mc.five_over_four
     military = MilitaryInfoVM(
-        paid_op=round(mc.paid_op),
-        raw_op=round(mc.raw_op),
-        paid_dp=round(mc.paid_dp),
-        raw_dp=round(mc.raw_dp),
+        paid_op=paid_op,
+        raw_op=mc.raw_op,
+        paid_dp=paid_dp,
+        raw_dp=mc.raw_dp,
         five_over_four_op=round(five_four[0]),
         five_over_four_dp=round(five_four[1]),
         draftees=mc.draftees,

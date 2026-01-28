@@ -234,13 +234,13 @@ class ODInfoFacade(object):
 
     # ---------------------------------------- QUERIES - Reports
 
-    def get_unchanged_nw(self, top: int = 50):
+    def get_unchanged_nw(self, top: int = 50, since: int = 12):
         """Get dominions with unchanged networth."""
-        return self._report_service.get_unchanged_nw(top)
+        return self._report_service.get_unchanged_nw(top, since=since)
 
-    def get_top_bot_nw(self, top=True, filter_zeroes=False):
+    def get_top_bot_nw(self, top=True, filter_zeroes=False, since: int = 12):
         """Get top or bottom networth changers."""
-        return self._report_service.get_top_bot_nw(top, filter_zeroes)
+        return self._report_service.get_top_bot_nw(top, filter_zeroes, since=since)
 
     def award_stats(self):
         # self.update_town_crier()

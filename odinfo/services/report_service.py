@@ -42,23 +42,24 @@ class ReportService:
         doms = list(self._repo.all_dominions())
         return sorted(doms, key=lambda x: x.current_land, reverse=True)
 
-    def _get_nw_deltas(self) -> dict:
+    def _get_nw_deltas(self, since: int = 12) -> dict:
         """Get networth deltas for all dominions."""
-        return get_networth_deltas(self._repo)
+        return get_networth_deltas(self._repo, since=since)
 
-    def get_unchanged_nw(self, top: int = 50) -> list[dict]:
+    def get_unchanged_nw(self, top: int = 50, since: int = 12) -> list[dict]:
         """
         Get dominions with unchanged networth, sorted by land size.
 
         Args:
             top: Maximum number of results to return.
+            since: Number of hours to look back.
 
         Returns:
             List of dicts with dominion info for those with zero networth change.
         """
         logger.debug("Getting Unchanged NW")
         doms = self._get_all_dominions()
-        nw_deltas = self._get_nw_deltas()
+        nw_deltas = self._get_nw_deltas(since=since)
         selected_doms = [d for d, nwd in nw_deltas.items() if nwd == 0]
         relevant_doms = [d for d in doms if d.code in selected_doms]
         result = []
@@ -75,20 +76,21 @@ class ReportService:
             result.append(nw_row)
         return sorted(result, key=itemgetter('land'), reverse=True)[:top]
 
-    def get_top_bot_nw(self, top: bool = True, filter_zeroes: bool = False) -> list[dict]:
+    def get_top_bot_nw(self, top: bool = True, filter_zeroes: bool = False, since: int = 12) -> list[dict]:
         """
         Get top or bottom networth changers.
 
         Args:
             top: If True, get top gainers; if False, get top losers.
             filter_zeroes: If True, exclude dominions with zero change.
+            since: Number of hours to look back.
 
         Returns:
             List of dicts with dominion info sorted by networth change.
         """
         logger.debug("Getting Top and Bot NW changes")
         doms = self._get_all_dominions()
-        nw_deltas = self._get_nw_deltas()
+        nw_deltas = self._get_nw_deltas(since=since)
         sorted_deltas = sorted(nw_deltas.items(), key=lambda x: x[1], reverse=top)[:10]
         selected_doms = [d[0] for d in sorted_deltas]
         relevant_doms = [d for d in doms if d.code in selected_doms]

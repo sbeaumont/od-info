@@ -274,10 +274,14 @@ def nw_tracker(send=None):
     result_of_send = ''
     if send == 'send':
         result_of_send = facade().send_top_bot_nw_to_discord()
+    hours = request.args.get('hours', 12, type=int)
+    if hours not in (12, 24, 36, 48):
+        hours = 12
     return render_template('nwtracker.html',
-                           top_nw=facade().get_top_bot_nw(filter_zeroes=True),
-                           bot_nw=facade().get_top_bot_nw(top=False, filter_zeroes=True),
-                           unchanged_nw=facade().get_unchanged_nw(),
+                           top_nw=facade().get_top_bot_nw(filter_zeroes=True, since=hours),
+                           bot_nw=facade().get_top_bot_nw(top=False, filter_zeroes=True, since=hours),
+                           unchanged_nw=facade().get_unchanged_nw(since=hours),
+                           hours=hours,
                            result_of_send=result_of_send)
 
 

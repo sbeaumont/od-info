@@ -3,8 +3,18 @@
 
 {% block content %}
   <div class="w3-container">
-    <a href="{{ url_for('nw_tracker') }}/send">Send to Discord</a>
+    <form method="get" style="display: inline;">
+      <label>Period:</label>
+      {% for h in [12, 24, 36, 48] %}
+        <label style="margin-left: 10px;">
+          <input type="radio" name="hours" value="{{ h }}" {{ 'checked' if hours == h else '' }} onchange="this.form.submit()"> {{ h }}h
+        </label>
+      {% endfor %}
+    </form>
+    <span style="margin-left: 20px;">
+      <a href="{{ url_for('nw_tracker') }}/send?hours={{ hours }}">Send to Discord</a>
       {{ result_of_send }}
+    </span>
     <h5>Top 10</h5>
     <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
         <thead>
@@ -13,7 +23,7 @@
                 <th>Race</th>
                 <th>Land</th>
                 <th>Networth</th>
-                <th>NW Delta (12h)</th>
+                <th>NW Delta ({{ hours }}h)</th>
                 <th>Realm</th>
             </tr>
         </thead>
@@ -43,7 +53,7 @@
                 <th>Race</th>
                 <th>Land</th>
                 <th>Networth</th>
-                <th>NW Delta (12h)</th>
+                <th>NW Delta ({{ hours }}h)</th>
                 <th>Realm</th>
             </tr>
         </thead>
@@ -73,7 +83,7 @@
                 <th>Race</th>
                 <th>Land</th>
                 <th>Networth</th>
-                <th>NW Delta (12h)</th>
+                <th>NW Delta ({{ hours }}h)</th>
                 <th>Realm</th>
             </tr>
         </thead>

@@ -242,10 +242,10 @@ def build_dominfo_vm(dom: Dominion,
 
     five_four = mc.five_over_four
     military = MilitaryInfoVM(
-        paid_op=paid_op,
-        raw_op=mc.raw_op,
-        paid_dp=paid_dp,
-        raw_dp=mc.raw_dp,
+        paid_op=round(paid_op),
+        raw_op=round(mc.raw_op),
+        paid_dp=round(paid_dp),
+        raw_dp=round(mc.raw_dp),
         five_over_four_op=round(five_four[0]),
         five_over_four_dp=round(five_four[1]),
         draftees=mc.draftees,

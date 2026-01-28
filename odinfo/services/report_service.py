@@ -66,6 +66,7 @@ class ReportService:
             nw_row = {
                 'code': row.code,
                 'name': row.name,
+                'race': row.race,
                 'land': row.current_land,
                 'networth': row.current_networth,
                 'nwdelta': nw_deltas[row.code],
@@ -96,6 +97,7 @@ class ReportService:
             nw_row = {
                 'code': row.code,
                 'name': row.name,
+                'race': row.race,
                 'land': row.current_land,
                 'networth': row.current_networth,
                 'nwdelta': nw_deltas[row.code],

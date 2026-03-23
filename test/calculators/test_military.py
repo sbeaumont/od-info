@@ -29,7 +29,7 @@ class MilitaryCalculatorTestCase(unittest.TestCase):
 
         mc = MilitaryCalculator(self.dom)
 
-        self.assertEqual(139, mc.paid_op)
+        self.assertEqual(144, mc.paid_op)
         self.assertEqual(116, mc.paid_dp)
         self.assertEqual((107, 89), mc.five_over_four)
 

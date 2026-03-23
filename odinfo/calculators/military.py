@@ -396,6 +396,34 @@ class MilitaryCalculator(object):
                     result[unit_key] = arrived
         return result
 
+    def _refined_amounts(self, refined_home: dict, arrived_returning: dict, arrived_training: dict) -> dict:
+        """Compute effective unit amounts from refined BS data.
+
+        Returns:
+            Dict mapping 'unit1'-'unit4' to effective amounts (float).
+        """
+        amounts = {}
+        for i in range(1, 5):
+            key = f'unit{i}'
+            amount = 0
+
+            # Refined home (midpoint)
+            if key in refined_home:
+                lower, upper, _ = refined_home[key]
+                amount = (lower + upper) / 2
+
+            # Arrived training (exact)
+            if key in arrived_training:
+                amount += arrived_training[key]
+
+            # Arrived returning (refined midpoint)
+            if key in arrived_returning:
+                lower, upper, _ = arrived_returning[key]
+                amount += (lower + upper) / 2
+
+            amounts[key] = amount
+        return amounts
+
     def current_raw_op(self, refined_home: dict, arrived_returning: dict, arrived_training: dict) -> int:
         """Calculate raw OP from refined home + arrived training + arrived returning.
 
@@ -410,27 +438,20 @@ class MilitaryCalculator(object):
         if not refined_home:
             return self.raw_op
 
+        amounts = self._refined_amounts(refined_home, arrived_returning, arrived_training)
+
         op = 0
         for i in range(1, 5):
-            key = f'unit{i}'
             unit = self.unit_type(i)
-
-            # Refined home (midpoint)
-            amount = 0
-            if key in refined_home:
-                lower, upper, _ = refined_home[key]
-                amount = (lower + upper) / 2
-
-            # Arrived training (exact)
-            if key in arrived_training:
-                amount += arrived_training[key]
-
-            # Arrived returning (refined midpoint)
-            if key in arrived_returning:
-                lower, upper, _ = arrived_returning[key]
-                amount += (lower + upper) / 2
-
+            amount = amounts[f'unit{i}']
             op += amount * unit.offense
+
+            # Pairing perk (e.g. kobold Overlord)
+            if unit.has_perk('offense_from_pairing'):
+                slot, num_required, op_buff = unit.get_perk('offense_from_pairing')
+                paired_amount = amounts.get(f'unit{int(slot)}', 0)
+                pairable = min(paired_amount // int(num_required), amount)
+                op += pairable * int(op_buff)
 
         return round(op)
 
@@ -448,6 +469,8 @@ class MilitaryCalculator(object):
         if not refined_home:
             return self.raw_dp
 
+        amounts = self._refined_amounts(refined_home, arrived_returning, arrived_training)
+
         dp = 0
 
         # Draftees (no training/returning for draftees)
@@ -456,25 +479,16 @@ class MilitaryCalculator(object):
             dp += (lower + upper) / 2
 
         for i in range(1, 5):
-            key = f'unit{i}'
             unit = self.unit_type(i)
-
-            # Refined home (midpoint)
-            amount = 0
-            if key in refined_home:
-                lower, upper, _ = refined_home[key]
-                amount = (lower + upper) / 2
-
-            # Arrived training (exact)
-            if key in arrived_training:
-                amount += arrived_training[key]
-
-            # Arrived returning (refined midpoint)
-            if key in arrived_returning:
-                lower, upper, _ = arrived_returning[key]
-                amount += (lower + upper) / 2
-
+            amount = amounts[f'unit{i}']
             dp += amount * unit.defense
+
+            # Pairing perk (e.g. kobold Taskmaster)
+            if unit.has_perk('defense_from_pairing'):
+                slot, num_required, dp_buff = unit.get_perk('defense_from_pairing')
+                paired_amount = amounts.get(f'unit{int(slot)}', 0)
+                pairable = min(paired_amount // int(num_required), amount)
+                dp += pairable * int(dp_buff)
 
         return round(dp)
 

@@ -135,8 +135,6 @@ class MilitaryService:
             return None, None, None
 
         bs_list = self.get_barracks_spies_in_tick(dom, last_bs.timestamp)
-        if len(bs_list) < 2:
-            return None, None, None
 
         mc = MilitaryCalculator(dom)
         ticks_since_bs = int(hours_since(last_bs.timestamp))
@@ -212,8 +210,6 @@ class MilitaryService:
             return []
 
         bs_list = self.get_barracks_spies_in_tick(dom, last_bs.timestamp)
-        if len(bs_list) < 2:
-            return []
 
         mc = MilitaryCalculator(dom)
         ticks_since_bs = int(hours_since(last_bs.timestamp))

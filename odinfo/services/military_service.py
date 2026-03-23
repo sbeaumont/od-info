@@ -119,19 +119,23 @@ class MilitaryService:
     def calculate_current_strength(self, dom: Dominion) -> tuple[int | None, int | None, str | None]:
         """Calculate current strength from refined BS data.
 
+        Requires multiple BS observations from the same tick to actually
+        narrow the fuzz range. With a single BS, the estimate is no better
+        than the standard calculation.
+
         Args:
             dom: Dominion to calculate current strength for.
 
         Returns:
             Tuple of (current_op, current_dp, confidence_string).
-            Returns (None, None, None) if no BS data available.
+            Returns (None, None, None) if fewer than 2 BS observations available.
         """
         last_bs = dom.last_barracks
         if not last_bs:
             return None, None, None
 
         bs_list = self.get_barracks_spies_in_tick(dom, last_bs.timestamp)
-        if not bs_list:
+        if len(bs_list) < 2:
             return None, None, None
 
         mc = MilitaryCalculator(dom)
@@ -154,22 +158,23 @@ class MilitaryService:
     def refine_paid_strength(self, dom: Dominion) -> tuple[int | None, int | None, str | None]:
         """Calculate refined OP/DP at the paid_until tick.
 
-        This gives a better estimate than the conservative BarracksSpy.military
-        calculation by using midpoint estimates instead of worst-case factors.
+        Requires multiple BS observations from the same tick to actually
+        narrow the fuzz range. With a single BS, the CS-based calculation
+        is more accurate, so returns None to let callers use that instead.
 
         Args:
             dom: Dominion to calculate paid strength for.
 
         Returns:
             Tuple of (paid_op, paid_dp, confidence_string).
-            Returns (None, None, None) if no BS data available for refinement.
+            Returns (None, None, None) if fewer than 2 BS observations available.
         """
         last_bs = dom.last_barracks
         if not last_bs:
             return None, None, None
 
         bs_list = self.get_barracks_spies_in_tick(dom, last_bs.timestamp)
-        if not bs_list:
+        if len(bs_list) < 2:
             return None, None, None
 
         mc = MilitaryCalculator(dom)
@@ -207,7 +212,7 @@ class MilitaryService:
             return []
 
         bs_list = self.get_barracks_spies_in_tick(dom, last_bs.timestamp)
-        if not bs_list:
+        if len(bs_list) < 2:
             return []
 
         mc = MilitaryCalculator(dom)

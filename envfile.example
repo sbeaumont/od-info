@@ -1,0 +1,27 @@
+# Your OpenDominion credentials (REQUIRED)
+USERNAME='EDIT_THIS'
+PASSWORD='EDIT_THIS'
+
+# Optional Discord webhook URL for notifications
+#DISCORD_WEBHOOK='None'
+
+# Your player ID - find this by hovering over your dominion name in search (REQUIRED)
+CURRENT_PLAYER_ID='EDIT_THIS'
+
+# Time adjustment: hours to add/subtract from your time to get OD server time
+# If OD shows 10:00 and your clock shows 12:00, use -2
+# If OD shows 10:00 and your clock shows 8:00, use 2
+LOCAL_TIME_SHIFT='0'
+
+# Optional: feature toggles for experimental features (comma-separated list)
+#FEATURE_TOGGLES='economy'
+
+# Random secret key for web sessions (REQUIRED)
+SECRET_KEY='EDIT_THIS'
+
+# Database file name - change round number as needed (REQUIRED)
+DATABSE_NAME='sqlite:///odinfo-round-49.sqlite'
+
+## Database users
+DB_USERNAME='admin'
+DB_PASSWORD='CHANGE_THIS'

@@ -53,72 +53,98 @@ PEASANTS_PER_HOME = 30
 
 # Template of the secrets.txt file that gets saved when it can't be found.
 
-SECRETS_TEMPLATE = """# ODInfo Configuration File
+discord_webhook = "#discord_webhook = None"
+if wh := os.getenv("DISCORD_WEBHOOK", None):
+    discord_webhook = wh
+feature_toggles = "#feature_toggles = economy"
+if ft := os.getenv("FEATURE_TOGGLES", None):
+    feature_toggles = ft
+
+SECRETS_TEMPLATE = f"""# ODInfo Configuration File
 # Edit the values below with your actual information
 
 # Your OpenDominion credentials (REQUIRED)
-username = EDIT_THIS
-password = EDIT_THIS
+username = {os.getenv("USERNAME", "EDIT_THIS")}
+password = {os.getenv("PASSWORD", "EDIT_THIS")}
 
 # Optional Discord webhook URL for notifications
-#discord_webhook = None
+{discord_webhook}
 
 # Your player ID - find this by hovering over your dominion name in search (REQUIRED)
-current_player_id = EDIT_THIS
+current_player_id = {os.getenv("CURRENT_PLAYER_ID", "EDIT_THIS")}
 
 # Time adjustment: hours to add/subtract from your time to get OD server time
 # If OD shows 10:00 and your clock shows 12:00, use -2
 # If OD shows 10:00 and your clock shows 8:00, use 2
-LOCAL_TIME_SHIFT = 0
+LOCAL_TIME_SHIFT = {os.getenv("LOCAL_TIME_SHIFT", "0")}
 
 # Optional: feature toggles for experimental features (comma-separated list)
-#feature_toggles = economy
+{feature_toggles}
 
 # Random secret key for web sessions (REQUIRED)
-secret_key = EDIT_THIS
+secret_key = {os.getenv("SECRET_KEY", "EDIT_THIS")}
 
 # Database file name - change round number as needed (REQUIRED)
-database_name = sqlite:///odinfo-round-45.sqlite
+database_name = {os.getenv("DATABASE_NAME", "sqlite:///odinfo-round-49.sqlite")}
 """
 
-USERS_JSON_TEMPLATE = """[
-  {
+USERS_JSON_TEMPLATE = f"""[
+  {{
     "id": "1",
-    "name": "admin",
-    "password": "CHANGE_THIS_PASSWORD",
+    "name": "{os.getenv("DB_USERNAME", "admin")}",
+    "password": "{os.getenv("DB_PASSWORD", "CHANGE_THIS_PASSWORD")}",
     "active": "true"
-  }
+  }}
 ]
 """
+
+
+def template_using_envs():
+    """Check if env vars are being used in the template.
+
+    This is useful for checking if the template files need to be checked
+    for modification or not.
+    """
+    using_env = False
+    # assume if one variable is being used, they are all configured correctly
+    if os.getenv("USERNAME") is not None:
+        using_env = True
+    return using_env
 
 
 def check_dirs_and_configs():
     problems = []
     instance_dir = executable_path(INSTANCE_DIR)
     if not os.path.exists(instance_dir):
-        problems.append(f'Expecting "{instance_dir}" subdirectory: creating one for you now.')
+        if not template_using_envs():
+            # skip reporting problems when env vars are provided
+            problems.append(f'Expecting "{instance_dir}" subdirectory: creating one for you now.')
         os.makedirs(instance_dir)
 
     secrets_filename = executable_path(SECRET_FILE)
     if not os.path.exists(secrets_filename):
-        problems.append(f'Expected {SECRET_FILE} with your configuration settings.')
         with open(secrets_filename, 'w') as f:
             f.writelines(SECRETS_TEMPLATE)
-        problems.append(f"Created {SECRET_FILE} for you.")
+        if not template_using_envs():
+            # skip reporting problems when env vars are provided
+            problems.append(f'Expected {SECRET_FILE} with your configuration settings.')
+            problems.append(f"Created {SECRET_FILE} for you.")
 
     with open(secrets_filename) as f:
-        if f.read() == SECRETS_TEMPLATE:
+        if not template_using_envs() and f.read() == SECRETS_TEMPLATE:
             problems.append(f"You still need to change {secrets_filename}.")
 
     users_filename = executable_path(USERS_FILE)
     if not os.path.exists(users_filename):
-        problems.append(f'Expected {users_filename} with your login settings.')
         with open(users_filename, 'w') as f:
             f.write(USERS_JSON_TEMPLATE)
-        problems.append(f"Created {users_filename} for you.")
+        if not template_using_envs():
+            # skip reporting problems when env vars are provided
+            problems.append(f'Expected {users_filename} with your login settings.')
+            problems.append(f"Created {users_filename} for you.")
 
     with open(users_filename) as f:
-        if f.read() == USERS_JSON_TEMPLATE:
+        if not template_using_envs() and f.read() == USERS_JSON_TEMPLATE:
             problems.append(f"You still need to change {users_filename}.")
 
 

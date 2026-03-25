@@ -1,0 +1,11 @@
+.github
+.venv
+instance
+scripts
+test
+*.py
+*.sh
+envfile.example
+odinfo.bat
+odinfo.spec
+README.md

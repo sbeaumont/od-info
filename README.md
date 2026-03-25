@@ -193,3 +193,20 @@ Then manually copy the executable from `dist/` and create the external `instance
 - Users need to edit `instance/secret.txt` and `instance/users.json` before first run
 - The SQLite database will be created automatically in the `instance/` folder
 - All user data (config, database) stays external to the executable for easy updates
+
+## Running in Docker
+
+1. Download the whole project from github.
+2. In the project directory, make a copy of the `envfile.example` and rename it to `.env`.
+3. Edit the `.env` file, filling out the REQUIRED info as per the previous examples above.
+4. In a terminal (eg PS or Bash) run docker (or podman) compose
+
+```bash
+docker compose up -d
+```
+
+OR
+
+```bash
+podman-compose up -d
+```

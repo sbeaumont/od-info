@@ -11,63 +11,23 @@ If you need some help or have feedback on this readme or the tool look me up in 
 
 Download the whole project from here and put it somewhere on your local disk.
 
-## Install uv
+## Setup
 
-The only thing you need to install is **uv**, a Python package manager. It will automatically download the right Python version and all dependencies for you.
+On Windows, double-click `setup.bat`. On Mac/Linux, run `./setup.sh` from a terminal.
 
-### Windows
+This will install uv (a Python package manager that handles Python and all dependencies for you), and then walk you through the configuration. You don't need to install Python or any packages yourself.
 
-Open a Command Prompt (type "cmd" in search) or PowerShell, and run:
-
-    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+You can re-run setup at any time — for example to update the round number for a new round. Your existing settings will be offered as defaults.
 
 NOTE: If you're not used to using a command prompt, what you need to do is go to the folder where you downloaded the files from GitHub, right-click and choose "Open In Terminal". This will put you in a command prompt at the correct location.
 
-### Mac or Linux
+### Discord notifications (optional)
 
-Open a Terminal window and run:
+You can send the networth tracking overview to Discord. During setup you'll be asked for a Discord webhook URL. To get one, go to a Discord channel where you have settings access, add a webhook, and copy the URL.
 
-    curl -LsSf https://astral.sh/uv/install.sh | sh
+### One database per round
 
-That's it! You don't need to install Python or any packages separately — uv handles all of that automatically when you first run the application.
-
-### Run and fail: add instance subdir, secret.txt and users.json file
-
-Do a first run: this will always exit with the message that you need to edit the config files.
-
-On Windows, double-click `odinfo.bat`. On Mac/Linux, run `./odinfo.sh` from a terminal.
-
-These files will have been created for you from templates in a subdirectory called "instance".
- 
-You will need to edit their contents. For secret.txt:
-
-    username = (your OD username)
-    password = (your OD password)
-    discord_webhook = (Discord webhook URL, if you have one.)
-    current_player_id = (Your player id. Easiest way to find out is go to Search page, hover over your dom name, and note the number at the end of the ".../op-center/<your number>" URL)
-    database_name=sqlite:///odinfo-round-<round number>.sqlite
-    secret_key=(just some random stuff, only need to put a good key here if you're hosting this server online)
-    LOCAL_TIME_SHIFT = (Difference in hours between your local time and OD server time. Positive if your time is ahead of OD server time: e.g. if OD time is 8:21 and your local time is 10:21, you fill in 2 here)
-
-Example:
-
-    username = myODusername
-    password = thisisabadpassword123!
-    discord_webhook = https://discord.com/api/webhooks/<other stuff>
-    current_player_id = 99999
-    database_name=sqlite:///my-odinfo-database-for-round-40.sqlite
-    secret_key=1234p981(*&^b98g89ubsy89g
-    LOCAL_TIME_SHIFT = -2
-
-You can send the networth tracking overview to Discord, but you'll need to set up a
-webhook there. On a channel where you can access the settings you can add a webhook
-and copy the URL from there.
-
-### One database per round (not for binary version)
-
-Tip: You can change the database_name in secret.txt to a new round number. 
-This way you can have a fresh database for every round, and you'll have a copy of the old round's data
-if you want to keep it.
+Each round gets its own database file. When a new round starts, re-run setup and enter the new round number. Your old round data is preserved.
 
 ### Run application
 

@@ -14,6 +14,8 @@ if launchctl list | grep -q "$PLIST_NAME"; then
     exit 1
 fi
 
+UV_PATH="$(which uv)"
+
 # Create the plist file
 cat > "$PLIST_PATH" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -24,7 +26,8 @@ cat > "$PLIST_PATH" << EOF
     <string>${PLIST_NAME}</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/bin/python3</string>
+        <string>${UV_PATH}</string>
+        <string>run</string>
         <string>${SCRIPT_DIR}/cron.py</string>
     </array>
     <key>WorkingDirectory</key>

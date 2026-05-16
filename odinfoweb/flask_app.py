@@ -205,6 +205,11 @@ def handle_general_error(error):
 
 # ---------------------------------------------------------------------- Flask Routes
 
+@app.route('/favicon.ico')
+def favicon():
+    return app.send_static_file('favicon.ico')
+
+
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/dominfo/', methods=['GET', 'POST'])
 @login_required

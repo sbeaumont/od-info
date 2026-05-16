@@ -4,6 +4,7 @@ import logging
 
 from odinfo.config import OUT_DIR, TOWN_CRIER_URL
 from odinfo.exceptions import ODInfoException
+from odinfo.opsdata.scrapetools import expect_not_none
 
 logger = logging.getLogger('od-info.towncrier')
 
@@ -25,110 +26,100 @@ def get_number_of_tc_pages(session) -> int:
 
 
 def get_tc_page(session, page_nr: int) -> list:
-    def code_for_name(name):
-        return event.find(string=re.compile(re.escape(name))).find_parent('a').attrs['href'].split('/')[-1]
-
     events = list()
     response = session.get(f'{TOWN_CRIER_URL}?page={page_nr}')
-    # print_response(response)
     soup = BeautifulSoup(response.content, "html.parser")
-    cs = soup.find('section', 'content')
+    cs = expect_not_none(
+        soup.find('table', class_='table-striped'),
+        "soup.find('table', class_='table-striped')"
+    )
     for row in cs.find_all('tr'):
         if not row.td.has_attr('colspan'):
-            columns = row.find_all('td')
-            timestamp = columns[0].span.string
-            event = columns[1]
-            dom_code = event.a.attrs['href'].split('/')[-1]
-            dom_name = event.a.span.string
-            event_text = ' '.join(event.stripped_strings)
-            target_code = target_name = amount = ''
-            try:
-                if 'conquered' in event_text:
-                    event_type = 'invasion'
-                    target_name, amount = re.search(r'conquered (\d+) land from (.*) \(#', event_text).group(2, 1)
-                elif 'invaded fellow dominion' in event_text:
-                    event_type = 'invasion'
-                    target_name, amount = re.search(r'invaded fellow dominion (.*) \(#\d+\) and captured (\d+)', event_text).group(1, 2)
-                elif 'invaded' in event_text:
-                    event_type = 'invasion'
-                    target_name, amount = re.search(r'invaded (.*) \(#\d+\) and captured (\d+)', event_text).group(1, 2)
-                elif 'fended off an attack' in event_text:
-                    event_type = 'bounce'
-                    target_name = re.search(r'.* fended off an attack from (.*) \(#', event_text).group(1)
-                elif 'were beaten back by' in event_text:
-                    event_type = 'bounce'
-                    target_name = dom_name
-                    target_code = dom_code
-                    dom_name = re.search(r'Sadly, the forces of (.*) \(#\d+\) were beaten back by (.*) \(#', event_text).group(2)
-                    dom_code = code_for_name(dom_name)
-                elif 'destroyed and rebuilt' in event_text:
-                    event_type = 'wonder_destruction'
-                    target_name, dom_name, dom_code = re.search(r'(.*) has been destroyed and rebuilt by (.*) \(#(\d+)', event_text).group(1, 2, 3)
-                    target_code = ' '
-                elif 'has attacked' in event_text:
-                    event_text = ' '.join([el.strip() for el in event_text.split('\n')])
-                    if 'a neutral wonder' in event_text:
-                        event_type = 'wonder_attack'
-                        target_name = 'a neutral wonder'
-                        target_code = ' '
-                    else:
-                        # Try wonder attack with dominion code
-                        wonder_with_target = re.search(r'has attacked the (.*) \(#(\d+)', event_text)
-                        if wonder_with_target:
-                            event_type = 'wonder_attack'
-                            target_name, target_code = wonder_with_target.group(1, 2)
-                        else:
-                            # Try wonder attack without code (ends with !)
-                            wonder_attack = re.search(r'has attacked the (.*)!', event_text)
-                            if wonder_attack:
-                                event_type = 'wonder_attack'
-                                target_name = wonder_attack.group(1)
-                                target_code = ' '
-                            else:
-                                # Try raid attack format (no "the", ends with .)
-                                raid_attack = re.search(r'has attacked ([^.]+)\.', event_text)
-                                if raid_attack:
-                                    event_type = 'raid_attack'
-                                    target_name = raid_attack.group(1)
-                                    target_code = ' '
-                                else:
-                                    # Couldn't parse - will be caught by AttributeError handler
-                                    raise AttributeError(f"No matching attack pattern found")
-                elif 'CANCELED' in event_text:
-                    event_type = 'war_cancel'
-                    target_name, target_code = re.search(r'has CANCELED war against (.*) \(#(\d+)', event_text).group(1, 2)
-                elif 'declared WAR' in event_text:
-                    event_type = 'war_declare'
-                    target_name, target_code = re.search(r'has declared WAR on (.*) \(#(\d+)', event_text).group(1, 2)
-                elif 'abandoned' in event_text:
-                    event_type = 'abandon'
-                    target_code = re.search(r'\(#(\d+)', event_text).group(1)
-                else:
-                    event_type = 'other'
-            except AttributeError as e:
-                logger.error(f'Error while parsing event text: {event_text}')
-                raise TownCrierParseError(event_text) from e
-
-            if target_name and not target_code:
-                if not event.find(string=re.compile(re.escape(target_name))):
-                    raise Exception(f'Can not find "{target_name}" in {event}')
-
-                if target_name == "the":
-                    # Dumb hack because someone used a name that is matched earlier in the event.
-                    # TODO No time for a better fix now. Counting on the fact in an invade it's always the third link.
-                    parent_link = event.find_all('a')[2]
-                else:
-                    parent_link = event.find(string=re.compile(re.escape(target_name))).find_parent('a')
-
-                if parent_link:
-                    target_code = parent_link.attrs['href'].split('/')[-1]
-                else:
-                    raise Exception(f'Can not find parent link for "{target_name}".', event_text)
-
-            event_elements = [timestamp, event_type, dom_code, dom_name, target_code, target_name, amount, event_text]
-            # list(event.children)
-            events.append(event_elements)
+            events.append(_parse_event_row(row))
     return events
+
+
+def _parse_event_row(row):
+    columns = row.find_all('td')
+    timestamp = columns[0].span.string
+    event = columns[1]
+    event_text = ' '.join(event.stripped_strings)
+
+    # OD wraps every named entity (dom, realm, wonder) as <a><span>NAME</span>...</a>.
+    # Anything outside <a><span> is verb-phrase prose (or amounts, realm "(#N)" markers).
+    named = [a for a in event.find_all('a') if a.find('span') is not None]
+    names = [a.find('span').get_text(strip=True) for a in named]
+    hrefs = [a.attrs['href'] for a in named]
+
+    # Build a name-free skeleton so dom names can't poison substring/regex matching.
+    skeleton = event_text
+    for n in sorted(names, key=len, reverse=True):
+        skeleton = skeleton.replace(n, '<DOM>')
+
+    # Realm number "(#N)" follows each named entity in document order.
+    realm_numbers = re.findall(r'<DOM>\s*\(#(\d+)\)', skeleton)
+
+    def code(idx):
+        return hrefs[idx].split('/')[-1]
+
+    dom_name = names[0] if names else ''
+    dom_code = code(0) if hrefs else ''
+    target_name = names[1] if len(names) > 1 else ''
+    target_code = code(1) if len(hrefs) > 1 else ''
+    amount = ''
+
+    try:
+        if 'conquered' in skeleton:
+            event_type = 'invasion'
+            amount = re.search(r'conquered (\d+) land', skeleton).group(1)
+        elif 'invaded fellow dominion' in skeleton or 'invaded' in skeleton:
+            event_type = 'invasion'
+            amount = re.search(r'and captured (\d+)', skeleton).group(1)
+        elif 'fended off an attack' in skeleton:
+            event_type = 'bounce'
+        elif 'were beaten back by' in skeleton:
+            event_type = 'bounce'
+            dom_name, target_name = names[1], names[0]
+            dom_code, target_code = code(1), code(0)
+        elif 'destroyed and rebuilt' in skeleton:
+            event_type = 'wonder_destruction'
+            target_name, dom_name = names[0], names[1]
+            target_code = ' '
+            dom_code = code(1)
+        elif 'has attacked' in skeleton:
+            if 'a neutral wonder' in skeleton:
+                event_type = 'wonder_attack'
+                target_name = 'a neutral wonder'
+                target_code = ' '
+            elif len(named) >= 2 and hrefs[1].endswith('/wonders'):
+                event_type = 'wonder_attack'
+                target_name = names[1]
+                target_code = realm_numbers[1] if len(realm_numbers) > 1 else ' '
+            elif len(named) >= 2:
+                event_type = 'raid_attack'
+                target_name = names[1]
+                target_code = ' '
+            else:
+                m = re.search(r'has attacked ([^.]+)\.', skeleton)
+                if m is None:
+                    raise AttributeError("No matching attack pattern found")
+                event_type = 'raid_attack'
+                target_name = m.group(1).strip()
+                target_code = ' '
+        elif 'CANCELED' in skeleton:
+            event_type = 'war_cancel'
+        elif 'declared WAR' in skeleton:
+            event_type = 'war_declare'
+        elif 'abandoned' in skeleton:
+            event_type = 'abandon'
+            target_code = realm_numbers[0] if realm_numbers else ''
+        else:
+            event_type = 'other'
+    except (AttributeError, IndexError) as e:
+        logger.error(f'Error while parsing event text: {event_text}')
+        raise TownCrierParseError(event_text) from e
+
+    return [timestamp, event_type, dom_code, dom_name, target_code, target_name, amount, event_text]
 
 
 if __name__ == '__main__':

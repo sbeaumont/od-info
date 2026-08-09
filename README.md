@@ -7,6 +7,31 @@ config files to change things.
 
 If you need some help or have feedback on this readme or the tool look me up in the OpenDominion Discord (AgFx).
 
+## How to Run It
+
+There are three ways, in the order I recommend them:
+
+1. **In a container** - unzip `odinfo-docker.zip` from the [releases page](../../releases)
+   and run `start`. Nothing to install but Podman or Docker, and it keeps its own data up
+   to date. This is where this project is heading, so it gets the most attention.
+2. **From the source** - download this project and run `setup`, described below. Best if
+   you want to read or change the code.
+3. **As a downloadable program** - take the executable for your platform from the releases
+   page. Still supported, and it needs nothing installed at all.
+
+### In a Container (recommended)
+
+Unzip `odinfo-docker.zip` somewhere of your own and run `start.bat` on Windows, or
+`./start.sh` on Mac/Linux. It downloads ODInfo, writes the template configuration files
+for you to fill in, and on the second start serves the interface on http://localhost:5042.
+
+Next to the interface it fetches new game data every hour by itself, so unlike the other
+two ways there is nothing for you to schedule. The unzipped folder has its own README,
+and scripts that mirror the ones described below: `start`, `stop`, `update_data`,
+`update_refdata` and `logs`.
+
+## Running From the Source
+
 ### Download files
 
 Download the whole project from here and put it somewhere on your local disk.
@@ -136,3 +161,15 @@ Then manually copy the executable from `dist/` and create the external `instance
 - Users need to edit `instance/secret.txt` and `instance/users.json` before first run
 - The SQLite database will be created automatically in the `instance/` folder
 - All user data (config, database) stays external to the executable for easy updates
+
+### The Container Bundle
+
+`odinfo-docker.zip` is what users of the recommended route download. Its contents are in
+`docker-dist/`: the compose file and the scripts, no image. The image is built from the
+`Dockerfile` here and pushed to GitHub Packages, both by
+`.github/workflows/publish-image.yml`, on the same `r*` tags that produce the binaries.
+The bundle always pulls the `latest` tag, so a new release reaches people the next time
+they run `start`.
+
+The first push creates the package as private. It has to be made public once, under the
+repository's Packages settings, or `start` gets a 403 when it tries to pull.

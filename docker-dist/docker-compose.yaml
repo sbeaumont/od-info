@@ -1,0 +1,38 @@
+# The two containers that make up ODInfo. Started by start.sh / start.bat.
+#
+# TZ comes from the .env file next to this one. It matters: a container's clock is UTC,
+# while ODInfo stores plain local timestamps and adds LOCAL_TIME_SHIFT to them, so a
+# container in the wrong timezone records every observation hours off.
+
+services:
+  app:
+    image: ghcr.io/sbeaumont/od-info:latest
+    ports:
+      # ODInfo listens on 5000 inside the container, as it does natively. Published to
+      # 127.0.0.1 only, so it is reachable from this machine and not from the network.
+      # Override the 5042 with ODINFO_PORT in .env if something else already has it.
+      - "127.0.0.1:${ODINFO_PORT:-5042}:5000"
+    volumes:
+      - ./instance:/app/instance:Z
+    environment:
+      TZ: ${TZ:?Put TZ=Area/City in the .env file, e.g. TZ=Europe/Amsterdam}
+    restart: unless-stopped
+
+  updater:
+    image: ghcr.io/sbeaumont/od-info:latest
+    volumes:
+      - ./instance:/app/instance:Z
+    environment:
+      TZ: ${TZ:?Put TZ=Area/City in the .env file, e.g. TZ=Europe/Amsterdam}
+    restart: unless-stopped
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        while true; do
+          wait=$$(( ((45 - $$(date +%-M) + 60) % 60) * 60 - $$(date +%-S) ))
+          [ "$$wait" -le 0 ] && wait=$$(( wait + 3600 ))
+          echo "Next update at $$(date -d "+$$wait seconds" +%H:%M), in $${wait}s"
+          sleep "$$wait"
+          python cron.py
+        done

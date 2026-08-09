@@ -1,0 +1,5 @@
+# Appear here as soon as anyone runs the bundle from this folder. The instance directory
+# holds real credentials, so keep both well away from the repository.
+.env
+instance/
+bootstrap.log

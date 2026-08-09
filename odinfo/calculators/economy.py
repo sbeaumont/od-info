@@ -3,8 +3,8 @@ from math import trunc
 from sqlalchemy.orm import Session
 
 from odinfo.domain.models import Dominion
-from odinfo.config import PLAT_PER_ALCHEMY_PER_TICK, PLAT_PER_PEASANT_PER_TICK, PEASANTS_PER_HOME
-from odinfo.domain.refdata import GT_DEFENSE_FACTOR
+from odinfo.domain.refdata import (GT_DEFENSE_FACTOR, MIDAS_TOUCH_BONUS, POP_PER_HOME,
+                                   PLAT_PER_ALCHEMY_PER_TICK, PLAT_PER_PEASANT_PER_TICK)
 
 
 class Economy(object):
@@ -15,7 +15,7 @@ class Economy(object):
     def plat_total_bonus(self):
         bonus = 0
         # Assuming Midas Touch is up
-        bonus += 0.10
+        bonus += MIDAS_TOUCH_BONUS
         bonus += self.dom.last_castle.science_rating
         bonus += self.dom.tech.value_for_perk('platinum_production') / 100
         return bonus
@@ -35,7 +35,7 @@ class Economy(object):
     @property
     def plat_per_home(self):
         if self.dom.last_castle:
-            return (PEASANTS_PER_HOME * (1 + self.dom.last_castle.keep_rating)) * PLAT_PER_PEASANT_PER_TICK
+            return (POP_PER_HOME * (1 + self.dom.last_castle.keep_rating)) * PLAT_PER_PEASANT_PER_TICK
         else:
             return -1
 

@@ -5,7 +5,8 @@ from math import trunc
 from odinfo.domain.models import Dominion
 from odinfo.domain.refdata import Race
 from odinfo.domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, TEMPLE_BONUS_PER_PERC, Unit, Spells, MAX_TEMPLE_BONUS
-from odinfo.domain.refdata import NETWORTH_VALUES, ARES_BONUS
+from odinfo.domain.refdata import NETWORTH_VALUES, ARES_BONUS, BARRACKS_SPY_FUZZ
+from odinfo.domain.refdata import UNITS_PER_BOAT, BOATS_PER_DOCK, BOATS_PER_DOCK_PER_DAY
 
 logger = logging.getLogger('od-info.military')
 
@@ -113,8 +114,8 @@ class MilitaryCalculator(object):
     def boats(self, current_day: int):
         """Return [boats, docks (protected boats), sendable units, total boat capacity]"""
         if self.navy:
-            protected_boats = self.navy['docks'] * (2.25 + current_day * 0.05)
-            units_per_boat = 30 + self.race.get_perk('boat_capacity', 0)
+            protected_boats = self.navy['docks'] * (BOATS_PER_DOCK + current_day * BOATS_PER_DOCK_PER_DAY)
+            units_per_boat = UNITS_PER_BOAT + self.race.get_perk('boat_capacity', 0)
             total_sendable_units = sum([self.amount(self.race.nr_of_unit(u)) for u in self.race.sendable_units if u.need_boat])
             return (round(self.navy['boats'], 1),
                     round(protected_boats, 1),
@@ -254,15 +255,14 @@ class MilitaryCalculator(object):
     def paid_dp(self) -> int:
         return round(self.raw_dp * (1 + self.defense_bonus))
 
-    # BS fuzz constants from OD source (InfoMapper.php)
-    # Observed value is in range [true * 0.85, true / 0.85]
-    BS_FUZZ_LOW = 0.85       # observed can be as low as true * 0.85
-    BS_FUZZ_HIGH = 1 / 0.85  # observed can be as high as true * 1.176
-    BS_DEFAULT_ERROR = 16.0  # default error percentage for single observation
-
     @staticmethod
     def refine_unit_estimate(observations: list[int]) -> tuple[float, float, float]:
         """Combine multiple BS observations to get tighter bounds on true value.
+
+        The game shows a value somewhere in [true * fuzz, true / fuzz], so every observation
+        puts the true value in [observed * fuzz, observed / fuzz]. The highest observation
+        raises the floor and the lowest one lowers the ceiling, which is what makes several
+        observations of the same tick worth more than one.
 
         Args:
             observations: List of observed values for a single unit type.
@@ -272,28 +272,16 @@ class MilitaryCalculator(object):
             error_pct is the percentage error (half the range as % of midpoint).
         """
         if not observations:
-            return (0, 0, 0)
+            return 0, 0, 0
 
-        if len(observations) == 1:
-            obs = observations[0]
-            lower = obs / MilitaryCalculator.BS_FUZZ_HIGH
-            upper = obs / MilitaryCalculator.BS_FUZZ_LOW
-            return (lower, upper, MilitaryCalculator.BS_DEFAULT_ERROR)
+        lower_bound = max(observations) * BARRACKS_SPY_FUZZ
+        upper_bound = min(observations) / BARRACKS_SPY_FUZZ
 
-        min_obs = min(observations)
-        max_obs = max(observations)
+        # An observation of zero units means zero units, there is nothing to be wrong about.
+        midpoint = (lower_bound + upper_bound) / 2
+        error_pct = (upper_bound - lower_bound) / midpoint * 100 / 2 if midpoint else 0
 
-        lower_bound = max_obs / MilitaryCalculator.BS_FUZZ_HIGH
-        upper_bound = min_obs / MilitaryCalculator.BS_FUZZ_LOW
-
-        # Calculate error percentage
-        if lower_bound > 0:
-            midpoint = (lower_bound + upper_bound) / 2
-            error_pct = (upper_bound - lower_bound) / midpoint * 100 / 2
-        else:
-            error_pct = MilitaryCalculator.BS_DEFAULT_ERROR
-
-        return (lower_bound, upper_bound, max(0, error_pct))
+        return lower_bound, upper_bound, max(0, error_pct)
 
     def refined_home_units(self, barracks_spies: list) -> dict:
         """Get refined home unit estimates from multiple BS observations.

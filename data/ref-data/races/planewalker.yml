@@ -1,0 +1,54 @@
+key: planewalker
+name: Planewalker
+alignment: evil
+description: >-
+  <p>Cunning and ancient, the Planewalkers are wanderers who travel between worlds, treating each plane as a medium to be shaped. Where others quarry stone or till the soil, they summon form from the elements themselves, raising silent guardians from root and earth and breathing purpose into wind and water.</p>
+  <p>Since much of their population is conjured rather than born to this world, traditional dwellings serve them poorly. Their numbers are sustained through ceaseless acts of will and those who tire often turn away from creation and instead listen to the whispers beyond, returning with unsettling truths and fragments of knowledge mortals were never meant to possess.</p>
+attacker_difficulty: 1
+explorer_difficulty: 1
+converter_difficulty: 3
+overall_difficulty: 3
+home_land_type: cavern
+perks:
+  home_housing: -5
+  barracks_housing: -10
+units:
+  - name: Elemental
+    cost:
+      platinum: 0
+    power:
+      offense: 4
+      defense: 0
+    perks:
+      not_trainable: 1
+    need_boat: false
+  - name: Golem
+    cost:
+      platinum: 0
+    power:
+      offense: 0
+      defense: 4
+    perks:
+      not_trainable: 1
+  - name: Conjurer
+    cost:
+      platinum: 1200
+    power:
+      offense: 0
+      defense: 1
+    perks:
+      counts_as_wizard: 0.1
+      defense_from_pairing: 2,3,6 # slot 2 (Golem), 3 required, +6 def each
+      summons_unit: 2,20,3 # summons slot 2 (Golem), 1 per 20 Conjurers home, cap 3 per Conjurer total
+  - name: Summoner
+    cost:
+      platinum: 1200
+    power:
+      offense: 1
+      defense: 1
+    perks:
+      counts_as_wizard: 0.1
+      offense_from_pairing: 1,3,6 # slot 1 (Elemental), 3 required, +6 off each
+      summons_unit: 1,20,3 # summons slot 1 (Elemental), 1 per 20 Summoners home, cap 3 per Summoner total
+    need_boat: false
+playable: false

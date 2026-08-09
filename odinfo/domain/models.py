@@ -7,7 +7,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from odinfo.domain.domainhelper import Buildings, Land, Technology, Magic
 from odinfo.timeutils import hours_since, current_od_time
-from odinfo.domain.refdata import Race
+from odinfo.domain.refdata import Race, BARRACKS_SPY_FUZZ
 
 
 class Base(DeclarativeBase):
@@ -173,8 +173,6 @@ class DominionHistory(TimestampedOpsMixin, Base):
 
 
 class BarracksSpy(TimestampedOpsMixin, Base):
-    BS_UNCERTAINTY: float = 0.85
-
     __tablename__ = 'BarracksSpy'
     __table_args__ = (Index('idx_BarracksSpy_dom_ts', 'dominion', 'timestamp'),)
 
@@ -232,8 +230,8 @@ class BarracksSpy(TimestampedOpsMixin, Base):
     @property
     def military(self) -> dict:
         def calc_unit(nr: int):
-            home = getattr(self, f'home_unit{nr}') / BarracksSpy.BS_UNCERTAINTY
-            away = self.amount_returning(nr) * BarracksSpy.BS_UNCERTAINTY
+            home = getattr(self, f'home_unit{nr}') / BARRACKS_SPY_FUZZ
+            away = self.amount_returning(nr) * BARRACKS_SPY_FUZZ
             training = self.amount_training(nr) if self.paid_until_for_unit(nr) > 0 else 0
             return home + away + training
 

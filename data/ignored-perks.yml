@@ -1,0 +1,236 @@
+# Perks from the game reference data that have been looked at and are NOT relevant for this
+# tool. Perks listed here are no longer flagged when refdata_update.py finds them coming or
+# going in a new version of ref-data.
+#
+# Format is "perk_name: reason", where the reason is a note to your future self.
+#
+# The rule of thumb used below: intel shows unit counts, never the spells in effect.
+#
+# So a perk that changes POWER matters. Bloodrage leaves no trace in a scan, so the tool has
+# to assume it is up and add the offense itself.
+#
+# A perk that changes COUNTS does not matter. Death and Decay turns peasants into units, and
+# the next barracks spy simply shows more units. The tool reads the result and never has to
+# know the spell was cast.
+#
+# The same goes for anything the tool doesn't model at all: production, construction, ops,
+# invasion outcomes and the hero duels.
+#
+# Perks NOT listed here are treated as needing a look: either the tool acts on them, or you
+# haven't decided yet.
+
+# --- Resource production, decay and consumption -------------------------------------------
+# The tool reads stocks and buildings from intel, it doesn't project resource flows. The one
+# exception is platinum_production, which the economy page uses.
+alchemy_improvement_forges_raw: Resource production, not used in OP/DP or networth.
+boat_production: Boat counts come from intel, the tool doesn't project them.
+exchange_bonus: Resource exchange rates, economy only.
+exchange_mana: Resource exchange rates, economy only.
+food_consumption: Food economy, not modelled.
+food_decay: Food economy, not modelled.
+food_production: Food economy, not modelled.
+food_production_prestige: Food economy, not modelled.
+fools_gold: Theft protection, the tool doesn't model theft.
+gem_production: Resource production, economy only.
+guard_tax: Guard membership cost, economy only.
+improved_fools_gold: Theft protection, the tool doesn't model theft.
+lumber_decay: Resource production, economy only.
+lumber_from_land: Resource production, economy only.
+lumber_production: Resource production, economy only.
+mana_decay: Resource production, economy only.
+mana_production: Resource production, economy only.
+mana_production_raw: Resource production, economy only.
+ore_production: Resource production, economy only.
+ore_production_damage: Resource production, economy only.
+platinum_production_raw: Flat platinum bonus, the economy page works from observed buildings.
+wartime_mana_production_raw: Resource production, economy only.
+wizard_guild_mana_production_raw: Resource production, economy only.
+
+# --- Costs, investment and construction ---------------------------------------------------
+# All about what things cost the owner. The tool sees the result (buildings, castle ratings,
+# units) in the next scan.
+archmage_cost: Cost only, the result shows up in intel.
+assassin_cost: Cost only, the result shows up in intel.
+construction_cost: Cost only, the tool reads actual buildings.
+construction_lumber_cost: Cost only, the tool reads actual buildings.
+construction_platinum_cost: Cost only, the tool reads actual buildings.
+destruction_discount: Razing cost, not modelled.
+employment: Jobs per building, economy only.
+explore_cost_wizard_mastery: Exploration cost, not modelled.
+explore_draftee_cost: Exploration cost, not modelled.
+explore_platinum_cost: Exploration cost, not modelled.
+invest_bonus: Castle investment, the tool reads castle ratings from the survey.
+invest_bonus_gems: Castle investment, the tool reads castle ratings from the survey.
+invest_bonus_harbor: Castle investment, the tool reads castle ratings from the survey.
+invest_bonus_spires: Castle investment, the tool reads castle ratings from the survey.
+military_cost: Training cost, the tool reads actual unit counts.
+rezone_cost: Land management cost, not modelled.
+spy_cost: Training cost, the tool reads actual unit counts.
+wizard_cost: Training cost, the tool reads actual unit counts.
+
+# --- Housing and population capacity --------------------------------------------------------
+# How many people fit in a building. The tool reads actual population from intel and doesn't
+# work out how much room anyone has left.
+barracks_housing: Population capacity, not modelled.
+extra_barren_max_population: Population capacity, not modelled.
+home_housing: Population capacity, not modelled.
+max_population: Population capacity, not modelled.
+
+# --- Land and population growth -----------------------------------------------------------
+auto_rezone_forest: Land management, the tool reads actual land.
+auto_rezone_water: Land management, the tool reads actual land.
+population_growth: Growth speed, the tool reads actual population.
+prestige_gains: Prestige is read from ClearSight, its growth isn't projected.
+tech_production: Research speed, the tool reads researched techs from Vision.
+tech_production_invasion: Research speed, the tool reads researched techs from Vision.
+tech_production_raw: Research speed, the tool reads researched techs from Vision.
+tech_production_raw_per_acre: Research speed, the tool reads researched techs from Vision.
+tech_refund: Research bookkeeping, not modelled.
+temporary_tech: Research bookkeeping, the tool reads researched techs from Vision.
+
+# --- Espionage and magic strength ---------------------------------------------------------
+# The tool reports the raw spy and wizard ratios from ClearSight. It doesn't judge whether an
+# operation would succeed, so power and strength modifiers don't enter any calculation.
+charm_spies: Op mechanics, the tool doesn't model op success.
+counts_as_spy: The game publishes spa itself now, including units that count as spies.
+counts_as_wizard: The game publishes wpa itself now, including units that count as wizards.
+enemy_assassinate_draftees_damage: Op mechanics, not modelled.
+enemy_assassinate_wizards_damage: Op mechanics, not modelled.
+enemy_burning_duration: Op mechanics, not modelled.
+enemy_disband_spies_damage: Op mechanics, not modelled.
+enemy_espionage_chance: Op mechanics, not modelled.
+enemy_fireball_damage: Op mechanics, not modelled.
+enemy_lightning_bolt_damage: Op mechanics, not modelled.
+enemy_sabotage_boats_damage: Op mechanics, not modelled.
+enemy_spell_chance: Op mechanics, not modelled.
+enemy_spell_damage: Op mechanics, not modelled.
+enemy_spell_duration: Op mechanics, not modelled.
+enemy_spy_losses: Op mechanics, not modelled.
+espionage_fails_hide_identity: Op mechanics, not modelled.
+spy_losses: Op mechanics, not modelled.
+spy_power: Op mechanics, the tool reports the raw spy ratio.
+spy_power_defense: Op mechanics, the tool reports the raw spy ratio.
+spy_power_offense: Op mechanics, the tool reports the raw spy ratio.
+spy_strength_recovery: Op mechanics, not modelled.
+theft_chance: Theft ops, not modelled.
+theft_gains: Theft ops, not modelled.
+theft_losses: Theft ops, not modelled.
+theft_strength_cost: Theft ops, not modelled.
+train_archmages_from_draftees: Changes draftee counts, which the next scan shows.
+wizard_power: Op mechanics, the tool reports the raw wizard ratio.
+wizard_power_offense: Op mechanics, the tool reports the raw wizard ratio.
+wizard_strength_recovery: Op mechanics, not modelled.
+
+# --- Spell bookkeeping and info ops --------------------------------------------------------
+# Which spell cancels which, what an info op reveals, how much a spell costs to keep up. The
+# tool scrapes the results of info ops, it doesn't cast anything.
+cancels_cull_the_weak: Spell bookkeeping.
+cancels_gaias_light: Spell bookkeeping.
+cancels_gaias_shadow: Spell bookkeeping.
+cancels_immortal: Spell bookkeeping.
+cancels_midas_touch: Spell bookkeeping.
+clear_sight: Marks the spell as an info op, the tool scrapes the result page.
+disclosure: Info op, the tool scrapes the result page.
+immune_burning: Spell resistance, not modelled.
+immune_lightning_storm: Spell resistance, not modelled.
+invalid_protection: Rule about when a spell can be cast.
+invalid_royal_guard: Rule about when a spell can be cast.
+lightning_storm: Hostile spell effect, the damage shows up in later intel.
+apply_burning: Hostile spell effect, the damage shows up in later intel.
+apply_corruption: Hostile spell effect, the damage shows up in later intel.
+apply_lightning_storm: Hostile spell effect, the damage shows up in later intel.
+apply_rejuvenation: Spell effect, the result shows up in later intel.
+apply_satiated_thirst: Marks a vampire conversion spell, converted units show up in intel.
+destroy_improvement_forges: Hostile spell effect, later intel shows the new rating.
+destroy_improvement_keep: Hostile spell effect, later intel shows the new rating.
+destroy_improvement_science: Hostile spell effect, later intel shows the new rating.
+destroy_improvement_walls: Hostile spell effect, later intel shows the new rating.
+destroy_peasants: Hostile spell effect, later intel shows the new population.
+destroy_resource_food: Hostile spell effect, food isn't modelled.
+racial_spell_cost: Spell cost, not modelled.
+revelation: Marks the spell as an info op, the tool scrapes the result page.
+self_spell_cost: Spell cost, not modelled.
+self_spell_duration: Spell duration, the tool reads active spells from Revelation.
+spell_cost: Spell cost, not modelled.
+spell_reflect: Op mechanics, not modelled.
+spell_refund: Spell cost, not modelled.
+spreads_plague: Spell effect, the result shows up in later intel.
+surreal_perception: Tells the target who scanned them, no effect on any calculation.
+vision: Marks the spell as an info op, the tool scrapes the result page.
+war_cancels: War declaration bookkeeping.
+war_extends: War declaration bookkeeping.
+wonder_damage: Damage to wonders, the tool doesn't track wonder health.
+
+# --- Invasion outcomes ---------------------------------------------------------------------
+# Casualties, conversions and spoils happen after an attack lands. The tool works out whether
+# an attack is possible, not what it yields, and the aftermath shows up in the next scan.
+casualties: Invasion outcome, not modelled.
+casualties_defense: Invasion outcome, not modelled.
+casualties_offense: Invasion outcome, not modelled.
+casualties_offense_range: Invasion outcome, not modelled.
+conversion: Invasion outcome, converted units show up in the next barracks spy.
+conversion_rate: Invasion outcome, converted units show up in the next barracks spy.
+conversions_range: Invasion outcome, converted units show up in the next barracks spy.
+convert_military_spies_to_military_draftees: Unit shuffling, later intel shows the result.
+convert_peasants_to_self_military_unit1: Unit shuffling, later intel shows the result.
+convert_peasants_to_self_military_unit3: Unit shuffling, later intel shows the result.
+convert_vampires: Unit shuffling, later intel shows the result.
+convert_werewolves: Unit shuffling, later intel shows the result.
+enemy_casualties_offense: Invasion outcome, not modelled.
+faster_return: Return speed, the barracks spy shows the actual return ticks.
+fewer_casualties: Invasion outcome, not modelled.
+fixed_casualties: Invasion outcome, not modelled.
+immortal: Invasion outcome, not modelled.
+immortal_from_pairing: Invasion outcome, not modelled.
+immortal_vs_land_range: Invasion outcome, not modelled.
+immortal_wizards: Invasion outcome, not modelled.
+invasion_morale: Invasion outcome, not modelled.
+kills_immortal: Invasion outcome, not modelled.
+max_casualties_defense: Invasion outcome, not modelled.
+max_casualties_offense: Invasion outcome, not modelled.
+plunder_gems: Invasion spoils, not modelled.
+plunder_mana: Invasion spoils, not modelled.
+plunder_platinum: Invasion spoils, not modelled.
+raid_attack_damage: Raid mechanics, not modelled.
+rebirth: Invasion outcome, later intel shows the result.
+reduce_combat_losses: Invasion outcome, not modelled.
+retal_prestige: Prestige from retaliation, not modelled.
+salvage_lumber: Invasion spoils, not modelled.
+salvage_ore: Invasion spoils, not modelled.
+sink_boats_defense: Invasion outcome, boat counts come from intel.
+sink_boats_offense: Invasion outcome, boat counts come from intel.
+upgrade_specs: Unit shuffling, the next barracks spy shows the result.
+upgrade_survivors: Invasion outcome, the next barracks spy shows the result.
+upgrade_swordsmen: Unit shuffling, the next barracks spy shows the result.
+wizard_guilds_produce_military_unit3: Unit production, the next barracks spy shows the result.
+
+# --- Hero duels and hero progression --------------------------------------------------------
+# A minigame between heroes. Nothing here touches the numbers the tool works with, with the
+# exception of the hero offense perk, which is deliberately not on this list.
+assassinate_draftees_damage: Hero ability, not modelled.
+combat_attack: Hero duel stat.
+combat_counter: Hero duel stat.
+combat_defense: Hero duel stat.
+combat_evasion: Hero duel stat.
+combat_focus: Hero duel stat.
+combat_health: Hero duel stat.
+combat_recover: Hero duel stat.
+cyclone_damage: Hero ability, not modelled.
+fireball_damage: Hero ability, not modelled.
+hero_bonus: Hero progression.
+hero_experience: Hero progression.
+info_spell_cost: Hero ability, spell costs aren't modelled.
+land_spy_strength_cost: Hero ability, op strength isn't modelled.
+martyrdom: Hero ability, not modelled.
+raze_mod_building_discount: Hero ability, not modelled.
+self_spell_strength_cost: Hero ability, op strength isn't modelled.
+wonder_attack_damage: Hero ability, wonder health isn't tracked.
+xp_from_land_gain_bonus: Hero progression.
+xp_from_ops_bonus: Hero progression.
+xp_from_ops_penalty: Hero progression.
+
+# --- Flavour ---------------------------------------------------------------------------------
+flavor_basher: Cosmetic.
+flavor_smasher: Cosmetic.
+flavor_tunneler: Cosmetic.
+sentient: Cosmetic wonder property.

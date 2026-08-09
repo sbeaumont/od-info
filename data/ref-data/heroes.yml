@@ -1,0 +1,180 @@
+abjuration:
+  name: Abjuration
+  level: 6
+  type: magic
+  icon: ra-book-cover
+  perks:
+    enemy_lightning_bolt_damage: -10
+    combat_defense: 1
+divination:
+  name: Divination
+  level: 4
+  type: magic
+  icon: ra-book-cover
+  perks:
+    info_spell_cost: -10
+    combat_focus: 1
+    combat_evasion: 4
+enchantment:
+  name: Enchantment
+  level: 2
+  type: magic
+  icon: ra-book-cover
+  perks:
+    self_spell_strength_cost: -1
+    combat_focus: 2
+evocation:
+  name: Evocation
+  level: 6
+  type: magic
+  icon: ra-book-cover
+  perks:
+    fireball_damage: 10
+    combat_attack: 1
+hammer_of_retribution:
+  name: Hammer of Retribution
+  level: 4
+  type: item
+  icon: ra-hammer-drop
+  perks:
+    retal_prestige: 5
+    combat_counter: 5
+illusion:
+  name: Illusion
+  level: 2
+  type: magic
+  icon: ra-book-cover
+  perks:
+    espionage_fails_hide_identity: 1
+    combat_evasion: 5
+iron_dagger:
+  name: Iron Dagger
+  level: 4
+  type: item
+  icon: ra-plain-dagger
+  perks:
+    assassinate_draftees_damage: 10
+  active: false
+kings_banner:
+  name: King's Banner
+  level: 2
+  type: item
+  icon: ra-knight-banner
+  perks:
+    invasion_morale: -2
+    combat_health: 5
+orb_of_detection:
+  name: Orb of Detection
+  level: 4
+  type: item
+  icon: ra-orb-wand
+  perks:
+    enemy_spy_losses: 20
+    combat_counter: 2
+    combat_evasion: 4
+spyglass:
+  name: Spyglass
+  level: 2
+  type: item
+  icon: ra-spyglass
+  perks:
+    land_spy_strength_cost: 1
+    combat_counter: 1
+    combat_evasion: 4
+scribes_journal:
+  name: Scribe's Journal
+  level: 2
+  type: item
+  icon: ra-scroll-quill
+  perks:
+    tech_production_invasion: 10
+    combat_focus: 2
+transmutation:
+  name: Transmutation
+  level: 4
+  type: magic
+  icon: ra-book-cover
+  perks:
+    exchange_mana: 1
+    combat_health: 4
+    combat_recover: 1
+disarmament:
+  name: Disarmament
+  level: 0
+  type: directive
+  icon: ra-drop-weapon
+  perks:
+    offense: -100
+    raze_mod_building_discount: 1
+  classes:
+    - scion
+martyrdom:
+  name: Martyrdom
+  level: 0
+  type: effect
+  icon: ra-angel-wings
+  perks:
+    martyrdom: 15
+  classes:
+    - scion
+revised_strategy:
+  name: Revised Strategy
+  level: 0
+  type: immediate
+  icon: ra-annexation
+  perks:
+    tech_refund: 50
+  classes:
+    - scion
+pursuit_of_knowledge:
+  name: Pursuit of Knowledge
+  level: 0
+  type: directive
+  icon: ra-archive-research
+  perks:
+    tech_production: 25
+    invest_bonus: -20
+  classes:
+    - scholar
+blade_of_sundering:
+  name: Blade of Sundering
+  level: 6
+  type: item
+  icon: ra-relic-blade
+  perks:
+    wonder_attack_damage: 20
+    combat_attack: 1
+staff_of_stormcaller:
+  name: Staff of the Stormcaller
+  level: 6
+  type: item
+  icon: ra-wizard-staff
+  perks:
+    cyclone_damage: 20
+    combat_focus: 2
+    combat_health: 5
+anti_magic_sigils:
+  name: Anti-Magic Sigils
+  level: 6
+  type: item
+  icon: ra-x-mark
+  perks:
+    enemy_spell_duration: -2
+    combat_evasion: 7
+lead_from_the_front:
+  name: Lead from the Front
+  level: 1
+  type: doctrine
+  icon: ra-vertical-banner
+  perks:
+    xp_from_land_gain_bonus: 100
+    xp_from_ops_penalty: 100
+    combat_health: 5
+lead_from_the_shadows:
+  name: Lead from the Shadows
+  level: 1
+  type: doctrine
+  icon: ra-cloak-and-dagger
+  perks:
+    xp_from_ops_bonus: 100
+    combat_health: 5

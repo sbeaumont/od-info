@@ -1,3 +1,4 @@
+import json
 import sys
 import os
 from dataclasses import dataclass, field
@@ -28,10 +29,50 @@ DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 INSTANCE_DIR = './instance'
 OUT_DIR = './out'
-REF_DATA_DIR = resource_path('ref-data')
 OPS_DATA_DIR = 'opsdata'
+DATA_DIR = 'data'
 SECRET_FILE = f'{INSTANCE_DIR}/secret.txt'
 USERS_FILE = f'{INSTANCE_DIR}/users.json'
+
+# Game data comes in two copies. The baseline ships with the application and is a plain
+# mirror of the game's own data files. The override is what refdata_update.py downloads for
+# a user later on, and lives with the rest of their data so a new release can't wipe it.
+# Both carry a stamp saying when they were synced, and the youngest one is the one in use.
+# That way a release with fresher game data automatically supersedes an older download.
+
+REF_DATA_BASELINE_DIR = resource_path(f'{DATA_DIR}/ref-data')
+REF_DATA_OVERRIDE_DIR = executable_path(f'{INSTANCE_DIR}/ref-data')
+REF_DATA_ARCHIVE_DIR = executable_path(f'{INSTANCE_DIR}/ref-data-archive')
+REF_DATA_STAMP_FILE = '.refdata-version'
+# Game numbers that the game doesn't publish in its own data files, so we keep them
+# ourselves. Application settings live in this module and in secret.txt, not in there.
+GAME_CONSTANTS_FILE = resource_path(f'{DATA_DIR}/game-constants.json')
+IGNORED_PERKS_FILE = resource_path(f'{DATA_DIR}/ignored-perks.yml')
+
+
+def refdata_sync_time(directory: str) -> str:
+    """When this copy of the reference data was synced with the game's repository.
+
+    Empty for a copy that was never synced by the updater, which makes it the oldest one
+    around: an unstamped copy loses from any stamped one.
+    """
+    stamp_file = os.path.join(directory, REF_DATA_STAMP_FILE)
+    if not os.path.exists(stamp_file):
+        return ''
+    with open(stamp_file) as f:
+        return json.load(f)['synced_at']
+
+
+def refdata_read_path() -> str:
+    """Which of the two copies of the reference data the application reads."""
+    if not os.path.exists(REF_DATA_OVERRIDE_DIR):
+        return REF_DATA_BASELINE_DIR
+    if refdata_sync_time(REF_DATA_OVERRIDE_DIR) < refdata_sync_time(REF_DATA_BASELINE_DIR):
+        return REF_DATA_BASELINE_DIR
+    return REF_DATA_OVERRIDE_DIR
+
+
+REF_DATA_DIR = refdata_read_path()
 
 # Knowledge of the URL structure of the OD website
 
@@ -45,11 +86,13 @@ SELECT_URL = f'{OD_BASE}/dominion/{{}}/select'
 MY_OP_CENTER_URL = f'{OD_BASE}/dominion/advisors/op-center'
 BARRACKS_ARCHIVE_URL = f'{OP_CENTER_URL}/{{}}/barracks_spy'
 
-# Global settings that can't be found anywhere else
+# Knowledge of the OD source repository, where the ref-data game data files come from.
 
-PLAT_PER_ALCHEMY_PER_TICK = 45
-PLAT_PER_PEASANT_PER_TICK = 2.7
-PEASANTS_PER_HOME = 30
+OD_SOURCE_REPO = 'OpenDominion/OpenDominion'
+OD_SOURCE_BRANCH = 'develop'
+OD_SOURCE_DATA_PATH = 'app/data'
+OD_SOURCE_TREE_URL = f'https://api.github.com/repos/{OD_SOURCE_REPO}/git/trees/{{ref}}?recursive=1'
+OD_SOURCE_RAW_URL = f'https://raw.githubusercontent.com/{OD_SOURCE_REPO}/{{ref}}/{{path}}'
 
 # Template of the secrets.txt file that gets saved when it can't be found.
 

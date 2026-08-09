@@ -13,8 +13,8 @@ a = Analysis(
     datas=[
         # Include templates directory - Flask needs this
         ('odinfoweb/templates', 'templates'),
-        # Include reference data - the app reads YAML/JSON files from here
-        ('ref-data', 'ref-data'),
+        # Include the game data - reference data mirror, game constants, reviewed perks
+        ('data', 'data'),
         # Include schema files for database operations
         ('odinfo/opsdata/schema.sql', 'odinfo/opsdata'),
         # Include any schema update scripts

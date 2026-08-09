@@ -66,11 +66,37 @@ generate a new one and initialize it.
 
 ## Updating reference information
 
-If you're using this app for a while, the reference (.yml) files with facts
-about races, tech and wonders might get out of date. You can just download
-updated files from the ref-data folder in this project, or go straight to the source 
-at https://github.com/OpenDominion/OpenDominion/tree/develop/app/data and
-replace them in the ref-data folder.
+If you're using this app for a while, the reference (.yml) files with facts about races,
+tech and wonders might get out of date. The app can fetch them itself from the game's own
+source at https://github.com/OpenDominion/OpenDominion/tree/develop/app/data.
+
+On Windows, double-click `update_refdata.bat`. On Mac/Linux, run `./update_refdata.sh`. It
+shows you what changed before it replaces anything.
+
+From a terminal you can also look without changing anything:
+
+```bash
+uv run python refdata_update.py
+```
+
+That downloads nothing to disk, it only reports. Applying it is then:
+
+```bash
+uv run python refdata_update.py update
+```
+
+The new files go into `instance/ref-data`, alongside your database, and the app uses them
+after a restart. Your previous version is archived in `instance/ref-data-archive`, so you
+can undo an update with `uv run python refdata_update.py restore`.
+
+Sometimes the report says a perk needs a look. Perks are the game's building blocks for
+spells, wonders, techs and units, and a new one can mean a mechanic this app doesn't know
+about yet. Updating anyway is fine, the data is newer either way, but some calculation may
+quietly ignore the new mechanic until the app catches up. Let AgFx know on Discord when you
+see one.
+
+When a later version of this app ships with newer reference data than what you downloaded,
+that newer data automatically takes over.
 
 ## Creating a Distribution Package
 

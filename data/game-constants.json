@@ -1,0 +1,61 @@
+{
+  "non_home_types": [
+    "alchemy",
+    "farm",
+    "smithy",
+    "masonry",
+    "ore_mine",
+    "gryphon_nest",
+    "tower",
+    "wizard_guild",
+    "temple",
+    "diamond_mine",
+    "school",
+    "lumberyard",
+    "factory",
+    "guard_tower",
+    "shrine",
+    "barracks",
+    "dock"
+  ],
+  "jobs_per_building": 20,
+  "pop_per_home": 30,
+  "pop_per_non_home": 15,
+  "pop_per_barren": 5,
+  "non_home_capacity": 15,
+  "build_ticks": 12,
+  "masonry_multiplier": 2.6,
+
+  "gt_defense_factor": 1.6,
+  "gn_offense_bonus": 1.6,
+  "temple_bonus_per_perc": 1.35,
+  "max_temple_bonus": 27,
+
+  "ares_bonus": 0.1,
+  "midas_touch_bonus": 0.1,
+
+  "barracks_spy_fuzz": 0.85,
+
+  "plat_per_alchemy_per_tick": 45,
+  "plat_per_peasant_per_tick": 2.7,
+
+  "units_per_boat": 30,
+  "boats_per_dock": 2.25,
+  "boats_per_dock_per_day": 0.05,
+
+  "imp_factors": {
+    "science": {"max": 0.2, "factor": 4000, "plus": 15000},
+    "keep": {"max": 0.3, "factor": 4000, "plus": 15000},
+    "spires": {"max": 0.6, "factor": 5000, "plus": 15000},
+    "forges": {"max": 0.3, "factor": 7500, "plus": 15000},
+    "walls": {"max": 0.3, "factor": 7500, "plus": 15000},
+    "harbor": {"max": 0.6, "factor": 5000, "plus": 15000}
+  },
+
+  "networth_values": {
+    "land": 20,
+    "buildings": 5,
+    "specs": 5,
+    "spywiz": 5
+  }
+}

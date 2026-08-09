@@ -1,6 +1,5 @@
 import math
 import logging
-import os
 from operator import attrgetter
 
 import yaml
@@ -8,41 +7,41 @@ import json
 from math import erf
 from enum import Enum
 from collections import defaultdict, namedtuple
-from odinfo.config import REF_DATA_DIR
+from odinfo.config import REF_DATA_DIR, GAME_CONSTANTS_FILE
 from functools import lru_cache
 
 
 logger = logging.getLogger('od-info.refdata')
 
-config_json = json.load(open(os.path.join(REF_DATA_DIR, 'config.json')))
+game_constants = json.load(open(GAME_CONSTANTS_FILE))
 
-NON_HOME_CAPACITY = config_json['NON_HOME_CAPACITY']
-BUILD_TICKS = config_json['BUILD_TICKS']
-MASONRY_MULTIPLIER = config_json['MASONRY_MULTIPLIER']
-GT_DEFENSE_FACTOR = config_json['GT_DEFENSE_FACTOR']
-GN_OFFENSE_BONUS = config_json['GN_OFFENSE_BONUS']
-TEMPLE_BONUS_PER_PERC = config_json['TEMPLE_BONUS_PER_PERC']
-MAX_TEMPLE_BONUS = config_json['MAX_TEMPLE_BONUS']
-BS_UNCERTAINTY = config_json['BS_UNCERTAINTY']
-ARES_BONUS = config_json['ARES_BONUS']
+NON_HOME_CAPACITY = game_constants['non_home_capacity']
+BUILD_TICKS = game_constants['build_ticks']
+MASONRY_MULTIPLIER = game_constants['masonry_multiplier']
+GT_DEFENSE_FACTOR = game_constants['gt_defense_factor']
+GN_OFFENSE_BONUS = game_constants['gn_offense_bonus']
+TEMPLE_BONUS_PER_PERC = game_constants['temple_bonus_per_perc']
+MAX_TEMPLE_BONUS = game_constants['max_temple_bonus']
+POP_PER_HOME = game_constants['pop_per_home']
+PLAT_PER_ALCHEMY_PER_TICK = game_constants['plat_per_alchemy_per_tick']
+PLAT_PER_PEASANT_PER_TICK = game_constants['plat_per_peasant_per_tick']
+UNITS_PER_BOAT = game_constants['units_per_boat']
+BOATS_PER_DOCK = game_constants['boats_per_dock']
+BOATS_PER_DOCK_PER_DAY = game_constants['boats_per_dock_per_day']
+
+# Bonuses from spells that every dominion is assumed to keep up, since the tool can't see
+# them for other dominions. Racial spells come from spells.yml instead.
+ARES_BONUS = game_constants['ares_bonus']
+MIDAS_TOUCH_BONUS = game_constants['midas_touch_bonus']
+
+# The game shows barracks spy numbers somewhere in [true * fuzz, true / fuzz].
+BARRACKS_SPY_FUZZ = game_constants['barracks_spy_fuzz']
 
 ImpFactor = namedtuple('ImpFactor', 'max factor plus')
 
-IMP_FACTORS = {
-    'science': ImpFactor(0.2, 4000, 15000),
-    'keep': ImpFactor(0.3, 4000, 15000),
-    'spires': ImpFactor(0.6, 5000, 15000),
-    'forges': ImpFactor(0.3, 7500, 15000),
-    'walls': ImpFactor(0.3, 7500, 15000),
-    'harbor': ImpFactor(0.6, 5000, 15000)
-}
+IMP_FACTORS = {name: ImpFactor(**factors) for name, factors in game_constants['imp_factors'].items()}
 
-NETWORTH_VALUES = {
-    'land': 20,
-    'buildings': 5,
-    'specs': 5,
-    'spywiz': 5
-}
+NETWORTH_VALUES = game_constants['networth_values']
 
 
 class SendableType(Enum):
@@ -216,15 +215,6 @@ class Unit(object):
         op = self.offense
         dp = self.defense
         return 1.8 * min(6, max(op, dp)) + (0.45 * min(6, op, dp)) + (0.2 * (max((op - 6), 0) + max((dp - 6), 0)))
-
-    @property
-    def ratios(self) -> dict:
-        return {
-            'spy_offense': self.get_perk('counts_as_spy_offense', 0),
-            'spy_defense': self.get_perk('counts_as_spy_defense', 0),
-            'wiz_offense': self.get_perk('counts_as_wizard_offense', 0),
-            'wiz_defense': self.get_perk('counts_as_wizard_defense', 0)
-        }
 
 
 class Race(object):

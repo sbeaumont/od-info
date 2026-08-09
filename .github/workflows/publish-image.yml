@@ -6,14 +6,13 @@ on:
     tags: ['r*']
   workflow_dispatch:
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   publish:
     name: Build and push to GHCR
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -56,6 +55,9 @@ jobs:
     name: Attach the unzip-and-run bundle
     needs: publish
     runs-on: ubuntu-latest
+    permissions:
+      # Attaching an asset to the release is a write to the repository's contents.
+      contents: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v4

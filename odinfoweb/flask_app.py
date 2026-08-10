@@ -21,7 +21,7 @@ from odinfoweb.forms import LoginForm
 from odinfo.domain.models import Base
 from odinfoweb.user import load_user_by_id, load_user_by_name, User
 
-from odinfo.config import OP_CENTER_URL, load_secrets, check_dirs_and_configs, get_config
+from odinfo.config import OP_CENTER_URL, WEB_PORT, load_secrets, check_dirs_and_configs, get_config
 from odinfo.facade.cache import FacadeCache
 from odinfo.facade.odinfo import ODInfoFacade
 from odinfo.facade.graphs import nw_history_graph, land_history_graph
@@ -381,5 +381,5 @@ def teardown_app(exception):
 
 
 if __name__ == '__main__':
-    print("Starting Server...")
-    app.run()
+    print(f"Starting Server on http://localhost:{WEB_PORT} ...")
+    app.run(port=WEB_PORT)

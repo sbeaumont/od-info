@@ -24,7 +24,9 @@ RUN install -d -o odinfo -g odinfo instance out
 
 USER odinfo
 ENV PATH="/app/.venv/bin:$PATH"
-EXPOSE 5000
+# The same port ODInfo uses everywhere else, so nothing has to be translated when it is
+# published. Keep it in step with WEB_PORT in odinfo/config.py.
+EXPOSE 5042
 
 ENTRYPOINT ["flask"]
-CMD ["--app", "odinfoweb.flask_app", "run", "--host", "0.0.0.0"]
+CMD ["--app", "odinfoweb.flask_app", "run", "--host", "0.0.0.0", "--port", "5042"]

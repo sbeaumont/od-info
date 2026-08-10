@@ -25,6 +25,13 @@ def executable_path(rel_path: str):
 
 DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
+# The port the web interface listens on. Not Flask's own 5000: that one is taken often
+# enough to be a nuisance, by macOS AirPlay among others. Every way of starting ODInfo
+# uses this same number, so the launchers that don't run Python to work it out
+# (odinfo.sh, odinfo.bat, the Dockerfile) repeat it and have to be changed along.
+
+WEB_PORT = 5042
+
 # Knowledge of internal directory and file structure
 
 INSTANCE_DIR = './instance'

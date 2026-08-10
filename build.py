@@ -103,7 +103,7 @@ The application will:
 - Create an `instance/` folder with template config files (first run only)
 - Check your configuration files and prompt you to edit them if needed
 - Create the database if it doesn't exist  
-- Start the web server (usually at http://localhost:5000)
+- Start the web server (usually at http://localhost:5042)
 
 ## Upgrading
 

@@ -30,6 +30,11 @@ two ways there is nothing for you to schedule. The unzipped folder has its own R
 and scripts that mirror the ones described below: `start`, `stop`, `update_data`,
 `update_refdata` and `logs`.
 
+Where your data lives, the port, and whether the interface is reachable from the rest of
+your network are all settings in the `.env` file in that folder. It also explains how to
+drive the container yourself instead of through the scripts, for anyone who would rather
+do that.
+
 ## Running From the Source
 
 ### Download files
@@ -65,7 +70,7 @@ you're opening up a local webserver.
 ### Open the browser
 
 Look in the run log of the console (command prompt) for the local URL you can point in your browser, but generally 
-it's http://localhost:5000 or http://127.0.0.1:5000.
+it's http://localhost:5042 or http://127.0.0.1:5042.
 First time you will be asked to enter a username and password, this is NOT your OD credentials, but what you filled in
 the "users.json" file. If you have your browser remember it you won't have to deal with that anymore.
 

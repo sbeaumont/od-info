@@ -1,19 +1,25 @@
 # The two containers that make up ODInfo. Started by start.sh / start.bat.
 #
-# TZ comes from the .env file next to this one. It matters: a container's clock is UTC,
-# while ODInfo stores plain local timestamps and adds LOCAL_TIME_SHIFT to them, so a
-# container in the wrong timezone records every observation hours off.
+# Everything you can change sits in the .env file next to this one, which start writes for
+# you on the first run: TZ, ODINFO_INSTANCE, ODINFO_PORT, ODINFO_BIND and ODINFO_ENGINE.
+#
+# TZ matters more than it looks: a container's clock is UTC, while ODInfo stores plain
+# local timestamps and adds LOCAL_TIME_SHIFT to them, so a container in the wrong timezone
+# records every observation hours off.
 
 services:
   app:
     image: ghcr.io/sbeaumont/od-info:latest
     ports:
-      # ODInfo listens on 5000 inside the container, as it does natively. Published to
-      # 127.0.0.1 only, so it is reachable from this machine and not from the network.
-      # Override the 5042 with ODINFO_PORT in .env if something else already has it.
-      - "127.0.0.1:${ODINFO_PORT:-5042}:5000"
+      # ODInfo listens on 5042 inside the container, the same port it uses everywhere
+      # else, so there is nothing to translate. Published on every interface, because a
+      # headless machine is no use if only that machine can reach it; the interface asks
+      # for the login from users.json. ODINFO_BIND=127.0.0.1 keeps it to this machine.
+      - "${ODINFO_BIND:-0.0.0.0}:${ODINFO_PORT:-5042}:5042"
     volumes:
-      - ./instance:/app/instance:Z
+      # Your configuration and database. Lives next to these scripts unless you point
+      # ODINFO_INSTANCE somewhere else, at a full path like /srv/odinfo/instance.
+      - ${ODINFO_INSTANCE:-./instance}:/app/instance:Z
     environment:
       TZ: ${TZ:?Put TZ=Area/City in the .env file, e.g. TZ=Europe/Amsterdam}
     restart: unless-stopped
@@ -21,7 +27,7 @@ services:
   updater:
     image: ghcr.io/sbeaumont/od-info:latest
     volumes:
-      - ./instance:/app/instance:Z
+      - ${ODINFO_INSTANCE:-./instance}:/app/instance:Z
     environment:
       TZ: ${TZ:?Put TZ=Area/City in the .env file, e.g. TZ=Europe/Amsterdam}
     restart: unless-stopped

@@ -1,0 +1,28 @@
+{% extends "odinfo-base.html" %}
+
+{% block content %}
+<div class="w3-container od-doc">
+
+  <h1>About OD Info</h1>
+
+  <p class="od-lead">
+    OD Info collects what you've seen of a round and works out what it means, so you can
+    plan against it. These pages explain how it goes about that.
+  </p>
+
+  <dl>
+    <dt><a href="{{ url_for('philosophy') }}">What OD Info is for</a></dt>
+    <dd>
+      Why the tool counts what it counts, why that won't tell you whether to send, and what
+      each section of the app is meant to answer.
+    </dd>
+
+    <dt><a href="{{ url_for('op_explained') }}">How OP and DP are calculated</a></dt>
+    <dd>
+      Which ops feed the numbers, what each unit is worth, which bonuses go on top, and why
+      a figure here can differ from what the game or another tool tells you.
+    </dd>
+  </dl>
+
+</div>
+{% endblock %}

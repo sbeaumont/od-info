@@ -1,0 +1,159 @@
+{% extends "odinfo-base.html" %}
+
+{#
+  What the tool is for and what each section is meant to answer. The sidebar in
+  odinfo-base.html is the list this page describes, so a section added or dropped there is
+  a reason to re-read this page. After doing so, run:
+
+      uv run python check_explanations.py --stamp odinfoweb/templates/philosophy.html
+#}
+{% set reviewed_on = '2026-08-12' %}
+{#- doc-sources
+odinfoweb/templates/odinfo-base.html 6bc692cd959709f6
+odinfoweb/viewmodels/about.py b15a9a2aabfd0eb6
+-#}
+
+{% block content %}
+<div class="w3-container od-doc">
+
+  <h1>What OD Info is for</h1>
+
+  <p class="od-lead">
+    OD Info is a planning tool. It's built around one question: what will the round look
+    like {{ vm.build_ticks }} ticks from now?
+  </p>
+
+  <h2>The {{ vm.build_ticks }} tick clock</h2>
+
+  <p>
+    Almost everything you build takes {{ vm.build_ticks }} ticks to finish. That single
+    fact sets your horizon.
+  </p>
+  <p>
+    What you start now is what you'll have half a day from now. So you need to know today
+    who'll be able to reach you then, and how much defence you'd better be holding when
+    they do.
+  </p>
+  <p>
+    Every number in here points at that question. It's also why some of them won't match
+    what the game shows you this second.
+  </p>
+
+  <h2>Why everything counts as paid</h2>
+
+  <p>
+    The tool counts what a dominion has committed to. Units in the training queue count.
+    Buildings under construction count. Land that's already on its way counts. At a
+    {{ vm.build_ticks }} tick horizon all of it is real, and that's the horizon you're
+    planning against.
+  </p>
+  <p>
+    So a figure here can read higher than what the game shows that dominion right now.
+    That's the intended answer. The <span class="od-term">Paid</span> column tells you how
+    many ticks are left before their queue lands.
+  </p>
+  <p>
+    Want the right-now view instead? The <span class="od-term">Current Strength</span>
+    columns on the Military page give you that.
+  </p>
+
+  <h2>What it won't do</h2>
+
+  <p>
+    It won't tell you whether to send. The numbers rest on assumptions that are fine for
+    planning and shaky for a final call: spells assumed up, barracks spy figures carrying
+    their fuzz, bonuses pulled from ops taken hours apart. Any of those can be off on the
+    dominion in front of you.
+  </p>
+  <p>
+    Use it to work out who's worth a look and what you need ready. Then take fresh ops and
+    check the target in the game's own calculator before you commit.
+    <a href="{{ url_for('op_explained') }}">How OP and DP are calculated</a> goes through
+    where the two drift apart.
+  </p>
+
+  <h2>Why it keeps history</h2>
+
+  <p>
+    Every update adds a timestamped copy instead of overwriting the last one. One op tells
+    you where a dominion stands. A run of them tells you where it's heading, which is what
+    you actually need {{ vm.build_ticks }} ticks out.
+  </p>
+  <p>
+    That's also why the age of an op sits on every page, colour coded. Over an hour old,
+    look twice. Past {{ vm.build_ticks }} ticks, refresh it before you trust it.
+  </p>
+  <p>
+    The tool never plays for you. It takes no actions in the game and collects nothing on
+    its own, because that's against the rules. You play, you take the ops, you pull the
+    results in here.
+  </p>
+
+  <h2>What each section is for</h2>
+
+  <dl>
+    <dt><a href="{{ url_for('overview') }}">Overview</a></dt>
+    <dd>
+      Every dominion in the round with its land, its networth, and how far that networth
+      moved in the last 12 hours. Where you start, and where you keep coming back to.
+    </dd>
+
+    <dt><a href="{{ url_for('towncrier') }}">Town Crier</a></dt>
+    <dd>
+      A copy of the game's event feed, wiped and refreshed every time you update it.
+      There's little reason to read it here, since the game shows you the same events. It's
+      in the app because it's raw material: Award Stats runs entirely off it, and there's
+      more to be squeezed out of who has been hitting whom than the tool does today.
+    </dd>
+
+    <dt><a href="{{ url_for('nw_tracker') }}">Networth Tracker</a></dt>
+    <dd>
+      Two questions on one page. The top of the list is who's growing fastest, which is a
+      threat forming. The <span class="od-term">Unchanged NW</span> list below it is the
+      opposite: dominions whose networth hasn't budged, which usually means nobody's home.
+      An inactive dominion has probably let Ares Call drop, and that makes it a target.
+    </dd>
+
+    <dt><a href="{{ url_for('ratios') }}">Ratios</a></dt>
+    <dd>
+      Wizard and spy ratios per dominion. Whether your ops will land on them, and whether
+      theirs will land on you.
+    </dd>
+
+    <dt><a href="{{ url_for('military') }}">Military Tracker</a></dt>
+    <dd>
+      The planning board. What each dominion could send, what it'd have left at home, and
+      what your own defence has to beat once their temples are counted.
+    </dd>
+
+    <dt><a href="{{ url_for('realmies') }}">Realmies</a></dt>
+    <dd>
+      Your own realm, seen the way an enemy scanning it sees it. Who's under-defended,
+      who's missing Ares Call, who has no boats to send with. Find your soft spots before
+      somebody else finds them for you.
+    </dd>
+
+    <dt><a href="{{ url_for('stealables') }}">Stealables</a></dt>
+    <dd>
+      Where the resources are sitting, with your own realm and the bots filtered out.
+    </dd>
+
+    <dt><a href="{{ url_for('stats') }}">Award Stats</a></dt>
+    <dd>
+      Pure fun, this one. Bounce counts and war declarations tallied out of the Town Crier
+      events, for handing out awards to the realm when the round wraps up.
+    </dd>
+
+    {% if 'economy' in feature_toggles %}
+    <dt><a href="{{ url_for('economy') }}">Economy</a></dt>
+    <dd>
+      Your own dominion's jobs and platinum production. Off unless you switch it on in
+      <code>secret.txt</code>.
+    </dd>
+    {% endif %}
+  </dl>
+
+  <p class="od-stamp">Last checked on {{ reviewed_on }}.</p>
+
+</div>
+{% endblock %}

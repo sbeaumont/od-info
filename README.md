@@ -128,6 +128,34 @@ see one.
 When a later version of this app ships with newer reference data than what you downloaded,
 that newer data automatically takes over.
 
+## Keeping the About pages honest
+
+The About section explains the tool to its users: what it is for and what each part of it
+is meant to answer, and how it arrives at a dominion's OP and DP. Those pages are only
+worth having if they stay true, so each one carries the date somebody last read it against
+the code, plus a fingerprint of every file it depends on. The page itself lists those
+files, so a page decides what would make it go stale.
+
+Install the hook that guards them once per checkout:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+From then on a push that touches the code behind an explanation stops until somebody has
+read the page against the change:
+
+```bash
+uv run python check_explanations.py            # are the pages still current?
+uv run python check_explanations.py --stamp    # they are now, record that
+```
+
+Name a page to limit either command to that one. Stamping is a claim that you have read
+the page, not a formality. `git push --no-verify` skips the hook if you need it to.
+
+A new explanation page joins in by carrying a `reviewed_on` date and a `doc-sources` block
+listing the files it describes; nothing else has to be registered anywhere.
+
 ## Creating a Distribution Package
 
 To create a standalone executable for distribution to non-technical users:

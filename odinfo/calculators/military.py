@@ -5,6 +5,7 @@ from math import trunc
 from odinfo.domain.models import Dominion
 from odinfo.domain.refdata import Race
 from odinfo.domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, TEMPLE_BONUS_PER_PERC, Unit, Spells, MAX_TEMPLE_BONUS
+from odinfo.domain.refdata import MAX_GUARD_TOWER_BONUS, MAX_GRYPHON_NEST_BONUS
 from odinfo.domain.refdata import NETWORTH_VALUES, ARES_BONUS, BARRACKS_SPY_FUZZ
 from odinfo.domain.refdata import UNITS_PER_BOAT, BOATS_PER_DOCK, BOATS_PER_DOCK_PER_DAY
 
@@ -127,7 +128,7 @@ class MilitaryCalculator(object):
     def spell_bonus(self, race: str, perk_name: str):
         if not self.spells:
             self.spells = Spells()
-        return self.spells.value_for_perk(race.lower(), perk_name)
+        return self.spells.value_for_perk(race, perk_name)
 
     @property
     def temple_bonus(self) -> float:
@@ -151,14 +152,14 @@ class MilitaryCalculator(object):
     @property
     def gryphon_nest_bonus(self) -> float:
         if self.dom.buildings:
-            return self.dom.buildings.ratio_of('gryphon_nest') * GN_OFFENSE_BONUS
+            return min(MAX_GRYPHON_NEST_BONUS, self.dom.buildings.ratio_of('gryphon_nest') * GN_OFFENSE_BONUS)
         else:
             return 0
 
     @property
     def guard_tower_bonus(self) -> float:
         if self.dom.buildings:
-            return self.dom.buildings.ratio_of('guard_tower') * GT_DEFENSE_FACTOR
+            return min(MAX_GUARD_TOWER_BONUS, self.dom.buildings.ratio_of('guard_tower') * GT_DEFENSE_FACTOR)
         else:
             return 0
 

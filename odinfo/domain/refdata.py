@@ -18,8 +18,11 @@ game_constants = json.load(open(GAME_CONSTANTS_FILE))
 NON_HOME_CAPACITY = game_constants['non_home_capacity']
 BUILD_TICKS = game_constants['build_ticks']
 MASONRY_MULTIPLIER = game_constants['masonry_multiplier']
+# Building bonuses run per percent of land owned and all cap out at 20% owned.
 GT_DEFENSE_FACTOR = game_constants['gt_defense_factor']
+MAX_GUARD_TOWER_BONUS = game_constants['max_guard_tower_bonus']
 GN_OFFENSE_BONUS = game_constants['gn_offense_bonus']
+MAX_GRYPHON_NEST_BONUS = game_constants['max_gryphon_nest_bonus']
 TEMPLE_BONUS_PER_PERC = game_constants['temple_bonus_per_perc']
 MAX_TEMPLE_BONUS = game_constants['max_temple_bonus']
 POP_PER_HOME = game_constants['pop_per_home']
@@ -63,7 +66,12 @@ class Spells(object):
         self.spells = self._load_spells()
 
     def value_for_perk(self, race: str, perk_name: str):
-        return self.spells[perk_name].get(race, 0)
+        return self.spells[perk_name].get(self.race_key(race), 0)
+
+    @staticmethod
+    def race_key(race: str) -> str:
+        """spells.yml keys a race as 'dark-elf' where the game calls it 'Dark Elf'."""
+        return race.strip().lower().replace(' ', '-')
 
     @staticmethod
     @lru_cache(maxsize=None)

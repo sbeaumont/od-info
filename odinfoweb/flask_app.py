@@ -29,6 +29,8 @@ from odinfo.exceptions import ODInfoException
 from odinfo.repositories.game import GameRepository
 from odinfoweb.viewmodels.dominfo import build_dominfo_vm
 from odinfoweb.viewmodels.economy import build_economy_vm
+from odinfoweb.viewmodels.opexplained import build_op_explained_vm
+from odinfoweb.viewmodels.about import build_philosophy_vm
 
 # ---------------------------------------------------------------------- Flask
 
@@ -320,6 +322,24 @@ def military(versus_op: int = 0):
                            versus_op=versus_op,
                            include_current=include_current,
                            current_day=facade().current_tick.day)
+
+
+@app.route('/about')
+@login_required
+def about():
+    return render_template('about.html')
+
+
+@app.route('/about/philosophy')
+@login_required
+def philosophy():
+    return render_template('philosophy.html', vm=build_philosophy_vm())
+
+
+@app.route('/about/op-explained')
+@login_required
+def op_explained():
+    return render_template('op-explained.html', vm=build_op_explained_vm())
 
 
 @app.route('/realmies')

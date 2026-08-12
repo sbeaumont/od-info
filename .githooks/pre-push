@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+# Stops a push when code moved but the About page explaining it did not.
+#
+# Install once, in this checkout:
+#
+#     git config core.hooksPath .githooks
+#
+# The check is stdlib-only, so it runs under a plain python when uv is not on the PATH,
+# which is what happens when you push from an IDE rather than a terminal.
+#
+# To push past it anyway: git push --no-verify
+
+for interpreter in uv python3 python; do
+    if command -v "$interpreter" >/dev/null 2>&1; then
+        if [ "$interpreter" = "uv" ]; then
+            uv run python check_explanations.py && exit 0
+        else
+            "$interpreter" check_explanations.py && exit 0
+        fi
+        echo ""
+        echo "Push stopped. Read the pages above against those changes, then either"
+        echo "correct them or stamp them as still true."
+        exit 1
+    fi
+done
+
+echo "pre-push: found no python to run check_explanations.py with." >&2
+exit 1

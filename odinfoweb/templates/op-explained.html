@@ -1,0 +1,320 @@
+{% extends "odinfo-base.html" %}
+
+{#
+  This page describes what the calculators actually do. When the calculation changes, the
+  page has to change with it, and the fingerprints below record which version of the code
+  was read the last time somebody checked. The pre-push hook compares them and stops the
+  push if they no longer match. After re-reading the page against the code, run:
+
+      uv run python check_explanations.py --stamp odinfoweb/templates/op-explained.html
+#}
+{% set reviewed_on = '2026-08-12' %}
+{#- doc-sources
+data/game-constants.json ba2c2b750d084f9d
+odinfo/calculators/military.py c0a512add23394c4
+odinfo/domain/domainhelper.py 8df104a7b57165c6
+odinfo/domain/models.py 8ed718270aff3a6a
+odinfo/domain/refdata.py 03d7d4c74a6312ff
+odinfo/services/military_service.py 223c44544ed14ecc
+odinfoweb/viewmodels/opexplained.py 63e527e88165b4e6
+-#}
+
+{% block content %}
+<div class="w3-container od-doc">
+
+  <h1>How OP and DP are calculated</h1>
+
+  <p class="od-lead">
+    OD Info never sees a dominion's offensive or defensive power. It rebuilds both from the
+    ops you've taken, the same way you would by hand.
+  </p>
+  <h2>1. Which units get counted</h2>
+
+  <p>Two ops report a dominion's army, and they tell you different things.</p>
+
+  <table class="w3-table w3-striped-dark w3-bordered w3-border">
+    <thead>
+      <tr class="w3-black"><th>Op</th><th>What it tells you</th></tr>
+    </thead>
+    <tr>
+      <td><span class="od-term">Clear Sight</span></td>
+      <td>
+        Every unit the dominion owns, one number per unit type. That includes units away on
+        an invasion. It won't tell you how they're split, and it says nothing about the
+        training queue.
+      </td>
+    </tr>
+    <tr>
+      <td><span class="od-term">Barracks Spy</span></td>
+      <td>
+        The split: how many are home, how many are training and land on which tick, how
+        many are returning and land on which tick. Every number on it is fuzzed by up to
+        {{ vm.barracks_spy_error_percent }}%.
+      </td>
+    </tr>
+  </table>
+
+  <p>The tool picks between them per dominion.</p>
+
+  <ul class="w3-ul w3-border w3-border-black">
+    <li>
+      <strong>Clear Sight is fresher</strong> (or under an hour old): its totals get used,
+      plus anything from the last Barracks Spy that hadn't finished training by the time
+      the Clear Sight was taken. What they own now, plus what's still in the oven.
+    </li>
+    <li>
+      <strong>Barracks Spy is fresher</strong>: home, returning and training get added back
+      together. Units at home are taken at the top of their fuzz range and returning units
+      at the bottom, so the dominion reads as strong at home now.
+    </li>
+  </ul>
+
+  <p>
+    The <span class="od-term">Paid</span> column counts the ticks until the last of that
+    training lands. Until then you're looking at OP they've paid for. Whether they can
+    send it this tick is a different question.
+  </p>
+  <p>
+    That's the angle of the whole tool: the maximum a dominion could send once everything
+    it has paid for has landed. It's the figure that fits the
+    <a href="{{ url_for('philosophy') }}">{{ vm.build_ticks }} tick planning window</a>
+    the rest of the app works in.
+  </p>
+
+  <h2>2. What one unit is worth</h2>
+
+  <p>
+    Each unit starts at its race's printed offense and defense. Then its own perks move the
+    number.
+  </p>
+  <p>
+    The ones worth knowing about are the perks that depend on the dominion rather than the
+    race, because each needs an extra op before the tool can read it.
+  </p>
+
+  <dl>
+    <dt>Offense or defense from land</dt>
+    <dd>
+      A Wood Elf Druid hits harder the more forest the dominion sits on. Needs a
+      <span class="od-term">Land Spy</span>. Without one the perk counts as zero.
+    </dd>
+    <dt>Offense from wizard ratio</dt>
+    <dd>
+      An Icekin Ice Elemental scales with raw WPA, read off
+      <span class="od-term">Clear Sight</span>.
+    </dd>
+    <dt>Offense from prestige</dt>
+    <dd>
+      An Orc Bone Breaker scales with prestige, also off
+      <span class="od-term">Clear Sight</span>.
+    </dd>
+    <dt>Paired units</dt>
+    <dd>
+      A Kobold Overlord is worth more when there are enough of the paired unit to go round.
+      Counted straight from the army.
+    </dd>
+  </dl>
+
+  <p>
+    An exclamation mark next to <span class="od-term">Ops Age</span> on the Military page
+    means one of these applies to that dominion and the op it needs is missing. That unit
+    is being counted at its printed strength.
+  </p>
+
+  <h2>3. The bonuses on top</h2>
+
+  <p>
+    Offense bonuses get added together first, then applied once to the raw OP, same as the
+    game does it. Defense works the same way off its own list.
+  </p>
+  <p>
+    Anything the tool can't see counts as zero. So a dominion you have thin intel on always
+    reads low, never high.
+  </p>
+
+  <table class="w3-table w3-striped-dark w3-bordered w3-border">
+    <thead>
+      <tr class="w3-black">
+        <th>Bonus</th><th>Applies to</th><th>Op it needs</th>
+      </tr>
+    </thead>
+    <tr><td>Racial bonus</td><td>OP and DP</td><td>none, it follows from the race</td></tr>
+    <tr><td>Racial self-spell</td><td>OP and DP</td><td>none, it's assumed up (see below)</td></tr>
+    <tr><td>Ares Call</td><td>DP, +{{ vm.ares_bonus_percent }}%</td><td>none, it's assumed up</td></tr>
+    <tr><td>Techs</td><td>OP and DP</td><td><span class="od-term">Vision</span></td></tr>
+    <tr><td>Forges and Walls</td><td>OP and DP</td><td><span class="od-term">Castle Spy</span></td></tr>
+    <tr><td>Gryphon Nests and Guard Towers</td><td>OP and DP</td><td><span class="od-term">Survey Dominion</span></td></tr>
+    <tr><td>Prestige</td><td>OP</td><td><span class="od-term">Clear Sight</span></td></tr>
+  </table>
+
+  <h3>Buildings</h3>
+
+  <table class="w3-table w3-striped-dark w3-bordered w3-border">
+    <thead>
+      <tr class="w3-black"><th>Building</th><th>Effect</th><th>Per 1% owned</th><th>Maximum</th></tr>
+    </thead>
+    {% for building in vm.buildings %}
+    <tr>
+      <td>{{ building.name }}</td>
+      <td>{{ building.effect }}</td>
+      <td>{{ building.per_percent }}%</td>
+      <td>{{ building.max_bonus_percent }}% at 20% owned</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <p>
+    Buildings under construction count towards these, and land on its way counts towards
+    the total they're measured against. That's deliberate, and it's the same paid thinking
+    as the training queue. It does mean the percentage here can run ahead of what the game
+    shows that dominion today.
+  </p>
+
+  <h3>Spells assumed to be up</h3>
+
+  <p>
+    A racial self-spell is invisible from the outside, so the tool assumes it's running.
+    That's the right guess for an active dominion and the wrong one for somebody asleep or
+    out of mana. Ares Call gets the same treatment on defense.
+  </p>
+
+  <table class="w3-table w3-striped-dark w3-bordered w3-border">
+    <thead>
+      <tr class="w3-black"><th>Race</th><th>Offense</th><th>Defense</th></tr>
+    </thead>
+    {% for spell in vm.assumed_spells %}
+    <tr>
+      <td>{{ spell.race }}</td>
+      <td>{% if spell.offense_percent %}{{ '%+g' % spell.offense_percent }}%{% else %}&mdash;{% endif %}</td>
+      <td>{% if spell.defense_percent %}{{ '%+g' % spell.defense_percent }}%{% else %}&mdash;{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2>4. What each column means</h2>
+
+  <dl>
+    <dt>Send OP / Send DP</dt>
+    <dd>
+      A normal send: everything in the two offensive unit slots goes out, everything in the
+      two defensive slots stays home. That's the realistic send for most races, and it's
+      what you get until you switch the send type. A race whose third and fourth units are
+      both hybrids has no such split, so those show the 5/4 figure here instead.
+      <br>
+      Fill in <span class="od-term">vs OP</span> at the top of the page and the column
+      changes meaning. It becomes the most OP that dominion could send while still holding
+      off an attack of that size, spending its hybrids on defence first.
+    </dd>
+    <dt>5/4 OP / 5/4 DP</dt>
+    <dd>
+      The absolute maximum. Hybrids get thrown at the attack in order of how much offense
+      they buy per point of defence given up, until sending one more would break the 5/4
+      rule. Treat it as the worst case rather than the likely one.
+    </dd>
+    <dt>+Tmps</dt>
+    <dd>
+      Send OP grossed up for that dominion's temples. Temples cut your defence, so this is
+      the number your DP actually has to beat. Compare against this column, not Send OP.
+      It's also the one to sort on when you want the strongest dominion in the round with
+      their temples already counted in.
+    </dd>
+    <dt>Raw OP / Raw DP</dt>
+    <dd>
+      These cells show OP and DP <em>with</em> all bonuses applied. The genuinely raw
+      figure is in the tooltip when you hover the cell.
+    </dd>
+    <dt>Cur OP / Cur DP / Conf</dt>
+    <dd>
+      Strength from home units only, worked out from Barracks Spies rather than Clear
+      Sight, plus whatever has landed since. Two or more Barracks Spies taken in the same
+      tick narrow the {{ vm.barracks_spy_error_percent }}% fuzz, because each one puts the
+      true number in its own range and the ranges overlap.
+      <span class="od-term">Conf</span> tells you how tight that got:
+      <code>locked</code> means they pinned it exactly, otherwise you get the margin
+      that's left.
+    </dd>
+  </dl>
+
+  <h2>5. Why your number can differ</h2>
+
+  <p>In rough order of how often it's the answer.</p>
+
+  <ol>
+    <li>
+      <strong>Units owned versus units at home.</strong> The main OP figure counts every
+      unit the dominion owns, including any out on an invasion right now. A tool showing
+      what's home this tick will be lower, and both of you are right. The
+      <span class="od-term">Cur OP</span> column is the home-only view.
+    </li>
+    <li>
+      <strong>The training queue.</strong> The game's own Offense Calculator assumes a
+      dominion keeps training at the same rate, so it counts the full queue. OD Info counts
+      what's actually left and drops the ticks that already landed. Against a dominion
+      training hard, OD Info reads lower than the game. That's deliberate on the game's
+      side.
+    </li>
+    <li>
+      <strong>Spells that may not be up.</strong> Every race gets credited with its
+      self-spell. On a dominion that's asleep, out of mana, or just out of protection,
+      that's up to 10% of OP that isn't there.
+    </li>
+    <li>
+      <strong>Ops you're missing.</strong> No Vision, no tech bonus. No Castle Spy, no
+      forges. No Survey Dominion, no gryphon nests. Each one quietly counts as zero, so
+      thin intel always reads low. Check <span class="od-term">Ops Age</span> before you
+      trust a number.
+    </li>
+    <li>
+      <strong>Barracks Spy fuzz.</strong> Every number on one is off by up to
+      {{ vm.barracks_spy_error_percent }}% either way. When the Barracks Spy is the
+      freshest op, that error rides straight into the OP. A second one in the same tick
+      genuinely narrows it.
+    </li>
+    <li>
+      <strong>Ops taken at different times.</strong> The bonuses come from up to four
+      separate ops. If your Survey is a day older than your Clear Sight, you're looking at
+      yesterday's buildings on today's army.
+    </li>
+    <li>
+      <strong>Buildings under construction.</strong> Counted as though they're finished, as
+      above. A dominion mid-rebuild reads slightly ahead of what the game shows it.
+    </li>
+    <li>
+      <strong>Clear Sight isn't always exact.</strong> A realm holding the Spire of
+      Illusion has its Clear Sight results fuzzed, and the tool takes Clear Sight at face
+      value.
+    </li>
+  </ol>
+
+  <h2>6. What the tool doesn't count yet</h2>
+
+  <p>
+    Each one skews the estimate in a predictable direction. Poke AgFx if you want one of
+    them fixed soon.
+  </p>
+
+  <ul class="w3-ul w3-border w3-border-black">
+    <li>
+      <strong>Wonders.</strong> Nothing realm-wide from wonders is counted. A realm holding
+      the Obelisk of Power or the Lair of the Dragon hits harder than shown, and one behind
+      the Great Wall defends better.
+    </li>
+    <li>
+      <strong>Units that ignore draftees.</strong> Draftees always count towards DP here,
+      so a dominion facing a Dark Elf or Spirit attack looks better defended than it is.
+    </li>
+    <li>
+      <strong>Offense that varies with land range.</strong> A Gnome Juggernaut and a classic
+      Dark Elf Spirit Warrior hit harder or softer depending on the size of the target.
+      They're counted at base value, so Gnome OP in particular reads low.
+    </li>
+    <li>
+      <strong>Offense and defense from buildings</strong> on the classic Dark Elf Adept, and
+      <strong>summoned units</strong> on Planewalker.
+    </li>
+  </ul>
+
+  <p class="od-stamp">Last checked against the calculations on {{ reviewed_on }}.</p>
+
+</div>
+{% endblock %}

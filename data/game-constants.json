@@ -27,9 +27,11 @@
   "masonry_multiplier": 2.6,
 
   "gt_defense_factor": 1.6,
+  "max_guard_tower_bonus": 0.32,
   "gn_offense_bonus": 1.6,
+  "max_gryphon_nest_bonus": 0.32,
   "temple_bonus_per_perc": 1.35,
-  "max_temple_bonus": 27,
+  "max_temple_bonus": 0.27,
 
   "ares_bonus": 0.1,
   "midas_touch_bonus": 0.1,

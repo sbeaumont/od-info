@@ -1,5 +1,6 @@
 import logging
-from datetime import timedelta
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 
 from sqlalchemy import func, select, and_
 
@@ -10,24 +11,20 @@ from odinfo.timeutils import current_od_time
 logger = logging.getLogger('od-info.calculators')
 
 
-def get_latest_and_oldest_nw(repo: GameRepository, since=12):
-    since_timestamp = current_od_time() + timedelta(hours=-since)
-    logger.debug(f"Getting networth values since {since_timestamp}")
-    session = repo.session
-    latest_nws = session.execute(
-        select(DominionHistory, func.max(DominionHistory.timestamp))
-        .filter(DominionHistory.timestamp >= since_timestamp)
-        .group_by(DominionHistory.dominion_id)
-    ).scalars()
-    oldest_nws = session.execute(
-        select(DominionHistory, func.min(DominionHistory.timestamp))
-        .filter(DominionHistory.timestamp >= since_timestamp)
-        .group_by(DominionHistory.dominion_id)
-    ).scalars()
-    return latest_nws, oldest_nws
+@dataclass(frozen=True)
+class NetworthDelta:
+    """How far a dominion's networth moved, and the stretch it was measured over."""
+    delta: int
+    oldest: datetime
+    latest: datetime
+
+    @property
+    def span(self) -> timedelta:
+        return self.latest - self.oldest
 
 
-def get_networth_deltas(repo: GameRepository, since=12):
+def get_networth_deltas(repo: GameRepository, since=12) -> dict[int, NetworthDelta]:
+    """How far each dominion's networth moved within the last `since` hours."""
     since_timestamp = current_od_time() + timedelta(hours=-since)
     logger.debug(f"Getting networth values since {since_timestamp}")
     session = repo.session
@@ -76,11 +73,16 @@ def get_networth_deltas(repo: GameRepository, since=12):
     latest_dict = {record.dominion_id: record for record in latest_nws}
     oldest_dict = {record.dominion_id: record for record in oldest_nws}
 
-    # Calculate deltas for dominions that appear in both results
-    deltas = {}
+    # Calculate deltas for dominions we saw at two different moments
+    deltas = dict()
     for dominion_id in set(latest_dict) & set(oldest_dict):
         latest = latest_dict[dominion_id]
         oldest = oldest_dict[dominion_id]
-        deltas[dominion_id] = latest.networth - oldest.networth
+        if latest.timestamp == oldest.timestamp:
+            # One reading: a delta of zero would claim it held still, when in truth we
+            # never saw it move.
+            continue
+        deltas[dominion_id] = NetworthDelta(latest.networth - oldest.networth,
+                                            oldest.timestamp,
+                                            latest.timestamp)
     return deltas
-

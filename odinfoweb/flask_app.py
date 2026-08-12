@@ -21,7 +21,9 @@ from odinfoweb.forms import LoginForm
 from odinfo.domain.models import Base
 from odinfoweb.user import load_user_by_id, load_user_by_name, User
 
-from odinfo.config import OP_CENTER_URL, WEB_PORT, load_secrets, check_dirs_and_configs, get_config
+from odinfo.config import (OP_CENTER_URL, WEB_PORT, NW_PERIODS, NW_DEFAULT_PERIOD,
+                           NW_ROW_COUNTS, NW_UNCHANGED_DEFAULT, load_secrets,
+                           check_dirs_and_configs, get_config)
 from odinfo.facade.cache import FacadeCache
 from odinfo.facade.odinfo import ODInfoFacade
 from odinfo.facade.graphs import nw_history_graph, land_history_graph
@@ -30,7 +32,7 @@ from odinfo.repositories.game import GameRepository
 from odinfoweb.viewmodels.dominfo import build_dominfo_vm
 from odinfoweb.viewmodels.economy import build_economy_vm
 from odinfoweb.viewmodels.opexplained import build_op_explained_vm
-from odinfoweb.viewmodels.about import build_philosophy_vm
+from odinfoweb.viewmodels.about import build_nw_tracker_vm, build_philosophy_vm
 
 # ---------------------------------------------------------------------- Flask
 
@@ -281,14 +283,21 @@ def nw_tracker(send=None):
     result_of_send = ''
     if send == 'send':
         result_of_send = facade().send_top_bot_nw_to_discord()
-    hours = request.args.get('hours', 12, type=int)
-    if hours not in (12, 24, 36, 48):
-        hours = 12
+    hours = request.args.get('hours', NW_DEFAULT_PERIOD, type=int)
+    if hours not in NW_PERIODS:
+        hours = NW_DEFAULT_PERIOD
+    show = request.args.get('show', NW_UNCHANGED_DEFAULT, type=int)
+    if show not in NW_ROW_COUNTS:
+        show = NW_UNCHANGED_DEFAULT
     return render_template('nwtracker.html',
                            top_nw=facade().get_top_bot_nw(filter_zeroes=True, since=hours),
                            bot_nw=facade().get_top_bot_nw(top=False, filter_zeroes=True, since=hours),
-                           unchanged_nw=facade().get_unchanged_nw(since=hours),
+                           unchanged_nw=facade().get_unchanged_nw(top=show or None, since=hours),
+                           without_delta=facade().count_without_delta(since=hours),
+                           periods=NW_PERIODS,
+                           row_counts=NW_ROW_COUNTS,
                            hours=hours,
+                           show=show,
                            result_of_send=result_of_send)
 
 
@@ -340,6 +349,12 @@ def philosophy():
 @login_required
 def op_explained():
     return render_template('op-explained.html', vm=build_op_explained_vm())
+
+
+@app.route('/about/nw-tracker')
+@login_required
+def nw_tracker_explained():
+    return render_template('nw-tracker-explained.html', vm=build_nw_tracker_vm())
 
 
 @app.route('/realmies')

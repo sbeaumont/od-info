@@ -1,107 +1,72 @@
 {% extends "odinfo-base.html" %}
 {% block title %}Networth Tracker{% endblock %}
 
+{% macro nw_table(rows) %}
+  <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
+      <thead>
+          <tr class="w3-black">
+              <th>Name</th>
+              <th>Race</th>
+              <th>Land</th>
+              <th>Networth</th>
+              <th>NW Delta ({{ hours }}h)</th>
+              <th>Span</th>
+              <th>Realm</th>
+          </tr>
+      </thead>
+      <tbody>
+      {% for dom in rows %}
+      <tr>
+          <td>
+              <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
+          </td>
+          <td>{{ dom.race }}</td>
+          <td>{{ dom.land }}</td>
+          <td>{{ dom.networth }}</td>
+          <td>{{ dom.nwdelta }}</td>
+          <td>{{ dom.span }}</td>
+          <td>{{ dom.realm }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+  </table>
+{% endmacro %}
+
 {% block content %}
   <div class="w3-container">
     <form method="get" style="display: inline;">
       <label>Period:</label>
-      {% for h in [12, 24, 36, 48] %}
+      {% for h in periods %}
         <label style="margin-left: 10px;">
           <input type="radio" name="hours" value="{{ h }}" {{ 'checked' if hours == h else '' }} onchange="this.form.submit()"> {{ h }}h
         </label>
       {% endfor %}
+      <label style="margin-left: 30px;">Unchanged rows:</label>
+      {% for count in row_counts %}
+        <label style="margin-left: 10px;">
+          <input type="radio" name="show" value="{{ count }}" {{ 'checked' if show == count else '' }} onchange="this.form.submit()"> {{ count if count else 'All' }}
+        </label>
+      {% endfor %}
     </form>
     <span style="margin-left: 20px;">
-      <a href="{{ url_for('nw_tracker') }}/send?hours={{ hours }}">Send to Discord</a>
+      <a href="{{ url_for('nw_tracker') }}/send?hours={{ hours }}&show={{ show }}">Send to Discord</a>
       {{ result_of_send }}
     </span>
+    {% if without_delta %}
+      <p>No delta for {{ without_delta }} dominions.</p>
+    {% endif %}
     <h5>Top 10</h5>
-    <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
-        <thead>
-            <tr class="w3-black">
-                <th>Name</th>
-                <th>Race</th>
-                <th>Land</th>
-                <th>Networth</th>
-                <th>NW Delta ({{ hours }}h)</th>
-                <th>Realm</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for dom in top_nw %}
-        <tr>
-            <td>
-                <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
-            </td>
-            <td>{{ dom.race }}</td>
-            <td>{{ dom.land }}</td>
-            <td>{{ dom.networth }}</td>
-            <td>{{ dom.nwdelta }}</td>
-            <td>{{ dom.realm }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {{ nw_table(top_nw) }}
     <br>
   </div>
   <div class="w3-container">
-    <h5>Unchanged NW</h5>
-    <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
-        <thead>
-            <tr class="w3-black">
-                <th>Name</th>
-                <th>Race</th>
-                <th>Land</th>
-                <th>Networth</th>
-                <th>NW Delta ({{ hours }}h)</th>
-                <th>Realm</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for dom in unchanged_nw %}
-        <tr>
-            <td>
-                <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
-            </td>
-            <td>{{ dom.race }}</td>
-            <td>{{ dom.land }}</td>
-            <td>{{ dom.networth }}</td>
-            <td>{{ dom.nwdelta }}</td>
-            <td>{{ dom.realm }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <h5>Unchanged NW ({{ unchanged_nw|length }})</h5>
+    {{ nw_table(unchanged_nw) }}
     <br>
   </div>
   <div class="w3-container">
     <h5>Bottom 10</h5>
-    <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
-        <thead>
-            <tr class="w3-black">
-                <th>Name</th>
-                <th>Race</th>
-                <th>Land</th>
-                <th>Networth</th>
-                <th>NW Delta ({{ hours }}h)</th>
-                <th>Realm</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for dom in bot_nw %}
-        <tr>
-            <td>
-                <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
-            </td>
-            <td>{{ dom.race }}</td>
-            <td>{{ dom.land }}</td>
-            <td>{{ dom.networth }}</td>
-            <td>{{ dom.nwdelta }}</td>
-            <td>{{ dom.realm }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {{ nw_table(bot_nw) }}
     <br>
   </div>
 {% endblock %}

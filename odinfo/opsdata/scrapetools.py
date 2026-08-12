@@ -71,16 +71,12 @@ def get_soup_page(session: requests.Session, url: str) -> BeautifulSoup | None:
         raise ConnectionError(f"Cannot reach OpenDominion: {e}")
 
 
-def read_server_time(soup: BeautifulSoup) -> str | None:
-    list_o_titles = [s for s in soup.footer.find_all('span', title=True)]
-    if len(list_o_titles) > 0:
-        timestamp_span = list_o_titles[0]
-        return timestamp_span['title']
-    else:
-        print("Can't find server time!")
-        print(soup.footer.find_all('span'))
-        print('\n', soup.footer)
-        return None
+def read_server_time(soup: BeautifulSoup) -> str:
+    footer = expect_not_none(soup.footer, "the page footer, which carries the server time")
+    titles = footer.find_all('span', title=True)
+    if not titles:
+        raise ODInfoException(f"No server time in the page footer: {footer}")
+    return titles[0]['title']
 
 
 def read_tick_time(soup: BeautifulSoup) -> ODTickTime:

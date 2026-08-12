@@ -3,16 +3,18 @@ from datetime import datetime, timedelta
 from math import trunc
 
 from odinfo.config import DATE_TIME_FORMAT, get_config
+from odinfo.exceptions import ODInfoException
 
 
 def cleanup_timestamp(timestamp: str) -> datetime:
     """Ensures that a timestamp has a YYYY-MM-DD HH:MM:SS format."""
     m = re.match(r"(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})", timestamp)
-    if m:
-        clean_ts = f"{m.group(1)} {m.group(2)}"
-        return datetime.strptime(clean_ts, DATE_TIME_FORMAT)
-    else:
-        return datetime.now()
+    if not m:
+        # Falling back to the local clock would date the reading by however far our
+        # clock sits from the game's, and nothing downstream could tell.
+        raise ODInfoException(f"Not a timestamp we can read: {timestamp!r}")
+    clean_ts = f"{m.group(1)} {m.group(2)}"
+    return datetime.strptime(clean_ts, DATE_TIME_FORMAT)
 
 
 def row_s_to_dict(row_s):

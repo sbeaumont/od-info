@@ -4,6 +4,7 @@ View models for the overview page.
 
 from dataclasses import dataclass
 
+from odinfo.calculators.networthcalculator import NetworthDelta
 from odinfo.domain.models import Dominion
 from odinfo.timeutils import hours_since
 
@@ -25,15 +26,19 @@ class OverviewRowVM:
 
 def build_overview_list_vm(
     dominions: list[Dominion],
-    nw_deltas: dict[int, int]
+    nw_deltas: dict[int, NetworthDelta]
 ) -> list[OverviewRowVM]:
     """
     Build a list of OverviewRowVM from dominions.
+
+    Dominions we have too few readings for show a delta of 0 here, the same as they
+    always have. The Networth Tracker is the page that tells those two apart.
 
     Returns list sorted by land descending.
     """
     result = []
     for dom in dominions:
+        reading = nw_deltas.get(dom.code)
         result.append(OverviewRowVM(
             code=dom.code,
             name=dom.name,
@@ -44,7 +49,7 @@ def build_overview_list_vm(
             player=dom.player or '',
             role=dom.role or 'unknown',
             ops_age=hours_since(dom.last_op),
-            nw_delta=nw_deltas.get(dom.code, 0),
+            nw_delta=reading.delta if reading else 0,
         ))
 
     return sorted(result, key=lambda r: r.land, reverse=True)

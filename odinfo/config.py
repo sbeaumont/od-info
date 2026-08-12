@@ -32,6 +32,16 @@ DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 WEB_PORT = 5042
 
+# What the Networth Tracker offers to look at: the periods it can measure a delta over,
+# and how many Unchanged rows to list. 0 means every row. The defaults are what the page
+# and the Discord report use when nobody says otherwise. Top and Bottom have a fixed
+# length that the report service decides, since those are reports rather than a browse.
+
+NW_PERIODS = (12, 24, 36, 48)
+NW_DEFAULT_PERIOD = 12
+NW_ROW_COUNTS = (10, 25, 50, 0)
+NW_UNCHANGED_DEFAULT = 50
+
 # Knowledge of internal directory and file structure
 
 INSTANCE_DIR = './instance'

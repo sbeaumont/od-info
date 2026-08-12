@@ -10,7 +10,7 @@
 {% set reviewed_on = '2026-08-12' %}
 {#- doc-sources
 odinfoweb/templates/odinfo-base.html 6bc692cd959709f6
-odinfoweb/viewmodels/about.py b15a9a2aabfd0eb6
+odinfoweb/viewmodels/about.py c15fb9d78c5e41b5
 -#}
 
 {% block content %}
@@ -112,6 +112,8 @@ odinfoweb/viewmodels/about.py b15a9a2aabfd0eb6
       threat forming. The <span class="od-term">Unchanged NW</span> list below it is the
       opposite: dominions whose networth hasn't budged, which usually means nobody's home.
       An inactive dominion has probably let Ares Call drop, and that makes it a target.
+      It's the one page that costs you no ops at all:
+      <a href="{{ url_for('nw_tracker_explained') }}">how it works</a>.
     </dd>
 
     <dt><a href="{{ url_for('ratios') }}">Ratios</a></dt>

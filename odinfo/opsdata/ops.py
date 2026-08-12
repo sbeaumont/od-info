@@ -140,7 +140,7 @@ def grab_search(session) -> dict:
         dom_info['land'] = int(cells[3].string.strip().replace(',', ''))
         dom_info['networth'] = int(cells[4].string.strip().replace(',', ''))
         dom_info['in_range'] = cells[5].string.strip()
-        dom_info['timestamp'] = str(server_time)
+        dom_info['timestamp'] = server_time
         search_lines[dom_info['code']] = dom_info
     return search_lines
 

@@ -234,13 +234,17 @@ class ODInfoFacade(object):
 
     # ---------------------------------------- QUERIES - Reports
 
-    def get_unchanged_nw(self, top: int = 50, since: int = 12):
-        """Get dominions with unchanged networth."""
+    def get_unchanged_nw(self, top: int | None = None, since: int = 12):
+        """Get dominions with unchanged networth, capped at top if one is given."""
         return self._report_service.get_unchanged_nw(top, since=since)
 
     def get_top_bot_nw(self, top=True, filter_zeroes=False, since: int = 12):
         """Get top or bottom networth changers."""
         return self._report_service.get_top_bot_nw(top, filter_zeroes, since=since)
+
+    def count_without_delta(self, since: int = 12) -> int:
+        """How many dominions have too few readings to report a networth delta for."""
+        return self._report_service.count_without_delta(since=since)
 
     def award_stats(self):
         # self.update_town_crier()

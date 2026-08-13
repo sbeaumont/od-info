@@ -218,12 +218,10 @@ odinfoweb/viewmodels/opexplained.py 63e527e88165b4e6
       when you want the strongest dominion in the round with their temples already counted
       in.
       <br>
-      Temples come off the <em>multiplier</em> on your defence, not off your finished DP,
+      Temples reduce the <em>multiplier</em> on your defence, not your total DP,
       and that multiplier never drops below 1. So with M for your multiplier (1 plus your
       DP bonus) and t for their temple reduction, the column is
-      <span class="od-term">Send OP &times; M &divide; max(M &minus; t, 1)</span>. A bigger
-      DP bonus dilutes their temples: the same 20% temples cost a defender sitting on
-      walls, guard towers and Ares far less than one with nothing up.
+      <span class="od-term">Send OP &times; M &divide; max(M &minus; t, 1)</span>.
       <br>
       That means the column is written from a defender's point of view, and by default
       that defender is you. The <span class="od-term">my DP bonus</span> box at the top of

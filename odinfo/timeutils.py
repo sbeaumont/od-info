@@ -7,8 +7,13 @@ from odinfo.exceptions import ODInfoException
 
 
 def cleanup_timestamp(timestamp: str) -> datetime:
-    """Ensures that a timestamp has a YYYY-MM-DD HH:MM:SS format."""
-    m = re.match(r"(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})", timestamp)
+    """Ensures that a timestamp has a YYYY-MM-DD HH:MM:SS format.
+
+    Searches rather than anchors: a scraped cell arrives wrapped in the newlines
+    and indentation of the page template, and that padding is not a reason to
+    refuse a timestamp we can plainly read.
+    """
+    m = re.search(r"(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})", timestamp)
     if not m:
         # Falling back to the local clock would date the reading by however far our
         # clock sits from the game's, and nothing downstream could tell.

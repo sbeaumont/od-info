@@ -41,7 +41,7 @@ def get_tc_page(session, page_nr: int) -> list:
 
 def _parse_event_row(row):
     columns = row.find_all('td')
-    timestamp = columns[0].span.string
+    timestamp = columns[0].span.get_text(strip=True)
     event = columns[1]
     event_text = ' '.join(event.stripped_strings)
 

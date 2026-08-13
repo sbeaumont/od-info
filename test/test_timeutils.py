@@ -15,6 +15,10 @@ class CleanupTimestampTest(unittest.TestCase):
         self.assertEqual(datetime(2026, 3, 22, 0, 42, 58),
                          cleanup_timestamp('2026-03-22 00:42:58.123456'))
 
+    def test_accepts_a_scraped_cell_with_its_padding(self):
+        self.assertEqual(datetime(2026, 8, 13, 13, 59, 51),
+                         cleanup_timestamp('\n                2026-08-13 13:59:51\n            '))
+
     def test_refuses_to_guess(self):
         for junk in ('None', '', 'yesterday', '2026-03-22'):
             with self.subTest(junk=junk):

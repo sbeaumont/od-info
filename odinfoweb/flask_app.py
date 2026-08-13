@@ -144,7 +144,10 @@ def handle_odinfo_error(error):
     """Handle ODInfo-specific errors gracefully."""
     import traceback
     error_traceback = traceback.format_exc()
-    
+
+    app.logger.error("Error handling %s: %s", request.path, error, exc_info=error)
+
+
     # Try to render the appropriate template with error info
     # Use the referrer to determine which page to show
     template = 'odinfo-base.html'
@@ -177,6 +180,8 @@ def handle_general_error(error):
 
     import traceback
     error_traceback = traceback.format_exc()
+
+    app.logger.error("Error handling %s: %s", request.path, error, exc_info=error)
 
     # Wrap the error in ODInfoException for consistent handling
     wrapped_error = ODInfoException(

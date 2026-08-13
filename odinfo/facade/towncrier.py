@@ -31,7 +31,7 @@ def get_tc_page(session, page_nr: int) -> list:
     soup = BeautifulSoup(response.content, "html.parser")
     cs = expect_not_none(
         soup.find('table', class_='table-striped'),
-        "soup.find('table', class_='table-striped')"
+        f"the event table on town crier page {page_nr} ({response.url})"
     )
     for row in cs.find_all('tr'):
         if not row.td.has_attr('colspan'):

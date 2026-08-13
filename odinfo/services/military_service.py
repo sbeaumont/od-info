@@ -40,13 +40,15 @@ class MilitaryService:
         """
         self._repo = repo
 
-    def military_list(self, current_day: int, versus_op: int = 0, top: int = 20,
-                      include_current_strength: bool = False) -> list[MilitaryRowVM]:
+    def military_list(self, current_day: int, defense_bonus: float, versus_op: int = 0,
+                      top: int = 20, include_current_strength: bool = False) -> list[MilitaryRowVM]:
         """
         Get military overview for top dominions.
 
         Args:
             current_day: Current game day (for boat protection calculations).
+            defense_bonus: The defender's own DP bonus as a decimal, which is what a
+                target's temples eat into. Used for the +Tmps columns.
             versus_op: OP value to calculate safe OP/DP against (0 for default).
             top: Number of top dominions to include.
             include_current_strength: If True, calculate current strength from
@@ -55,8 +57,8 @@ class MilitaryService:
         Returns:
             List of MilitaryRowVM view models for each dominion.
         """
-        logger.debug("Computing military_list for versus_op=%s, top=%s, current=%s",
-                     versus_op, top, include_current_strength)
+        logger.debug("Computing military_list for versus_op=%s, top=%s, current=%s, dp_bonus=%s",
+                     versus_op, top, include_current_strength, defense_bonus)
         all_doms = list(self._repo.all_dominions())[:top]
         mil_calcs = sorted(
             [MilitaryCalculator(dom) for dom in all_doms],
@@ -93,7 +95,7 @@ class MilitaryService:
                 hittable_75_percent=mc.hittable_75_percent,
                 five_over_four_op=five_four_op,
                 five_over_four_dp=five_four_dp,
-                five_four_op_with_temples=mc.five_four_op_with_temples,
+                five_four_op_with_temples=mc.five_four_op_with_temples(defense_bonus),
                 temples=mc.temple_bonus,
                 boats_amount=boat_stuff[0],
                 boats_prt=boat_stuff[1],
@@ -107,7 +109,7 @@ class MilitaryService:
                 paid_dp=paid_dp,
                 safe_op=mc.safe_op if versus_op == 0 else mc.safe_op_versus(versus_op)[0],
                 safe_dp=mc.safe_dp if versus_op == 0 else mc.safe_op_versus(versus_op)[1],
-                safe_op_with_temples=mc.safe_op_with_temples(versus_op),
+                safe_op_with_temples=mc.safe_op_with_temples(versus_op, defense_bonus),
                 networth=mc.dom.current_networth,
                 has_incomplete_intel=mc.has_incomplete_intel(),
                 current_op=current_op,
@@ -117,6 +119,10 @@ class MilitaryService:
             result_list.append(row)
 
         return result_list
+
+    def defense_bonus(self, dom: Dominion) -> float:
+        """A dominion's own DP bonus as a decimal, from guard towers, walls, spells and techs."""
+        return MilitaryCalculator(dom).defense_bonus
 
     def calculate_current_strength(self, dom: Dominion) -> tuple[int | None, int | None, str | None]:
         """Calculate current strength from refined BS data.

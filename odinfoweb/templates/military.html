@@ -33,6 +33,9 @@
             <label style="margin-left: 20px;">
                 vs OP: <input type="number" id="versus-op" value="{{ versus_op or '' }}" placeholder="0" style="width: 70px; padding: 2px 4px;">
             </label>
+            <label title="Your own DP bonus. Their temples come off it, so it sets the +Tmps column. Empty the box to go back to your own.">
+                my DP bonus: <input type="number" id="dp-bonus" value="{{ dp_bonus_percent }}" step="0.1" min="0" style="width: 70px; padding: 2px 4px;">%
+            </label>
         </div>
     </div>
 
@@ -223,17 +226,22 @@
             location.reload();
         });
 
-        // Handle VS OP input (preserve current parameter)
-        $('#versus-op').on('change', function() {
-            const val = $(this).val();
-            const url = new URL(window.location.href);
-            if (val && val > 0) {
-                window.location.href = '{{ url_for("military", versus_op=0) }}'.replace('/0', '/' + val) +
-                    (url.searchParams.get('current') ? '?current=true' : '');
-            } else {
-                window.location.href = '{{ url_for("military") }}' +
-                    (url.searchParams.get('current') ? '?current=true' : '');
+        // Handle VS OP and DP bonus inputs (both reload, preserving the other settings)
+        $('#versus-op, #dp-bonus').on('change', function() {
+            const versusOp = $('#versus-op').val();
+            const dpBonus = $('#dp-bonus').val();
+            const target = (versusOp && versusOp > 0)
+                ? '{{ url_for("military", versus_op=0) }}'.replace('/0', '/' + versusOp)
+                : '{{ url_for("military") }}';
+            const url = new URL(target, window.location.origin);
+            if (new URL(window.location.href).searchParams.get('current')) {
+                url.searchParams.set('current', 'true');
             }
+            // An empty box means "use my own bonus", which is what no parameter does.
+            if (dpBonus !== '') {
+                url.searchParams.set('dp_bonus', dpBonus);
+            }
+            window.location.href = url.toString();
         });
     });
 </script>

@@ -213,10 +213,24 @@ odinfoweb/viewmodels/opexplained.py 63e527e88165b4e6
     </dd>
     <dt>+Tmps</dt>
     <dd>
-      Send OP grossed up for that dominion's temples. Temples cut your defence, so this is
-      the number your DP actually has to beat. Compare against this column, not Send OP.
-      It's also the one to sort on when you want the strongest dominion in the round with
-      their temples already counted in.
+      Send OP grossed up for that dominion's temples, so it's the number your DP actually
+      has to beat. Compare against this column, not Send OP. It's also the one to sort on
+      when you want the strongest dominion in the round with their temples already counted
+      in.
+      <br>
+      Temples come off the <em>multiplier</em> on your defence, not off your finished DP,
+      and that multiplier never drops below 1. So with M for your multiplier (1 plus your
+      DP bonus) and t for their temple reduction, the column is
+      <span class="od-term">Send OP &times; M &divide; max(M &minus; t, 1)</span>. A bigger
+      DP bonus dilutes their temples: the same 20% temples cost a defender sitting on
+      walls, guard towers and Ares far less than one with nothing up.
+      <br>
+      That means the column is written from a defender's point of view, and by default
+      that defender is you. The <span class="od-term">my DP bonus</span> box at the top of
+      the page starts at your own bonus as the ops have it. Type another number to read
+      the round through a different defence &mdash; a realmie you're advising, or the
+      bonus you'll have once your walls finish &mdash; and empty the box to go back to
+      your own.
     </dd>
     <dt>Raw OP / Raw DP</dt>
     <dd>

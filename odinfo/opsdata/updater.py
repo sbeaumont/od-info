@@ -255,7 +255,8 @@ select
     c.resource_food as food,
     c.resource_gems as gems,
     c.resource_mana as mana,
-    c.resource_lumber as lumber
+    c.resource_lumber as lumber,
+    c.resource_ore as ore
 from
     ClearSight c,
     Dominions d
@@ -271,7 +272,8 @@ order by
     c.resource_food desc,
     c.resource_mana desc,
     c.resource_gems desc,
-    c.resource_lumber desc
+    c.resource_lumber desc,
+    c.resource_ore desc
 """
 
 

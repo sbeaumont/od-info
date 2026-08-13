@@ -137,17 +137,31 @@ class MilitaryCalculator(object):
         else:
             return 0
 
-    @property
-    def five_four_op_with_temples(self) -> float:
-        """The effective OP that a defender has to compare their DP with to see if they're safe."""
-        return round(self.five_over_four[0] / (1 - self.temple_bonus))
+    def op_with_temples(self, op: float, defense_bonus: float) -> float:
+        """This dominion's OP with its temples applied, against a defender's DP bonus.
 
-    def safe_op_with_temples(self, versus_op: int) -> float:
+        The game subtracts the temple reduction from the defender's DP multiplier and
+        floors that multiplier at 1, it does not scale the finished DP:
+
+            $multiplier = max(($multiplier - $multiplierReduction), 1);
+                -- MilitaryCalculator::getDefensivePowerMultiplier
+
+        So a defender whose bonuses add up to multiplier M keeps max(M - t, 1) / M of the
+        DP they see on their own status page, and the OP they have to beat is the inverse.
+        """
+        if defense_bonus < 0:
+            raise ValueError(f"A DP bonus is never negative, got {defense_bonus}.")
+        multiplier = 1 + defense_bonus
+        return round(op * multiplier / max(multiplier - self.temple_bonus, 1))
+
+    def five_four_op_with_temples(self, defense_bonus: float) -> float:
         """The effective OP that a defender has to compare their DP with to see if they're safe."""
-        if versus_op == 0:
-            return round(self.safe_op / (1 - self.temple_bonus))
-        else:
-            return round(self.safe_op_versus(versus_op)[0] / (1 - self.temple_bonus))
+        return self.op_with_temples(self.five_over_four[0], defense_bonus)
+
+    def safe_op_with_temples(self, versus_op: int, defense_bonus: float) -> float:
+        """The effective OP that a defender has to compare their DP with to see if they're safe."""
+        op = self.safe_op if versus_op == 0 else self.safe_op_versus(versus_op)[0]
+        return self.op_with_temples(op, defense_bonus)
 
     @property
     def gryphon_nest_bonus(self) -> float:

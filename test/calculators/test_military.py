@@ -101,6 +101,44 @@ class BuildingBonusCapTestCase(unittest.TestCase):
         self.assertAlmostEqual(0.27, MilitaryCalculator(self.dom).temple_bonus)
 
 
+class TempleReductionTestCase(unittest.TestCase):
+    """Temples come off the defender's DP multiplier, they don't scale their finished DP.
+
+    The game does max(multiplier - reduction, 1), so how much a target's temples are
+    worth depends on the DP bonus of whoever is being hit.
+    """
+    def setUp(self):
+        self.session = create_db_session()
+        init_db(self.session)
+        self.dom = self.session.get(Dominion, 1)
+        self.survey = self.dom.last_survey
+        self.survey.temple = 30  # over the cap, so the reduction is a flat 27%
+
+    def test_op_grossed_up_against_a_defence_bonus(self):
+        # 10000 * 1.6 / (1.6 - 0.27)
+        mc = MilitaryCalculator(self.dom)
+        self.assertEqual(12030, mc.op_with_temples(10000, 0.6))
+
+    def test_a_bigger_defence_bonus_dilutes_the_temples(self):
+        mc = MilitaryCalculator(self.dom)
+        self.assertGreater(mc.op_with_temples(10000, 0.4), mc.op_with_temples(10000, 0.8))
+
+    def test_temples_do_nothing_to_a_defender_without_bonuses(self):
+        """The multiplier floors at 1, so there is nothing for the temples to take."""
+        mc = MilitaryCalculator(self.dom)
+        self.assertEqual(10000, mc.op_with_temples(10000, 0))
+
+    def test_a_defence_bonus_below_the_reduction_only_loses_what_it_has(self):
+        # 10000 * 1.1 / max(1.1 - 0.27, 1)
+        mc = MilitaryCalculator(self.dom)
+        self.assertEqual(11000, mc.op_with_temples(10000, 0.1))
+
+    def test_a_negative_defence_bonus_is_rejected(self):
+        mc = MilitaryCalculator(self.dom)
+        with self.assertRaises(ValueError):
+            mc.op_with_temples(10000, -0.1)
+
+
 class SpellRaceKeyTestCase(unittest.TestCase):
     """The game names a race 'Dark Elf' where spells.yml keys it 'dark-elf'."""
 

@@ -66,7 +66,7 @@ def build_op_explained_vm() -> OpExplainedVM:
                             GN_OFFENSE_BONUS, MAX_GRYPHON_NEST_BONUS * 100),
             BuildingBonusVM('Guard Towers', 'Defensive power',
                             GT_DEFENSE_FACTOR, MAX_GUARD_TOWER_BONUS * 100),
-            BuildingBonusVM('Temples', "Target's defensive power reduced by",
+            BuildingBonusVM('Temples', "Target's DP multiplier reduced by",
                             TEMPLE_BONUS_PER_PERC, MAX_TEMPLE_BONUS * 100),
         ],
         assumed_spells=assumed,

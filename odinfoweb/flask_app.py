@@ -393,6 +393,16 @@ def cleanup():
     return render_template('cleanup.html', deleted=deleted)
 
 
+@app.route('/reset', methods=['GET', 'POST'])
+@login_required
+def reset():
+    if request.method == 'POST':
+        db.drop_all()
+        db.create_all()
+        facade().clear_cache()
+    return render_template('reset.html', done=request.method == 'POST')
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm(request.form)

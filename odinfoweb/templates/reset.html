@@ -1,0 +1,20 @@
+{% extends "odinfo-base.html" %}
+{% block title %}Database Reset{% endblock %}
+
+{% block content %}
+  <div class="w3-container">
+    {% if done %}
+      <h3>Database Reset Complete</h3>
+      <p>All tables are empty. Click Update on the overview to load the data again.</p>
+      <p style="margin-top: 20px;">
+        <a href="{{ url_for('overview') }}" class="w3-button w3-dark-grey">Back to Overview</a>
+      </p>
+    {% else %}
+      <h3>Reset Database</h3>
+      <p>This deletes all data in all tables and creates the tables again. You cannot undo this.</p>
+      <form method="POST" action="{{ url_for('reset') }}">
+        <button type="submit" class="w3-button w3-red">Reset the database</button>
+      </form>
+    {% endif %}
+  </div>
+{% endblock %}

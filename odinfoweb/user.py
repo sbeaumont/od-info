@@ -1,5 +1,7 @@
-from odinfo.config import USERS_FILE
 import json
+
+from odinfo.config import USERS_FILE
+from odinfo.exceptions import ODInfoException
 
 
 class User(object):
@@ -41,19 +43,25 @@ class User(object):
         }
 
 
-def load_user_by_id(_id: str | int) -> User | None:
+def load_users() -> list[dict]:
+    """The login entries in the users file."""
     with open(USERS_FILE) as f:
-        users = json.loads(f.read())
-    for u in users:
+        text = f.read()
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as e:
+        raise ODInfoException(f"Error reading {USERS_FILE}") from e
+
+
+def load_user_by_id(_id: str | int) -> User | None:
+    for u in load_users():
         if str(_id) == str(u["id"]):
             return User(u)
     return None
 
 
 def load_user_by_name(name: str) -> User | None:
-    with open(USERS_FILE) as f:
-        users = json.loads(f.read())
-    for u in users:
+    for u in load_users():
         if str(name) == str(u["name"]):
             return User(u)
     return None

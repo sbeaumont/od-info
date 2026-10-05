@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-10-04T20:59:51Z",
+  "max_age_hours": 0,
+  "dominion": {
+    "id": 17602,
+    "name": "Bowl",
+    "realm": 3,
+    "race": "Lizardfolk"
+  },
+  "type": "barracks_spy",
+  "ops": [
+    {
+      "units": {
+        "home": {
+          "draftees": 0,
+          "unit1": 0,
+          "unit2": 2458,
+          "unit3": 207,
+          "unit4": 127
+        },
+        "returning": {
+          "unit1": {
+            "8": 78
+          },
+          "unit4": {
+            "8": 1221
+          }
+        },
+        "training": {
+          "unit2": {
+            "1": 72,
+            "2": 71,
+            "7": 166,
+            "8": 162,
+            "9": 111
+          },
+          "unit4": {
+            "3": 22,
+            "6": 70
+          }
+        }
+      },
+      "created_at": "2026-10-04T20:55:10Z"
+    },
+    {
+      "units": {
+        "home": {
+          "draftees": 0,
+          "unit1": 0,
+          "unit2": 1921,
+          "unit3": 111,
+          "unit4": 0
+        },
+        "returning": {
+          "unit1": {
+            "9": 93
+          },
+          "unit3": {
+            "9": 49
+          },
+          "unit4": {
+            "9": 979
+          }
+        },
+        "training": {
+          "unit2": {
+            "1": 10,
+            "7": 33,
+            "9": 226
+          },
+          "unit3": {
+            "1": 50
+          },
+          "unit4": {
+            "5": 150,
+            "7": 144,
+            "9": 96,
+            "10": 40
+          }
+        }
+      },
+      "created_at": "2026-10-04T07:19:55Z"
+    }
+  ]
+}

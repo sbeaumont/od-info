@@ -16,18 +16,17 @@ logger = logging.getLogger('od-info.session')
 class ODSession:
     """Manages an authenticated session with the OpenDominion website."""
 
-    def __init__(self, config: Config, player_id: int | None = None):
+    def __init__(self, config: Config, player_id: int):
         """
         Create a new session manager.
 
         Args:
             config: Application configuration with credentials.
-            player_id: If provided, switch to this dominion after login.
-                      If None, uses config.current_player_id.
+            player_id: The dominion to switch to after login.
         """
         self._session: requests.Session | None = None
         self._config = config
-        self._player_id = player_id if player_id is not None else config.current_player_id
+        self._player_id = player_id
 
     @property
     def session(self) -> requests.Session:

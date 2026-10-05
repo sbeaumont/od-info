@@ -1,0 +1,1052 @@
+[
+  {
+    "id": 78,
+    "number": 52,
+    "name": "Round 52",
+    "description": "Age of the Orc",
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2026-10-25T00:00:00Z",
+    "end_date": "2026-12-11T00:00:00Z",
+    "has_started": false,
+    "has_ended": false
+  },
+  {
+    "id": 77,
+    "number": 0,
+    "name": "Magic System Test Round",
+    "description": "Age of Experimental Magic",
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2026-10-04T00:00:00Z",
+    "end_date": "2026-10-16T00:00:00Z",
+    "has_started": true,
+    "has_ended": false
+  },
+  {
+    "id": 76,
+    "number": 51,
+    "name": "Round 51",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2026-08-08T18:00:00Z",
+    "end_date": "2026-09-24T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 75,
+    "number": 50,
+    "name": "Round 50",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2026-06-07T00:00:00Z",
+    "end_date": "2026-07-24T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 74,
+    "number": 0,
+    "name": "UI/UX Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2026-05-16T18:00:00Z",
+    "end_date": "2026-05-28T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 73,
+    "number": 49,
+    "name": "Round 49",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2026-03-21T18:00:00Z",
+    "end_date": "2026-05-07T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 72,
+    "number": 48,
+    "name": "Round 48",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2026-01-25T00:00:00Z",
+    "end_date": "2026-03-13T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 71,
+    "number": 0,
+    "name": "MMXXVI Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2026-01-03T00:00:00Z",
+    "end_date": "2026-01-15T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 70,
+    "number": 47,
+    "name": "Round 47",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2025-11-08T18:00:00Z",
+    "end_date": "2025-12-25T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 69,
+    "number": 46,
+    "name": "Round 46",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2025-09-07T00:00:00Z",
+    "end_date": "2025-10-24T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 68,
+    "number": 0,
+    "name": "Raids Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2025-08-10T00:00:00Z",
+    "end_date": "2025-08-22T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 67,
+    "number": 45,
+    "name": "Round 45",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2025-06-07T18:00:00Z",
+    "end_date": "2025-07-24T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 66,
+    "number": 44,
+    "name": "Round 44",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2025-04-06T00:00:00Z",
+    "end_date": "2025-05-23T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 65,
+    "number": 0,
+    "name": "March Madness Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2025-03-16T00:00:00Z",
+    "end_date": "2025-03-28T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 64,
+    "number": 43,
+    "name": "Round 43",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2025-01-11T18:00:00Z",
+    "end_date": "2025-02-27T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 63,
+    "number": 42,
+    "name": "Round 42",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2024-11-10T00:00:00Z",
+    "end_date": "2024-12-27T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 62,
+    "number": 0,
+    "name": "Classic Wonders Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2024-10-20T00:00:00Z",
+    "end_date": "2024-11-01T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 61,
+    "number": 41,
+    "name": "Round 41",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2024-08-17T18:00:00Z",
+    "end_date": "2024-10-03T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 60,
+    "number": 40,
+    "name": "Round 40",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2024-06-15T00:00:00Z",
+    "end_date": "2024-08-01T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 59,
+    "number": 0,
+    "name": "Undying Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2024-05-19T00:00:00Z",
+    "end_date": "2024-05-31T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 58,
+    "number": 39,
+    "name": "Round 39",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2024-03-16T18:00:00Z",
+    "end_date": "2024-05-02T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 56,
+    "number": 38,
+    "name": "Round 38",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2024-01-14T00:00:00Z",
+    "end_date": "2024-03-01T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 55,
+    "number": 0,
+    "name": "Automation Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2023-12-21T00:00:00Z",
+    "end_date": "2024-01-02T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 54,
+    "number": 37,
+    "name": "Round 37",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2023-10-21T18:00:00Z",
+    "end_date": "2023-12-07T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 53,
+    "number": 0,
+    "name": "Back to School Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2023-09-30T18:00:00Z",
+    "end_date": "2023-10-12T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 52,
+    "number": 36,
+    "name": "Round 36",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2023-08-06T00:00:00Z",
+    "end_date": "2023-09-22T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 51,
+    "number": 35,
+    "name": "Round 35",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2023-06-03T18:00:00Z",
+    "end_date": "2023-07-20T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 50,
+    "number": 0,
+    "name": "Zombie Kobolds Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2023-05-13T18:00:00Z",
+    "end_date": "2023-05-25T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 49,
+    "number": 34,
+    "name": "Round 34",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2023-03-19T00:00:00Z",
+    "end_date": "2023-05-05T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 48,
+    "number": 33,
+    "name": "Round 33",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2023-01-21T18:00:00Z",
+    "end_date": "2023-03-09T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 47,
+    "number": 32,
+    "name": "Round 32",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2022-11-20T00:00:00Z",
+    "end_date": "2023-01-06T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 46,
+    "number": 0,
+    "name": "Heroes Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2022-11-05T00:00:00Z",
+    "end_date": "2022-11-15T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 45,
+    "number": 31,
+    "name": "Round 31",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2022-09-10T18:00:00Z",
+    "end_date": "2022-10-27T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 44,
+    "number": 30,
+    "name": "Round 30",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2022-07-10T00:00:00Z",
+    "end_date": "2022-08-26T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 43,
+    "number": 0,
+    "name": "Summer of Bots Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2022-06-26T00:00:00Z",
+    "end_date": "2022-07-03T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 42,
+    "number": 29,
+    "name": "Round 29",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2022-04-29T18:00:00Z",
+    "end_date": "2022-06-15T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 41,
+    "number": 28,
+    "name": "Round 28",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2022-02-27T00:00:00Z",
+    "end_date": "2022-04-15T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 40,
+    "number": 0,
+    "name": "Spell Rework Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2022-02-06T00:00:00Z",
+    "end_date": "2022-02-18T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 39,
+    "number": 27,
+    "name": "Round 27",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2021-12-11T18:00:00Z",
+    "end_date": "2022-01-27T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 38,
+    "number": 26,
+    "name": "Round 26",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2021-10-16T00:00:00Z",
+    "end_date": "2021-12-02T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 37,
+    "number": 0,
+    "name": "Race Rework Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2021-09-26T00:00:00Z",
+    "end_date": "2021-10-09T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 36,
+    "number": 25,
+    "name": "Round 25",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2021-07-31T18:00:00Z",
+    "end_date": "2021-09-16T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 35,
+    "number": 24,
+    "name": "Round 24",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2021-05-30T00:00:00Z",
+    "end_date": "2021-07-16T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 34,
+    "number": 0,
+    "name": "Tax Collection Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2021-05-13T00:00:00Z",
+    "end_date": "2021-05-24T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 33,
+    "number": 23,
+    "name": "Round 23",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2021-03-20T18:00:00Z",
+    "end_date": "2021-05-06T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 31,
+    "number": 0,
+    "name": "Matchmaking Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2021-03-08T18:00:00Z",
+    "end_date": "2021-03-15T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 30,
+    "number": 22,
+    "name": "Round 22",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2021-01-17T00:00:00Z",
+    "end_date": "2021-03-05T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 29,
+    "number": 0,
+    "name": "New Year Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2021-01-04T00:00:00Z",
+    "end_date": "2021-01-13T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 28,
+    "number": 21,
+    "name": "Round 21",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2020-11-14T18:00:00Z",
+    "end_date": "2020-12-31T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 27,
+    "number": 0,
+    "name": "Halloween Test Round",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2020-11-01T18:00:00Z",
+    "end_date": "2020-11-10T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 26,
+    "number": 20,
+    "name": "Round 20",
+    "description": null,
+    "league": {
+      "id": 2,
+      "key": "standard",
+      "description": "Standard League"
+    },
+    "start_date": "2020-09-13T00:00:00Z",
+    "end_date": "2020-10-30T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 24,
+    "number": 19,
+    "name": "Beta Round 19",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2020-07-11T18:00:00Z",
+    "end_date": "2020-08-27T18:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 22,
+    "number": 18,
+    "name": "Beta Round 18",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2020-05-10T00:00:00Z",
+    "end_date": "2020-06-26T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 20,
+    "number": 17,
+    "name": "Beta Round 17",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2020-03-15T00:00:00Z",
+    "end_date": "2020-05-01T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 19,
+    "number": 16,
+    "name": "Beta Round 16",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2020-01-15T00:00:00Z",
+    "end_date": "2020-03-02T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 18,
+    "number": 15,
+    "name": "Beta Round 15",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2019-11-17T00:00:00Z",
+    "end_date": "2020-01-03T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 17,
+    "number": 14,
+    "name": "Beta Round 14",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2019-08-18T00:00:00Z",
+    "end_date": "2019-10-05T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 16,
+    "number": 13,
+    "name": "Beta Round 13",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2019-06-16T00:00:00Z",
+    "end_date": "2019-08-02T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 12,
+    "number": 12,
+    "name": "Beta Round 12",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2019-04-14T00:00:00Z",
+    "end_date": "2019-05-31T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 11,
+    "number": 11,
+    "name": "Beta Round 11",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2019-02-04T00:00:00Z",
+    "end_date": "2019-03-23T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 10,
+    "number": 10,
+    "name": "Beta Round 10",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2018-12-03T00:00:00Z",
+    "end_date": "2019-01-19T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 9,
+    "number": 9,
+    "name": "Beta Round 9",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2018-10-08T00:00:00Z",
+    "end_date": "2018-11-24T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 8,
+    "number": 8,
+    "name": "Beta Round 8",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2018-08-09T00:00:00Z",
+    "end_date": "2018-09-25T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 7,
+    "number": 7,
+    "name": "Beta Round 7",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2018-05-05T00:00:00Z",
+    "end_date": "2018-06-21T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 6,
+    "number": 6,
+    "name": "Beta Round 6",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2018-03-04T00:00:00Z",
+    "end_date": "2018-04-19T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 5,
+    "number": 5,
+    "name": "Beta Round 5",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2017-12-02T00:00:00Z",
+    "end_date": "2018-01-18T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 4,
+    "number": 4,
+    "name": "Beta Round 4",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2017-10-10T00:00:00Z",
+    "end_date": "2017-11-26T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 3,
+    "number": 3,
+    "name": "Beta Round 3",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2017-08-17T00:00:00Z",
+    "end_date": "2017-10-03T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 2,
+    "number": 2,
+    "name": "Beta Round 2",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2017-06-27T00:00:00Z",
+    "end_date": "2017-08-13T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  },
+  {
+    "id": 1,
+    "number": 1,
+    "name": "Beta Round 1",
+    "description": null,
+    "league": {
+      "id": 1,
+      "key": "beta",
+      "description": "Beta League"
+    },
+    "start_date": "2017-05-06T00:00:00Z",
+    "end_date": "2017-06-22T00:00:00Z",
+    "has_started": true,
+    "has_ended": true
+  }
+]

@@ -1,0 +1,4821 @@
+{
+  "generated_at": "2026-10-04T20:59:51Z",
+  "realm": {
+    "id": 1176,
+    "number": 4,
+    "name": "Magic. Magic! MAGIC!!!"
+  },
+  "dominions": {
+    "17641": {
+      "id": 17641,
+      "name": "Boom",
+      "race": "Demon",
+      "ops": {
+        "clear_sight": {
+          "ruler_name": "Boomer",
+          "land": 848,
+          "peasants": 10895,
+          "employment": 100,
+          "networth": 37678,
+          "prestige": 250,
+          "resilience": 0,
+          "resolve": 0,
+          "spy_mastery": 0,
+          "wizard_mastery": 0,
+          "resource_platinum": 0,
+          "resource_food": 3514,
+          "resource_lumber": 12678,
+          "resource_mana": 27344,
+          "resource_ore": 0,
+          "resource_gems": 0,
+          "resource_tech": 1050,
+          "resource_boats": 0,
+          "morale": 98,
+          "military_draftees": 117,
+          "military_unit1": 0,
+          "military_unit2": 584,
+          "military_unit3": 1134,
+          "military_unit4": 0,
+          "military_spies": 19,
+          "military_assassins": 0,
+          "military_wizards": 19,
+          "military_archmages": 0,
+          "recently_invaded_count": null,
+          "clear_sight_accuracy": null,
+          "spa": 0.02240566037735849,
+          "wpa": 0.02240566037735849,
+          "race_name": "Demon",
+          "realm": 4,
+          "name": "Boom",
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "revelation": {
+          "spells": [],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "castle_spy": {
+          "science": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "keep": {
+            "points": 625500,
+            "rating": 0.0419,
+            "incoming": 0
+          },
+          "forges": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "walls": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "spires": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "harbor": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "total": 625500,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "barracks_spy": {
+          "units": {
+            "home": {
+              "spies": 19,
+              "assassins": 0,
+              "wizards": 19,
+              "archmages": 0,
+              "draftees": 117,
+              "unit1": 0,
+              "unit2": 584,
+              "unit3": 1134,
+              "unit4": 0
+            },
+            "returning": [],
+            "training": {
+              "spies": {
+                "9": 100,
+                "12": 50
+              },
+              "unit3": {
+                "9": 774,
+                "12": 50
+              },
+              "wizards": {
+                "9": 100,
+                "12": 50
+              }
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "survey_dominion": {
+          "constructed": {
+            "home": 30,
+            "alchemy": 281,
+            "farm": 37,
+            "smithy": 141,
+            "masonry": 0,
+            "ore_mine": 0,
+            "gryphon_nest": 0,
+            "tower": 79,
+            "wizard_guild": 0,
+            "temple": 0,
+            "diamond_mine": 143,
+            "school": 0,
+            "lumberyard": 17,
+            "factory": 72,
+            "guard_tower": 0,
+            "shrine": 0,
+            "barracks": 0,
+            "dock": 0
+          },
+          "constructing": {
+            "diamond_mine": {
+              "9": 12
+            },
+            "farm": {
+              "9": 6
+            },
+            "home": {
+              "9": 20
+            },
+            "school": {
+              "9": 1
+            },
+            "wizard_guild": {
+              "9": 9
+            }
+          },
+          "barren_land": 0,
+          "total_land": 848,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "land_spy": {
+          "totalLand": 848,
+          "totalBarrenLand": 0,
+          "totalConstructedLand": 800,
+          "explored": {
+            "plain": {
+              "amount": 465,
+              "percentage": 54.83490566037735,
+              "barren": 0,
+              "constructed": 459,
+              "constructedPercentage": 57.375
+            },
+            "mountain": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            },
+            "swamp": {
+              "amount": 88,
+              "percentage": 10.377358490566039,
+              "barren": 0,
+              "constructed": 79,
+              "constructedPercentage": 9.875
+            },
+            "cavern": {
+              "amount": 206,
+              "percentage": 24.29245283018868,
+              "barren": 0,
+              "constructed": 173,
+              "constructedPercentage": 21.625
+            },
+            "forest": {
+              "amount": 17,
+              "percentage": 2.0047169811320753,
+              "barren": 0,
+              "constructed": 17,
+              "constructedPercentage": 2.125
+            },
+            "hill": {
+              "amount": 72,
+              "percentage": 8.49056603773585,
+              "barren": 0,
+              "constructed": 72,
+              "constructedPercentage": 9
+            },
+            "water": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            }
+          },
+          "incoming": {
+            "swamp": {
+              "12": 6
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "vision": {
+          "techs": [],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "disclosure": {
+          "0": {
+            "name": "Naag'zugho",
+            "class": "sorcerer",
+            "level": 0,
+            "experience": 13,
+            "next_level_xp": 200,
+            "bonus": 0,
+            "upgrades": [],
+            "inactive_classes": []
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        }
+      },
+      "resources": {
+        "platinum": 0,
+        "food": 3514,
+        "lumber": 12678,
+        "mana": 27344,
+        "ore": 0,
+        "gems": 0,
+        "tech": 1050,
+        "boats": 0
+      },
+      "returning": {},
+      "military": {
+        "draft_rate": 90,
+        "draftees": 117,
+        "unit1": 0,
+        "unit2": 584,
+        "unit3": 1134,
+        "unit4": 0,
+        "spies": 19,
+        "assassins": 0,
+        "wizards": 19,
+        "archmages": 0,
+        "spy_strength": 100,
+        "wizard_strength": 96,
+        "offensive_modifier": 7.5,
+        "defensive_modifier": 0,
+        "spy_ratio": {
+          "offense": 0.022,
+          "defense": 0.022
+        },
+        "wizard_ratio": {
+          "offense": 0.022,
+          "defense": 0.022
+        }
+      },
+      "land": {
+        "plain": 465,
+        "mountain": 0,
+        "swamp": 88,
+        "cavern": 206,
+        "forest": 17,
+        "hill": 72,
+        "water": 0,
+        "discounted_land": 0,
+        "barren_land": 0
+      },
+      "buildings": {
+        "home": 30,
+        "alchemy": 281,
+        "farm": 37,
+        "smithy": 141,
+        "masonry": 0,
+        "ore_mine": 0,
+        "gryphon_nest": 0,
+        "tower": 79,
+        "wizard_guild": 0,
+        "temple": 0,
+        "diamond_mine": 143,
+        "school": 0,
+        "lumberyard": 17,
+        "factory": 72,
+        "guard_tower": 0,
+        "shrine": 0,
+        "barracks": 0,
+        "dock": 0
+      },
+      "hourly": {
+        "production": {
+          "platinum": 42061,
+          "food": 3034,
+          "lumber": 850,
+          "mana": 1975,
+          "ore": 0,
+          "gems": 2145,
+          "tech": 0,
+          "boats": 0
+        },
+        "consumption": {
+          "food": 3473
+        },
+        "decay": {
+          "food": 35,
+          "lumber": 127,
+          "mana": 547
+        },
+        "net_change": {
+          "food": -474,
+          "lumber": 723,
+          "mana": 1428
+        }
+      },
+      "population": {
+        "total": 13892,
+        "max": 14065,
+        "peasants": 10895,
+        "military": 2997,
+        "jobs": 15400,
+        "employed": 10895
+      },
+      "statistics": {
+        "platinum_spent": 2827805,
+        "platinum_spent_construction": 339413,
+        "platinum_spent_exploration": 858400,
+        "platinum_spent_investment": 0,
+        "platinum_spent_rezoning": 8360,
+        "platinum_spent_training": 1621632,
+        "lumber_spent": 49595,
+        "lumber_spent_construction": 49595,
+        "lumber_spent_investment": 0,
+        "lumber_spent_training": 0,
+        "mana_spent": 17794,
+        "mana_spent_investment": 0,
+        "mana_spent_training": 17794,
+        "ore_spent": 0,
+        "ore_spent_investment": 0,
+        "ore_spent_training": 0,
+        "gems_spent": 52125,
+        "gems_spent_investment": 52125,
+        "gems_spent_training": 0,
+        "land_conquered": 0,
+        "land_explored": 504,
+        "land_lost": 0,
+        "highest_land_achieved": 848
+      }
+    },
+    "17627": {
+      "id": 17627,
+      "name": "Your Moms Hemerrhoid Cream",
+      "race": "Dark Elf",
+      "ops": {
+        "clear_sight": {
+          "ruler_name": "jmerc13",
+          "land": 612,
+          "peasants": 8191,
+          "employment": 100,
+          "networth": 26712,
+          "prestige": 214,
+          "resilience": 0,
+          "resolve": 0,
+          "spy_mastery": 0,
+          "wizard_mastery": 0,
+          "resource_platinum": 147261,
+          "resource_food": 22171,
+          "resource_lumber": 30816,
+          "resource_mana": 22571,
+          "resource_ore": 42715,
+          "resource_gems": 4725,
+          "resource_tech": 780,
+          "resource_boats": 0,
+          "morale": 100,
+          "military_draftees": 259,
+          "military_unit1": 0,
+          "military_unit2": 450,
+          "military_unit3": 641,
+          "military_unit4": 0,
+          "military_spies": 90,
+          "military_assassins": 0,
+          "military_wizards": 226,
+          "military_archmages": 0,
+          "recently_invaded_count": null,
+          "clear_sight_accuracy": null,
+          "spa": 0.14705882352941177,
+          "wpa": 0.5571895424836601,
+          "race_name": "Dark Elf",
+          "realm": 4,
+          "name": "Your Moms Hemerrhoid Cream",
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "revelation": {
+          "spells": [
+            {
+              "dominion_id": 17627,
+              "spell_id": 12,
+              "duration": 6,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T14:24:10.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "gaias_watch",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17627,
+              "spell_id": 13,
+              "duration": 6,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T14:24:03.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "ares_call",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17627,
+              "spell_id": 14,
+              "duration": 6,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T14:24:07.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "midas_touch",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17627,
+              "spell_id": 62,
+              "duration": 6,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T14:24:16.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "spellwrights_calling",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            }
+          ],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "castle_spy": {
+          "science": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "keep": {
+            "points": 779604,
+            "rating": 0.0678,
+            "incoming": 0
+          },
+          "forges": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "walls": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "spires": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "harbor": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "total": 779604,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "barracks_spy": {
+          "units": {
+            "home": {
+              "spies": 90,
+              "assassins": 0,
+              "wizards": 226,
+              "archmages": 0,
+              "draftees": 259,
+              "unit1": 0,
+              "unit2": 450,
+              "unit3": 641,
+              "unit4": 0
+            },
+            "returning": [],
+            "training": {
+              "unit2": {
+                "3": 881
+              },
+              "unit3": {
+                "1": 3,
+                "2": 4,
+                "3": 3,
+                "4": 4,
+                "7": 3,
+                "8": 3,
+                "9": 92,
+                "10": 3,
+                "11": 3,
+                "12": 3
+              },
+              "unit4": {
+                "8": 169
+              }
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "survey_dominion": {
+          "constructed": {
+            "home": 95,
+            "alchemy": 127,
+            "farm": 39,
+            "smithy": 107,
+            "masonry": 0,
+            "ore_mine": 27,
+            "gryphon_nest": 0,
+            "tower": 17,
+            "wizard_guild": 58,
+            "temple": 0,
+            "diamond_mine": 100,
+            "school": 0,
+            "lumberyard": 20,
+            "factory": 0,
+            "guard_tower": 0,
+            "shrine": 0,
+            "barracks": 0,
+            "dock": 0
+          },
+          "constructing": {
+            "diamond_mine": {
+              "6": 5
+            },
+            "farm": {
+              "6": 5
+            },
+            "home": {
+              "6": 12
+            }
+          },
+          "barren_land": 0,
+          "total_land": 612,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "land_spy": {
+          "totalLand": 612,
+          "totalBarrenLand": 0,
+          "totalConstructedLand": 590,
+          "explored": {
+            "plain": {
+              "amount": 278,
+              "percentage": 45.42483660130719,
+              "barren": 0,
+              "constructed": 273,
+              "constructedPercentage": 46.271186440677965
+            },
+            "mountain": {
+              "amount": 27,
+              "percentage": 4.411764705882353,
+              "barren": 0,
+              "constructed": 27,
+              "constructedPercentage": 4.576271186440678
+            },
+            "swamp": {
+              "amount": 75,
+              "percentage": 12.254901960784313,
+              "barren": 0,
+              "constructed": 75,
+              "constructedPercentage": 12.711864406779661
+            },
+            "cavern": {
+              "amount": 212,
+              "percentage": 34.64052287581699,
+              "barren": 0,
+              "constructed": 195,
+              "constructedPercentage": 33.05084745762712
+            },
+            "forest": {
+              "amount": 20,
+              "percentage": 3.2679738562091507,
+              "barren": 0,
+              "constructed": 20,
+              "constructedPercentage": 3.389830508474576
+            },
+            "hill": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            },
+            "water": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "vision": {
+          "techs": [],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "disclosure": {
+          "0": {
+            "name": "Mucolu Iardrun",
+            "class": "alchemist",
+            "level": 0,
+            "experience": 92,
+            "next_level_xp": 200,
+            "bonus": 0,
+            "upgrades": [],
+            "inactive_classes": []
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        }
+      },
+      "resources": {
+        "platinum": 147261,
+        "food": 22171,
+        "lumber": 30816,
+        "mana": 22571,
+        "ore": 42715,
+        "gems": 4725,
+        "tech": 780,
+        "boats": 0
+      },
+      "returning": {},
+      "military": {
+        "draft_rate": 90,
+        "draftees": 259,
+        "unit1": 0,
+        "unit2": 450,
+        "unit3": 641,
+        "unit4": 0,
+        "spies": 90,
+        "assassins": 0,
+        "wizards": 226,
+        "archmages": 0,
+        "spy_strength": 92,
+        "wizard_strength": 88,
+        "offensive_modifier": 2.14,
+        "defensive_modifier": 10,
+        "spy_ratio": {
+          "offense": 0.147,
+          "defense": 0.147
+        },
+        "wizard_ratio": {
+          "offense": 0.557,
+          "defense": 0.557
+        }
+      },
+      "land": {
+        "plain": 278,
+        "mountain": 27,
+        "swamp": 75,
+        "cavern": 212,
+        "forest": 20,
+        "hill": 0,
+        "water": 0,
+        "discounted_land": 35,
+        "barren_land": 0
+      },
+      "buildings": {
+        "home": 95,
+        "alchemy": 127,
+        "farm": 39,
+        "smithy": 107,
+        "masonry": 0,
+        "ore_mine": 27,
+        "gryphon_nest": 0,
+        "tower": 17,
+        "wizard_guild": 58,
+        "temple": 0,
+        "diamond_mine": 100,
+        "school": 0,
+        "lumberyard": 20,
+        "factory": 0,
+        "guard_tower": 0,
+        "shrine": 0,
+        "barracks": 0,
+        "dock": 0
+      },
+      "hourly": {
+        "production": {
+          "platinum": 30613,
+          "food": 3498,
+          "lumber": 1000,
+          "mana": 1005,
+          "ore": 1620,
+          "gems": 1575,
+          "tech": 0,
+          "boats": 0
+        },
+        "consumption": {
+          "food": 2757
+        },
+        "decay": {
+          "food": 222,
+          "lumber": 308,
+          "mana": 451
+        },
+        "net_change": {
+          "food": 519,
+          "lumber": 692,
+          "mana": 554
+        }
+      },
+      "population": {
+        "total": 11028,
+        "max": 11025,
+        "peasants": 8191,
+        "military": 2837,
+        "jobs": 9900,
+        "employed": 8191
+      },
+      "statistics": {
+        "platinum_spent": 1673117,
+        "platinum_spent_construction": 198485,
+        "platinum_spent_exploration": 313626,
+        "platinum_spent_investment": 0,
+        "platinum_spent_rezoning": 9500,
+        "platinum_spent_training": 1151506,
+        "lumber_spent": 28950,
+        "lumber_spent_construction": 28950,
+        "lumber_spent_investment": 0,
+        "lumber_spent_training": 0,
+        "mana_spent": 0,
+        "mana_spent_investment": 0,
+        "mana_spent_training": 0,
+        "ore_spent": 56885,
+        "ore_spent_investment": 0,
+        "ore_spent_training": 56885,
+        "gems_spent": 66150,
+        "gems_spent_investment": 64967,
+        "gems_spent_training": 1183,
+        "land_conquered": 0,
+        "land_explored": 161,
+        "land_lost": 109,
+        "highest_land_achieved": 685
+      }
+    },
+    "17630": {
+      "id": 17630,
+      "name": "Wonkey donkey",
+      "race": "Goblin",
+      "ops": {
+        "clear_sight": {
+          "ruler_name": "Viking",
+          "land": 730,
+          "peasants": 8766,
+          "employment": 100,
+          "networth": 42983,
+          "prestige": 359,
+          "resilience": 0,
+          "resolve": 0,
+          "spy_mastery": 0,
+          "wizard_mastery": 0,
+          "resource_platinum": 348566,
+          "resource_food": 8547,
+          "resource_lumber": 4442,
+          "resource_mana": 5742,
+          "resource_ore": 53015,
+          "resource_gems": 0,
+          "resource_tech": 1450,
+          "resource_boats": 56,
+          "morale": 100,
+          "military_draftees": 568,
+          "military_unit1": 0,
+          "military_unit2": 2773,
+          "military_unit3": 866,
+          "military_unit4": 234,
+          "military_spies": 15,
+          "military_assassins": 0,
+          "military_wizards": 15,
+          "military_archmages": 0,
+          "recently_invaded_count": null,
+          "clear_sight_accuracy": null,
+          "spa": 0.02054794520547945,
+          "wpa": 0.02054794520547945,
+          "race_name": "Goblin",
+          "realm": 4,
+          "name": "Wonkey donkey",
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "revelation": {
+          "spells": [
+            {
+              "dominion_id": 17630,
+              "spell_id": 13,
+              "duration": 4,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-09-29T09:21:36.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "ares_call",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17630,
+              "spell_id": 14,
+              "duration": 4,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T12:00:20.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "midas_touch",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            }
+          ],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "castle_spy": {
+          "science": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "keep": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "forges": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "walls": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "spires": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "harbor": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "total": 0,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "barracks_spy": {
+          "units": {
+            "home": {
+              "spies": 15,
+              "assassins": 0,
+              "wizards": 15,
+              "archmages": 0,
+              "draftees": 568,
+              "unit1": 0,
+              "unit2": 2773,
+              "unit3": 189,
+              "unit4": 234
+            },
+            "returning": {
+              "unit3": {
+                "5": 677
+              }
+            },
+            "training": {
+              "unit2": {
+                "1": 148,
+                "2": 75
+              },
+              "unit4": {
+                "1": 153,
+                "2": 75
+              }
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "survey_dominion": {
+          "constructed": {
+            "home": 50,
+            "alchemy": 300,
+            "farm": 25,
+            "smithy": 105,
+            "masonry": 0,
+            "ore_mine": 50,
+            "gryphon_nest": 0,
+            "tower": 20,
+            "wizard_guild": 0,
+            "temple": 0,
+            "diamond_mine": 0,
+            "school": 0,
+            "lumberyard": 10,
+            "factory": 0,
+            "guard_tower": 0,
+            "shrine": 0,
+            "barracks": 0,
+            "dock": 20
+          },
+          "constructing": {
+            "farm": {
+              "4": 12
+            },
+            "home": {
+              "4": 70
+            },
+            "lumberyard": {
+              "4": 2
+            },
+            "smithy": {
+              "4": 27
+            },
+            "temple": {
+              "4": 26
+            },
+            "tower": {
+              "4": 13
+            }
+          },
+          "barren_land": 0,
+          "total_land": 730,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "land_spy": {
+          "totalLand": 730,
+          "totalBarrenLand": 0,
+          "totalConstructedLand": 580,
+          "explored": {
+            "plain": {
+              "amount": 469,
+              "percentage": 64.24657534246575,
+              "barren": 0,
+              "constructed": 430,
+              "constructedPercentage": 74.13793103448276
+            },
+            "mountain": {
+              "amount": 50,
+              "percentage": 6.8493150684931505,
+              "barren": 0,
+              "constructed": 50,
+              "constructedPercentage": 8.620689655172415
+            },
+            "swamp": {
+              "amount": 59,
+              "percentage": 8.082191780821917,
+              "barren": 0,
+              "constructed": 20,
+              "constructedPercentage": 3.4482758620689653
+            },
+            "cavern": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            },
+            "forest": {
+              "amount": 12,
+              "percentage": 1.643835616438356,
+              "barren": 0,
+              "constructed": 10,
+              "constructedPercentage": 1.7241379310344827
+            },
+            "hill": {
+              "amount": 120,
+              "percentage": 16.43835616438356,
+              "barren": 0,
+              "constructed": 50,
+              "constructedPercentage": 8.620689655172415
+            },
+            "water": {
+              "amount": 20,
+              "percentage": 2.73972602739726,
+              "barren": 0,
+              "constructed": 20,
+              "constructedPercentage": 3.4482758620689653
+            }
+          },
+          "incoming": {
+            "forest": {
+              "5": 32
+            },
+            "hill": {
+              "5": 4
+            },
+            "plain": {
+              "5": 14
+            },
+            "swamp": {
+              "5": 2
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "vision": {
+          "techs": [],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "disclosure": {
+          "0": {
+            "name": "Czoz'dhac",
+            "class": "alchemist",
+            "level": 1,
+            "experience": 468,
+            "next_level_xp": 700,
+            "bonus": 0.3,
+            "upgrades": {
+              "lead_from_the_front": "Lead from the Front"
+            },
+            "inactive_classes": []
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        }
+      },
+      "resources": {
+        "platinum": 348566,
+        "food": 8547,
+        "lumber": 4442,
+        "mana": 5742,
+        "ore": 53015,
+        "gems": 0,
+        "tech": 1450,
+        "boats": 32
+      },
+      "returning": {
+        "prestige": {
+          "5": 35
+        },
+        "boats": {
+          "5": 24
+        },
+        "platinum": {
+          "5": 13540
+        },
+        "tech": {
+          "5": 250
+        }
+      },
+      "military": {
+        "draft_rate": 90,
+        "draftees": 568,
+        "unit1": 0,
+        "unit2": 2773,
+        "unit3": 189,
+        "unit4": 234,
+        "spies": 15,
+        "assassins": 0,
+        "wizards": 15,
+        "archmages": 0,
+        "spy_strength": 100,
+        "wizard_strength": 100,
+        "offensive_modifier": 3.59,
+        "defensive_modifier": 10,
+        "spy_ratio": {
+          "offense": 0.021,
+          "defense": 0.021
+        },
+        "wizard_ratio": {
+          "offense": 0.021,
+          "defense": 0.021
+        }
+      },
+      "land": {
+        "plain": 469,
+        "mountain": 50,
+        "swamp": 59,
+        "cavern": 0,
+        "forest": 12,
+        "hill": 120,
+        "water": 20,
+        "discounted_land": 0,
+        "barren_land": 0
+      },
+      "buildings": {
+        "home": 50,
+        "alchemy": 300,
+        "farm": 25,
+        "smithy": 105,
+        "masonry": 0,
+        "ore_mine": 50,
+        "gryphon_nest": 0,
+        "tower": 20,
+        "wizard_guild": 0,
+        "temple": 0,
+        "diamond_mine": 0,
+        "school": 0,
+        "lumberyard": 10,
+        "factory": 0,
+        "guard_tower": 0,
+        "shrine": 0,
+        "barracks": 0,
+        "dock": 20
+      },
+      "hourly": {
+        "production": {
+          "platinum": 40996,
+          "food": 2900,
+          "lumber": 500,
+          "mana": 500,
+          "ore": 3000,
+          "gems": 0,
+          "tech": 0,
+          "boats": 1
+        },
+        "consumption": {
+          "food": 3422
+        },
+        "decay": {
+          "food": 85,
+          "lumber": 44,
+          "mana": 115
+        },
+        "net_change": {
+          "food": -607,
+          "lumber": 456,
+          "mana": 385
+        }
+      },
+      "population": {
+        "total": 13688,
+        "max": 14544,
+        "peasants": 8766,
+        "military": 4922,
+        "jobs": 10600,
+        "employed": 8766
+      },
+      "statistics": {
+        "platinum_spent": 2015331,
+        "platinum_spent_construction": 218444,
+        "platinum_spent_exploration": 0,
+        "platinum_spent_investment": 0,
+        "platinum_spent_rezoning": 10902,
+        "platinum_spent_training": 1785985,
+        "lumber_spent": 32340,
+        "lumber_spent_construction": 32340,
+        "lumber_spent_investment": 0,
+        "lumber_spent_training": 0,
+        "mana_spent": 0,
+        "mana_spent_investment": 0,
+        "mana_spent_training": 0,
+        "ore_spent": 114985,
+        "ore_spent_investment": 0,
+        "ore_spent_training": 114985,
+        "gems_spent": 0,
+        "gems_spent_investment": 0,
+        "gems_spent_training": 0,
+        "land_conquered": 182,
+        "land_explored": 40,
+        "land_lost": 0,
+        "highest_land_achieved": 730
+      }
+    },
+    "17631": {
+      "id": 17631,
+      "name": "Hogwarts Society",
+      "race": "Dark Elf",
+      "ops": {
+        "clear_sight": {
+          "ruler_name": "Professor Flitwick",
+          "land": 722,
+          "peasants": 10317,
+          "employment": 88.7854996607541,
+          "networth": 37390,
+          "prestige": 250,
+          "resilience": 0,
+          "resolve": 0,
+          "spy_mastery": 0,
+          "wizard_mastery": 0,
+          "resource_platinum": 69,
+          "resource_food": 12826,
+          "resource_lumber": 128,
+          "resource_mana": 7785,
+          "resource_ore": 4447,
+          "resource_gems": 0,
+          "resource_tech": 788,
+          "resource_boats": 0,
+          "morale": 97,
+          "military_draftees": 78,
+          "military_unit1": 0,
+          "military_unit2": 3141,
+          "military_unit3": 280,
+          "military_unit4": 0,
+          "military_spies": 50,
+          "military_assassins": 0,
+          "military_wizards": 50,
+          "military_archmages": 0,
+          "recently_invaded_count": null,
+          "clear_sight_accuracy": null,
+          "spa": 0.06925207756232687,
+          "wpa": 0.13850415512465375,
+          "race_name": "Dark Elf",
+          "realm": 4,
+          "name": "Hogwarts Society",
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "revelation": {
+          "spells": [
+            {
+              "dominion_id": 17631,
+              "spell_id": 12,
+              "duration": 4,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T12:07:16.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "gaias_watch",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17631,
+              "spell_id": 13,
+              "duration": 4,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T12:07:03.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "ares_call",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17631,
+              "spell_id": 14,
+              "duration": 4,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T12:07:08.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "midas_touch",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17631,
+              "spell_id": 15,
+              "duration": 4,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T12:07:12.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "mining_strength",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            }
+          ],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "castle_spy": {
+          "science": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "keep": {
+            "points": 596772,
+            "rating": 0.0465,
+            "incoming": 0
+          },
+          "forges": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "walls": {
+            "points": 21692,
+            "rating": 0.0012,
+            "incoming": 0
+          },
+          "spires": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "harbor": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "total": 618464,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "barracks_spy": {
+          "units": {
+            "home": {
+              "spies": 50,
+              "assassins": 0,
+              "wizards": 50,
+              "archmages": 0,
+              "draftees": 78,
+              "unit1": 0,
+              "unit2": 3141,
+              "unit3": 280,
+              "unit4": 0
+            },
+            "returning": [],
+            "training": {
+              "spies": {
+                "2": 10,
+                "6": 15,
+                "10": 1,
+                "12": 24
+              },
+              "unit2": {
+                "3": 95,
+                "4": 100,
+                "9": 42
+              },
+              "unit3": {
+                "2": 10,
+                "3": 5,
+                "6": 20,
+                "8": 22,
+                "9": 7,
+                "10": 12,
+                "12": 5
+              },
+              "wizards": {
+                "2": 10,
+                "6": 15,
+                "10": 25
+              }
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "survey_dominion": {
+          "constructed": {
+            "home": 195,
+            "alchemy": 90,
+            "farm": 40,
+            "smithy": 120,
+            "masonry": 0,
+            "ore_mine": 18,
+            "gryphon_nest": 0,
+            "tower": 23,
+            "wizard_guild": 15,
+            "temple": 0,
+            "diamond_mine": 65,
+            "school": 5,
+            "lumberyard": 9,
+            "factory": 63,
+            "guard_tower": 10,
+            "shrine": 0,
+            "barracks": 24,
+            "dock": 0
+          },
+          "constructing": {
+            "dock": {
+              "12": 5
+            },
+            "lumberyard": {
+              "12": 1
+            },
+            "ore_mine": {
+              "12": 2
+            },
+            "smithy": {
+              "10": 2,
+              "12": 5
+            },
+            "tower": {
+              "7": 7
+            },
+            "wizard_guild": {
+              "3": 5,
+              "7": 5,
+              "8": 8,
+              "10": 5
+            }
+          },
+          "barren_land": 0,
+          "total_land": 722,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "land_spy": {
+          "totalLand": 722,
+          "totalBarrenLand": 0,
+          "totalConstructedLand": 677,
+          "explored": {
+            "plain": {
+              "amount": 257,
+              "percentage": 35.59556786703601,
+              "barren": 0,
+              "constructed": 250,
+              "constructedPercentage": 36.92762186115214
+            },
+            "mountain": {
+              "amount": 20,
+              "percentage": 2.7700831024930745,
+              "barren": 0,
+              "constructed": 18,
+              "constructedPercentage": 2.658788774002954
+            },
+            "swamp": {
+              "amount": 68,
+              "percentage": 9.418282548476455,
+              "barren": 0,
+              "constructed": 38,
+              "constructedPercentage": 5.612998522895126
+            },
+            "cavern": {
+              "amount": 265,
+              "percentage": 36.70360110803324,
+              "barren": 0,
+              "constructed": 265,
+              "constructedPercentage": 39.14327917282127
+            },
+            "forest": {
+              "amount": 10,
+              "percentage": 1.3850415512465373,
+              "barren": 0,
+              "constructed": 9,
+              "constructedPercentage": 1.329394387001477
+            },
+            "hill": {
+              "amount": 97,
+              "percentage": 13.434903047091412,
+              "barren": 0,
+              "constructed": 97,
+              "constructedPercentage": 14.32791728212703
+            },
+            "water": {
+              "amount": 5,
+              "percentage": 0.6925207756232686,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            }
+          },
+          "incoming": {
+            "forest": {
+              "8": 1,
+              "12": 1
+            },
+            "hill": {
+              "2": 5,
+              "3": 3,
+              "4": 2,
+              "6": 5,
+              "8": 1
+            },
+            "plain": {
+              "3": 2,
+              "4": 2,
+              "8": 1,
+              "10": 4,
+              "12": 2
+            },
+            "swamp": {
+              "4": 5
+            },
+            "water": {
+              "10": 5,
+              "12": 5
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "vision": {
+          "techs": [],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "disclosure": {
+          "0": {
+            "name": "Dephnica Eravnis",
+            "class": "alchemist",
+            "level": 1,
+            "experience": 294,
+            "next_level_xp": 700,
+            "bonus": 0.3,
+            "upgrades": {
+              "lead_from_the_shadows": "Lead from the Shadows"
+            },
+            "inactive_classes": []
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        }
+      },
+      "resources": {
+        "platinum": 69,
+        "food": 12826,
+        "lumber": 128,
+        "mana": 7785,
+        "ore": 4447,
+        "gems": 0,
+        "tech": 788,
+        "boats": 0
+      },
+      "returning": {},
+      "military": {
+        "draft_rate": 30,
+        "draftees": 78,
+        "unit1": 0,
+        "unit2": 3141,
+        "unit3": 280,
+        "unit4": 0,
+        "spies": 50,
+        "assassins": 0,
+        "wizards": 50,
+        "archmages": 0,
+        "spy_strength": 96,
+        "wizard_strength": 100,
+        "offensive_modifier": 2.5,
+        "defensive_modifier": 12.336,
+        "spy_ratio": {
+          "offense": 0.069,
+          "defense": 0.069
+        },
+        "wizard_ratio": {
+          "offense": 0.139,
+          "defense": 0.139
+        }
+      },
+      "land": {
+        "plain": 257,
+        "mountain": 20,
+        "swamp": 68,
+        "cavern": 265,
+        "forest": 10,
+        "hill": 97,
+        "water": 5,
+        "discounted_land": 0,
+        "barren_land": 0
+      },
+      "buildings": {
+        "home": 195,
+        "alchemy": 90,
+        "farm": 40,
+        "smithy": 120,
+        "masonry": 0,
+        "ore_mine": 18,
+        "gryphon_nest": 0,
+        "tower": 23,
+        "wizard_guild": 15,
+        "temple": 0,
+        "diamond_mine": 65,
+        "school": 5,
+        "lumberyard": 9,
+        "factory": 63,
+        "guard_tower": 10,
+        "shrine": 0,
+        "barracks": 24,
+        "dock": 0
+      },
+      "hourly": {
+        "production": {
+          "platinum": 31746,
+          "food": 3600,
+          "lumber": 450,
+          "mana": 725,
+          "ore": 1188,
+          "gems": 1023,
+          "tech": 4,
+          "boats": 0
+        },
+        "consumption": {
+          "food": 3583
+        },
+        "decay": {
+          "food": 128,
+          "lumber": 1,
+          "mana": 156
+        },
+        "net_change": {
+          "food": -111,
+          "lumber": 449,
+          "mana": 569
+        }
+      },
+      "population": {
+        "total": 14334,
+        "max": 14546,
+        "peasants": 10317,
+        "military": 4017,
+        "jobs": 9160,
+        "employed": 9160
+      },
+      "statistics": {
+        "platinum_spent": 1649202,
+        "platinum_spent_construction": 153386,
+        "platinum_spent_exploration": 467126,
+        "platinum_spent_investment": 0,
+        "platinum_spent_rezoning": 1500,
+        "platinum_spent_training": 1027190,
+        "lumber_spent": 26641,
+        "lumber_spent_construction": 22680,
+        "lumber_spent_investment": 3961,
+        "lumber_spent_training": 0,
+        "mana_spent": 0,
+        "mana_spent_investment": 0,
+        "mana_spent_training": 0,
+        "ore_spent": 56045,
+        "ore_spent_investment": 8073,
+        "ore_spent_training": 47972,
+        "gems_spent": 49533,
+        "gems_spent_investment": 49533,
+        "gems_spent_training": 0,
+        "land_conquered": 0,
+        "land_explored": 206,
+        "land_lost": 0,
+        "highest_land_achieved": 722
+      }
+    },
+    "17645": {
+      "id": 17645,
+      "name": "T23D",
+      "race": "Dark Elf",
+      "ops": {
+        "clear_sight": {
+          "ruler_name": "Oblivious",
+          "land": 754,
+          "peasants": 9317,
+          "employment": 100,
+          "networth": 37267,
+          "prestige": 250,
+          "resilience": 0,
+          "resolve": 0,
+          "spy_mastery": 0,
+          "wizard_mastery": 0,
+          "resource_platinum": 952,
+          "resource_food": 25484,
+          "resource_lumber": 11749,
+          "resource_mana": 5819,
+          "resource_ore": 13403,
+          "resource_gems": 0,
+          "resource_tech": 780,
+          "resource_boats": 0,
+          "morale": 100,
+          "military_draftees": 0,
+          "military_unit1": 0,
+          "military_unit2": 2805,
+          "military_unit3": 311,
+          "military_unit4": 0,
+          "military_spies": 50,
+          "military_assassins": 0,
+          "military_wizards": 136,
+          "military_archmages": 0,
+          "recently_invaded_count": null,
+          "clear_sight_accuracy": null,
+          "spa": 0.06631299734748011,
+          "wpa": 0.253315649867374,
+          "race_name": "Dark Elf",
+          "realm": 4,
+          "name": "T23D",
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "revelation": {
+          "spells": [
+            {
+              "dominion_id": 17645,
+              "spell_id": 13,
+              "duration": 1,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-03T23:41:46.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "ares_call",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17645,
+              "spell_id": 14,
+              "duration": 1,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-03T23:41:42.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "midas_touch",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17645,
+              "spell_id": 62,
+              "duration": 1,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-03T23:41:50.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "spellwrights_calling",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            }
+          ],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "castle_spy": {
+          "science": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "keep": {
+            "points": 40000,
+            "rating": 0.0033,
+            "incoming": 0
+          },
+          "forges": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "walls": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "spires": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "harbor": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "total": 40000,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "barracks_spy": {
+          "units": {
+            "home": {
+              "spies": 50,
+              "assassins": 0,
+              "wizards": 136,
+              "archmages": 0,
+              "draftees": 0,
+              "unit1": 0,
+              "unit2": 2805,
+              "unit3": 311,
+              "unit4": 0
+            },
+            "returning": [],
+            "training": {
+              "unit2": {
+                "6": 94,
+                "7": 93,
+                "9": 184
+              },
+              "unit3": {
+                "1": 3,
+                "2": 4,
+                "3": 4,
+                "4": 9,
+                "5": 6,
+                "6": 8,
+                "7": 99,
+                "8": 99,
+                "9": 3,
+                "10": 4,
+                "11": 4,
+                "12": 4
+              }
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "survey_dominion": {
+          "constructed": {
+            "home": 188,
+            "alchemy": 204,
+            "farm": 42,
+            "smithy": 146,
+            "masonry": 0,
+            "ore_mine": 25,
+            "gryphon_nest": 0,
+            "tower": 0,
+            "wizard_guild": 75,
+            "temple": 0,
+            "diamond_mine": 0,
+            "school": 0,
+            "lumberyard": 20,
+            "factory": 0,
+            "guard_tower": 0,
+            "shrine": 0,
+            "barracks": 0,
+            "dock": 0
+          },
+          "constructing": {
+            "diamond_mine": {
+              "12": 29
+            },
+            "lumberyard": {
+              "12": 3
+            },
+            "ore_mine": {
+              "12": 5
+            },
+            "smithy": {
+              "12": 7
+            },
+            "tower": {
+              "12": 10
+            }
+          },
+          "barren_land": 0,
+          "total_land": 754,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "land_spy": {
+          "totalLand": 754,
+          "totalBarrenLand": 0,
+          "totalConstructedLand": 700,
+          "explored": {
+            "plain": {
+              "amount": 399,
+              "percentage": 52.91777188328912,
+              "barren": 0,
+              "constructed": 392,
+              "constructedPercentage": 56.00000000000001
+            },
+            "mountain": {
+              "amount": 30,
+              "percentage": 3.978779840848806,
+              "barren": 0,
+              "constructed": 25,
+              "constructedPercentage": 3.571428571428571
+            },
+            "swamp": {
+              "amount": 85,
+              "percentage": 11.273209549071618,
+              "barren": 0,
+              "constructed": 75,
+              "constructedPercentage": 10.714285714285714
+            },
+            "cavern": {
+              "amount": 217,
+              "percentage": 28.779840848806366,
+              "barren": 0,
+              "constructed": 188,
+              "constructedPercentage": 26.857142857142858
+            },
+            "forest": {
+              "amount": 23,
+              "percentage": 3.050397877984085,
+              "barren": 0,
+              "constructed": 20,
+              "constructedPercentage": 2.857142857142857
+            },
+            "hill": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            },
+            "water": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            }
+          },
+          "incoming": {
+            "cavern": {
+              "1": 13,
+              "4": 41
+            },
+            "forest": {
+              "6": 3
+            },
+            "mountain": {
+              "6": 5
+            },
+            "plain": {
+              "5": 13
+            },
+            "swamp": {
+              "6": 5
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "vision": {
+          "techs": [],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "disclosure": {
+          "0": {
+            "name": "Mervad Ghusirsi",
+            "class": "sorcerer",
+            "level": 1,
+            "experience": 452,
+            "next_level_xp": 700,
+            "bonus": 2.5,
+            "upgrades": {
+              "lead_from_the_shadows": "Lead from the Shadows"
+            },
+            "inactive_classes": []
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        }
+      },
+      "resources": {
+        "platinum": 952,
+        "food": 25484,
+        "lumber": 11749,
+        "mana": 5819,
+        "ore": 13403,
+        "gems": 0,
+        "tech": 780,
+        "boats": 0
+      },
+      "returning": {},
+      "military": {
+        "draft_rate": 90,
+        "draftees": 0,
+        "unit1": 0,
+        "unit2": 2805,
+        "unit3": 311,
+        "unit4": 0,
+        "spies": 50,
+        "assassins": 0,
+        "wizards": 136,
+        "archmages": 0,
+        "spy_strength": 44,
+        "wizard_strength": 100,
+        "offensive_modifier": 2.5,
+        "defensive_modifier": 10,
+        "spy_ratio": {
+          "offense": 0.066,
+          "defense": 0.066
+        },
+        "wizard_ratio": {
+          "offense": 0.26,
+          "defense": 0.26
+        }
+      },
+      "land": {
+        "plain": 399,
+        "mountain": 30,
+        "swamp": 85,
+        "cavern": 217,
+        "forest": 23,
+        "hill": 0,
+        "water": 0,
+        "discounted_land": 0,
+        "barren_land": 0
+      },
+      "buildings": {
+        "home": 188,
+        "alchemy": 204,
+        "farm": 42,
+        "smithy": 146,
+        "masonry": 0,
+        "ore_mine": 25,
+        "gryphon_nest": 0,
+        "tower": 0,
+        "wizard_guild": 75,
+        "temple": 0,
+        "diamond_mine": 0,
+        "school": 0,
+        "lumberyard": 20,
+        "factory": 0,
+        "guard_tower": 0,
+        "shrine": 0,
+        "barracks": 0,
+        "dock": 0
+      },
+      "hourly": {
+        "production": {
+          "platinum": 37769,
+          "food": 3444,
+          "lumber": 1000,
+          "mana": 750,
+          "ore": 1500,
+          "gems": 0,
+          "tech": 0,
+          "boats": 0
+        },
+        "consumption": {
+          "food": 3309
+        },
+        "decay": {
+          "food": 255,
+          "lumber": 117,
+          "mana": 116
+        },
+        "net_change": {
+          "food": -120,
+          "lumber": 883,
+          "mana": 634
+        }
+      },
+      "population": {
+        "total": 13237,
+        "max": 13807,
+        "peasants": 9317,
+        "military": 3920,
+        "jobs": 10240,
+        "employed": 9317
+      },
+      "statistics": {
+        "platinum_spent": 2033020,
+        "platinum_spent_construction": 346100,
+        "platinum_spent_exploration": 686240,
+        "platinum_spent_investment": 0,
+        "platinum_spent_rezoning": 10400,
+        "platinum_spent_training": 990280,
+        "lumber_spent": 51874,
+        "lumber_spent_construction": 51874,
+        "lumber_spent_investment": 0,
+        "lumber_spent_training": 0,
+        "mana_spent": 0,
+        "mana_spent_investment": 0,
+        "mana_spent_training": 0,
+        "ore_spent": 70597,
+        "ore_spent_investment": 20000,
+        "ore_spent_training": 50597,
+        "gems_spent": 0,
+        "gems_spent_investment": 0,
+        "gems_spent_training": 0,
+        "land_conquered": 0,
+        "land_explored": 274,
+        "land_lost": 0,
+        "highest_land_achieved": 754
+      }
+    },
+    "17648": {
+      "id": 17648,
+      "name": "Hail Satan",
+      "race": "Halfling",
+      "ops": {
+        "clear_sight": {
+          "ruler_name": "FIRETIPPED",
+          "land": 698,
+          "peasants": 7926,
+          "employment": 100,
+          "networth": 41125,
+          "prestige": 344,
+          "resilience": 0,
+          "resolve": 0,
+          "spy_mastery": 0,
+          "wizard_mastery": 0,
+          "resource_platinum": 489,
+          "resource_food": 39991,
+          "resource_lumber": 30200,
+          "resource_mana": 3373,
+          "resource_ore": 2106,
+          "resource_gems": 0,
+          "resource_tech": 1280,
+          "resource_boats": 56,
+          "morale": 100,
+          "military_draftees": 66,
+          "military_unit1": 0,
+          "military_unit2": 1000,
+          "military_unit3": 950,
+          "military_unit4": 1099,
+          "military_spies": 100,
+          "military_assassins": 0,
+          "military_wizards": 15,
+          "military_archmages": 0,
+          "recently_invaded_count": null,
+          "clear_sight_accuracy": null,
+          "spa": 0.3467048710601719,
+          "wpa": 0.02148997134670487,
+          "race_name": "Halfling",
+          "realm": 4,
+          "name": "Hail Satan",
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "revelation": {
+          "spells": [
+            {
+              "dominion_id": 17648,
+              "spell_id": 13,
+              "duration": 4,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T12:58:19.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "ares_call",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17648,
+              "spell_id": 14,
+              "duration": 4,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T12:58:23.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "midas_touch",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17648,
+              "spell_id": 15,
+              "duration": 4,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T12:58:27.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "mining_strength",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            }
+          ],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "castle_spy": {
+          "science": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "keep": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "forges": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "walls": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "spires": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "harbor": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "total": 0,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "barracks_spy": {
+          "units": {
+            "home": {
+              "spies": 100,
+              "assassins": 0,
+              "wizards": 15,
+              "archmages": 0,
+              "draftees": 66,
+              "unit1": 0,
+              "unit2": 1000,
+              "unit3": 950,
+              "unit4": 350
+            },
+            "returning": {
+              "unit4": {
+                "5": 749
+              }
+            },
+            "training": {
+              "unit2": {
+                "2": 191,
+                "3": 172,
+                "7": 179
+              },
+              "unit3": {
+                "2": 200
+              },
+              "unit4": {
+                "2": 200,
+                "7": 58,
+                "8": 94,
+                "9": 60,
+                "11": 61,
+                "12": 66
+              },
+              "wizards": {
+                "5": 10
+              }
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "survey_dominion": {
+          "constructed": {
+            "home": 66,
+            "alchemy": 300,
+            "farm": 20,
+            "smithy": 105,
+            "masonry": 0,
+            "ore_mine": 29,
+            "gryphon_nest": 0,
+            "tower": 20,
+            "wizard_guild": 0,
+            "temple": 0,
+            "diamond_mine": 0,
+            "school": 0,
+            "lumberyard": 20,
+            "factory": 0,
+            "guard_tower": 20,
+            "shrine": 0,
+            "barracks": 0,
+            "dock": 20
+          },
+          "constructing": {
+            "dock": {
+              "5": 5
+            },
+            "farm": {
+              "4": 5
+            },
+            "guard_tower": {
+              "4": 24
+            },
+            "home": {
+              "5": 23
+            },
+            "ore_mine": {
+              "4": 6
+            },
+            "smithy": {
+              "4": 25
+            },
+            "tower": {
+              "4": 10
+            }
+          },
+          "barren_land": 0,
+          "total_land": 698,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "land_spy": {
+          "totalLand": 698,
+          "totalBarrenLand": 0,
+          "totalConstructedLand": 600,
+          "explored": {
+            "plain": {
+              "amount": 455,
+              "percentage": 65.18624641833811,
+              "barren": 0,
+              "constructed": 425,
+              "constructedPercentage": 70.83333333333334
+            },
+            "mountain": {
+              "amount": 35,
+              "percentage": 5.014326647564469,
+              "barren": 0,
+              "constructed": 29,
+              "constructedPercentage": 4.833333333333333
+            },
+            "swamp": {
+              "amount": 30,
+              "percentage": 4.297994269340974,
+              "barren": 0,
+              "constructed": 20,
+              "constructedPercentage": 3.3333333333333335
+            },
+            "cavern": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            },
+            "forest": {
+              "amount": 20,
+              "percentage": 2.865329512893983,
+              "barren": 0,
+              "constructed": 20,
+              "constructedPercentage": 3.3333333333333335
+            },
+            "hill": {
+              "amount": 133,
+              "percentage": 19.054441260744987,
+              "barren": 0,
+              "constructed": 86,
+              "constructedPercentage": 14.333333333333334
+            },
+            "water": {
+              "amount": 25,
+              "percentage": 3.5816618911174785,
+              "barren": 0,
+              "constructed": 20,
+              "constructedPercentage": 3.3333333333333335
+            }
+          },
+          "incoming": {
+            "mountain": {
+              "5": 36
+            },
+            "plain": {
+              "5": 12
+            },
+            "swamp": {
+              "5": 4
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "vision": {
+          "techs": [],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "disclosure": {
+          "0": {
+            "name": "Mariah Featherbottom",
+            "class": "blacksmith",
+            "level": 1,
+            "experience": 488,
+            "next_level_xp": 700,
+            "bonus": -0.2,
+            "upgrades": {
+              "lead_from_the_front": "Lead from the Front"
+            },
+            "inactive_classes": []
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        }
+      },
+      "resources": {
+        "platinum": 489,
+        "food": 39991,
+        "lumber": 30200,
+        "mana": 3373,
+        "ore": 2106,
+        "gems": 0,
+        "tech": 1280,
+        "boats": 34
+      },
+      "returning": {
+        "prestige": {
+          "5": 37
+        },
+        "boats": {
+          "5": 22
+        },
+        "tech": {
+          "5": 250
+        }
+      },
+      "military": {
+        "draft_rate": 90,
+        "draftees": 66,
+        "unit1": 0,
+        "unit2": 1000,
+        "unit3": 950,
+        "unit4": 350,
+        "spies": 100,
+        "assassins": 0,
+        "wizards": 15,
+        "archmages": 0,
+        "spy_strength": 84,
+        "wizard_strength": 100,
+        "offensive_modifier": 3.44,
+        "defensive_modifier": 24.585,
+        "spy_ratio": {
+          "offense": 0.347,
+          "defense": 0.468
+        },
+        "wizard_ratio": {
+          "offense": 0.021,
+          "defense": 0.021
+        }
+      },
+      "land": {
+        "plain": 455,
+        "mountain": 35,
+        "swamp": 30,
+        "cavern": 0,
+        "forest": 20,
+        "hill": 133,
+        "water": 25,
+        "discounted_land": 0,
+        "barren_land": 0
+      },
+      "buildings": {
+        "home": 66,
+        "alchemy": 300,
+        "farm": 20,
+        "smithy": 105,
+        "masonry": 0,
+        "ore_mine": 29,
+        "gryphon_nest": 0,
+        "tower": 20,
+        "wizard_guild": 0,
+        "temple": 0,
+        "diamond_mine": 0,
+        "school": 0,
+        "lumberyard": 20,
+        "factory": 0,
+        "guard_tower": 20,
+        "shrine": 0,
+        "barracks": 0,
+        "dock": 20
+      },
+      "hourly": {
+        "production": {
+          "platinum": 38390,
+          "food": 2482,
+          "lumber": 1000,
+          "mana": 500,
+          "ore": 1914,
+          "gems": 0,
+          "tech": 0,
+          "boats": 1
+        },
+        "consumption": {
+          "food": 2178
+        },
+        "decay": {
+          "food": 400,
+          "lumber": 302,
+          "mana": 67
+        },
+        "net_change": {
+          "food": -96,
+          "lumber": 698,
+          "mana": 433
+        }
+      },
+      "population": {
+        "total": 12447,
+        "max": 12447,
+        "peasants": 7926,
+        "military": 4521,
+        "jobs": 10680,
+        "employed": 7926
+      },
+      "statistics": {
+        "platinum_spent": 2248854,
+        "platinum_spent_construction": 192714,
+        "platinum_spent_exploration": 0,
+        "platinum_spent_investment": 0,
+        "platinum_spent_rezoning": 13440,
+        "platinum_spent_training": 2042700,
+        "lumber_spent": 28130,
+        "lumber_spent_construction": 28130,
+        "lumber_spent_investment": 0,
+        "lumber_spent_training": 0,
+        "mana_spent": 0,
+        "mana_spent_investment": 0,
+        "mana_spent_training": 0,
+        "ore_spent": 51560,
+        "ore_spent_investment": 0,
+        "ore_spent_training": 51560,
+        "gems_spent": 0,
+        "gems_spent_investment": 0,
+        "gems_spent_training": 0,
+        "land_conquered": 150,
+        "land_explored": 40,
+        "land_lost": 0,
+        "highest_land_achieved": 698
+      }
+    },
+    "17660": {
+      "id": 17660,
+      "name": "We\u2019re casting some fireballs",
+      "race": "Demon",
+      "ops": {
+        "clear_sight": {
+          "ruler_name": "Get in losers",
+          "land": 875,
+          "peasants": 10708,
+          "employment": 100,
+          "networth": 43275,
+          "prestige": 250,
+          "resilience": 0,
+          "resolve": 0,
+          "spy_mastery": 0,
+          "wizard_mastery": 0,
+          "resource_platinum": 48260,
+          "resource_food": 5236,
+          "resource_lumber": 10087,
+          "resource_mana": 8779,
+          "resource_ore": 0,
+          "resource_gems": 1995,
+          "resource_tech": 1130,
+          "resource_boats": 0,
+          "morale": 93,
+          "military_draftees": 582,
+          "military_unit1": 0,
+          "military_unit2": 735,
+          "military_unit3": 1440,
+          "military_unit4": 0,
+          "military_spies": 55,
+          "military_assassins": 0,
+          "military_wizards": 112,
+          "military_archmages": 0,
+          "recently_invaded_count": null,
+          "clear_sight_accuracy": null,
+          "spa": 0.06285714285714286,
+          "wpa": 0.128,
+          "race_name": "Demon",
+          "realm": 4,
+          "name": "We\u2019re casting some fireballs",
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "revelation": {
+          "spells": [
+            {
+              "dominion_id": 17660,
+              "spell_id": 14,
+              "duration": 5,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T02:21:28.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "midas_touch",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17660,
+              "spell_id": 12,
+              "duration": 3,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T11:29:01.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "gaias_watch",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17660,
+              "spell_id": 13,
+              "duration": 3,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-03T23:43:22.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "ares_call",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            }
+          ],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "castle_spy": {
+          "science": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "keep": {
+            "points": 471600,
+            "rating": 0.0314,
+            "incoming": 0
+          },
+          "forges": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "walls": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "spires": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "harbor": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "total": 471600,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "barracks_spy": {
+          "units": {
+            "home": {
+              "spies": 55,
+              "assassins": 0,
+              "wizards": 112,
+              "archmages": 0,
+              "draftees": 582,
+              "unit1": 0,
+              "unit2": 735,
+              "unit3": 1440,
+              "unit4": 0
+            },
+            "returning": [],
+            "training": {
+              "unit2": {
+                "2": 391
+              },
+              "unit3": {
+                "3": 128
+              }
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "survey_dominion": {
+          "constructed": {
+            "home": 30,
+            "alchemy": 281,
+            "farm": 39,
+            "smithy": 141,
+            "masonry": 0,
+            "ore_mine": 0,
+            "gryphon_nest": 0,
+            "tower": 26,
+            "wizard_guild": 60,
+            "temple": 0,
+            "diamond_mine": 133,
+            "school": 0,
+            "lumberyard": 18,
+            "factory": 72,
+            "guard_tower": 0,
+            "shrine": 0,
+            "barracks": 0,
+            "dock": 0
+          },
+          "constructing": {
+            "diamond_mine": {
+              "3": 33,
+              "5": 11
+            },
+            "farm": {
+              "3": 6
+            },
+            "wizard_guild": {
+              "3": 9,
+              "11": 16
+            }
+          },
+          "barren_land": 0,
+          "total_land": 875,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "land_spy": {
+          "totalLand": 875,
+          "totalBarrenLand": 0,
+          "totalConstructedLand": 800,
+          "explored": {
+            "plain": {
+              "amount": 467,
+              "percentage": 53.37142857142857,
+              "barren": 0,
+              "constructed": 461,
+              "constructedPercentage": 57.62500000000001
+            },
+            "mountain": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            },
+            "swamp": {
+              "amount": 111,
+              "percentage": 12.685714285714287,
+              "barren": 0,
+              "constructed": 86,
+              "constructedPercentage": 10.75
+            },
+            "cavern": {
+              "amount": 207,
+              "percentage": 23.65714285714286,
+              "barren": 0,
+              "constructed": 163,
+              "constructedPercentage": 20.375
+            },
+            "forest": {
+              "amount": 18,
+              "percentage": 2.057142857142857,
+              "barren": 0,
+              "constructed": 18,
+              "constructedPercentage": 2.25
+            },
+            "hill": {
+              "amount": 72,
+              "percentage": 8.228571428571428,
+              "barren": 0,
+              "constructed": 72,
+              "constructedPercentage": 9
+            },
+            "water": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            }
+          },
+          "incoming": {
+            "cavern": {
+              "11": 28
+            },
+            "swamp": {
+              "6": 10,
+              "8": 22
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "vision": {
+          "techs": [],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "disclosure": {
+          "0": {
+            "name": "Dave the Fireball",
+            "class": "alchemist",
+            "level": 1,
+            "experience": 247,
+            "next_level_xp": 700,
+            "bonus": 0.3,
+            "upgrades": {
+              "lead_from_the_shadows": "Lead from the Shadows"
+            },
+            "inactive_classes": []
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        }
+      },
+      "resources": {
+        "platinum": 48260,
+        "food": 5236,
+        "lumber": 10087,
+        "mana": 8779,
+        "ore": 0,
+        "gems": 1995,
+        "tech": 1130,
+        "boats": 0
+      },
+      "returning": {},
+      "military": {
+        "draft_rate": 90,
+        "draftees": 582,
+        "unit1": 0,
+        "unit2": 735,
+        "unit3": 1440,
+        "unit4": 0,
+        "spies": 55,
+        "assassins": 0,
+        "wizards": 112,
+        "archmages": 0,
+        "spy_strength": 100,
+        "wizard_strength": 100,
+        "offensive_modifier": 7.5,
+        "defensive_modifier": 10,
+        "spy_ratio": {
+          "offense": 0.063,
+          "defense": 0.063
+        },
+        "wizard_ratio": {
+          "offense": 0.128,
+          "defense": 0.128
+        }
+      },
+      "land": {
+        "plain": 467,
+        "mountain": 0,
+        "swamp": 111,
+        "cavern": 207,
+        "forest": 18,
+        "hill": 72,
+        "water": 0,
+        "discounted_land": 0,
+        "barren_land": 0
+      },
+      "buildings": {
+        "home": 30,
+        "alchemy": 281,
+        "farm": 39,
+        "smithy": 141,
+        "masonry": 0,
+        "ore_mine": 0,
+        "gryphon_nest": 0,
+        "tower": 26,
+        "wizard_guild": 60,
+        "temple": 0,
+        "diamond_mine": 133,
+        "school": 0,
+        "lumberyard": 18,
+        "factory": 72,
+        "guard_tower": 0,
+        "shrine": 0,
+        "barracks": 0,
+        "dock": 0
+      },
+      "hourly": {
+        "production": {
+          "platinum": 45836,
+          "food": 3510,
+          "lumber": 900,
+          "mana": 1250,
+          "ore": 0,
+          "gems": 1995,
+          "tech": 0,
+          "boats": 0
+        },
+        "consumption": {
+          "food": 3537
+        },
+        "decay": {
+          "food": 52,
+          "lumber": 101,
+          "mana": 176
+        },
+        "net_change": {
+          "food": -79,
+          "lumber": 799,
+          "mana": 1074
+        }
+      },
+      "population": {
+        "total": 14151,
+        "max": 14351,
+        "peasants": 10708,
+        "military": 3443,
+        "jobs": 15400,
+        "employed": 10708
+      },
+      "statistics": {
+        "platinum_spent": 2887979,
+        "platinum_spent_construction": 364886,
+        "platinum_spent_exploration": 1192607,
+        "platinum_spent_investment": 0,
+        "platinum_spent_rezoning": 8360,
+        "platinum_spent_training": 1322126,
+        "lumber_spent": 53716,
+        "lumber_spent_construction": 53716,
+        "lumber_spent_investment": 0,
+        "lumber_spent_training": 0,
+        "mana_spent": 18858,
+        "mana_spent_investment": 0,
+        "mana_spent_training": 18858,
+        "ore_spent": 0,
+        "ore_spent_investment": 0,
+        "ore_spent_training": 0,
+        "gems_spent": 39300,
+        "gems_spent_investment": 39300,
+        "gems_spent_training": 0,
+        "land_conquered": 0,
+        "land_explored": 585,
+        "land_lost": 0,
+        "highest_land_achieved": 875
+      }
+    },
+    "17666": {
+      "id": 17666,
+      "name": "Ice Lemon Tea",
+      "race": "Dark Elf",
+      "ops": {
+        "clear_sight": {
+          "ruler_name": "Panpan",
+          "land": 662,
+          "peasants": 6348,
+          "employment": 100,
+          "networth": 32589,
+          "prestige": 237,
+          "resilience": 0,
+          "resolve": 0,
+          "spy_mastery": 0,
+          "wizard_mastery": 0,
+          "resource_platinum": 363347,
+          "resource_food": 35769,
+          "resource_lumber": 33844,
+          "resource_mana": 2690,
+          "resource_ore": 16502,
+          "resource_gems": 0,
+          "resource_tech": 2900,
+          "resource_boats": 134.8,
+          "morale": 100,
+          "military_draftees": 194,
+          "military_unit1": 841,
+          "military_unit2": 1098,
+          "military_unit3": 435,
+          "military_unit4": 73,
+          "military_spies": 35,
+          "military_assassins": 0,
+          "military_wizards": 0,
+          "military_archmages": 0,
+          "recently_invaded_count": null,
+          "clear_sight_accuracy": null,
+          "spa": 0.052870090634441085,
+          "wpa": 0.11782477341389729,
+          "race_name": "Dark Elf",
+          "realm": 4,
+          "name": "Ice Lemon Tea",
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "revelation": {
+          "spells": [
+            {
+              "dominion_id": 17666,
+              "spell_id": 12,
+              "duration": 12,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T20:30:43.000000Z",
+              "updated_at": "2026-10-04T20:30:43.000000Z",
+              "spell": "gaias_watch",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17666,
+              "spell_id": 14,
+              "duration": 7,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T15:07:22.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "midas_touch",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17666,
+              "spell_id": 13,
+              "duration": 4,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T12:27:43.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "ares_call",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            }
+          ],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "castle_spy": {
+          "science": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "keep": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "forges": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "walls": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "spires": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "harbor": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "total": 0,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "barracks_spy": {
+          "units": {
+            "home": {
+              "spies": 35,
+              "assassins": 0,
+              "wizards": 0,
+              "archmages": 0,
+              "draftees": 194,
+              "unit1": 0,
+              "unit2": 1098,
+              "unit3": 435,
+              "unit4": 0
+            },
+            "returning": {
+              "unit1": {
+                "4": 841
+              },
+              "unit4": {
+                "4": 73
+              }
+            },
+            "training": {
+              "unit1": {
+                "4": 209
+              },
+              "unit3": {
+                "4": 291,
+                "8": 67,
+                "9": 66
+              }
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "survey_dominion": {
+          "constructed": {
+            "home": 0,
+            "alchemy": 188,
+            "farm": 10,
+            "smithy": 122,
+            "masonry": 0,
+            "ore_mine": 19,
+            "gryphon_nest": 0,
+            "tower": 20,
+            "wizard_guild": 0,
+            "temple": 0,
+            "diamond_mine": 0,
+            "school": 56,
+            "lumberyard": 20,
+            "factory": 68,
+            "guard_tower": 122,
+            "shrine": 0,
+            "barracks": 0,
+            "dock": 37
+          },
+          "barren_land": 0,
+          "total_land": 662,
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "land_spy": {
+          "totalLand": 662,
+          "totalBarrenLand": 0,
+          "totalConstructedLand": 662,
+          "explored": {
+            "plain": {
+              "amount": 320,
+              "percentage": 48.338368580060425,
+              "barren": 0,
+              "constructed": 320,
+              "constructedPercentage": 48.338368580060425
+            },
+            "mountain": {
+              "amount": 19,
+              "percentage": 2.8700906344410875,
+              "barren": 0,
+              "constructed": 19,
+              "constructedPercentage": 2.8700906344410875
+            },
+            "swamp": {
+              "amount": 20,
+              "percentage": 3.0211480362537766,
+              "barren": 0,
+              "constructed": 20,
+              "constructedPercentage": 3.0211480362537766
+            },
+            "cavern": {
+              "amount": 56,
+              "percentage": 8.459214501510575,
+              "barren": 0,
+              "constructed": 56,
+              "constructedPercentage": 8.459214501510575
+            },
+            "forest": {
+              "amount": 20,
+              "percentage": 3.0211480362537766,
+              "barren": 0,
+              "constructed": 20,
+              "constructedPercentage": 3.0211480362537766
+            },
+            "hill": {
+              "amount": 190,
+              "percentage": 28.700906344410875,
+              "barren": 0,
+              "constructed": 190,
+              "constructedPercentage": 28.700906344410875
+            },
+            "water": {
+              "amount": 37,
+              "percentage": 5.589123867069486,
+              "barren": 0,
+              "constructed": 37,
+              "constructedPercentage": 5.589123867069486
+            }
+          },
+          "incoming": {
+            "forest": {
+              "4": 18
+            },
+            "hill": {
+              "4": 12
+            },
+            "plain": {
+              "4": 22
+            },
+            "swamp": {
+              "4": 2
+            }
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "vision": {
+          "techs": [],
+          "created_at": "2026-10-04T20:59:50Z"
+        },
+        "disclosure": {
+          "0": {
+            "name": "Dirvern Drieri",
+            "class": "blacksmith",
+            "level": 1,
+            "experience": 226,
+            "next_level_xp": 700,
+            "bonus": -0.2,
+            "upgrades": [],
+            "inactive_classes": []
+          },
+          "created_at": "2026-10-04T20:59:50Z"
+        }
+      },
+      "resources": {
+        "platinum": 363347,
+        "food": 35769,
+        "lumber": 33844,
+        "mana": 2690,
+        "ore": 16502,
+        "gems": 0,
+        "tech": 2900,
+        "boats": 101.8
+      },
+      "returning": {
+        "prestige": {
+          "4": 46
+        },
+        "boats": {
+          "4": 33
+        },
+        "tech": {
+          "4": 250
+        }
+      },
+      "military": {
+        "draft_rate": 90,
+        "draftees": 194,
+        "unit1": 0,
+        "unit2": 1098,
+        "unit3": 435,
+        "unit4": 0,
+        "spies": 35,
+        "assassins": 0,
+        "wizards": 0,
+        "archmages": 0,
+        "spy_strength": 98,
+        "wizard_strength": 95,
+        "offensive_modifier": 2.37,
+        "defensive_modifier": 39.486,
+        "spy_ratio": {
+          "offense": 0.053,
+          "defense": 0.053
+        },
+        "wizard_ratio": {
+          "offense": 0.118,
+          "defense": 0.118
+        }
+      },
+      "land": {
+        "plain": 320,
+        "mountain": 19,
+        "swamp": 20,
+        "cavern": 56,
+        "forest": 20,
+        "hill": 190,
+        "water": 37,
+        "discounted_land": 40,
+        "barren_land": 0
+      },
+      "buildings": {
+        "home": 0,
+        "alchemy": 188,
+        "farm": 10,
+        "smithy": 122,
+        "masonry": 0,
+        "ore_mine": 19,
+        "gryphon_nest": 0,
+        "tower": 20,
+        "wizard_guild": 0,
+        "temple": 0,
+        "diamond_mine": 0,
+        "school": 56,
+        "lumberyard": 20,
+        "factory": 68,
+        "guard_tower": 122,
+        "shrine": 0,
+        "barracks": 0,
+        "dock": 37
+      },
+      "hourly": {
+        "production": {
+          "platinum": 28159,
+          "food": 2562,
+          "lumber": 1000,
+          "mana": 500,
+          "ore": 1140,
+          "gems": 0,
+          "tech": 51,
+          "boats": 1.85
+        },
+        "consumption": {
+          "food": 2414
+        },
+        "decay": {
+          "food": 358,
+          "lumber": 338,
+          "mana": 54
+        },
+        "net_change": {
+          "food": -210,
+          "lumber": 662,
+          "mana": 446
+        }
+      },
+      "population": {
+        "total": 9657,
+        "max": 9657,
+        "peasants": 6348,
+        "military": 3309,
+        "jobs": 13240,
+        "employed": 6348
+      },
+      "statistics": {
+        "platinum_spent": 1874826,
+        "platinum_spent_construction": 243260,
+        "platinum_spent_exploration": 408610,
+        "platinum_spent_investment": 0,
+        "platinum_spent_rezoning": 0,
+        "platinum_spent_training": 1222956,
+        "lumber_spent": 34660,
+        "lumber_spent_construction": 34660,
+        "lumber_spent_investment": 0,
+        "lumber_spent_training": 0,
+        "mana_spent": 0,
+        "mana_spent_investment": 0,
+        "mana_spent_training": 0,
+        "ore_spent": 64618,
+        "ore_spent_investment": 0,
+        "ore_spent_training": 64618,
+        "gems_spent": 0,
+        "gems_spent_investment": 0,
+        "gems_spent_training": 0,
+        "land_conquered": 54,
+        "land_explored": 352,
+        "land_lost": 40,
+        "highest_land_achieved": 702
+      }
+    },
+    "17672": {
+      "id": 17672,
+      "name": "Magic and Lycanthropes",
+      "race": "Lycanthrope",
+      "ops": {
+        "clear_sight": {
+          "ruler_name": "magi magi",
+          "land": 1004,
+          "peasants": 15580,
+          "employment": 100,
+          "networth": 38470,
+          "prestige": 250,
+          "resilience": 0,
+          "resolve": 0,
+          "spy_mastery": 0,
+          "wizard_mastery": 0,
+          "resource_platinum": 11083,
+          "resource_food": 784,
+          "resource_lumber": 621,
+          "resource_mana": 2016,
+          "resource_ore": 0,
+          "resource_gems": 0,
+          "resource_tech": 1130,
+          "resource_boats": 0,
+          "morale": 86,
+          "military_draftees": 0,
+          "military_unit1": 0,
+          "military_unit2": 2768,
+          "military_unit3": 0,
+          "military_unit4": 0,
+          "military_spies": 15,
+          "military_assassins": 0,
+          "military_wizards": 15,
+          "military_archmages": 0,
+          "recently_invaded_count": null,
+          "clear_sight_accuracy": null,
+          "spa": 0.014940239043824702,
+          "wpa": 0.014940239043824702,
+          "race_name": "Lycanthrope",
+          "realm": 4,
+          "name": "Magic and Lycanthropes",
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "revelation": {
+          "spells": [
+            {
+              "dominion_id": 17672,
+              "spell_id": 12,
+              "duration": 11,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T19:15:08.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "gaias_watch",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17672,
+              "spell_id": 14,
+              "duration": 4,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-03T23:32:43.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "midas_touch",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17672,
+              "spell_id": 13,
+              "duration": 3,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-03T23:32:47.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "ares_call",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            }
+          ],
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "castle_spy": {
+          "science": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "keep": {
+            "points": 689700,
+            "rating": 0.0393,
+            "incoming": 0
+          },
+          "forges": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "walls": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "spires": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "harbor": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "total": 689700,
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "barracks_spy": {
+          "units": {
+            "home": {
+              "spies": 15,
+              "assassins": 0,
+              "wizards": 15,
+              "archmages": 0,
+              "draftees": 0,
+              "unit1": 0,
+              "unit2": 2768,
+              "unit3": 0,
+              "unit4": 0
+            },
+            "returning": [],
+            "training": {
+              "unit2": {
+                "1": 87,
+                "2": 144,
+                "3": 39,
+                "4": 66,
+                "5": 66,
+                "6": 39,
+                "7": 40,
+                "8": 70,
+                "9": 45
+              }
+            }
+          },
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "survey_dominion": {
+          "constructed": {
+            "home": 90,
+            "alchemy": 209,
+            "farm": 50,
+            "smithy": 140,
+            "masonry": 0,
+            "ore_mine": 0,
+            "gryphon_nest": 0,
+            "tower": 18,
+            "wizard_guild": 0,
+            "temple": 0,
+            "diamond_mine": 191,
+            "school": 0,
+            "lumberyard": 22,
+            "factory": 70,
+            "guard_tower": 90,
+            "shrine": 0,
+            "barracks": 0,
+            "dock": 0
+          },
+          "constructing": {
+            "diamond_mine": {
+              "1": 15,
+              "2": 15,
+              "3": 15,
+              "4": 5,
+              "11": 10
+            },
+            "farm": {
+              "4": 5,
+              "11": 5
+            },
+            "guard_tower": {
+              "9": 31,
+              "11": 10
+            },
+            "lumberyard": {
+              "12": 3
+            },
+            "tower": {
+              "4": 5,
+              "11": 5
+            }
+          },
+          "barren_land": 0,
+          "total_land": 1004,
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "land_spy": {
+          "totalLand": 1004,
+          "totalBarrenLand": 0,
+          "totalConstructedLand": 880,
+          "explored": {
+            "plain": {
+              "amount": 409,
+              "percentage": 40.73705179282869,
+              "barren": 0,
+              "constructed": 399,
+              "constructedPercentage": 45.34090909090909
+            },
+            "mountain": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            },
+            "swamp": {
+              "amount": 28,
+              "percentage": 2.788844621513944,
+              "barren": 0,
+              "constructed": 18,
+              "constructedPercentage": 2.0454545454545454
+            },
+            "cavern": {
+              "amount": 341,
+              "percentage": 33.96414342629482,
+              "barren": 0,
+              "constructed": 281,
+              "constructedPercentage": 31.931818181818183
+            },
+            "forest": {
+              "amount": 25,
+              "percentage": 2.49003984063745,
+              "barren": 0,
+              "constructed": 22,
+              "constructedPercentage": 2.5
+            },
+            "hill": {
+              "amount": 201,
+              "percentage": 20.0199203187251,
+              "barren": 0,
+              "constructed": 160,
+              "constructedPercentage": 18.181818181818183
+            },
+            "water": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            }
+          },
+          "incoming": {
+            "cavern": {
+              "3": 3,
+              "6": 3,
+              "9": 6,
+              "10": 6,
+              "12": 6
+            },
+            "forest": {
+              "1": 3,
+              "6": 9,
+              "7": 6
+            },
+            "hill": {
+              "1": 3,
+              "2": 3,
+              "4": 3,
+              "10": 6,
+              "11": 5
+            },
+            "plain": {
+              "2": 3,
+              "4": 3,
+              "7": 3,
+              "8": 3,
+              "11": 4
+            },
+            "swamp": {
+              "8": 6,
+              "9": 6,
+              "12": 6
+            }
+          },
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "vision": {
+          "techs": [],
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "disclosure": {
+          "0": {
+            "name": "Eleanor",
+            "class": "alchemist",
+            "level": 1,
+            "experience": 472,
+            "next_level_xp": 700,
+            "bonus": 0.3,
+            "upgrades": {
+              "lead_from_the_shadows": "Lead from the Shadows"
+            },
+            "inactive_classes": []
+          },
+          "created_at": "2026-10-04T20:59:51Z"
+        }
+      },
+      "resources": {
+        "platinum": 11083,
+        "food": 784,
+        "lumber": 621,
+        "mana": 2016,
+        "ore": 0,
+        "gems": 0,
+        "tech": 1130,
+        "boats": 0
+      },
+      "returning": {},
+      "military": {
+        "draft_rate": 90,
+        "draftees": 0,
+        "unit1": 0,
+        "unit2": 2768,
+        "unit3": 0,
+        "unit4": 0,
+        "spies": 15,
+        "assassins": 0,
+        "wizards": 15,
+        "archmages": 0,
+        "spy_strength": 96,
+        "wizard_strength": 99,
+        "offensive_modifier": 2.5,
+        "defensive_modifier": 29.343,
+        "spy_ratio": {
+          "offense": 0.015,
+          "defense": 0.015
+        },
+        "wizard_ratio": {
+          "offense": 0.015,
+          "defense": 0.015
+        }
+      },
+      "land": {
+        "plain": 409,
+        "mountain": 0,
+        "swamp": 28,
+        "cavern": 341,
+        "forest": 25,
+        "hill": 201,
+        "water": 0,
+        "discounted_land": 0,
+        "barren_land": 0
+      },
+      "buildings": {
+        "home": 90,
+        "alchemy": 209,
+        "farm": 50,
+        "smithy": 140,
+        "masonry": 0,
+        "ore_mine": 0,
+        "gryphon_nest": 0,
+        "tower": 18,
+        "wizard_guild": 0,
+        "temple": 0,
+        "diamond_mine": 191,
+        "school": 0,
+        "lumberyard": 22,
+        "factory": 70,
+        "guard_tower": 90,
+        "shrine": 0,
+        "barracks": 0,
+        "dock": 0
+      },
+      "hourly": {
+        "production": {
+          "platinum": 56772,
+          "food": 4500,
+          "lumber": 1100,
+          "mana": 450,
+          "ore": 0,
+          "gems": 2865,
+          "tech": 0,
+          "boats": 0
+        },
+        "consumption": {
+          "food": 4743
+        },
+        "decay": {
+          "food": 8,
+          "lumber": 6,
+          "mana": 40
+        },
+        "net_change": {
+          "food": -251,
+          "lumber": 1094,
+          "mana": 410
+        }
+      },
+      "population": {
+        "total": 18974,
+        "max": 19163,
+        "peasants": 15580,
+        "military": 3394,
+        "jobs": 15800,
+        "employed": 15580
+      },
+      "statistics": {
+        "platinum_spent": 2952837,
+        "platinum_spent_construction": 507456,
+        "platinum_spent_exploration": 1868323,
+        "platinum_spent_investment": 0,
+        "platinum_spent_rezoning": 2400,
+        "platinum_spent_training": 574658,
+        "lumber_spent": 77459,
+        "lumber_spent_construction": 77459,
+        "lumber_spent_investment": 0,
+        "lumber_spent_training": 0,
+        "mana_spent": 0,
+        "mana_spent_investment": 0,
+        "mana_spent_training": 0,
+        "ore_spent": 0,
+        "ore_spent_investment": 0,
+        "ore_spent_training": 0,
+        "gems_spent": 57475,
+        "gems_spent_investment": 57475,
+        "gems_spent_training": 0,
+        "land_conquered": 0,
+        "land_explored": 750,
+        "land_lost": 0,
+        "highest_land_achieved": 1004
+      }
+    },
+    "17706": {
+      "id": 17706,
+      "name": "jahmes",
+      "race": "Undead",
+      "ops": {
+        "clear_sight": {
+          "ruler_name": "jahmes",
+          "land": 500,
+          "peasants": 1000,
+          "employment": 0,
+          "networth": 10000,
+          "prestige": 250,
+          "resilience": 0,
+          "resolve": 0,
+          "spy_mastery": 0,
+          "wizard_mastery": 0,
+          "resource_platinum": 50000,
+          "resource_food": 15000,
+          "resource_lumber": 15000,
+          "resource_mana": 0,
+          "resource_ore": 0,
+          "resource_gems": 0,
+          "resource_tech": 0,
+          "resource_boats": 0,
+          "morale": 100,
+          "military_draftees": 150,
+          "military_unit1": 0,
+          "military_unit2": 0,
+          "military_unit3": 0,
+          "military_unit4": 0,
+          "military_spies": 0,
+          "military_assassins": 0,
+          "military_wizards": 0,
+          "military_archmages": 0,
+          "recently_invaded_count": null,
+          "clear_sight_accuracy": null,
+          "spa": 0,
+          "wpa": 0,
+          "race_name": "Undead",
+          "realm": 4,
+          "name": "jahmes",
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "revelation": {
+          "spells": [],
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "castle_spy": {
+          "science": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "keep": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "forges": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "walls": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "spires": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "harbor": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "total": 0,
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "barracks_spy": {
+          "units": {
+            "home": {
+              "spies": 0,
+              "assassins": 0,
+              "wizards": 0,
+              "archmages": 0,
+              "draftees": 150,
+              "unit1": 0,
+              "unit2": 0,
+              "unit3": 0,
+              "unit4": 0
+            },
+            "returning": [],
+            "training": []
+          },
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "survey_dominion": {
+          "constructed": {
+            "home": 0,
+            "alchemy": 0,
+            "farm": 0,
+            "smithy": 0,
+            "masonry": 0,
+            "ore_mine": 0,
+            "gryphon_nest": 0,
+            "tower": 0,
+            "wizard_guild": 0,
+            "temple": 0,
+            "diamond_mine": 0,
+            "school": 0,
+            "lumberyard": 0,
+            "factory": 0,
+            "guard_tower": 0,
+            "shrine": 0,
+            "barracks": 0,
+            "dock": 0
+          },
+          "barren_land": 500,
+          "total_land": 500,
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "land_spy": {
+          "totalLand": 500,
+          "totalBarrenLand": 500,
+          "totalConstructedLand": 0,
+          "explored": {
+            "plain": {
+              "amount": 500,
+              "percentage": 100,
+              "barren": 500,
+              "constructed": 0,
+              "constructedPercentage": 0
+            },
+            "mountain": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            },
+            "swamp": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            },
+            "cavern": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            },
+            "forest": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            },
+            "hill": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            },
+            "water": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            }
+          },
+          "incoming": {
+            "plain": {
+              "12": 60
+            }
+          },
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "vision": {
+          "techs": [],
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "disclosure": {
+          "created_at": "2026-10-04T20:59:51Z"
+        }
+      },
+      "resources": {
+        "platinum": 50000,
+        "food": 15000,
+        "lumber": 15000,
+        "mana": 0,
+        "ore": 0,
+        "gems": 0,
+        "tech": 0,
+        "boats": 0
+      },
+      "returning": {},
+      "military": {
+        "draft_rate": 90,
+        "draftees": 150,
+        "unit1": 0,
+        "unit2": 0,
+        "unit3": 0,
+        "unit4": 0,
+        "spies": 0,
+        "assassins": 0,
+        "wizards": 0,
+        "archmages": 0,
+        "spy_strength": 100,
+        "wizard_strength": 100,
+        "offensive_modifier": 2.5,
+        "defensive_modifier": 0,
+        "spy_ratio": {
+          "offense": 0,
+          "defense": 0
+        },
+        "wizard_ratio": {
+          "offense": 0,
+          "defense": 0
+        }
+      },
+      "land": {
+        "plain": 500,
+        "mountain": 0,
+        "swamp": 0,
+        "cavern": 0,
+        "forest": 0,
+        "hill": 0,
+        "water": 0,
+        "discounted_land": 0,
+        "barren_land": 500
+      },
+      "buildings": {
+        "home": 0,
+        "alchemy": 0,
+        "farm": 0,
+        "smithy": 0,
+        "masonry": 0,
+        "ore_mine": 0,
+        "gryphon_nest": 0,
+        "tower": 0,
+        "wizard_guild": 0,
+        "temple": 0,
+        "diamond_mine": 0,
+        "school": 0,
+        "lumberyard": 0,
+        "factory": 0,
+        "guard_tower": 0,
+        "shrine": 0,
+        "barracks": 0,
+        "dock": 0
+      },
+      "hourly": {
+        "production": {
+          "platinum": 0,
+          "food": 0,
+          "lumber": 0,
+          "mana": 0,
+          "ore": 0,
+          "gems": 0,
+          "tech": 0,
+          "boats": 0
+        },
+        "consumption": {
+          "food": 143
+        },
+        "decay": {
+          "food": 150,
+          "lumber": 150,
+          "mana": 0
+        },
+        "net_change": {
+          "food": -293,
+          "lumber": -150,
+          "mana": 0
+        }
+      },
+      "population": {
+        "total": 1150,
+        "max": 2627,
+        "peasants": 1000,
+        "military": 150,
+        "jobs": 0,
+        "employed": 0
+      },
+      "statistics": {
+        "platinum_spent": 0,
+        "platinum_spent_construction": 0,
+        "platinum_spent_exploration": 0,
+        "platinum_spent_investment": 0,
+        "platinum_spent_rezoning": 0,
+        "platinum_spent_training": 0,
+        "lumber_spent": 0,
+        "lumber_spent_construction": 0,
+        "lumber_spent_investment": 0,
+        "lumber_spent_training": 0,
+        "mana_spent": 0,
+        "mana_spent_investment": 0,
+        "mana_spent_training": 0,
+        "ore_spent": 0,
+        "ore_spent_investment": 0,
+        "ore_spent_training": 0,
+        "gems_spent": 0,
+        "gems_spent_investment": 0,
+        "gems_spent_training": 0,
+        "land_conquered": 0,
+        "land_explored": 0,
+        "land_lost": 0,
+        "highest_land_achieved": 250
+      }
+    },
+    "17711": {
+      "id": 17711,
+      "name": "Eastern Wang",
+      "race": "Orc",
+      "ops": {
+        "clear_sight": {
+          "ruler_name": "Wang",
+          "land": 717,
+          "peasants": 8380,
+          "employment": 100,
+          "networth": 42695,
+          "prestige": 392,
+          "resilience": 0,
+          "resolve": 0,
+          "spy_mastery": 0,
+          "wizard_mastery": 0,
+          "resource_platinum": 131029,
+          "resource_food": 21103,
+          "resource_lumber": 32708,
+          "resource_mana": 1902,
+          "resource_ore": 0,
+          "resource_gems": 7350,
+          "resource_tech": 2050,
+          "resource_boats": 68,
+          "morale": 100,
+          "military_draftees": 82,
+          "military_unit1": 1461,
+          "military_unit2": 181,
+          "military_unit3": 1710,
+          "military_unit4": 0,
+          "military_spies": 20,
+          "military_assassins": 0,
+          "military_wizards": 20,
+          "military_archmages": 0,
+          "recently_invaded_count": null,
+          "clear_sight_accuracy": null,
+          "spa": 0.02789400278940028,
+          "wpa": 0.02789400278940028,
+          "race_name": "Orc",
+          "realm": 4,
+          "name": "Eastern Wang",
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "revelation": {
+          "spells": [
+            {
+              "dominion_id": 17711,
+              "spell_id": 14,
+              "duration": 9,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T17:30:47.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "midas_touch",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17711,
+              "spell_id": 13,
+              "duration": 4,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T12:24:24.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "ares_call",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            }
+          ],
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "castle_spy": {
+          "science": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "keep": {
+            "points": 392040,
+            "rating": 0.0318,
+            "incoming": 0
+          },
+          "forges": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "walls": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "spires": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "harbor": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "total": 392040,
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "barracks_spy": {
+          "units": {
+            "home": {
+              "spies": 20,
+              "assassins": 0,
+              "wizards": 20,
+              "archmages": 0,
+              "draftees": 82,
+              "unit1": 70,
+              "unit2": 181,
+              "unit3": 1710,
+              "unit4": 0
+            },
+            "returning": {
+              "unit1": {
+                "4": 1391
+              }
+            },
+            "training": {
+              "unit1": {
+                "2": 70
+              },
+              "unit2": {
+                "1": 9,
+                "6": 302,
+                "8": 160
+              }
+            }
+          },
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "survey_dominion": {
+          "constructed": {
+            "home": 90,
+            "alchemy": 189,
+            "farm": 22,
+            "smithy": 101,
+            "masonry": 0,
+            "ore_mine": 0,
+            "gryphon_nest": 0,
+            "tower": 15,
+            "wizard_guild": 0,
+            "temple": 0,
+            "diamond_mine": 70,
+            "school": 0,
+            "lumberyard": 30,
+            "factory": 32,
+            "guard_tower": 0,
+            "shrine": 0,
+            "barracks": 0,
+            "dock": 20
+          },
+          "constructing": {
+            "diamond_mine": {
+              "4": 49
+            },
+            "dock": {
+              "4": 8
+            },
+            "farm": {
+              "4": 7
+            },
+            "guard_tower": {
+              "4": 21
+            },
+            "home": {
+              "4": 10
+            },
+            "smithy": {
+              "4": 30,
+              "5": 6
+            },
+            "tower": {
+              "4": 17
+            }
+          },
+          "barren_land": 0,
+          "total_land": 717,
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "land_spy": {
+          "totalLand": 717,
+          "totalBarrenLand": 0,
+          "totalConstructedLand": 569,
+          "explored": {
+            "plain": {
+              "amount": 355,
+              "percentage": 49.5118549511855,
+              "barren": 0,
+              "constructed": 312,
+              "constructedPercentage": 54.833040421792624
+            },
+            "mountain": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            },
+            "swamp": {
+              "amount": 32,
+              "percentage": 4.463040446304045,
+              "barren": 0,
+              "constructed": 15,
+              "constructedPercentage": 2.6362038664323375
+            },
+            "cavern": {
+              "amount": 119,
+              "percentage": 16.596931659693166,
+              "barren": 0,
+              "constructed": 70,
+              "constructedPercentage": 12.302284710017574
+            },
+            "forest": {
+              "amount": 130,
+              "percentage": 18.13110181311018,
+              "barren": 0,
+              "constructed": 120,
+              "constructedPercentage": 21.0896309314587
+            },
+            "hill": {
+              "amount": 53,
+              "percentage": 7.391910739191074,
+              "barren": 0,
+              "constructed": 32,
+              "constructedPercentage": 5.623901581722319
+            },
+            "water": {
+              "amount": 28,
+              "percentage": 3.905160390516039,
+              "barren": 0,
+              "constructed": 20,
+              "constructedPercentage": 3.5149384885764503
+            }
+          },
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "vision": {
+          "techs": [],
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "disclosure": {
+          "0": {
+            "name": "Prutha",
+            "class": "alchemist",
+            "level": 1,
+            "experience": 436,
+            "next_level_xp": 700,
+            "bonus": 0.3,
+            "upgrades": {
+              "lead_from_the_front": "Lead from the Front"
+            },
+            "inactive_classes": []
+          },
+          "created_at": "2026-10-04T20:59:51Z"
+        }
+      },
+      "resources": {
+        "platinum": 131029,
+        "food": 21103,
+        "lumber": 32708,
+        "mana": 1902,
+        "ore": 0,
+        "gems": 7350,
+        "tech": 2050,
+        "boats": 18
+      },
+      "returning": {
+        "boats": {
+          "4": 50
+        }
+      },
+      "military": {
+        "draft_rate": 90,
+        "draftees": 82,
+        "unit1": 70,
+        "unit2": 181,
+        "unit3": 1710,
+        "unit4": 0,
+        "spies": 20,
+        "assassins": 0,
+        "wizards": 20,
+        "archmages": 0,
+        "spy_strength": 100,
+        "wizard_strength": 100,
+        "offensive_modifier": 3.92,
+        "defensive_modifier": 10,
+        "spy_ratio": {
+          "offense": 0.028,
+          "defense": 0.028
+        },
+        "wizard_ratio": {
+          "offense": 0.028,
+          "defense": 0.028
+        }
+      },
+      "land": {
+        "plain": 355,
+        "mountain": 0,
+        "swamp": 32,
+        "cavern": 119,
+        "forest": 130,
+        "hill": 53,
+        "water": 28,
+        "discounted_land": 44,
+        "barren_land": 0
+      },
+      "buildings": {
+        "home": 90,
+        "alchemy": 189,
+        "farm": 22,
+        "smithy": 101,
+        "masonry": 0,
+        "ore_mine": 0,
+        "gryphon_nest": 0,
+        "tower": 15,
+        "wizard_guild": 0,
+        "temple": 0,
+        "diamond_mine": 70,
+        "school": 0,
+        "lumberyard": 30,
+        "factory": 32,
+        "guard_tower": 0,
+        "shrine": 0,
+        "barracks": 0,
+        "dock": 20
+      },
+      "hourly": {
+        "production": {
+          "platinum": 34337,
+          "food": 2660,
+          "lumber": 2250,
+          "mana": 375,
+          "ore": 0,
+          "gems": 1050,
+          "tech": 0,
+          "boats": 1
+        },
+        "consumption": {
+          "food": 3098
+        },
+        "decay": {
+          "food": 211,
+          "lumber": 327,
+          "mana": 38
+        },
+        "net_change": {
+          "food": -649,
+          "lumber": 1923,
+          "mana": 337
+        }
+      },
+      "population": {
+        "total": 12395,
+        "max": 12980,
+        "peasants": 8380,
+        "military": 4015,
+        "jobs": 9580,
+        "employed": 8380
+      },
+      "statistics": {
+        "platinum_spent": 2158938,
+        "platinum_spent_construction": 255479,
+        "platinum_spent_exploration": 211638,
+        "platinum_spent_investment": 0,
+        "platinum_spent_rezoning": 18626,
+        "platinum_spent_training": 1673195,
+        "lumber_spent": 71815,
+        "lumber_spent_construction": 36135,
+        "lumber_spent_investment": 0,
+        "lumber_spent_training": 35680,
+        "mana_spent": 0,
+        "mana_spent_investment": 0,
+        "mana_spent_training": 0,
+        "ore_spent": 0,
+        "ore_spent_investment": 0,
+        "ore_spent_training": 0,
+        "gems_spent": 32670,
+        "gems_spent_investment": 32670,
+        "gems_spent_training": 0,
+        "land_conquered": 180,
+        "land_explored": 231,
+        "land_lost": 44,
+        "highest_land_achieved": 761
+      }
+    },
+    "17721": {
+      "id": 17721,
+      "name": "Brand New Player",
+      "race": "Firewalker",
+      "ops": {
+        "clear_sight": {
+          "ruler_name": "On Brand",
+          "land": 1002,
+          "peasants": 14619,
+          "employment": 100,
+          "networth": 39165,
+          "prestige": 250,
+          "resilience": 0,
+          "resolve": 0,
+          "spy_mastery": 0,
+          "wizard_mastery": 0,
+          "resource_platinum": 42803,
+          "resource_food": 2854,
+          "resource_lumber": 13232,
+          "resource_mana": 4474,
+          "resource_ore": 0,
+          "resource_gems": 0,
+          "resource_tech": 1050,
+          "resource_boats": 15.1,
+          "morale": 91,
+          "military_draftees": 65,
+          "military_unit1": 0,
+          "military_unit2": 1986,
+          "military_unit3": 495,
+          "military_unit4": 0,
+          "military_spies": 25,
+          "military_assassins": 0,
+          "military_wizards": 20,
+          "military_archmages": 0,
+          "recently_invaded_count": null,
+          "clear_sight_accuracy": null,
+          "spa": 0.0249500998003992,
+          "wpa": 0.01996007984031936,
+          "race_name": "Firewalker",
+          "realm": 4,
+          "name": "Brand New Player",
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "revelation": {
+          "spells": [
+            {
+              "dominion_id": 17721,
+              "spell_id": 13,
+              "duration": 12,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-03T11:46:11.000000Z",
+              "updated_at": "2026-10-04T20:45:59.000000Z",
+              "spell": "ares_call",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17721,
+              "spell_id": 24,
+              "duration": 10,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T18:07:16.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "alchemist_flame",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            },
+            {
+              "dominion_id": 17721,
+              "spell_id": 14,
+              "duration": 6,
+              "cast_by_dominion_id": null,
+              "created_at": "2026-10-04T14:04:16.000000Z",
+              "updated_at": "2026-10-04T20:00:02.000000Z",
+              "spell": "midas_touch",
+              "cast_by_dominion_name": null,
+              "cast_by_dominion_realm_number": null
+            }
+          ],
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "castle_spy": {
+          "science": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "keep": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "forges": {
+            "points": 368525,
+            "rating": 0.0143,
+            "incoming": 0
+          },
+          "walls": {
+            "points": 0,
+            "rating": 0,
+            "incoming": 0
+          },
+          "spires": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "harbor": {
+            "points": 0,
+            "rating": 0,
+            "rating_secondary": 0,
+            "incoming": 0
+          },
+          "total": 368525,
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "barracks_spy": {
+          "units": {
+            "home": {
+              "spies": 25,
+              "assassins": 0,
+              "wizards": 20,
+              "archmages": 0,
+              "draftees": 65,
+              "unit1": 0,
+              "unit2": 1986,
+              "unit3": 495,
+              "unit4": 0
+            },
+            "returning": [],
+            "training": {
+              "unit2": {
+                "2": 210,
+                "3": 70,
+                "4": 65,
+                "5": 62,
+                "6": 62,
+                "7": 63,
+                "8": 64
+              }
+            }
+          },
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "survey_dominion": {
+          "constructed": {
+            "home": 106,
+            "alchemy": 257,
+            "farm": 43,
+            "smithy": 154,
+            "masonry": 0,
+            "ore_mine": 0,
+            "gryphon_nest": 0,
+            "tower": 47,
+            "wizard_guild": 0,
+            "temple": 0,
+            "diamond_mine": 0,
+            "school": 0,
+            "lumberyard": 36,
+            "factory": 66,
+            "guard_tower": 154,
+            "shrine": 0,
+            "barracks": 0,
+            "dock": 40
+          },
+          "constructing": {
+            "dock": {
+              "2": 18
+            },
+            "smithy": {
+              "2": 9,
+              "5": 18,
+              "6": 9,
+              "7": 9,
+              "8": 9,
+              "9": 9,
+              "10": 3
+            },
+            "tower": {
+              "10": 6,
+              "11": 9
+            }
+          },
+          "barren_land": 0,
+          "total_land": 1002,
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "land_spy": {
+          "totalLand": 1002,
+          "totalBarrenLand": 0,
+          "totalConstructedLand": 903,
+          "explored": {
+            "plain": {
+              "amount": 520,
+              "percentage": 51.896207584830336,
+              "barren": 0,
+              "constructed": 454,
+              "constructedPercentage": 50.27685492801772
+            },
+            "mountain": {
+              "amount": 0,
+              "percentage": 0,
+              "barren": 0,
+              "constructed": 0,
+              "constructedPercentage": 0
+            },
+            "swamp": {
+              "amount": 62,
+              "percentage": 6.187624750499002,
+              "barren": 0,
+              "constructed": 47,
+              "constructedPercentage": 5.204872646733112
+            },
+            "cavern": {
+              "amount": 106,
+              "percentage": 10.578842315369261,
+              "barren": 0,
+              "constructed": 106,
+              "constructedPercentage": 11.738648947951273
+            },
+            "forest": {
+              "amount": 36,
+              "percentage": 3.592814371257485,
+              "barren": 0,
+              "constructed": 36,
+              "constructedPercentage": 3.9867109634551494
+            },
+            "hill": {
+              "amount": 220,
+              "percentage": 21.956087824351297,
+              "barren": 0,
+              "constructed": 220,
+              "constructedPercentage": 24.363233665559246
+            },
+            "water": {
+              "amount": 58,
+              "percentage": 5.788423153692615,
+              "barren": 0,
+              "constructed": 40,
+              "constructedPercentage": 4.4296788482834994
+            }
+          },
+          "incoming": {
+            "plain": {
+              "2": 9,
+              "5": 27,
+              "6": 9,
+              "7": 9,
+              "8": 9,
+              "9": 9,
+              "10": 9,
+              "11": 9,
+              "12": 9
+            },
+            "swamp": {
+              "2": 18
+            }
+          },
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "vision": {
+          "techs": [],
+          "created_at": "2026-10-04T20:59:51Z"
+        },
+        "disclosure": {
+          "0": {
+            "name": "The New New",
+            "class": "alchemist",
+            "level": 1,
+            "experience": 408,
+            "next_level_xp": 700,
+            "bonus": 0.3,
+            "upgrades": {
+              "lead_from_the_front": "Lead from the Front"
+            },
+            "inactive_classes": []
+          },
+          "created_at": "2026-10-04T20:59:51Z"
+        }
+      },
+      "resources": {
+        "platinum": 42803,
+        "food": 2854,
+        "lumber": 13232,
+        "mana": 4474,
+        "ore": 0,
+        "gems": 0,
+        "tech": 1050,
+        "boats": 15.1
+      },
+      "returning": {},
+      "military": {
+        "draft_rate": 90,
+        "draftees": 65,
+        "unit1": 0,
+        "unit2": 1986,
+        "unit3": 495,
+        "unit4": 0,
+        "spies": 25,
+        "assassins": 0,
+        "wizards": 20,
+        "archmages": 0,
+        "spy_strength": 100,
+        "wizard_strength": 95,
+        "offensive_modifier": 3.93,
+        "defensive_modifier": 34.591,
+        "spy_ratio": {
+          "offense": 0.025,
+          "defense": 0.025
+        },
+        "wizard_ratio": {
+          "offense": 0.02,
+          "defense": 0.02
+        }
+      },
+      "land": {
+        "plain": 520,
+        "mountain": 0,
+        "swamp": 62,
+        "cavern": 106,
+        "forest": 36,
+        "hill": 220,
+        "water": 58,
+        "discounted_land": 0,
+        "barren_land": 0
+      },
+      "buildings": {
+        "home": 106,
+        "alchemy": 257,
+        "farm": 43,
+        "smithy": 154,
+        "masonry": 0,
+        "ore_mine": 0,
+        "gryphon_nest": 0,
+        "tower": 47,
+        "wizard_guild": 0,
+        "temple": 0,
+        "diamond_mine": 0,
+        "school": 0,
+        "lumberyard": 36,
+        "factory": 66,
+        "guard_tower": 154,
+        "shrine": 0,
+        "barracks": 0,
+        "dock": 40
+      },
+      "hourly": {
+        "production": {
+          "platinum": 59694,
+          "food": 5166,
+          "lumber": 1800,
+          "mana": 1175,
+          "ore": 0,
+          "gems": 0,
+          "tech": 0,
+          "boats": 2
+        },
+        "consumption": {
+          "food": 4451
+        },
+        "decay": {
+          "food": 29,
+          "lumber": 132,
+          "mana": 89
+        },
+        "net_change": {
+          "food": 686,
+          "lumber": 1668,
+          "mana": 1086
+        }
+      },
+      "population": {
+        "total": 17806,
+        "max": 17887,
+        "peasants": 14619,
+        "military": 3187,
+        "jobs": 15940,
+        "employed": 14619
+      },
+      "statistics": {
+        "platinum_spent": 3190710,
+        "platinum_spent_construction": 424520,
+        "platinum_spent_exploration": 1942214,
+        "platinum_spent_investment": 0,
+        "platinum_spent_rezoning": 8080,
+        "platinum_spent_training": 815896,
+        "lumber_spent": 78783,
+        "lumber_spent_construction": 78783,
+        "lumber_spent_investment": 0,
+        "lumber_spent_training": 0,
+        "mana_spent": 0,
+        "mana_spent_investment": 0,
+        "mana_spent_training": 0,
+        "ore_spent": 0,
+        "ore_spent_investment": 0,
+        "ore_spent_training": 0,
+        "gems_spent": 0,
+        "gems_spent_investment": 0,
+        "gems_spent_training": 0,
+        "land_conquered": 0,
+        "land_explored": 769,
+        "land_lost": 0,
+        "highest_land_achieved": 1002
+      }
+    }
+  }
+}

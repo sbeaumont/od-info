@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-from sqlalchemy import Integer, String, DateTime, ForeignKey, Float, func, JSON, Index
+from sqlalchemy import Integer, String, DateTime, ForeignKey, Float, func, JSON, Index, Boolean
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -319,11 +319,11 @@ class ClearSight(TimestampedOpsMixin, Base):
     military_unit2: Mapped[int] = mapped_column(Integer, default=0)
     military_unit3: Mapped[int] = mapped_column(Integer, default=0)
     military_unit4: Mapped[int] = mapped_column(Integer, default=0)
-    military_spies: Mapped[int] = mapped_column(Integer, default=0)
-    military_assassins: Mapped[int] = mapped_column(Integer, default=0)
-    military_wizards: Mapped[int] = mapped_column(Integer, default=0)
-    military_archmages: Mapped[int] = mapped_column(Integer, default=0)
-    clear_sight_accuracy: Mapped[float] = mapped_column(Float, default=0.85)
+    military_spies: Mapped[Optional[int]] = mapped_column(Integer)
+    military_assassins: Mapped[Optional[int]] = mapped_column(Integer)
+    military_wizards: Mapped[Optional[int]] = mapped_column(Integer)
+    military_archmages: Mapped[Optional[int]] = mapped_column(Integer)
+    clear_sight_accuracy: Mapped[float] = mapped_column(Float, default=1.0)
     wpa: Mapped[float] = mapped_column(Float, default=0)
     spa: Mapped[float] = mapped_column(Float, default=0)
 
@@ -420,15 +420,61 @@ class TownCrier(Base):
     __tablename__ = 'TownCrier'
 
     timestamp: Mapped[datetime] = mapped_column(DateTime)
-    origin: Mapped[int] = mapped_column(Integer)
-    origin_name: Mapped[str] = mapped_column(String(200))
-    target: Mapped[int] = mapped_column(Integer)
-    target_name: Mapped[str] = mapped_column(String(200))
+    origin: Mapped[Optional[int]] = mapped_column(Integer)
+    origin_name: Mapped[Optional[str]] = mapped_column(String(200))
+    target: Mapped[Optional[int]] = mapped_column(Integer)
+    target_name: Mapped[Optional[str]] = mapped_column(String(200))
     event_type: Mapped[str] = mapped_column(String(200), default='other')
-    amount: Mapped[int] = mapped_column(Integer)
-    text: Mapped[str] = mapped_column(String(300))
+    amount: Mapped[Optional[int]] = mapped_column(Integer)
 
     __mapper_args__ = {'primary_key': [timestamp, origin, event_type, target]}
+
+
+class Wonder(Base):
+    """A wonder of the round."""
+    __tablename__ = 'Wonder'
+
+    key: Mapped[str] = mapped_column(String(100), primary_key=True)
+    realm: Mapped[int] = mapped_column(Integer, index=True)
+    name: Mapped[str] = mapped_column(String(200))
+    power: Mapped[int] = mapped_column(Integer)
+    max_power: Mapped[int] = mapped_column(Integer)
+    power_is_approximate: Mapped[bool] = mapped_column(Boolean)
+
+
+class War(Base):
+    """A war declaration that has not ended. A mutual war is two rows."""
+    __tablename__ = 'War'
+
+    realm: Mapped[int] = mapped_column(Integer, primary_key=True)
+    target_realm: Mapped[int] = mapped_column(Integer, primary_key=True)
+    target_realm_name: Mapped[str] = mapped_column(String(200))
+    status: Mapped[str] = mapped_column(String(20))
+    declared_at: Mapped[datetime] = mapped_column(DateTime)
+    active_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
+    inactive_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
+
+
+class MyDominion(Base):
+    """The dominion of the API key, and the round it plays in."""
+    __tablename__ = 'MyDominion'
+
+    code: Mapped[int] = mapped_column(Integer, primary_key=True)
+    realm: Mapped[int] = mapped_column(Integer)
+    round_id: Mapped[int] = mapped_column(Integer)
+    round_start: Mapped[datetime] = mapped_column(DateTime)
+    round_duration_days: Mapped[int] = mapped_column(Integer)
+
+    @property
+    def current_day(self) -> int:
+        """The round day, where the first day of the round is day 1."""
+        since_start = current_od_time() - self.round_start
+        if since_start < timedelta(0):
+            raise ValueError(f"The round has not started yet, it starts at {self.round_start}")
+        return since_start // timedelta(days=1) + 1
+
+    def __repr__(self):
+        return f'MyDominion({self.code}, {self.realm}, {self.round_id}, {self.round_start}, {self.round_duration_days})'
 
 
 class SchemaVersion(Base):

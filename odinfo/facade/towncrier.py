@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import re
 import logging
 
-from odinfo.config import OUT_DIR, TOWN_CRIER_URL
+from odinfo.config import TOWN_CRIER_URL
 from odinfo.exceptions import ODInfoException
 from odinfo.opsdata.scrapetools import expect_not_none
 
@@ -113,6 +113,10 @@ def _parse_event_row(row):
         elif 'abandoned' in skeleton:
             event_type = 'abandon'
             target_code = realm_numbers[0] if realm_numbers else ''
+        elif 'has been discovered' in skeleton:
+            event_type = 'wonder_spawn'
+            target_name = names[0]
+            dom_name, dom_code, target_code = '', '', ''
         else:
             event_type = 'other'
     except (AttributeError, IndexError) as e:
@@ -120,17 +124,3 @@ def _parse_event_row(row):
         raise TownCrierParseError(event_text) from e
 
     return [timestamp, event_type, dom_code, dom_name, target_code, target_name, amount, event_text]
-
-
-if __name__ == '__main__':
-    from odinfo.config import get_config
-    from odinfo.services.od_session import ODSession
-    with ODSession(get_config()) as od_session:
-        with open(f'{OUT_DIR}/all_tc.txt', 'w') as f:
-            for page_nr in range(1, get_number_of_tc_pages(od_session.session) + 1):
-                events = get_tc_page(od_session.session, page_nr)
-                for event in events:
-                    event_line = f'''"{'", "'.join(event)}"'''
-                    f.write(event_line)
-                    f.write('\n')
-                    print(event_line)

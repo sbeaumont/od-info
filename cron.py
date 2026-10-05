@@ -5,9 +5,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from odinfo.config import check_dirs_and_configs, get_config
+from odinfo.domain.models import Base
 from odinfo.facade.cache import FacadeCache
 from odinfo.facade.odinfo import ODInfoFacade
 from odinfo.repositories.game import GameRepository
+from odinfo.services.od_api import database_url
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("odinfo.cron")
@@ -26,7 +28,7 @@ def check_all_ok():
 
 def initialize_database(config) -> GameRepository:
     """Initialize the database and return a repository."""
-    db_url = config.database_name
+    db_url = database_url(config, logger.warning)
     if db_url.startswith('sqlite'):
         db_url = db_url.replace('sqlite:///', 'sqlite:///instance/')
     logging.info("Initializing database")
@@ -36,6 +38,7 @@ def initialize_database(config) -> GameRepository:
                            max_overflow=10,
                            pool_timeout=10,
                            pool_recycle=280)
+    Base.metadata.create_all(engine)
     session = Session(bind=engine)
     return GameRepository(session)
 
@@ -43,13 +46,17 @@ def initialize_database(config) -> GameRepository:
 def update_all(config, repo: GameRepository) -> None:
     """Update all information from the OD into the database."""
     cache = FacadeCache()
-    facade = ODInfoFacade(config, repo, cache)
-    logging.info("Updating Dominions Index (from search page)...")
+    facade = ODInfoFacade(config, repo, cache, on_wait=logger.warning)
+    logging.info("Updating Dominions Index...")
     facade.update_dom_index()
     logging.info("Updating all Dominions...")
     facade.update_all()
     logging.info("Updating realmies...")
     facade.update_realmies()
+    logging.info("Updating wonders and wars...")
+    facade.update_realms()
+    logging.info("Updating Town Crier...")
+    facade.update_town_crier()
 
 
 if __name__ == '__main__':

@@ -88,105 +88,25 @@ Example: A dominion with 1,524 Flamewolves home + 781 in training shows ~3,100 c
 
 ## Data Collection Issue
 
-**Problem**: Current scraping only fetches the *latest* BS for each dominion. If multiple BSes were done between refreshes, we lose the intermediate observations.
+**Problem**: The op center gives only the *latest* BS for each dominion. If the realm ran several BSes between two updates, the intermediate observations are lost.
 
-**Current behavior (confirmed)**:
-- `grab_ops()` in `ops.py` fetches `/dominion/op-center/{dom_code}`
-- This returns a JSON with only the **latest** ops data
-- `update_ops()` in `updater.py` stores the BS if that exact timestamp doesn't exist
-- Multiple BSes between refreshes → only the last one is captured
+**Solution**: The API op archive, `GET /dominions/me/op-center/{dom_code}/barracks_spy`, gives every BS the realm gathered on a dominion, newest first. OD keeps all scans for the entire round.
 
-**Solution**: Scrape the BS archive pages on OpenDominion to get historical BS data.
+**How OD Info uses it** (`UpdateService.update_all`):
+- The op center response has the latest BS of each dominion.
+- When that BS is not stored yet, OD Info fetches the archive of that dominion with `max_age_hours=BUILD_TICKS` (12).
+- `update_barracks_archive()` in `updater.py` stores each archive entry through `update_ops()`, so a BS that is already stored is skipped.
 
-**Investigation needed**:
-- [x] Confirm current scraping behavior - **CONFIRMED: only gets latest**
-- [x] Find the BS archive page URL structure on OpenDominion - **FOUND**
+Each BS carries its own `created_at`, which gives the tick it belongs to.
 
-**Archive URL pattern**:
-```
-/dominion/op-center/{dom_code}/barracks_spy
-/dominion/op-center/{dom_code}/survey_dominion
-/dominion/op-center/{dom_code}/castle_spy
-/dominion/op-center/{dom_code}/land_spy
-... (similar for all op types)
-```
-
-Where `{dom_code}` is the dominion code (e.g., 15538) - same as used elsewhere in the system.
-
-Each archive page:
-- Shows all historical scans of that type for the dominion
-- Scans are listed vertically
-- Pages are paginated
-
-**Remaining investigation**:
-- [x] Determine HTML structure of archive pages (for scraping) - **DONE**
-- [x] Check pagination structure - `?page=N` query parameter
-- [x] Determine data retention - **OD keeps ALL scans for the entire round**
-- [x] Implement archive scraping for barracks_spy - **DONE** (BarracksArchive class)
 - [ ] Consider extending to other op types later
 
-**Important**: Use the timestamp from each BS entry's `<em>Revealed {timestamp}...</em>` to determine which tick it belongs to. Existing `read_server_time()` in scrapetools handles OD time parsing.
+### Archive Response
 
-### Archive Page HTML Structure
-
-Each BS entry on the archive page consists of:
-
-**1. Units in training and home table**
-```html
-<div class="box box-primary">
-  <div class="box-header with-border">
-    <h3 class="box-title"><i class="ra ra-sword"></i> Units in training and home</h3>
-  </div>
-  <div class="box-body table-responsive no-padding">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Unit</th>
-          <th>1</th>...<th>12</th>  <!-- training ticks -->
-          <th>Home (Training)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>Draftees:</td><td colspan="12">&nbsp;</td><td>~3,227</td></tr>
-        <tr><td>Spearman:</td><td>-</td>...<td>-</td><td>0</td></tr>
-        <!-- more unit rows -->
-      </tbody>
-    </table>
-  </div>
-  <div class="box-footer">
-    <em>Revealed 2025-12-23 16:36:41 by Music Video Palpatine</em>
-    <span class="label label-danger">Invalid</span>  <!-- or label-warning for stale -->
-    <br>
-    <span class="label label-default">Day 45</span>
-    <span class="label label-default">Hour 23</span>
-  </div>
-</div>
-```
-
-**2. Units returning from battle table** (same structure, different header)
-```html
-<div class="box box-primary">
-  <h3 class="box-title"><i class="fa fa-clock-o"></i> Units returning from battle</h3>
-  <!-- Similar table with ticks 1-12 and "Total" column -->
-</div>
-```
-
-**Key data points to extract**:
-- Timestamp from `<em>Revealed {timestamp} by {player}</em>`
-- Day/Hour from the `label-default` spans
-- Home unit counts from last column (values prefixed with `~` indicate uncertainty)
-- Training amounts from tick columns (1-12)
-- Returning amounts from the second table
-
-**Value formats**:
-- `~3,227` - uncertain value (subject to 15% error)
-- `0` - exact zero
-- `-` - no units in that tick
-- `???` - unknown/missing data
-
-**Pagination**:
-- URL pattern: `/dominion/op-center/{dom_code}/barracks_spy?page=N`
-- Links in `<ul class="pagination">` element
+Each entry in `ops` has the same fields as `barracks_spy` in the op center: `units.home` (draftees,
+unit1..unit4), `units.training` and `units.returning` as unit → ticks → amount, and `created_at`.
+`docs/od_api/responses/op_archive_barracks_spy.json` holds a real example. Every amount is
+subject to the 15% fuzz.
 
 ## Situation Change Detection
 
@@ -223,14 +143,12 @@ Rename existing properties for clarity before adding current strength.
 **Tests:**
 - [x] Update test assertions
 
-### Phase 1: Archive Scraping ✓
-Scrape BS archive pages and store as standard BarracksSpy objects.
-    
-- [x] Add `BarracksArchive` class to `ops.py` with `scrape()` method
-- [x] Parse archive HTML structure (timestamp, units, training, returning)
-- [x] Create BarracksSpy objects from each entry (reuse existing model)
-- [x] Handle pagination (`?page=N`)
-- [x] Store in database via `update_barracks_archive()` in `updater.py`
+### Phase 1: Archive from the API ✓
+Fetch the BS archive from the API and store each entry as a standard BarracksSpy object.
+
+- [x] `ODApi.op_archive()` in `odinfo/services/od_api.py`
+- [x] Store each entry via `update_barracks_archive()` in `updater.py`, through `update_ops()`
+- [x] Fetch the archive in `UpdateService.update_all` when a new BS arrives
 
 ### Phase 2: Service & Calculator Split ✓
 

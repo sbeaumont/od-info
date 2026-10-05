@@ -2,7 +2,8 @@ from math import trunc
 
 from sqlalchemy.orm import Session
 
-from odinfo.domain.models import Dominion
+from odinfo.domain.models import Dominion, MyDominion
+from odinfo.services.od_api import database_url
 from odinfo.domain.refdata import (GT_DEFENSE_FACTOR, MIDAS_TOUCH_BONUS, POP_PER_HOME,
                                    PLAT_PER_ALCHEMY_PER_TICK, PLAT_PER_PEASANT_PER_TICK)
 
@@ -57,10 +58,12 @@ if __name__ == '__main__':
     from odinfo.config import get_config
 
     config = get_config()
-    db_name = config.database_name[:10] + 'instance/' + config.database_name[10:]
+    db_url = database_url(config, print)
+    db_name = db_url[:10] + 'instance/' + db_url[10:]
     print(db_name)
     with Session(create_engine(db_name)) as session:
-        dom = session.execute(select(Dominion).where(Dominion.code == config.current_player_id)).scalar()
+        my_code = session.execute(select(MyDominion)).scalar().code
+        dom = session.execute(select(Dominion).where(Dominion.code == my_code)).scalar()
         econ = Economy(dom)
 
         print("Base plat per tick", econ.base_plat_per_tick)

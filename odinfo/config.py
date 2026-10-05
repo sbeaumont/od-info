@@ -95,13 +95,11 @@ REF_DATA_DIR = refdata_read_path()
 
 OD_BASE = 'https://www.opendominion.net'
 LOGIN_URL = f'{OD_BASE}/auth/login'
-SEARCH_PAGE = f'{OD_BASE}/dominion/search'
 OP_CENTER_URL = f'{OD_BASE}/dominion/op-center'
 TOWN_CRIER_URL = f'{OD_BASE}/dominion/town-crier'
 STATUS_URL = f'{OD_BASE}/dominion/status'
 SELECT_URL = f'{OD_BASE}/dominion/{{}}/select'
-MY_OP_CENTER_URL = f'{OD_BASE}/dominion/advisors/op-center'
-BARRACKS_ARCHIVE_URL = f'{OP_CENTER_URL}/{{}}/barracks_spy'
+API_BASE = f'{OD_BASE}/api/v1'
 
 # Knowledge of the OD source repository, where the ref-data game data files come from.
 
@@ -120,16 +118,11 @@ SECRETS_TEMPLATE = """# ODInfo Configuration File
 username = EDIT_THIS
 password = EDIT_THIS
 
+# Your OpenDominion API key (REQUIRED) - generate it on your dominion's Settings page
+api_key = EDIT_THIS
+
 # Optional Discord webhook URL for notifications
 #discord_webhook = None
-
-# Your player ID - find this by hovering over your dominion name in search (REQUIRED)
-current_player_id = EDIT_THIS
-
-# Time adjustment: hours to add/subtract from your time to get OD server time
-# If OD shows 10:00 and your clock shows 12:00, use -2
-# If OD shows 10:00 and your clock shows 8:00, use 2
-LOCAL_TIME_SHIFT = 0
 
 # Optional: feature toggles for experimental features (comma-separated list)
 #feature_toggles = economy
@@ -137,8 +130,8 @@ LOCAL_TIME_SHIFT = 0
 # Random secret key for web sessions (REQUIRED)
 secret_key = EDIT_THIS
 
-# Database file name - change round number as needed (REQUIRED)
-database_name = sqlite:///odinfo-round-45.sqlite
+# Optional: database to open, for example an old round. Default is one database per current round.
+#database_name = sqlite:///odinfo-round-49.sqlite
 """
 
 USERS_JSON_TEMPLATE = """[
@@ -223,9 +216,8 @@ class Config:
     """
     username: str
     password: str
-    current_player_id: int
-    database_name: str
-    local_time_shift: int = 0
+    api_key: str
+    database_name: str | None = None
     discord_webhook: str | None = None
     feature_toggles: list[str] = field(default_factory=list)
     secret_key: str = ''
@@ -242,9 +234,8 @@ class Config:
         return cls(
             username=secrets['username'],
             password=secrets['password'],
-            current_player_id=int(secrets['current_player_id']),
-            database_name=secrets['database_name'],
-            local_time_shift=int(secrets.get('LOCAL_TIME_SHIFT', '0')),
+            api_key=secrets['api_key'],
+            database_name=secrets.get('database_name'),
             discord_webhook=secrets.get('discord_webhook'),
             feature_toggles=toggles,
             secret_key=secrets.get('secret_key', ''),

@@ -29,6 +29,7 @@ from odinfo.facade.odinfo import ODInfoFacade
 from odinfo.facade.graphs import nw_history_graph, land_history_graph
 from odinfo.exceptions import ODInfoException
 from odinfo.repositories.game import GameRepository
+from odinfo.services.od_api import database_url
 from odinfoweb.viewmodels.dominfo import build_dominfo_vm
 from odinfoweb.viewmodels.economy import build_economy_vm
 from odinfoweb.viewmodels.opexplained import build_op_explained_vm
@@ -77,7 +78,7 @@ app.logger.setLevel(logging.DEBUG)
 
 db = SQLAlchemy(model_class=Base, session_options={"autoflush": False})
 # The lib adds an "instance" folder to the URL so I have to take that into account.
-db_url = load_secrets()['database_name']
+db_url = database_url(get_config(), app.logger.warning)
 
 print("Database URL:", db_url)
 if db_url.startswith('sqlite:'):
@@ -125,7 +126,7 @@ def facade() -> ODInfoFacade:
     _facade = getattr(g, '_facade', None)
     if not _facade:
         repo = GameRepository(db.session)
-        _facade = g._facade = ODInfoFacade(get_config(), repo, app.facade_cache)
+        _facade = g._facade = ODInfoFacade(get_config(), repo, app.facade_cache, on_wait=app.logger.warning)
     return _facade
 
 
@@ -227,6 +228,7 @@ def overview():
         facade().update_dom_index()
         facade().update_all()
         facade().update_realmies()
+        facade().update_realms()
     if request.method == 'POST':
         for k, v in request.form.items():
             if k.startswith('role.'):
@@ -277,6 +279,8 @@ def towncrier():
 def stats():
     if request.args.get('update'):
         facade().update_town_crier()
+    if request.args.get('reload'):
+        facade().reload_town_crier()
     return render_template('stats.html',
                             stats=facade().award_stats())
 
@@ -340,7 +344,7 @@ def military(versus_op: int = 0):
                            versus_op=versus_op,
                            dp_bonus_percent=round(defense_bonus * 100, 1),
                            include_current=include_current,
-                           current_day=facade().current_tick.day)
+                           current_day=facade().my_dominion().current_day)
 
 
 @app.route('/about')

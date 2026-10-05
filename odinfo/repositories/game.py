@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 
 from odinfo.domain.models import (
     Dominion, TownCrier, ClearSight, BarracksSpy, CastleSpy,
-    LandSpy, SurveyDominion, Vision, Revelation
+    LandSpy, SurveyDominion, Vision, Revelation, MyDominion, Wonder, War
 )
 
 
@@ -90,6 +90,10 @@ class GameRepository:
             raise ValueError(f"Dominion {dom_id} not found")
         return dom.realm
 
+    def get_my_dominion(self) -> MyDominion | None:
+        """The dominion of the API key, None before the first update."""
+        return self._session.execute(select(MyDominion)).scalar()
+
     def add_dominion(self, dominion: Dominion) -> None:
         """Add a single dominion (auto-commits)."""
         with self.transaction():
@@ -129,6 +133,31 @@ class GameRepository:
         with self.transaction():
             self._session.query(TownCrier).delete()
             self._session.add_all(events)
+
+    def add_town_crier_events(self, events: list[TownCrier]) -> None:
+        """Add town crier events (auto-commits)."""
+        with self.transaction():
+            self._session.add_all(events)
+
+    def latest_town_crier_timestamp(self) -> datetime | None:
+        """The time of the newest stored town crier event, None when there are none."""
+        return self._session.execute(select(func.max(TownCrier.timestamp))).scalar()
+
+    # ----------------------------- Wonders
+
+    def replace_wonders(self, wonders: list[Wonder]) -> None:
+        """Replace all wonders with the current state (auto-commits)."""
+        with self.transaction():
+            self._session.query(Wonder).delete()
+            self._session.add_all(wonders)
+
+    # ----------------------------- Wars
+
+    def replace_wars(self, wars: list[War]) -> None:
+        """Replace all wars with the current state (auto-commits)."""
+        with self.transaction():
+            self._session.query(War).delete()
+            self._session.add_all(wars)
 
     # ----------------------------- General utilities
 

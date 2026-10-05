@@ -1,8 +1,8 @@
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from math import trunc
 
-from odinfo.config import DATE_TIME_FORMAT, get_config
+from odinfo.config import DATE_TIME_FORMAT
 from odinfo.exceptions import ODInfoException
 
 
@@ -33,7 +33,8 @@ def row_s_to_dict(row_s):
 
 
 def current_od_time(as_str=False) -> datetime | str:
-    dt = datetime.now().replace(microsecond=0) + timedelta(hours=get_config().local_time_shift)
+    """The current server time: UTC, as a naive datetime like every stored timestamp."""
+    dt = datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)
     if as_str:
         return dt.strftime(DATE_TIME_FORMAT)
     else:

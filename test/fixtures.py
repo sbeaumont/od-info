@@ -160,7 +160,6 @@ def init_db(session: Session) -> None:
             target_name="Target Dominion",
             event_type="invasion",
             amount=75,
-            text="TC invasion text",
             timestamp=timestamp
         ))
 

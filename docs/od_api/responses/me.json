@@ -1,0 +1,28 @@
+{
+  "id": 17641,
+  "name": "Boom",
+  "realm": {
+    "id": 1176,
+    "number": 4,
+    "name": "Magic. Magic! MAGIC!!!"
+  },
+  "round": {
+    "id": 77,
+    "number": 0,
+    "name": "Magic System Test Round",
+    "start_date": "2026-10-04T00:00:00Z",
+    "end_date": "2026-10-16T00:00:00Z",
+    "day": 1,
+    "hour": 21,
+    "duration_days": 12
+  },
+  "server_time": "2026-10-04T20:59:49Z",
+  "links": {
+    "advisors": "https://www.opendominion.net/api/v1/dominions/me/advisors",
+    "op_center": "https://www.opendominion.net/api/v1/dominions/me/op-center",
+    "rounds": "https://www.opendominion.net/api/v1/rounds",
+    "round_dominions": "https://www.opendominion.net/api/v1/rounds/77/dominions",
+    "round_events": "https://www.opendominion.net/api/v1/rounds/77/events",
+    "round_realms": "https://www.opendominion.net/api/v1/rounds/77/realms"
+  }
+}

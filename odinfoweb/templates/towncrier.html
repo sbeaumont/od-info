@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="w3-container">
-  <a href="/towncrier?update=true">Update</a>
+  <a class="od-update" href="/towncrier?update=true">Update</a>
   <div class="od-table-container">
   <table id="mainContentTable" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
       <thead>
@@ -15,7 +15,6 @@
               <th>Target</th>
               <th>Target Name</th>
               <th>Amount</th>
-              <th>Text</th>
               <th>Timestamp</th>
           </tr>
       </thead>
@@ -28,7 +27,6 @@
           <td>{{ event.target }}</td>
           <td>{{ event.target_name }}</td>
           <td>{{ event.amount }}</td>
-          <td>{{ event.text }}</td>
           <td>{{ event.timestamp }}</td>
       </tr>
       {% endfor %}

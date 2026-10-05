@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS ClearSight (
     military_assassins INTEGER,
     military_wizards INTEGER,
     military_archmages INTEGER,
-    clear_sight_accuracy REAL DEFAULT 0.85,
+    clear_sight_accuracy REAL DEFAULT 1.0,
     wpa REAL
 );
 

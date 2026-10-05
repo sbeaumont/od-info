@@ -48,13 +48,6 @@ def load_existing_users():
     return {}
 
 
-def extract_round_number(database_name):
-    """Extract round number from a database name like 'sqlite:///odinfo-round-49.sqlite'."""
-    import re
-    match = re.search(r'round-(\d+)', database_name)
-    return match.group(1) if match else None
-
-
 def ask(prompt, default=None, required=True):
     """Prompt the user for input with an optional default."""
     if default:
@@ -81,20 +74,8 @@ def setup_secret_file():
     username = ask("Your OpenDominion username", default=existing.get('username'))
     password = ask("Your OpenDominion password", default=existing.get('password'))
 
-    print("\n  To find your player ID: go to the Search page in OpenDominion,")
-    print("  hover over your dominion name, and note the number at the end")
-    print("  of the '.../op-center/<number>' URL.")
-    player_id = ask("Your player ID (number)", default=existing.get('current_player_id'))
-
-    existing_round = extract_round_number(existing.get('database_name', ''))
-    print("\n  The round number is used for the database file name.")
-    print("  Each round gets its own database, so old data is preserved.")
-    round_number = ask("Current round number", default=existing_round or "49")
-
-    print("\n  Time shift: the difference in hours between your local time and OD server time.")
-    print("  If OD shows 10:00 and your clock shows 12:00, enter -2.")
-    print("  If OD shows 10:00 and your clock shows 8:00, enter 2.")
-    time_shift = ask("Local time shift in hours", default=existing.get('LOCAL_TIME_SHIFT', '0'))
+    print("\n  Generate an API key on the Settings page of your dominion in OpenDominion.")
+    api_key = ask("Your OpenDominion API key", default=existing.get('api_key'))
 
     discord_webhook = ask("Discord webhook URL (press Enter to skip)",
                           default=existing.get('discord_webhook'), required=False)
@@ -105,14 +86,12 @@ def setup_secret_file():
         "# ODInfo Configuration File\n",
         f"username = {username}\n",
         f"password = {password}\n",
+        f"api_key = {api_key}\n",
     ]
     if discord_webhook:
         lines.append(f"discord_webhook = {discord_webhook}\n")
     lines.extend([
-        f"current_player_id = {player_id}\n",
-        f"database_name = sqlite:///odinfo-round-{round_number}.sqlite\n",
         f"secret_key = {secret_key}\n",
-        f"LOCAL_TIME_SHIFT = {time_shift}\n",
     ])
 
     os.makedirs(INSTANCE_DIR, exist_ok=True)

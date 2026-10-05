@@ -9,16 +9,17 @@ Domain-specific operations are delegated to specialized services.
 """
 
 import logging
+from typing import Callable
 
 from odinfo.calculators.networthcalculator import get_networth_deltas
-from odinfo.config import Config, SEARCH_PAGE
+from odinfo.config import Config
 from odinfo.repositories.game import GameRepository
-from odinfo.domain.models import Dominion
+from odinfo.domain.models import Dominion, MyDominion
 from odinfo.timeutils import hours_since, add_duration, current_od_time
 from odinfo.facade.awardstats import AwardStats
 from odinfo.facade.cache import FacadeCache
-from odinfo.opsdata.scrapetools import read_tick_time, get_soup_page
 from odinfo.opsdata.updater import query_stealables
+from odinfo.services.od_api import ODApi
 from odinfo.services.od_session import ODSession
 from odinfo.services.military_service import MilitaryService
 from odinfo.services.report_service import ReportService
@@ -30,12 +31,14 @@ logger = logging.getLogger('od-info.facade')
 
 
 class ODInfoFacade(object):
-    def __init__(self, config: Config, repo: GameRepository, cache: FacadeCache):
+    def __init__(self, config: Config, repo: GameRepository, cache: FacadeCache, on_wait: Callable[[str], None]):
         self._config = config
         self._od_session = None
+        self._od_api = None
+        self._on_wait = on_wait
         self._repo = repo
         self._cache = cache
-        self._update_service = UpdateService(config, repo, lambda: self.od_session)
+        self._update_service = UpdateService(config, repo, lambda: self.od_session, lambda: self.od_api)
         self._report_service = ReportService(repo)
         self._military_service = MilitaryService(repo)
         self._update_service.initialize_if_empty()
@@ -52,12 +55,21 @@ class ODInfoFacade(object):
     def od_session(self):
         """Session for OpenDominion website (not database)."""
         if not self._od_session:
-            self._od_session = ODSession(self._config)
+            self._od_session = ODSession(self._config, self.my_dominion().code)
         return self._od_session.session
+
+    @property
+    def od_api(self) -> ODApi:
+        """Client for the OpenDominion API."""
+        if not self._od_api:
+            self._od_api = ODApi(self._config.api_key, self._on_wait)
+        return self._od_api
 
     def teardown(self):
         if self._od_session is not None:
             self._od_session.close()
+        if self._od_api is not None:
+            self._od_api.close()
 
     def update_all(self):
         """Update ops for all dominions that have newer scans available."""
@@ -79,13 +91,21 @@ class ODInfoFacade(object):
         self._update_service.update_ops(dom_code)
         self.clear_cache()
 
+    def update_realms(self):
+        """Update the wonders and wars from the OpenDominion API."""
+        self._update_service.update_realms()
+
     def update_town_crier(self):
-        """Update all Town Crier events from OpenDominion."""
+        """Add the new Town Crier events from the OpenDominion API."""
         self._update_service.update_town_crier()
+
+    def reload_town_crier(self):
+        """Replace all Town Crier events with every page scraped from OpenDominion."""
+        self._update_service.reload_town_crier()
 
     def update_realmies(self):
         """Update ops for all dominions in the player's realm."""
-        self._update_service.update_realmies(self.realmie_codes())
+        self._update_service.update_realmies()
 
     # ---------------------------------------- COMMANDS - Change directly
 
@@ -110,9 +130,13 @@ class ODInfoFacade(object):
     def dominion(self, dom_code):
         return self._repo.get_dominion(dom_code)
 
+    def my_dominion(self) -> MyDominion:
+        """The dominion of the API key and its round."""
+        return self._repo.get_my_dominion()
+
     def current_player_dominion(self) -> Dominion:
         """Get the current player's dominion."""
-        return self._repo.get_dominion(self._config.current_player_id)
+        return self._repo.get_dominion(self.my_dominion().code)
 
     def ops_age(self, dom: Dominion):
         return hours_since(dom.last_op)
@@ -179,7 +203,7 @@ class ODInfoFacade(object):
             logger.debug("Returning cached military_list for %s", cache_key)
             return self._cache[cache_key]
 
-        current_day = self.current_tick.day
+        current_day = self.my_dominion().current_day
         result_list = self._military_service.military_list(
             current_day, defense_bonus, versus_op, top, include_current_strength)
         self._cache[cache_key] = result_list
@@ -205,23 +229,19 @@ class ODInfoFacade(object):
         """Get 12-tick strength forecast for a single dominion."""
         return self._military_service.strength_forecast(dom)
 
-    def realmie_codes(self) -> list[int]:
-        logger.debug("Getting Realmies")
-        return [dom.code for dom in self.realmies()]
-
     def realmies(self) -> list[Dominion]:
         logger.debug("Getting Realmies")
-        return list(self._repo.get_realmies(self._config.current_player_id))
+        return list(self._repo.get_realmies(self.my_dominion().code))
 
     def realmies_with_blops_info(self):
         """Get realmies with military calculator info including blops (boats)."""
-        current_day = self.current_tick.day
+        current_day = self.my_dominion().current_day
         return self._military_service.realmies_with_blops_info(self.realmies(), current_day)
 
     def stealables(self) -> list:
         logger.debug("Listing stealables")
         since = add_duration(current_od_time(as_str=True), -12, True)
-        result = query_stealables(self._repo, since, self._repo.get_realm_of_dominion(self._config.current_player_id))
+        result = query_stealables(self._repo, since, self._repo.get_realm_of_dominion(self.my_dominion().code))
         return result
 
     # ---------------------------------------- QUERIES - Utility
@@ -230,11 +250,6 @@ class ODInfoFacade(object):
         """Get the name connected with a dominion code."""
         logger.debug("Getting name for %s", domcode)
         return self._repo.get_dominion(domcode).name
-
-    @property
-    def current_tick(self):
-        soup = get_soup_page(self.od_session, SEARCH_PAGE)
-        return read_tick_time(soup)
 
     # ---------------------------------------- QUERIES - Reports
 

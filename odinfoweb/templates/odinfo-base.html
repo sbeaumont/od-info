@@ -190,6 +190,13 @@ function w3_close() {
   mySidebar.style.display = "none";
   overlayBg.style.display = "none";
 }
+
+// An update can wait up to a minute for the OpenDominion API rate limit
+document.querySelectorAll('a.od-update').forEach(function (link) {
+  link.addEventListener('click', function () {
+    link.textContent = 'Updating, this can take up to a minute...';
+  });
+});
 </script>
 
 </body>

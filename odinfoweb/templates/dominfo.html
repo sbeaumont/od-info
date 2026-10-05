@@ -4,7 +4,7 @@
 {% block content %}
   <div class="w3-container">
     <h3>{{ dom_vm.name }} (#{{ dom_vm.realm }})</h3>
-    <a href="{{ url_for('dominfo', domcode=dom_vm.code, update='update' ) }}">Update</a> |
+    <a class="od-update" href="{{ url_for('dominfo', domcode=dom_vm.code, update='update' ) }}">Update</a> |
       <a href="{{ op_center_url }}/{{ dom_vm.code }}" target="_blank">OP Center</a>
     <div style="max-width: 80%;">
     <table class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable" style="width: 100%;">

@@ -1,0 +1,138 @@
+{
+  "generated_at": "2026-10-04T20:59:51Z",
+  "max_age_hours": 0,
+  "dominion": {
+    "id": 17602,
+    "name": "Bowl",
+    "realm": 3,
+    "race": "Lizardfolk",
+    "ops": {
+      "clear_sight": {
+        "ruler_name": "Soup Kitchen",
+        "land": 600,
+        "peasants": 7391,
+        "employment": 100,
+        "networth": 36646,
+        "prestige": 250,
+        "resilience": 0,
+        "resolve": 0,
+        "spy_mastery": 0,
+        "wizard_mastery": 0,
+        "resource_platinum": 57520,
+        "resource_food": 14045,
+        "resource_lumber": 3349,
+        "resource_mana": 7299,
+        "resource_ore": 0,
+        "resource_gems": 0,
+        "resource_tech": 1050,
+        "resource_boats": 0,
+        "morale": 90,
+        "military_draftees": 75,
+        "military_unit1": 88,
+        "military_unit2": 1704,
+        "military_unit3": 195,
+        "military_unit4": 923,
+        "military_spies": null,
+        "military_assassins": null,
+        "military_wizards": null,
+        "military_archmages": null,
+        "recently_invaded_count": 0,
+        "clear_sight_accuracy": null,
+        "spa": 0.03666666666666667,
+        "wpa": 0.016666666666666666,
+        "race_name": "Lizardfolk",
+        "realm": 3,
+        "name": "Bowl",
+        "created_at": "2026-10-04T08:02:28Z"
+      },
+      "revelation": null,
+      "castle_spy": null,
+      "barracks_spy": {
+        "units": {
+          "home": {
+            "draftees": 0,
+            "unit1": 0,
+            "unit2": 2458,
+            "unit3": 207,
+            "unit4": 127
+          },
+          "returning": {
+            "unit1": {
+              "8": 78
+            },
+            "unit4": {
+              "8": 1221
+            }
+          },
+          "training": {
+            "unit2": {
+              "1": 72,
+              "2": 71,
+              "7": 166,
+              "8": 162,
+              "9": 111
+            },
+            "unit4": {
+              "3": 22,
+              "6": 70
+            }
+          }
+        },
+        "created_at": "2026-10-04T20:55:10Z"
+      },
+      "survey_dominion": {
+        "constructed": {
+          "home": 86,
+          "alchemy": 202,
+          "farm": 35,
+          "smithy": 108,
+          "masonry": 0,
+          "ore_mine": 0,
+          "gryphon_nest": 36,
+          "tower": 17,
+          "wizard_guild": 0,
+          "temple": 0,
+          "diamond_mine": 0,
+          "school": 0,
+          "lumberyard": 17,
+          "factory": 5,
+          "guard_tower": 94,
+          "shrine": 0,
+          "barracks": 0,
+          "dock": 0
+        },
+        "constructing": {
+          "farm": {
+            "8": 10
+          },
+          "gryphon_nest": {
+            "8": 26,
+            "9": 13
+          },
+          "guard_tower": {
+            "8": 36
+          },
+          "lumberyard": {
+            "8": 11
+          },
+          "smithy": {
+            "8": 74
+          },
+          "temple": {
+            "8": 24,
+            "9": 16
+          },
+          "tower": {
+            "8": 10
+          }
+        },
+        "barren_land": 0,
+        "total_land": 820,
+        "created_at": "2026-10-04T20:55:18Z"
+      },
+      "land_spy": null,
+      "vision": null,
+      "disclosure": null
+    }
+  }
+}

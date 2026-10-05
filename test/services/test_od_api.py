@@ -3,7 +3,7 @@ from datetime import datetime
 from unittest.mock import Mock, patch
 
 from odinfo.config import API_BASE
-from odinfo.services.od_api import ODApi, ODApiError
+from odinfo.services.od_api import ODApi, ODApiError, _Pacer
 
 
 def response(status: int, body: dict | list | None = None, headers: dict | None = None, text: str = '') -> Mock:
@@ -13,11 +13,27 @@ def response(status: int, body: dict | list | None = None, headers: dict | None 
     return Mock(status_code=status, ok=status < 400, headers=headers, text=text, json=Mock(return_value=body))
 
 
+def rate_limited(retry_after: int) -> Mock:
+    return response(429, {'error': 'rate_limited', 'message': ''}, headers={'Retry-After': str(retry_after)})
+
+
 class ODApiTest(unittest.TestCase):
     def setUp(self):
+        self.clock = 0.0
+        self.sleeps = []
+        for target, fake in [('odinfo.services.od_api.time.monotonic', lambda: self.clock),
+                             ('odinfo.services.od_api.time.sleep', self.sleep),
+                             ('odinfo.services.od_api._pacer', _Pacer(1.0))]:
+            patcher = patch(target, fake)
+            patcher.start()
+            self.addCleanup(patcher.stop)
         self.waits = []
         self.api = ODApi('the-key', on_wait=self.waits.append)
         self.api._session.get = Mock()
+
+    def sleep(self, seconds: float):
+        self.sleeps.append(seconds)
+        self.clock += seconds
 
     def test_sends_the_key(self):
         self.assertEqual('the-key', self.api._session.headers['X-API-Key'])
@@ -40,22 +56,24 @@ class ODApiTest(unittest.TestCase):
             self.api.rounds()
         self.assertEqual('no_json', raised.exception.code)
 
-    @patch('odinfo.services.od_api.time.sleep')
-    def test_waits_once_on_the_rate_limit_and_tells_the_user(self, sleep):
-        self.api._session.get.side_effect = [response(429, {'error': 'rate_limited', 'message': ''},
-                                                      headers={'Retry-After': '37'}),
-                                             response(200, [])]
+    def test_spaces_requests_one_second_apart(self):
+        self.api._session.get.return_value = response(200, [])
+        self.api.rounds()
+        self.clock += 0.25
+        self.api.rounds()
+        self.assertEqual([0.75], self.sleeps)
+
+    def test_waits_on_the_rate_limit_and_tells_the_user(self):
+        self.api._session.get.side_effect = [rate_limited(37), response(200, [])]
         self.assertEqual([], self.api.rounds())
-        sleep.assert_called_once_with(37)
+        self.assertEqual([37], self.sleeps)
         self.assertEqual(["OpenDominion API rate limit reached, waiting 37 s"], self.waits)
 
-    @patch('odinfo.services.od_api.time.sleep')
-    def test_raises_when_still_rate_limited_after_the_wait(self, sleep):
-        limited = response(429, {'error': 'rate_limited', 'message': 'Slow down'}, headers={'Retry-After': '1'})
-        self.api._session.get.side_effect = [limited, limited]
-        with self.assertRaises(ODApiError) as raised:
-            self.api.rounds()
-        self.assertEqual('rate_limited', raised.exception.code)
+    def test_retries_until_the_rate_limit_lets_the_request_through(self):
+        self.api._session.get.side_effect = [rate_limited(5), rate_limited(3), response(200, [])]
+        self.assertEqual([], self.api.rounds())
+        self.assertEqual([5, 3], self.sleeps)
+        self.assertEqual(3, self.api._session.get.call_count)
 
     def test_events_since_is_utc_iso(self):
         self.api._session.get.return_value = response(200, [])

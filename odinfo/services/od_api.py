@@ -5,6 +5,7 @@ See https://www.opendominion.net/api-docs for the endpoints.
 """
 
 import logging
+import threading
 import time
 from datetime import datetime
 from typing import Callable
@@ -17,6 +18,26 @@ from odinfo.exceptions import ODInfoException
 logger = logging.getLogger('od-info.api')
 
 EVENT_LIMIT = 500  # the maximum the events endpoint returns, newest first, without paging
+REQUESTS_PER_MINUTE = 60  # the rate limit of the API, for each IP address
+
+
+class _Pacer:
+    """Spaces the requests of every client in this process to stay under the rate limit."""
+
+    def __init__(self, interval: float):
+        self._interval = interval
+        self._lock = threading.Lock()
+        self._last = -interval
+
+    def wait(self):
+        with self._lock:
+            delay = self._last + self._interval - time.monotonic()
+            if delay > 0:
+                time.sleep(delay)
+            self._last = time.monotonic()
+
+
+_pacer = _Pacer(60 / REQUESTS_PER_MINUTE)
 
 
 class ODApiError(ODInfoException):
@@ -45,11 +66,13 @@ class ODApi:
     def get(self, path: str, **params) -> dict | list:
         """GET an API path and return the decoded JSON. A parameter with value None is left out."""
         url = f'{API_BASE}{path}'
+        _pacer.wait()
         response = self._session.get(url, params=params)
-        if response.status_code == 429:
+        while response.status_code == 429:
             seconds = int(response.headers['Retry-After'])
             self._on_wait(f"OpenDominion API rate limit reached, waiting {seconds} s")
             time.sleep(seconds)
+            _pacer.wait()
             response = self._session.get(url, params=params)
         if not response.ok:
             raise self._error(response)

@@ -1,7 +1,9 @@
 import unittest
+from datetime import timedelta
 
 from test.fixtures import create_db_session, init_db
 from odinfo.domain.models import Dominion
+from odinfo.domain.refdata import BARRACKS_SPY_FUZZ
 
 
 class DominionTest(unittest.TestCase):
@@ -13,6 +15,22 @@ class DominionTest(unittest.TestCase):
         dom = self.session.get(Dominion, 1)
         self.assertEqual(dom.code, 1)  # add assertion here
         self.assertEqual(dom.last_cs.military_unit1, 10)
+
+    def _older_cs_newer_bs(self, cs_clerics: int, bs_home_clerics: int) -> Dominion:
+        dom = self.session.get(Dominion, 1)
+        dom.last_barracks.training = {}
+        dom.last_barracks.home_unit3 = bs_home_clerics
+        dom.last_cs.military_unit3 = cs_clerics
+        dom.last_cs.timestamp = dom.last_barracks.timestamp - timedelta(hours=3)
+        return dom
+
+    def test_military_keeps_cs_that_newer_bs_allows(self):
+        dom = self._older_cs_newer_bs(cs_clerics=437, bs_home_clerics=514)
+        self.assertEqual(437, dom.military['unit3'])
+
+    def test_military_takes_bs_worst_case_when_cs_is_ruled_out(self):
+        dom = self._older_cs_newer_bs(cs_clerics=300, bs_home_clerics=514)
+        self.assertAlmostEqual(514 / BARRACKS_SPY_FUZZ, dom.military['unit3'])
 
 
 if __name__ == '__main__':

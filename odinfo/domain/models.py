@@ -81,6 +81,11 @@ class Dominion(Base):
                 result['paid_until'] = self.last_barracks.paid_until
             else:
                 result = self.last_barracks.military
+                # Keep the exact CS count for each unit that the newer BS does not contradict.
+                cs_military = self.last_cs.military
+                for i in range(1, 5):
+                    if self.last_barracks.allows_amount(i, cs_military[f'unit{i}']):
+                        result[f'unit{i}'] = cs_military[f'unit{i}'] + self.last_barracks.paid_training(i)
         elif self.last_cs:
             result = self.last_cs.military
         elif self.last_barracks:
@@ -227,13 +232,20 @@ class BarracksSpy(TimestampedOpsMixin, Base):
         """Training units that have arrived home since this BS was taken."""
         return self.amount_training(unit_type_nr) - self.aged_amount_training_for_unit(unit_type_nr)
 
+    def paid_training(self, unit_type_nr: int) -> int:
+        return self.amount_training(unit_type_nr) if self.paid_until_for_unit(unit_type_nr) > 0 else 0
+
+    def allows_amount(self, unit_type_nr: int, amount: int) -> bool:
+        """Whether `amount` units at home and away fit within the fuzz of what this BS shows."""
+        shown = getattr(self, f'home_unit{unit_type_nr}') + self.amount_returning(unit_type_nr)
+        return shown * BARRACKS_SPY_FUZZ <= amount <= shown / BARRACKS_SPY_FUZZ
+
     @property
     def military(self) -> dict:
         def calc_unit(nr: int):
             home = getattr(self, f'home_unit{nr}') / BARRACKS_SPY_FUZZ
             away = self.amount_returning(nr) * BARRACKS_SPY_FUZZ
-            training = self.amount_training(nr) if self.paid_until_for_unit(nr) > 0 else 0
-            return home + away + training
+            return home + away + self.paid_training(nr)
 
         return {
             'unit1': calc_unit(1),

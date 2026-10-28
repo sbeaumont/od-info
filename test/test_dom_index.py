@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime
 from unittest.mock import Mock, patch
 
-from odinfo.domain.models import Dominion, DominionHistory, MyDominion
+from odinfo.domain.models import Dominion, DominionHistory, DominionStatus, MyDominion
 from odinfo.opsdata.updater import init_my_dominion, update_dom_index
 from odinfo.repositories.game import GameRepository
 from test.fixtures import create_db_session
@@ -22,7 +22,7 @@ DOMINIONS = [
     {'id': 17641, 'name': 'Boom', 'race': 'Dark Elf', 'realm_number': 4, 'realm_name': 'Magic',
      'land': 600, 'networth': 30000, 'in_protection': False, 'guard': None, 'locked': False, 'abandoned': False},
     {'id': 17690, 'name': 'Adijee', 'race': 'Orc', 'realm_number': 0, 'realm_name': 'The Graveyard',
-     'land': 598, 'networth': 27940, 'in_protection': False, 'guard': None, 'locked': False, 'abandoned': False},
+     'land': 598, 'networth': 27940, 'in_protection': True, 'guard': None, 'locked': False, 'abandoned': False},
 ]
 
 
@@ -73,6 +73,36 @@ class DomIndexTest(unittest.TestCase):
         self.assertEqual(1, len(history))
         self.assertEqual((datetime(2026, 10, 4, 21, 5, 0), 598, 27940),
                          (history[0].timestamp, history[0].land, history[0].networth))
+
+    @patch('odinfo.opsdata.updater.current_od_time', return_value=datetime(2026, 10, 4, 21, 5, 0))
+    def test_dominions_in_play_leave_out_protection_and_keep_unknown_status(self, now):
+        self.repo.session.add(my_dominion())
+        self.repo.session.commit()
+        update_dom_index(self.api, self.repo)
+        self.repo.session.add(Dominion(code=17700, name='No status yet', realm=5, race='Human'))
+        self.repo.session.commit()
+
+        self.assertEqual({17641, 17700}, {dom.code for dom in self.repo.dominions_in_play()})
+
+    @patch('odinfo.opsdata.updater.current_od_time')
+    def test_keeps_only_the_status_of_the_last_update(self, now):
+        self.repo.session.add(my_dominion())
+        self.repo.session.commit()
+        now.return_value = datetime(2026, 10, 4, 21, 5, 0)
+        update_dom_index(self.api, self.repo)
+
+        out_of_protection = [dict(line, in_protection=False) for line in DOMINIONS]
+        out_of_protection[1]['abandoned'] = True
+        self.api.dominions.return_value = out_of_protection
+        now.return_value = datetime(2026, 10, 4, 22, 5, 0)
+        update_dom_index(self.api, self.repo)
+
+        statuses = self.repo.session.query(DominionStatus).all()
+        self.assertEqual({17641}, {dom.code for dom in self.repo.dominions_in_play()})
+        self.assertEqual(2, len(statuses))
+        status = self.repo.session.get(Dominion, 17690).status
+        self.assertEqual((datetime(2026, 10, 4, 22, 5, 0), False, False, True),
+                         (status.timestamp, status.in_protection, status.locked, status.abandoned))
 
 
 if __name__ == '__main__':

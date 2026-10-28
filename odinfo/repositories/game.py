@@ -11,11 +11,11 @@ from typing import Iterator
 
 from datetime import datetime
 
-from sqlalchemy import select, func, update, delete
+from sqlalchemy import select, func, update, delete, or_
 from sqlalchemy.orm import Session
 
 from odinfo.domain.models import (
-    Dominion, TownCrier, ClearSight, BarracksSpy, CastleSpy,
+    Dominion, DominionHistory, DominionStatus, TownCrier, ClearSight, BarracksSpy, CastleSpy,
     LandSpy, SurveyDominion, Vision, Revelation, MyDominion, Wonder, War
 )
 
@@ -63,6 +63,12 @@ class GameRepository:
     def all_dominions(self) -> Iterator[Dominion]:
         """Return all dominions."""
         return self._session.execute(select(Dominion)).scalars()
+
+    def dominions_in_play(self) -> Iterator[Dominion]:
+        """Return the dominions that are not in protection, locked or abandoned."""
+        out_of_play = select(DominionStatus.dominion_id).where(
+            or_(DominionStatus.in_protection, DominionStatus.locked, DominionStatus.abandoned))
+        return self._session.execute(select(Dominion).where(Dominion.code.not_in(out_of_play))).scalars()
 
     def get_dominion(self, dom_id: int) -> Dominion | None:
         """Get a dominion by its code/id."""
@@ -138,6 +144,10 @@ class GameRepository:
         """Add town crier events (auto-commits)."""
         with self.transaction():
             self._session.add_all(events)
+
+    def latest_dom_index_timestamp(self) -> datetime | None:
+        """The time of the newest dominion index update, None when there is none."""
+        return self._session.execute(select(func.max(DominionHistory.timestamp))).scalar()
 
     def latest_town_crier_timestamp(self) -> datetime | None:
         """The time of the newest stored town crier event, None when there are none."""

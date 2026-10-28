@@ -9,7 +9,7 @@ from sqlalchemy import text
 from odinfo.opsdata.ops import Ops
 from odinfo.services.od_api import ODApi, EVENT_LIMIT
 from odinfo.timeutils import cleanup_timestamp, current_od_time
-from odinfo.domain.models import Dominion, DominionHistory, TownCrier, MyDominion, Wonder, War
+from odinfo.domain.models import Dominion, DominionHistory, DominionStatus, TownCrier, MyDominion, Wonder, War
 from odinfo.facade.towncrier import get_number_of_tc_pages, get_tc_page
 from odinfo.domain.models import (ClearSight, CastleSpy, BarracksSpy,
                                   SurveyDominion, LandSpy, Vision, Revelation)
@@ -74,6 +74,7 @@ def update_dom_index(od_api: ODApi, repo: GameRepository):
     doms = {d.code: d for d in repo.all_dominions()}
     new_doms = []
     new_history = []
+    new_statuses = []
     for line in od_api.dominions(repo.get_my_dominion().round_id):
         code = line['id']
         if code not in doms:
@@ -88,12 +89,19 @@ def update_dom_index(od_api: ODApi, repo: GameRepository):
                              land=line['land'],
                              networth=line['networth'])
         new_history.append(dh)
+        new_statuses.append(DominionStatus(dominion_id=code,
+                                           timestamp=timestamp,
+                                           in_protection=line['in_protection'],
+                                           locked=line['locked'],
+                                           abandoned=line['abandoned']))
 
     with repo.transaction():
         for dom in new_doms:
             repo.session.add(dom)
         for dh in new_history:
             repo.session.add(dh)
+        repo.session.query(DominionStatus).delete()
+        repo.session.add_all(new_statuses)
 
 
 def update_obj(ops, obj, mapping):
@@ -353,6 +361,8 @@ where
     and (d.realm != :realm)
     and (c.timestamp > :timestamp)
     and (d.realm != 0)
+    and d.code not in (select s.dominion from DominionStatus s
+                       where s.in_protection or s.locked or s.abandoned)
 group by
     c.dominion
 order by

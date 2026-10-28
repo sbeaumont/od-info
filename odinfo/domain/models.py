@@ -54,6 +54,7 @@ class Dominion(Base):
     vision: Mapped[List['Vision']] = relationship('Vision',
                                                      back_populates='dom',
                                                      order_by='Vision.timestamp.desc()')
+    status: Mapped[Optional['DominionStatus']] = relationship('DominionStatus', back_populates='dom')
 
     @property
     def current_land(self) -> int:
@@ -269,20 +270,6 @@ class BarracksSpy(TimestampedOpsMixin, Base):
     def paid_until(self) -> int:
         return max([self.paid_until_for_unit(i) for i in range(1, 5)])
 
-    def paid_until_for_unit_at_time(self, nr: int, target_time) -> int:
-        """Calculate paid_until for a unit as it was at a specific time."""
-        from odinfo.timeutils import hours_since
-        age_at_time = hours_since(self.timestamp, target_time)
-        max_ticks = 0
-        key = f'unit{nr}'
-        if key in self.training:
-            max_ticks = max(max_ticks, max([int(t) for t in self.training[key]]))
-        return max(0, max_ticks - age_at_time)
-
-    def paid_until_at_time(self, target_time) -> int:
-        """Calculate paid_until as it was at a specific time."""
-        return max([self.paid_until_for_unit_at_time(i, target_time) for i in range(1, 5)])
-
     def __repr__(self):
         return (f'BarracksSpy({self.dominion_id}, '
                 f'{self.timestamp}, {self.draftees}, '
@@ -440,6 +427,22 @@ class TownCrier(Base):
     amount: Mapped[Optional[int]] = mapped_column(Integer)
 
     __mapper_args__ = {'primary_key': [timestamp, origin, event_type, target]}
+
+
+class DominionStatus(Base):
+    """The status flags of a dominion at the last dominion index update."""
+    __tablename__ = 'DominionStatus'
+
+    dominion_id: Mapped[int] = mapped_column('dominion', ForeignKey('Dominions.code'), primary_key=True)
+    dom: Mapped['Dominion'] = relationship(back_populates='status')
+    timestamp: Mapped[datetime] = mapped_column(DateTime)
+    in_protection: Mapped[bool] = mapped_column(Boolean)
+    locked: Mapped[bool] = mapped_column(Boolean)
+    abandoned: Mapped[bool] = mapped_column(Boolean)
+
+    def __repr__(self):
+        return (f'DominionStatus({self.dominion_id}, {self.timestamp}, '
+                f'{self.in_protection}, {self.locked}, {self.abandoned})')
 
 
 class Wonder(Base):

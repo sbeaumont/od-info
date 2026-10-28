@@ -9,6 +9,7 @@ Domain-specific operations are delegated to specialized services.
 """
 
 import logging
+from datetime import datetime
 from typing import Callable
 
 from odinfo.calculators.networthcalculator import get_networth_deltas
@@ -138,6 +139,10 @@ class ODInfoFacade(object):
         """Get the current player's dominion."""
         return self._repo.get_dominion(self.my_dominion().code)
 
+    def time_last_update(self) -> datetime:
+        """The time of the last data update, from cron or the Update link."""
+        return self._repo.latest_dom_index_timestamp()
+
     def ops_age(self, dom: Dominion):
         return hours_since(dom.last_op)
 
@@ -181,7 +186,7 @@ class ODInfoFacade(object):
             return self._cache[cache_key]
 
         logger.debug("Computing ratio_list")
-        result = build_ratio_list_vm(list(self._repo.all_dominions()))
+        result = build_ratio_list_vm(list(self._repo.dominions_in_play()))
         self._cache[cache_key] = result
         return result
 
@@ -231,7 +236,8 @@ class ODInfoFacade(object):
 
     def realmies(self) -> list[Dominion]:
         logger.debug("Getting Realmies")
-        return list(self._repo.get_realmies(self.my_dominion().code))
+        my_realm = self.my_dominion().realm
+        return [dom for dom in self._repo.dominions_in_play() if dom.realm == my_realm]
 
     def realmies_with_blops_info(self):
         """Get realmies with military calculator info including blops (boats)."""

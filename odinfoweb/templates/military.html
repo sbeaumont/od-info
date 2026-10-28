@@ -37,6 +37,14 @@
                 my DP bonus: <input type="number" id="dp-bonus" value="{{ dp_bonus_percent }}" step="0.1" min="0" style="width: 70px; padding: 2px 4px;">%
             </label>
         </div>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 6px;">
+            <span><strong>Realms:</strong></span>
+            {% for realm in realms %}
+            <label style="cursor: pointer;">
+                <input type="checkbox" class="toggle-realm" value="{{ realm }}"> {{ realm }}
+            </label>
+            {% endfor %}
+        </div>
     </div>
 
     <div class="od-table-container">
@@ -72,7 +80,7 @@
             </tr>
         </thead>
         {% for dom in doms %}
-        <tr>
+        <tr data-realm="{{ dom.realm }}">
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
@@ -212,6 +220,29 @@
         // Sync checkboxes when ColVis dropdown changes visibility
         militaryTable.on('column-visibility.dt', function() {
             syncCheckboxes();
+        });
+
+        // Realm filter, kept per browser. A first visit hides my own realm and the bots.
+        const hiddenRealmsKey = 'military-hidden-realms';
+        const savedHiddenRealms = localStorage.getItem(hiddenRealmsKey);
+        const hiddenRealms = new Set(savedHiddenRealms !== null
+            ? JSON.parse(savedHiddenRealms)
+            : ['{{ my_realm }}', '0']);
+        $('.toggle-realm').each(function() {
+            $(this).prop('checked', !hiddenRealms.has(this.value));
+        });
+        $.fn.dataTable.ext.search.push(function(settings, searchData, index) {
+            return !hiddenRealms.has(militaryTable.row(index).node().dataset.realm);
+        });
+        militaryTable.draw();
+        $('.toggle-realm').on('change', function() {
+            if (this.checked) {
+                hiddenRealms.delete(this.value);
+            } else {
+                hiddenRealms.add(this.value);
+            }
+            localStorage.setItem(hiddenRealmsKey, JSON.stringify([...hiddenRealms]));
+            militaryTable.draw();
         });
 
         // Handle radio button changes for Send Type

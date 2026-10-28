@@ -51,7 +51,7 @@ class ReportService:
 
     def _get_all_dominions(self) -> dict[int, Dominion]:
         """Every dominion worth reporting on, by code. Bots are not."""
-        return {dom.code: dom for dom in self._repo.all_dominions() if dom.realm != BOT_REALM}
+        return {dom.code: dom for dom in self._repo.dominions_in_play() if dom.realm != BOT_REALM}
 
     def _get_nw_deltas(self, since: int = NW_DEFAULT_PERIOD) -> dict[int, NetworthDelta]:
         """Get networth deltas for all dominions."""

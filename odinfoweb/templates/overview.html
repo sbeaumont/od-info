@@ -6,6 +6,7 @@
 {% block content %}
   <div class="w3-container">
       <a class="od-update" href="/?update=true">Refresh Known Ops</a> | OD Time: {{ current_time }}
+      | Last update: {{ time_last_update }} ({{ time_since_last_update }} ago)
     <form action="{{ url_for('overview') }}" method="post" id="domform">
     <div class="od-table-container">
     <table id="mainContentTable" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">

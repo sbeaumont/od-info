@@ -59,7 +59,7 @@ class MilitaryService:
         """
         logger.debug("Computing military_list for versus_op=%s, top=%s, current=%s, dp_bonus=%s",
                      versus_op, top, include_current_strength, defense_bonus)
-        all_doms = list(self._repo.all_dominions())[:top]
+        all_doms = list(self._repo.dominions_in_play())[:top]
         mil_calcs = sorted(
             [MilitaryCalculator(dom) for dom in all_doms],
             key=lambda d: d.dom.current_networth,

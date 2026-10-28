@@ -22,7 +22,7 @@ from odinfo.domain.models import Base
 from odinfoweb.user import load_user_by_id, load_user_by_name, User
 
 from odinfo.config import (OP_CENTER_URL, WEB_PORT, NW_PERIODS, NW_DEFAULT_PERIOD,
-                           NW_ROW_COUNTS, NW_UNCHANGED_DEFAULT, load_secrets,
+                           NW_ROW_COUNTS, NW_UNCHANGED_DEFAULT, DATE_TIME_FORMAT, load_secrets,
                            check_dirs_and_configs, get_config)
 from odinfo.facade.cache import FacadeCache
 from odinfo.facade.odinfo import ODInfoFacade
@@ -30,6 +30,7 @@ from odinfo.facade.graphs import nw_history_graph, land_history_graph
 from odinfo.exceptions import ODInfoException
 from odinfo.repositories.game import GameRepository
 from odinfo.services.od_api import database_url
+from odinfo.services.report_service import format_span
 from odinfoweb.viewmodels.dominfo import build_dominfo_vm
 from odinfoweb.viewmodels.economy import build_economy_vm
 from odinfoweb.viewmodels.opexplained import build_op_explained_vm
@@ -239,10 +240,13 @@ def overview():
                 prefix, dom, old_name = k.split('.')
                 if old_name != v:
                     facade().update_player(dom, v)
+    time_last_update = facade().time_last_update()
     return render_template(
         'overview.html',
         doms=facade().dom_list(),
-        current_time=current_od_time(as_str=True))
+        current_time=current_od_time(as_str=True),
+        time_last_update=time_last_update.strftime(DATE_TIME_FORMAT),
+        time_since_last_update=format_span(current_od_time() - time_last_update))
 
 
 @app.route('/dominfo/<domcode>')
@@ -339,6 +343,8 @@ def military(versus_op: int = 0):
                                        include_current_strength=include_current)
     return render_template('military.html',
                            doms=dom_list,
+                           realms=sorted({dom.realm for dom in dom_list}),
+                           my_realm=facade().my_dominion().realm,
                            ages=facade().all_doms_ops_age(),
                            top_op=facade().top_op(dom_list),
                            versus_op=versus_op,

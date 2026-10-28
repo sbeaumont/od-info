@@ -323,12 +323,19 @@ class MilitaryCalculator(object):
 
         return result
 
-    def arrived_returning_units(self, barracks_spies: list, ticks_since_bs: int) -> dict:
+    @staticmethod
+    def exact_home_units(clear_sight) -> dict:
+        """Home units of a CS in the shape of refined_home_units(), with no error."""
+        military = clear_sight.military
+        return {key: (military[key], military[key], 0) for key in ('draftees', 'unit1', 'unit2', 'unit3', 'unit4')}
+
+    def arrived_returning_units(self, barracks_spies: list, ticks_since_bs: int, from_tick: int = 0) -> dict:
         """Get refined returning units that have arrived home since BS was taken.
 
         Args:
             barracks_spies: List of BarracksSpy objects from the same tick.
             ticks_since_bs: Hours elapsed since the BS was taken.
+            from_tick: Units arrived by this tick are left out.
 
         Returns:
             Dict with keys 'unit1'-'unit4', each containing
@@ -347,7 +354,7 @@ class MilitaryCalculator(object):
             for bs in barracks_spies:
                 if bs.returning and unit_key in bs.returning:
                     for tick in bs.returning[unit_key].keys():
-                        if int(tick) <= ticks_since_bs:
+                        if from_tick < int(tick) <= ticks_since_bs:
                             arrived_ticks.add(tick)
 
             # Sum up refined values for all arrived ticks
@@ -373,12 +380,13 @@ class MilitaryCalculator(object):
 
         return result
 
-    def arrived_training_units(self, latest_bs, ticks_since_bs: int) -> dict:
+    def arrived_training_units(self, latest_bs, ticks_since_bs: int, from_tick: int = 0) -> dict:
         """Get training units that have arrived home since BS was taken.
 
         Args:
             latest_bs: BarracksSpy object.
             ticks_since_bs: Hours elapsed since the BS was taken.
+            from_tick: Units arrived by this tick are left out.
 
         Returns:
             Dict with keys 'unit1'-'unit4' containing exact arrived amounts.
@@ -393,7 +401,7 @@ class MilitaryCalculator(object):
             if latest_bs.training and key in latest_bs.training:
                 arrived = sum(
                     amount for tick, amount in latest_bs.training[key].items()
-                    if int(tick) <= ticks_since_bs
+                    if from_tick < int(tick) <= ticks_since_bs
                 )
                 if arrived > 0:
                     result[unit_key] = arrived

@@ -147,12 +147,18 @@ class MilitaryService:
         mc = MilitaryCalculator(dom)
         ticks_since_bs = int(hours_since(last_bs.timestamp))
 
-        refined_home = mc.refined_home_units(bs_list)
+        last_cs = dom.last_cs
+        if last_cs and last_cs.timestamp >= last_bs.timestamp:
+            refined_home = mc.exact_home_units(last_cs)
+            from_tick = int((last_cs.timestamp - last_bs.timestamp) / timedelta(hours=1))
+        else:
+            refined_home = mc.refined_home_units(bs_list)
+            from_tick = 0
         if not refined_home:
             return None, None, None
 
-        arrived_returning = mc.arrived_returning_units(bs_list, ticks_since_bs)
-        arrived_training = mc.arrived_training_units(last_bs, ticks_since_bs)
+        arrived_returning = mc.arrived_returning_units(bs_list, ticks_since_bs, from_tick)
+        arrived_training = mc.arrived_training_units(last_bs, ticks_since_bs, from_tick)
 
         current_op = mc.current_op(refined_home, arrived_returning, arrived_training)
         current_dp = mc.current_dp(refined_home, arrived_returning, arrived_training)

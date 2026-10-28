@@ -1,8 +1,11 @@
 import unittest
+from datetime import timedelta
 
 from odinfo.calculators.military import MilitaryCalculator
 from odinfo.domain.models import Dominion
 from odinfo.domain.refdata import Spells
+from odinfo.repositories.game import GameRepository
+from odinfo.services.military_service import MilitaryService
 from test.fixtures import create_db_session, init_db
 
 
@@ -33,6 +36,22 @@ class MilitaryCalculatorTestCase(unittest.TestCase):
         self.assertEqual(144, mc.paid_op)
         self.assertEqual(116, mc.paid_dp)
         self.assertEqual((107, 89), mc.five_over_four)
+
+    def test_arrived_training_leaves_out_units_arrived_by_from_tick(self):
+        mc = MilitaryCalculator(self.dom)
+        self.assertEqual({'unit3': 199}, mc.arrived_training_units(self.dom.last_barracks, 10))
+        self.assertEqual({'unit3': 99}, mc.arrived_training_units(self.dom.last_barracks, 10, from_tick=5))
+
+    def test_current_strength_starts_from_a_newer_cs(self):
+        bs = self.dom.last_barracks
+        self.dom.last_cs.timestamp = bs.timestamp + timedelta(hours=9)
+        bs.home_unit3 = 0
+        mc = MilitaryCalculator(self.dom)
+
+        _, current_dp, confidence = MilitaryService(GameRepository(self.session)).calculate_current_strength(self.dom)
+
+        self.assertEqual(mc.paid_dp, current_dp)
+        self.assertEqual('locked', confidence)
 
     # def test_five_over_four_liz(self):
     #     bs = self.dom.last_barracks

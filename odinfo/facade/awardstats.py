@@ -11,14 +11,14 @@ class AwardStats(object):
         query = text("""
             select
                 tc.target as code,
-                tc.target_name as name,
+                coalesce(d.name, max(tc.target_name)) as name,
                 d.race as race,
                 d.realm as realm,
                 count(1) as amount
             from TownCrier tc
             left join Dominions d on tc.target = d.code
             where tc.event_type = 'bounce'
-            group by tc.target
+            group by tc.target, d.name, d.race, d.realm
             order by amount desc""")
         return self._session.execute(query)
 
@@ -27,14 +27,14 @@ class AwardStats(object):
         query = text("""
             select
                 tc.origin as code,
-                tc.origin_name as name,
+                coalesce(d.name, max(tc.origin_name)) as name,
                 d.race as race,
                 d.realm as realm,
                 count(1) as amount
             from TownCrier tc
             left join Dominions d on tc.origin = d.code
             where tc.event_type = 'bounce'
-            group by tc.origin
+            group by tc.origin, d.name, d.race, d.realm
             order by amount desc""")
         return self._session.execute(query)
 
@@ -43,7 +43,7 @@ class AwardStats(object):
         query = text("""
             select
                 tc.origin as realm,
-                tc.origin_name as name,
+                max(tc.origin_name) as name,
                 count(1) as declarations
             from TownCrier tc
             where tc.event_type like 'war_declare'
@@ -56,7 +56,7 @@ class AwardStats(object):
         query = text("""
             select
                 tc.target as realm,
-                tc.target_name as name,
+                max(tc.target_name) as name,
                 count(1) as declared_on
             from TownCrier tc
             where tc.event_type like 'war_declare'
@@ -69,14 +69,14 @@ class AwardStats(object):
         query = text("""
             select
                 tc.target as code,
-                tc.target_name as name,
+                coalesce(d.name, max(tc.target_name)) as name,
                 d.race as race,
                 d.realm as realm,
                 sum(tc.amount) as total_land,
                 count(1) as total_hits
             from TownCrier tc
             left join Dominions d on tc.target = d.code
-            group by tc.target
+            group by tc.target, d.name, d.race, d.realm
             having total_land > 0
             order by total_land desc""")
         return self._session.execute(query)
@@ -86,14 +86,14 @@ class AwardStats(object):
         query = text("""
             select
                 tc.origin as code,
-                tc.origin_name as name,
+                coalesce(d.name, max(tc.origin_name)) as name,
                 d.race as race,
                 d.realm as realm,
                 sum(tc.amount) as total_land,
                 count(1) as total_hits
             from TownCrier tc
             left join Dominions d on tc.origin = d.code
-            group by tc.origin
+            group by tc.origin, d.name, d.race, d.realm
             having total_land > 0
             order by total_land desc""")
         return self._session.execute(query)
@@ -108,6 +108,5 @@ class AwardStats(object):
                 tc.target as realm
             from TownCrier tc
             left join Dominions d on tc.origin = d.code
-            where tc.event_type like 'abandon'
-            group by tc.target""")
+            where tc.event_type like 'abandon'""")
         return self._session.execute(query)

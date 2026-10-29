@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-from sqlalchemy import Integer, String, DateTime, ForeignKey, Float, func, JSON, Index, Boolean
+from sqlalchemy import Integer, String, DateTime, ForeignKey, Float, JSON, Index, Boolean
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -502,4 +502,4 @@ class SchemaVersion(Base):
 
 
 def schema_version(db) -> str:
-    return db.session.query(SchemaVersion, func.max(SchemaVersion.timestamp)).scalar().version
+    return db.session.query(SchemaVersion).order_by(SchemaVersion.timestamp.desc()).first().version

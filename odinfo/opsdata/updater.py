@@ -343,7 +343,7 @@ CLEARSIGHT_MAPPING = {
 
 qry_stealables = """
 select
-    max(c.timestamp),
+    c.timestamp,
     c.dominion,
     d.name,
     c.land,
@@ -355,16 +355,18 @@ select
     c.resource_ore as ore
 from
     ClearSight c,
-    Dominions d
+    Dominions d,
+    (select dominion, max(timestamp) as timestamp from ClearSight
+     where timestamp > :timestamp
+     group by dominion) latest
 where
     (c.dominion = d.code)
+    and (c.dominion = latest.dominion)
+    and (c.timestamp = latest.timestamp)
     and (d.realm != :realm)
-    and (c.timestamp > :timestamp)
     and (d.realm != 0)
     and d.code not in (select s.dominion from DominionStatus s
                        where s.in_protection or s.locked or s.abandoned)
-group by
-    c.dominion
 order by
     c.resource_platinum desc,
     c.resource_food desc,

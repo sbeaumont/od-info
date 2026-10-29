@@ -45,6 +45,7 @@ ImpFactor = namedtuple('ImpFactor', 'max factor plus')
 IMP_FACTORS = {name: ImpFactor(**factors) for name, factors in game_constants['imp_factors'].items()}
 
 NETWORTH_VALUES = game_constants['networth_values']
+SPEC_SLOTS = game_constants['spec_slots']
 
 
 class SendableType(Enum):
@@ -114,9 +115,10 @@ class TechTree(object):
 
 
 class Unit(object):
-    def __init__(self, yaml_src: dict, dom):
+    def __init__(self, yaml_src: dict, dom, slot: int):
         self._data = yaml_src
         self.dom = dom
+        self.slot = slot
 
     def __str__(self):
         return f"Unit({self.name}, {self.offense}OP, {self.defense}DP)"
@@ -219,10 +221,10 @@ class Unit(object):
         return dp
 
     @property
-    def networth(self) -> int:
-        op = self.offense
-        dp = self.defense
-        return 1.8 * min(6, max(op, dp)) + (0.45 * min(6, op, dp)) + (0.2 * (max((op - 6), 0) + max((dp - 6), 0)))
+    def networth(self) -> float:
+        if self.slot in SPEC_SLOTS:
+            return NETWORTH_VALUES['specs']
+        return NETWORTH_VALUES['elite_point'] * max(self.offense, self.defense)
 
 
 class Race(object):
@@ -236,7 +238,7 @@ class Race(object):
         self.units = dict()
         self.reverse_units = dict()
         for i in range(1, 5):
-            unit = Unit(self.yaml['units'][i - 1], dom)
+            unit = Unit(self.yaml['units'][i - 1], dom, i)
             self.units[i] = unit
             self.reverse_units[unit.name] = i
 

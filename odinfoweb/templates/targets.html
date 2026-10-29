@@ -1,0 +1,159 @@
+{% set use_datatables = true %}
+{% extends "odinfo-base.html" %}
+{% block extrascripts %}
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css"/>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
+<style>
+  td.away { background-color: green; color: white; }
+</style>
+{% endblock %}
+
+{% block content %}
+  <div class="w3-container">
+    <div class="w3-panel w3-card-2 w3-dark-grey" style="margin-bottom: 10px; padding: 8px;">
+        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <label><strong>Attacker:</strong>
+                <select id="attacker" style="padding: 2px 4px;">
+                    {% for realmie in realmies %}
+                    <option value="{{ realmie.code }}" {% if realmie.code == attacker.code %}selected{% endif %}>
+                        {{ realmie.name }} ({{ realmie.current_land }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+            <span>Range {{ attacker.current_land }} acres, {{ min_range }}% to {{ max_range }}%</span>
+            <span id="colvis-container"></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 6px;">
+            <span><strong>Realms:</strong></span>
+            {% for realm in realms %}
+            <label style="cursor: pointer;">
+                <input type="checkbox" class="toggle-realm" value="{{ realm }}"> {{ realm }}
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="od-table-container">
+        <table id="mainContentTable" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
+        <thead>
+            <tr class="w3-black">
+                <th>Dominion</th>
+                <th>Realm</th>
+                <th>Race</th>
+                <th>Land</th>
+                <th>NW</th>
+                <th title="Raw DP of our ops plus NW growth since then, counted as the best DP per NW of the race. Without ops: all NW minus land and buildings, counted as DP. Times the known DP bonus.">Est DP</th>
+                <th>NW/acre</th>
+                <th title="NW/acre against the median of the same race">vs Race</th>
+                <th title="Target land as % of the attacker's land">Range</th>
+                <th title="Hours since its last invasion, and the land its target lost">Sent</th>
+                <th title="Hours since the last invasion on it, and the land it lost">Hit by</th>
+                <th title="Land growth in 24 hours plus land lost to hits. Empty when its own invasions can add land.">Explored</th>
+                <th title="Draftees from the last CS">Draftees</th>
+                <th>Ops Age</th>
+                <th title="Paid DP from our ops. ! means a unit gets DP from a perk that needs an op we do not have, for example a land spy.">DP</th>
+                <th>DP/acre</th>
+            </tr>
+        </thead>
+        {% for t in targets %}
+        <tr data-realm="{{ t.realm }}">
+            <td><a href="{{ url_for('dominfo', domcode=t.code) }}">{{ t.name }}</a></td>
+            <td>{{ t.realm }}</td>
+            <td>{{ t.race }}</td>
+            <td>{{ t.land }}</td>
+            <td>{{ t.networth }}</td>
+            <td>{{ t.estimated_dp }}</td>
+            <td>{{ t.nw_per_acre }}</td>
+            <td data-order="{{ t.nw_vs_race }}">{{ '%+.1f' % t.nw_vs_race }}%</td>
+            <td data-order="{{ t.range_percent }}">{{ t.range_percent }}%</td>
+            {% if t.sent_age is not none %}
+            <td data-order="{{ t.sent_age }}" {% if t.sent_age < 12 %}class="away"{% endif %}>
+                {{ t.sent_age }}h &middot; {{ 'bounce' if t.sent_bounced else t.sent_land }}
+            </td>
+            {% else %}
+            <td data-order="9999">-</td>
+            {% endif %}
+            {% if t.hit_age is not none %}
+            <td data-order="{{ t.hit_age }}">{{ t.hit_age }}h &middot; {{ 'bounce' if t.hit_bounced else t.hit_land }}</td>
+            {% else %}
+            <td data-order="9999">-</td>
+            {% endif %}
+            <td>{{ t.explored if t.explored is not none else '-' }}</td>
+            {% if t.draftees is not none %}
+            <td>{{ t.draftees }}</td>
+            {% else %}
+            <td data-order="-1">-</td>
+            {% endif %}
+            {% if t.ops_age is not none %}
+            <td data-order="{{ t.ops_age }}" {% if 1 < t.ops_age <= 12 %}class="stale"{% elif t.ops_age > 12 %}class="invalid"{% endif %}>{{ t.ops_age }}</td>
+            {% else %}
+            <td data-order="9999">-</td>
+            {% endif %}
+            {% if t.dp is not none %}
+            <td data-order="{{ t.dp }}">{{ t.dp }}{% if t.dp_incomplete %} !{% endif %}</td>
+            <td>{{ t.dp_per_acre }}</td>
+            {% else %}
+            <td data-order="-1">-</td>
+            <td data-order="-1">-</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        </table>
+    </div><br>
+  </div>
+
+<script>
+    $(document).ready(function() {
+        const targetsTable = $('#mainContentTable').DataTable({
+            paging: false,
+            order: [[5, 'asc']],
+            columnDefs: [
+                { type: "num", targets: [1, 3, 4, 5, 6, 7, 8, 11, 14, 15] },
+                { visible: false, targets: [9, 10, 11, 15] }
+            ],
+            autoWidth: false,
+            stateSave: true,
+            stateDuration: -1,
+            buttons: [
+                {
+                    extend: 'colvis',
+                    text: 'Columns ▼',
+                    columns: ':not(:first-child)'
+                }
+            ]
+        });
+        targetsTable.buttons().container().appendTo('#colvis-container');
+
+        $('#attacker').on('change', function() {
+            const url = new URL(window.location.href);
+            url.searchParams.set('attacker', this.value);
+            window.location.href = url.toString();
+        });
+
+        // Realm filter, kept per browser. A first visit hides my own realm.
+        const hiddenRealmsKey = 'targets-hidden-realms';
+        const savedHiddenRealms = localStorage.getItem(hiddenRealmsKey);
+        const hiddenRealms = new Set(savedHiddenRealms !== null
+            ? JSON.parse(savedHiddenRealms)
+            : ['{{ my_realm }}']);
+        $('.toggle-realm').each(function() {
+            $(this).prop('checked', !hiddenRealms.has(this.value));
+        });
+        $.fn.dataTable.ext.search.push(function(settings, searchData, index) {
+            return !hiddenRealms.has(targetsTable.row(index).node().dataset.realm);
+        });
+        targetsTable.draw();
+        $('.toggle-realm').on('change', function() {
+            if (this.checked) {
+                hiddenRealms.delete(this.value);
+            } else {
+                hiddenRealms.add(this.value);
+            }
+            localStorage.setItem(hiddenRealmsKey, JSON.stringify([...hiddenRealms]));
+            targetsTable.draw();
+        });
+    });
+</script>
+{% endblock %}

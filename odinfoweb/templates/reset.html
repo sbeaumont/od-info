@@ -12,7 +12,8 @@
     {% else %}
       <h3>Reset Database</h3>
       <p>This deletes all data in all tables and creates the tables again. You cannot undo this.</p>
-      <form method="POST" action="{{ url_for('reset') }}">
+      <form method="POST" action="{{ url_for('reset') }}"
+            onsubmit="return confirm('Delete all data in the database? You cannot undo this.');">
         <button type="submit" class="w3-button w3-red">Reset the database</button>
       </form>
     {% endif %}

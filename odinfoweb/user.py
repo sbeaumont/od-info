@@ -1,30 +1,29 @@
 import json
+from functools import cache
 
 from odinfo.config import USERS_FILE
 from odinfo.exceptions import ODInfoException
 
 
 class User(object):
-    @classmethod
-    def from_json(cls, json_data):
-        u = cls(json_data)
-        u._authenticated = json_data['authenticated']
-        return u
-
     def __init__(self, user_info: dict):
         self._id = user_info["id"]
         self.name = user_info["name"]
         self.password = user_info["password"]
         self._active = user_info["active"]
-        self._authenticated = False
+        self._admin = user_info.get("admin", "false")
 
     @property
     def is_authenticated(self):
-        return self._authenticated
+        return True
 
     @property
     def is_active(self) -> bool:
         return self._active == "true"
+
+    @property
+    def is_admin(self) -> bool:
+        return self._admin == "true"
 
     @property
     def is_anonymous(self):
@@ -33,16 +32,8 @@ class User(object):
     def get_id(self):
         return str(self._id)
 
-    def to_json(self):
-        return {
-            "id": self._id,
-            "name": self.name,
-            "password": self.password,
-            "active": self.is_active,
-            "authenticated": self._authenticated
-        }
 
-
+@cache
 def load_users() -> list[dict]:
     """The login entries in the users file."""
     with open(USERS_FILE) as f:

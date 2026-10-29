@@ -58,6 +58,9 @@
     "land": 20,
     "buildings": 5,
     "specs": 5,
+    "elite_point": 2,
     "spywiz": 5
-  }
+  },
+
+  "spec_slots": [1, 2]
 }

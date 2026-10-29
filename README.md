@@ -74,6 +74,9 @@ it's http://localhost:5042 or http://127.0.0.1:5042.
 First time you will be asked to enter a username and password, this is NOT your OD credentials, but what you filled in
 the "users.json" file. If you have your browser remember it you won't have to deal with that anymore.
 
+Only a user with `"admin": "true"` in "users.json" sees the Settings page. On that page you change the API key
+(new every round), the Discord webhook and your OD login, and you reset the database.
+
 ## Usage
 
 If everything is set up correctly you can press on the "update" links on the 

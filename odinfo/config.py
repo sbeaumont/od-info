@@ -203,6 +203,20 @@ def load_secrets():
         return secrets_dict
 
 
+def write_secrets(secrets_filename: str, changes: dict[str, str]):
+    """Write changed values into a secrets file, keeping its comments and the order of its lines."""
+    with open(secrets_filename) as f:
+        lines = f.read().splitlines()
+    remaining = dict(changes)
+    for i, line in enumerate(lines):
+        key = line.lstrip('#').split('=', 1)[0].strip()
+        if '=' in line and key in remaining:
+            lines[i] = f'{key} = {remaining.pop(key)}'
+    lines.extend(f'{key} = {value}' for key, value in remaining.items())
+    with open(secrets_filename, 'w') as f:
+        f.write('\n'.join(lines) + '\n')
+
+
 # Injectable configuration class
 
 

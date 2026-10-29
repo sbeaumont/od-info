@@ -1,12 +1,14 @@
 import unittest
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from odinfo.calculators.military import MilitaryCalculator
-from odinfo.domain.models import Dominion
+from odinfo.domain.models import ClearSight, Dominion, DominionHistory
 from odinfo.domain.refdata import Spells
 from odinfo.repositories.game import GameRepository
 from odinfo.services.military_service import MilitaryService
 from test.fixtures import create_db_session, init_db
+
+NOW = datetime(2026, 10, 28, 12, 0, 0)
 
 
 class MilitaryCalculatorTestCase(unittest.TestCase):
@@ -156,6 +158,56 @@ class TempleReductionTestCase(unittest.TestCase):
         mc = MilitaryCalculator(self.dom)
         with self.assertRaises(ValueError):
             mc.op_with_temples(10000, -0.1)
+
+
+class EstimatedDPTestCase(unittest.TestCase):
+    """DP estimated from NW, for a Dark Elf: Gargoyle 0/3 at 5 NW gives the best 0.6 DP per NW."""
+
+    def setUp(self):
+        self.session = create_db_session()
+        self.addCleanup(self.session.close)
+        self.dom = Dominion(code=1, name="Dominion", realm=3, race="Dark Elf")
+        self.session.add(self.dom)
+
+    def add_history(self, hours_ago, land, networth):
+        self.dom.history.append(DominionHistory(land=land, networth=networth,
+                                                timestamp=NOW - timedelta(hours=hours_ago)))
+        self.session.commit()
+
+    def add_cs(self, hours_ago, draftees, land=1000, networth=50000):
+        self.dom.clear_sight.append(ClearSight(land=land, peasants=0, networth=networth, prestige=250,
+                                               resource_platinum=0, military_draftees=draftees,
+                                               timestamp=NOW - timedelta(hours=hours_ago)))
+        self.session.commit()
+
+    def test_unit_networth(self):
+        units = MilitaryCalculator(self.dom).race.units
+        self.assertEqual([5, 5, 12, 13], [units[i].networth for i in range(1, 5)])
+
+    def test_without_ops_all_networth_above_land_counts_as_dp(self):
+        self.add_history(0, 1000, 55000)
+        mc = MilitaryCalculator(self.dom)
+        self.assertEqual(round(18000 * (1 + mc.defense_bonus)), mc.estimated_dp)
+
+    def test_networth_growth_since_the_ops_counts_as_dp(self):
+        self.add_history(3, 1000, 50000)
+        self.add_cs(2, 1000)
+        self.add_history(0, 1010, 52000)
+        mc = MilitaryCalculator(self.dom)
+        self.assertEqual(round((1000 + 1750 * 0.6) * (1 + mc.defense_bonus)), mc.estimated_dp)
+
+    def test_growth_since_a_cs_older_than_the_history(self):
+        self.add_cs(72, 1000, land=900, networth=40000)
+        self.add_history(0, 1000, 70000)
+        mc = MilitaryCalculator(self.dom)
+        self.assertEqual(round((1000 + 27500 * 0.6) * (1 + mc.defense_bonus)), mc.estimated_dp)
+
+    def test_networth_drop_keeps_the_dp_of_the_ops(self):
+        self.add_history(3, 1000, 50000)
+        self.add_cs(2, 1000)
+        self.add_history(0, 1000, 45000)
+        mc = MilitaryCalculator(self.dom)
+        self.assertEqual(mc.paid_dp, mc.estimated_dp)
 
 
 class SpellRaceKeyTestCase(unittest.TestCase):

@@ -10,20 +10,22 @@ Main entrypoint for the application.
 import os
 import sys
 import logging
+from functools import wraps
+
 import flask
-from flask import Flask, g, request, render_template, session
-from flask_login import LoginManager, login_user, login_required
+from flask import Flask, g, request, render_template
+from flask_login import LoginManager, login_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 
 from odinfo.timeutils import current_od_time
 from odinfoweb.forms import LoginForm
 
 from odinfo.domain.models import Base
-from odinfoweb.user import load_user_by_id, load_user_by_name, User
+from odinfoweb.user import load_user_by_id, load_user_by_name
 
 from odinfo.config import (OP_CENTER_URL, WEB_PORT, NW_PERIODS, NW_DEFAULT_PERIOD,
-                           NW_ROW_COUNTS, NW_UNCHANGED_DEFAULT, DATE_TIME_FORMAT, load_secrets,
-                           check_dirs_and_configs, get_config)
+                           NW_ROW_COUNTS, NW_UNCHANGED_DEFAULT, DATE_TIME_FORMAT, SECRET_FILE, load_secrets,
+                           check_dirs_and_configs, get_config, executable_path, write_secrets)
 from odinfo.facade.cache import FacadeCache
 from odinfo.facade.odinfo import ODInfoFacade
 from odinfo.facade.graphs import nw_history_graph, land_history_graph
@@ -35,6 +37,7 @@ from odinfoweb.viewmodels.dominfo import build_dominfo_vm
 from odinfoweb.viewmodels.economy import build_economy_vm
 from odinfoweb.viewmodels.opexplained import build_op_explained_vm
 from odinfoweb.viewmodels.about import build_nw_tracker_vm, build_philosophy_vm
+from odinfoweb.viewmodels.targets import MIN_RANGE, MAX_RANGE
 
 # ---------------------------------------------------------------------- Flask
 
@@ -109,13 +112,18 @@ login_manager.login_message = u"Please login"
 
 @login_manager.user_loader
 def load_user(user_id):
-    if 'od_user' not in session:
-        session['od_user'] = load_user_by_id(user_id).to_json()
-    user = User.from_json(session['od_user'])
-    if user and (user.get_id() == str(user_id)):
-        return user
-    else:
-        return None
+    return load_user_by_id(user_id)
+
+
+def admin_required(view):
+    """Show a view to admin users only. For everybody else the page does not exist."""
+    @wraps(view)
+    @login_required
+    def admin_view(*args, **kwargs):
+        if not current_user.is_admin:
+            flask.abort(404)
+        return view(*args, **kwargs)
+    return admin_view
 
 
 # ---------------------------------------------------------------------- Facade Singleton
@@ -384,6 +392,23 @@ def realmies():
                             realmies=facade().realmies_with_blops_info())
 
 
+@app.route('/targets')
+@login_required
+def targets():
+    realmies = facade().realmies()
+    attacker_code = request.args.get('attacker', type=int, default=facade().my_dominion().code)
+    attacker = facade().dominion(attacker_code)
+    target_list = facade().targets(attacker)
+    return render_template('targets.html',
+                           targets=target_list,
+                           realmies=realmies,
+                           attacker=attacker,
+                           min_range=MIN_RANGE,
+                           max_range=MAX_RANGE,
+                           realms=sorted({target.realm for target in target_list}),
+                           my_realm=facade().my_dominion().realm)
+
+
 @app.route('/stealables')
 @login_required
 def stealables():
@@ -399,8 +424,27 @@ def cleanup():
     return render_template('cleanup.html', deleted=deleted)
 
 
+SETTINGS_KEYS = ('api_key', 'discord_webhook', 'username', 'password')
+
+
+@app.route('/settings', methods=['GET', 'POST'])
+@admin_required
+def settings():
+    saved = []
+    if request.method == 'POST':
+        # An empty field keeps the current value, so a masked secret never has to be typed again.
+        changes = {key: request.form[key].strip() for key in SETTINGS_KEYS if request.form[key].strip()}
+        write_secrets(executable_path(SECRET_FILE), changes)
+        saved = sorted(changes)
+    secrets = load_secrets()
+    return render_template('settings.html',
+                           saved=saved,
+                           secrets=secrets,
+                           is_set={key: key in secrets for key in SETTINGS_KEYS})
+
+
 @app.route('/reset', methods=['GET', 'POST'])
-@login_required
+@admin_required
 def reset():
     if request.method == 'POST':
         db.drop_all()
@@ -417,8 +461,6 @@ def login():
         if user:
             if user.password == form.password.data:
                 print("Authenticated", user.name)
-                user._authenticated = True
-                session['od_user'] = user.to_json()
                 login_user(user)
             else:
                 print("Could not authenticate", user.name)

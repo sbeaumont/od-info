@@ -270,6 +270,31 @@ class MilitaryCalculator(object):
     def paid_dp(self) -> int:
         return round(self.raw_dp * (1 + self.defense_bonus))
 
+    @property
+    def best_dp_per_networth(self) -> float:
+        return max(self.unit_type(i).defense / self.unit_type(i).networth for i in range(1, 5))
+
+    def land_and_networth_readings(self) -> list[tuple]:
+        """(timestamp, land, networth) from the dominion index history and every CS."""
+        return ([(h.timestamp, h.land, h.networth) for h in self.dom.history] +
+                [(cs.timestamp, cs.land, cs.networth) for cs in self.dom.clear_sight])
+
+    @property
+    def estimated_dp(self) -> int:
+        """Raw DP of the ops plus the NW growth since then as DP, or the NW as DP without ops."""
+        land_networth = NETWORTH_VALUES['land'] + NETWORTH_VALUES['buildings']
+        readings = self.land_and_networth_readings()
+        _, land_now, networth_now = max(readings)
+        earlier = [r for r in readings if self.army and r[0] <= self.army['timestamp']]
+        if earlier:
+            _, land_then, networth_then = max(earlier)
+            growth = (networth_now - networth_then) - land_networth * (land_now - land_then)
+            # Only NW growth counts: a NW drop can come from lost OP units
+            raw_dp = self.raw_dp + max(0, growth) * self.best_dp_per_networth
+        else:
+            raw_dp = (networth_now - land_networth * land_now) * self.best_dp_per_networth
+        return round(raw_dp * (1 + self.defense_bonus))
+
     @staticmethod
     def refine_unit_estimate(observations: list[int]) -> tuple[float, float, float]:
         """Combine multiple BS observations to get tighter bounds on true value.

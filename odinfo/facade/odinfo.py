@@ -27,6 +27,7 @@ from odinfo.services.report_service import ReportService
 from odinfo.services.update_service import UpdateService
 from odinfoweb.viewmodels.overview import build_overview_list_vm
 from odinfoweb.viewmodels.ratios import build_ratio_list_vm
+from odinfoweb.viewmodels.targets import build_targets_vm
 
 logger = logging.getLogger('od-info.facade')
 
@@ -243,6 +244,20 @@ class ODInfoFacade(object):
         """Get realmies with military calculator info including blops (boats)."""
         current_day = self.my_dominion().current_day
         return self._military_service.realmies_with_blops_info(self.realmies(), current_day)
+
+    def targets(self, attacker: Dominion) -> list:
+        """Possible targets for the attacker, from data that costs no ops."""
+        cache_key = f'targets_{attacker.code}'
+        if cache_key in self._cache:
+            logger.debug("Returning cached targets for %s", cache_key)
+            return self._cache[cache_key]
+
+        logger.debug("Computing targets for %s", cache_key)
+        result = build_targets_vm(list(self._repo.dominions_in_play()),
+                                  attacker.current_land,
+                                  list(self._repo.all_town_crier_events()))
+        self._cache[cache_key] = result
+        return result
 
     def stealables(self) -> list:
         logger.debug("Listing stealables")

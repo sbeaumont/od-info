@@ -3,7 +3,8 @@
     "id": "1",
     "name": "test",
     "password": "boink",
-    "active": "true"
+    "active": "true",
+    "admin": "true"
   },
   {
     "id": "2",

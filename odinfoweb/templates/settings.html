@@ -1,0 +1,44 @@
+{% extends "odinfo-base.html" %}
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+  <div class="w3-container">
+    <h3>Settings</h3>
+    {% if saved %}
+      <div class="w3-panel w3-pale-green">
+        <p>Saved: {{ saved | join(', ') }}.</p>
+        <p>Cron uses the new values on its next run. Restart the web app to use them here.
+           A new API key for a new round also gives a new database.</p>
+      </div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('settings') }}" autocomplete="off">
+      <p>An empty field keeps the current value.</p>
+      <p>
+        <label>API key</label><br>
+        <input class="w3-input" type="text" name="api_key" value="{{ secrets['api_key'] }}" style="max-width: 500px;">
+      </p>
+      <p>
+        <label>Discord webhook</label><br>
+        <input class="w3-input" type="text" name="discord_webhook" value="{{ secrets['discord_webhook'] }}" style="max-width: 500px;">
+      </p>
+      <p>
+        <label>OpenDominion username</label><br>
+        <input class="w3-input" type="text" name="username" value="{{ secrets['username'] }}" style="max-width: 500px;">
+      </p>
+      <p>
+        <label>OpenDominion password</label><br>
+        <input class="w3-input" type="password" name="password"
+               placeholder="{{ '••••••••' if is_set['password'] else 'not set' }}" style="max-width: 500px;">
+      </p>
+      <button type="submit" class="w3-button w3-dark-grey">Save</button>
+    </form>
+
+    <h3 style="margin-top: 40px;">Reset Database</h3>
+    <p>This deletes all data in all tables and creates the tables again. You cannot undo this.</p>
+    <form method="POST" action="{{ url_for('reset') }}"
+          onsubmit="return confirm('Delete all data in the database? You cannot undo this.');">
+      <button type="submit" class="w3-button w3-red">Reset the database</button>
+    </form>
+  </div>
+{% endblock %}

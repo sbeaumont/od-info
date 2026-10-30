@@ -3,6 +3,7 @@
 
 {% block content %}
   <div class="w3-container">
+    <form action="{{ url_for('realmies') }}" method="post">
     <div class="od-table-container">
     <table id="mainContentTable" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
         <thead>
@@ -25,7 +26,7 @@
             <td>
                 <a href="{{ url_for('dominfo', domcode=realmie.code) }}">{{ realmie.name }}</a>
             </td>
-            <td>{{ realmie.player }}</td>
+            <td><input type="text" name="name.{{realmie.code}}.{{realmie.player}}" onfocusout="this.form.submit()" value="{{ realmie.player }}"></td>
             <td>{{ realmie.land }}</td>
             <td>{{ realmie.hittable_75_percent }}</td>
             <td>{{ realmie.max_sendable_op }}</td>
@@ -50,7 +51,8 @@
         </tr>
         {% endfor %}
     </table>
-    </div><br>
+    </div>
+    </form><br>
   </div>
 
 <script>

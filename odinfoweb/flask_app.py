@@ -245,7 +245,7 @@ def overview():
                 if old_role != v:
                     facade().update_role(dom, v)
             elif k.startswith('name.'):
-                prefix, dom, old_name = k.split('.')
+                prefix, dom, old_name = k.split('.', 2)
                 if old_name != v:
                     facade().update_player(dom, v)
     time_last_update = facade().time_last_update()
@@ -382,9 +382,14 @@ def nw_tracker_explained():
     return render_template('nw-tracker-explained.html', vm=build_nw_tracker_vm())
 
 
-@app.route('/realmies')
+@app.route('/realmies', methods=['GET', 'POST'])
 @login_required
 def realmies():
+    if request.method == 'POST':
+        for k, v in request.form.items():
+            prefix, dom, old_name = k.split('.', 2)
+            if old_name != v:
+                facade().update_player(dom, v)
     return render_template('realmies.html',
                             realmies=facade().realmies_with_blops_info())
 

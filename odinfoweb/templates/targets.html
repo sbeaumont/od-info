@@ -17,7 +17,7 @@
                 <select id="attacker" style="padding: 2px 4px;">
                     {% for realmie in realmies %}
                     <option value="{{ realmie.code }}" {% if realmie.code == attacker.code %}selected{% endif %}>
-                        {{ realmie.name }} ({{ realmie.current_land }})
+                        {{ realmie.name }}{% if realmie.player not in ('', '?') %} - {{ realmie.player }}{% endif %} ({{ realmie.current_land }})
                     </option>
                     {% endfor %}
                 </select>

@@ -202,16 +202,16 @@ class ODInfoFacade(object):
         self._cache[cache_key] = result
         return result
 
-    def military_list(self, defense_bonus: float, versus_op=0, top=20, include_current_strength=False):
+    def military_list(self, defense_bonus: float, versus_op=0, top=20):
         """Get military overview for top dominions, seen from a defender with this DP bonus."""
-        cache_key = f'military_list_{defense_bonus}_{versus_op}_{top}_{include_current_strength}'
+        cache_key = f'military_list_{defense_bonus}_{versus_op}_{top}'
         if cache_key in self._cache:
             logger.debug("Returning cached military_list for %s", cache_key)
             return self._cache[cache_key]
 
         current_day = self.my_dominion().current_day
         result_list = self._military_service.military_list(
-            current_day, defense_bonus, versus_op, top, include_current_strength)
+            current_day, defense_bonus, versus_op, top)
         self._cache[cache_key] = result_list
         return result_list
 

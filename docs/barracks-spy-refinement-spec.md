@@ -177,6 +177,12 @@ Fetch the BS archive from the API and store each entry as a standard BarracksSpy
 - [x] Add Current OP/DP with confidence to dominfo page
 - [ ] Color code based on confidence (optional, deferred)
 
+**Change on 2026-10-30**: the `include_current_strength` parameter and the "Current Strength"
+checkbox are gone. The military list always calculates current strength, at a cost of about
+25 ms for 165 dominions. Cur OP, Cur DP and Conf are optional columns in the Columns menu, like
+Draftees and Boats. Before this change, the Columns menu could show these columns without the
+checkbox, and they stayed empty.
+
 ## Open Questions
 
 1. **Away units direction**: Current code uses `away * 0.85` (lower bound). Should this be upper bound for consistency with "pessimistic" approach? Need to understand the original intent.

@@ -342,13 +342,11 @@ def ratios():
 @app.route('/military/<int:versus_op>')
 @login_required
 def military(versus_op: int = 0):
-    include_current = request.args.get('current', '').lower() == 'true'
     # The +Tmps columns are seen from a defender's side, so they need that defender's DP
     # bonus. Default to the player's own, but let them ask what a different one looks like.
     dp_bonus_arg = request.args.get('dp_bonus')
     defense_bonus = float(dp_bonus_arg) / 100 if dp_bonus_arg else facade().player_defense_bonus()
-    dom_list = facade().military_list(defense_bonus, versus_op=versus_op, top=1000,
-                                       include_current_strength=include_current)
+    dom_list = facade().military_list(defense_bonus, versus_op=versus_op, top=1000)
     return render_template('military.html',
                            doms=dom_list,
                            realms=sorted({dom.realm for dom in dom_list}),
@@ -357,7 +355,6 @@ def military(versus_op: int = 0):
                            top_op=facade().top_op(dom_list),
                            versus_op=versus_op,
                            dp_bonus_percent=round(defense_bonus * 100, 1),
-                           include_current=include_current,
                            current_day=facade().my_dominion().current_day)
 
 

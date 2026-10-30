@@ -25,9 +25,6 @@
             <label style="cursor: pointer;">
                 <input type="checkbox" id="toggle-boats"> Boats
             </label>
-            <label style="cursor: pointer;">
-                <input type="checkbox" id="toggle-current" {% if include_current %}checked{% endif %}> Current Strength
-            </label>
             <span id="colvis-container" style="margin-left: 10px;"></span>
             <a href="#" id="reset-columns" style="font-size: 0.8em; color: #aaa;">reset</a>
             <label style="margin-left: 20px;">
@@ -71,7 +68,7 @@
                 <th class="col-boats">Sendable (#/cap)</th>
                 <th class="col-basic">Raw OP</th>
                 <th class="col-basic">Raw DP</th>
-                <!-- Current strength columns (only when enabled) -->
+                <!-- Current strength columns -->
                 <th class="col-current">Cur OP</th>
                 <th class="col-current">Cur DP</th>
                 <th class="col-current">Conf</th>
@@ -177,7 +174,6 @@
         // Column indices for quick toggles
         const drafteesCols = [11];
         const boatsCols = [12, 13];
-        const currentCols = [16, 17, 18];
 
         // Sync checkboxes with current column visibility
         function syncCheckboxes() {
@@ -185,13 +181,6 @@
             $('#toggle-boats').prop('checked', militaryTable.column(12).visible());
         }
         syncCheckboxes();
-
-        // Show/hide current strength columns based on checkbox state
-        {% if include_current %}
-        currentCols.forEach(idx => militaryTable.column(idx).visible(true));
-        {% else %}
-        currentCols.forEach(idx => militaryTable.column(idx).visible(false));
-        {% endif %}
 
         // Handle Draftees checkbox
         $('#toggle-draftees').on('change', function() {
@@ -203,18 +192,6 @@
         $('#toggle-boats').on('change', function() {
             const visible = $(this).is(':checked');
             boatsCols.forEach(idx => militaryTable.column(idx).visible(visible));
-        });
-
-        // Handle Current Strength checkbox - reloads page with parameter
-        $('#toggle-current').on('change', function() {
-            const checked = $(this).is(':checked');
-            const url = new URL(window.location.href);
-            if (checked) {
-                url.searchParams.set('current', 'true');
-            } else {
-                url.searchParams.delete('current');
-            }
-            window.location.href = url.toString();
         });
 
         // Sync checkboxes when ColVis dropdown changes visibility
@@ -262,12 +239,9 @@
             const versusOp = $('#versus-op').val();
             const dpBonus = $('#dp-bonus').val();
             const target = (versusOp && versusOp > 0)
-                ? '{{ url_for("military", versus_op=0) }}'.replace('/0', '/' + versusOp)
+                ? '{{ url_for("military") }}/' + versusOp
                 : '{{ url_for("military") }}';
             const url = new URL(target, window.location.origin);
-            if (new URL(window.location.href).searchParams.get('current')) {
-                url.searchParams.set('current', 'true');
-            }
             // An empty box means "use my own bonus", which is what no parameter does.
             if (dpBonus !== '') {
                 url.searchParams.set('dp_bonus', dpBonus);

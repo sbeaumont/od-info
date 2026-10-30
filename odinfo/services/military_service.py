@@ -41,7 +41,7 @@ class MilitaryService:
         self._repo = repo
 
     def military_list(self, current_day: int, defense_bonus: float, versus_op: int = 0,
-                      top: int = 20, include_current_strength: bool = False) -> list[MilitaryRowVM]:
+                      top: int = 20) -> list[MilitaryRowVM]:
         """
         Get military overview for top dominions.
 
@@ -51,14 +51,12 @@ class MilitaryService:
                 target's temples eat into. Used for the +Tmps columns.
             versus_op: OP value to calculate safe OP/DP against (0 for default).
             top: Number of top dominions to include.
-            include_current_strength: If True, calculate current strength from
-                refined BS data. This is expensive (queries archives).
 
         Returns:
             List of MilitaryRowVM view models for each dominion.
         """
-        logger.debug("Computing military_list for versus_op=%s, top=%s, current=%s, dp_bonus=%s",
-                     versus_op, top, include_current_strength, defense_bonus)
+        logger.debug("Computing military_list for versus_op=%s, top=%s, dp_bonus=%s",
+                     versus_op, top, defense_bonus)
         all_doms = list(self._repo.dominions_in_play())[:top]
         mil_calcs = sorted(
             [MilitaryCalculator(dom) for dom in all_doms],
@@ -77,13 +75,9 @@ class MilitaryService:
             paid_op = refined_paid_op if refined_paid_op is not None else mc.paid_op
             paid_dp = refined_paid_dp if refined_paid_dp is not None else mc.paid_dp
 
-            # Calculate current strength only if requested
-            if include_current_strength:
-                current_op, current_dp, current_confidence = self.calculate_current_strength(mc.dom)
-                if current_confidence:
-                    confidence = current_confidence
-            else:
-                current_op, current_dp = None, None
+            current_op, current_dp, current_confidence = self.calculate_current_strength(mc.dom)
+            if current_confidence:
+                confidence = current_confidence
 
             row = MilitaryRowVM(
                 code=mc.dom.code,

@@ -8,14 +8,14 @@
 
       uv run python check_explanations.py --stamp odinfoweb/templates/op-explained.html
 #}
-{% set reviewed_on = '2026-10-28' %}
+{% set reviewed_on = '2026-10-30' %}
 {#- doc-sources
-data/game-constants.json ba2c2b750d084f9d
-odinfo/calculators/military.py 49d9750ce207c5b5
+data/game-constants.json b929609823abd74f
+odinfo/calculators/military.py 2cfd6165b4eb6219
 odinfo/domain/domainhelper.py 8df104a7b57165c6
-odinfo/domain/models.py f89f17d3a0c28d9b
-odinfo/domain/refdata.py 03d7d4c74a6312ff
-odinfo/services/military_service.py 23da00f45b0dbaec
+odinfo/domain/models.py 544d0cafdecdbcb6
+odinfo/domain/refdata.py 69a20ab61b8f978e
+odinfo/services/military_service.py 638c5429a3ac22df
 odinfoweb/viewmodels/opexplained.py 75439f8e7e721396
 -#}
 
@@ -237,10 +237,13 @@ odinfoweb/viewmodels/opexplained.py 75439f8e7e721396
     </dd>
     <dt>Cur OP / Cur DP / Conf</dt>
     <dd>
-      Strength from home units only, worked out from Barracks Spies rather than Clear
-      Sight, plus whatever has landed since. Two or more Barracks Spies taken in the same
-      tick narrow the {{ vm.barracks_spy_error_percent }}% fuzz, because each one puts the
-      true number in its own range and the ranges overlap.
+      Strength from home units only, worked out from the last Barracks Spy, plus whatever
+      has landed since. Two or more Barracks Spies taken in the same tick narrow the
+      {{ vm.barracks_spy_error_percent }}% fuzz, because each one puts the true number in
+      its own range and the ranges overlap. A Clear Sight at or after that tick narrows it
+      too. Its exact total is home plus returning, so home is that total minus the units
+      the Barracks Spy shows still away. In the same tick the two ranges pin each other,
+      and a small home army leaves the returning units almost exact.
       <span class="od-term">Conf</span> tells you how tight that got:
       <code>locked</code> means they pinned it exactly, otherwise you get the margin
       that's left.
@@ -280,7 +283,7 @@ odinfoweb/viewmodels/opexplained.py 75439f8e7e721396
       <strong>Barracks Spy fuzz.</strong> Every number on one is off by up to
       {{ vm.barracks_spy_error_percent }}% either way. When the Barracks Spy is the
       freshest op, that error rides straight into the OP. A second one in the same tick
-      genuinely narrows it.
+      genuinely narrows it, and so does a Clear Sight in the same tick.
     </li>
     <li>
       <strong>Ops taken at different times.</strong> The bonuses come from up to four

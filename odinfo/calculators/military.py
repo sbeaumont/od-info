@@ -1,6 +1,6 @@
 import time
 import logging
-from math import trunc
+from math import trunc, inf
 
 from odinfo.domain.models import Dominion
 from odinfo.domain.refdata import Race
@@ -8,6 +8,7 @@ from odinfo.domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, TEMPLE_BO
 from odinfo.domain.refdata import MAX_GUARD_TOWER_BONUS, MAX_GRYPHON_NEST_BONUS
 from odinfo.domain.refdata import NETWORTH_VALUES, ARES_BONUS, BARRACKS_SPY_FUZZ
 from odinfo.domain.refdata import UNITS_PER_BOAT, BOATS_PER_DOCK, BOATS_PER_DOCK_PER_DAY
+from odinfo.timeutils import ticks_between
 
 logger = logging.getLogger('od-info.military')
 
@@ -348,19 +349,60 @@ class MilitaryCalculator(object):
 
         return result
 
-    @staticmethod
-    def exact_home_units(clear_sight) -> dict:
-        """Home units of a CS in the shape of refined_home_units(), with no error."""
-        military = clear_sight.military
-        return {key: (military[key], military[key], 0) for key in ('draftees', 'unit1', 'unit2', 'unit3', 'unit4')}
+    def clear_sight_units(self, barracks_spies: list, clear_sight, from_tick: int) -> tuple[dict, dict]:
+        """Home units at the time of a CS, and the BS returning units still away then.
 
-    def arrived_returning_units(self, barracks_spies: list, ticks_since_bs: int, from_tick: int = 0) -> dict:
+        Args:
+            barracks_spies: List of BarracksSpy objects from the same tick.
+            clear_sight: A CS taken in or after the tick of the BS.
+            from_tick: Ticks between the BS and the CS.
+
+        Returns:
+            Tuple of (home, returning). Home is in the shape of refined_home_units(),
+            returning is (lower, upper, error_pct) of each unit still away at the CS.
+        """
+        def bounds(lower, upper):
+            midpoint = (lower + upper) / 2
+            return lower, upper, (upper - lower) / midpoint * 100 / 2 if midpoint else 0
+
+        military = clear_sight.military
+        bs_home = self.refined_home_units(barracks_spies) if from_tick == 0 else {}
+        remaining = self.arrived_returning_units(barracks_spies, inf, from_tick)
+
+        home = {'draftees': (military['draftees'], military['draftees'], 0)}
+        returning = {}
+        for i in range(1, 5):
+            key = f'unit{i}'
+            total = military[key]
+            returning_lower, returning_upper, _ = remaining.get(key, (0, 0, 0))
+            lower, upper = total - returning_upper, total - returning_lower
+            bs_lower, bs_upper, _ = bs_home.get(key, (0, inf, 0))
+            # The CS is newer, so its range stands alone when it falls outside the BS home range.
+            if bs_lower <= upper and lower <= bs_upper:
+                lower, upper = max(lower, bs_lower), min(upper, bs_upper)
+            home[key] = bounds(lower, upper)
+            if key in remaining:
+                returning[key] = bounds(total - upper, total - lower)
+        return home, returning
+
+    def starting_point(self, barracks_spies: list) -> tuple[dict, dict, int]:
+        """Home units, the returning units still away, and the tick after the BS they hold at."""
+        last_bs, last_cs = self.dom.last_barracks, self.dom.last_cs
+        if last_cs and last_cs.timestamp >= last_bs.timestamp:
+            from_tick = ticks_between(last_bs.timestamp, last_cs.timestamp)
+            home, returning = self.clear_sight_units(barracks_spies, last_cs, from_tick)
+            return home, returning, from_tick
+        return self.refined_home_units(barracks_spies), {}, 0
+
+    def arrived_returning_units(self, barracks_spies: list, ticks_since_bs: int, from_tick: int = 0,
+                                totals: dict = None) -> dict:
         """Get refined returning units that have arrived home since BS was taken.
 
         Args:
             barracks_spies: List of BarracksSpy objects from the same tick.
             ticks_since_bs: Hours elapsed since the BS was taken.
             from_tick: Units arrived by this tick are left out.
+            totals: Returning units after from_tick from clear_sight_units(), to share out.
 
         Returns:
             Dict with keys 'unit1'-'unit4', each containing
@@ -402,6 +444,13 @@ class MilitaryCalculator(object):
 
             if total_lower > 0 or total_upper > 0:
                 result[unit_key] = (total_lower, total_upper, max_error)
+
+        if totals:
+            remaining = self.arrived_returning_units(barracks_spies, inf, from_tick)
+            for key, (lower, upper, _) in result.items():
+                share = (lower + upper) / (remaining[key][0] + remaining[key][1])
+                total_lower, total_upper, error = totals[key]
+                result[key] = (total_lower * share, total_upper * share, error)
 
         return result
 

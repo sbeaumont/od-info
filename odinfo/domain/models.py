@@ -6,7 +6,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from odinfo.domain.domainhelper import Buildings, Land, Technology, Magic
-from odinfo.timeutils import hours_since, current_od_time
+from odinfo.timeutils import hours_since, current_od_time, ticks_between, ticks_since
 from odinfo.domain.refdata import Race, BARRACKS_SPY_FUZZ
 
 
@@ -200,7 +200,7 @@ class BarracksSpy(TimestampedOpsMixin, Base):
 
     def aged_amount_training_for_unit(self, unit_type_nr: int) -> int:
         key = f'unit{unit_type_nr}'
-        age = hours_since(self.timestamp)
+        age = ticks_since(self.timestamp)
         if self.training and key in self.training:
             return sum([amount for tick, amount in self.training[key].items() if int(tick) - age > 0])
         else:
@@ -210,11 +210,8 @@ class BarracksSpy(TimestampedOpsMixin, Base):
         """Calculate training units that hadn't completed by reference_time."""
         key = f'unit{unit_type_nr}'
         if self.training and key in self.training:
-            # Calculate hours between BarracksSpy and reference time (e.g., ClearSight)
-            time_diff = (reference_time - self.timestamp).total_seconds() / 3600
-            # Include units whose training tick is greater than the time difference
-            # i.e., units that hadn't completed by reference_time
-            return sum([amount for tick, amount in self.training[key].items() if int(tick) > time_diff])
+            ticks = ticks_between(self.timestamp, reference_time)
+            return sum([amount for tick, amount in self.training[key].items() if int(tick) > ticks])
         else:
             return 0
 
@@ -259,7 +256,7 @@ class BarracksSpy(TimestampedOpsMixin, Base):
         }
 
     def paid_until_for_unit(self, nr):
-        age = hours_since(self.timestamp)
+        age = ticks_since(self.timestamp)
         max_ticks = 0
         key = f'unit{nr}'
         if key in self.training:

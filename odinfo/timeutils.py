@@ -69,3 +69,13 @@ def add_duration(timestamp: str, duration: int, whole_hour=False) -> str:
 def truncate_to_tick(timestamp: datetime) -> datetime:
     """Floor a timestamp to the start of its tick (hour boundary)."""
     return timestamp.replace(minute=0, second=0, microsecond=0)
+
+
+def ticks_between(start: datetime, end: datetime) -> int:
+    """The number of ticks from the tick of start to the tick of end."""
+    return int((truncate_to_tick(end) - truncate_to_tick(start)) / timedelta(hours=1))
+
+
+def ticks_since(timestamp: datetime) -> int:
+    """The number of ticks from the tick of a timestamp to the current tick."""
+    return ticks_between(timestamp, current_od_time())

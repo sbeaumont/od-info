@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime
 
 from odinfo.exceptions import ODInfoException
-from odinfo.timeutils import cleanup_timestamp
+from odinfo.timeutils import cleanup_timestamp, ticks_between
 
 
 class CleanupTimestampTest(unittest.TestCase):
@@ -24,6 +24,17 @@ class CleanupTimestampTest(unittest.TestCase):
             with self.subTest(junk=junk):
                 with self.assertRaises(ODInfoException):
                     cleanup_timestamp(junk)
+
+
+class TicksBetweenTest(unittest.TestCase):
+    def test_counts_hour_boundaries(self):
+        self.assertEqual(4, ticks_between(datetime(2026, 10, 29, 18, 26), datetime(2026, 10, 29, 22, 10)))
+
+    def test_same_tick_is_zero(self):
+        self.assertEqual(0, ticks_between(datetime(2026, 10, 29, 18, 26), datetime(2026, 10, 29, 18, 59)))
+
+    def test_one_boundary_under_an_hour_apart(self):
+        self.assertEqual(1, ticks_between(datetime(2026, 10, 29, 18, 59), datetime(2026, 10, 29, 19, 1)))
 
 
 if __name__ == '__main__':

@@ -16,7 +16,7 @@ from datetime import timedelta
 from odinfo.calculators.military import MilitaryCalculator, RatioCalculator
 from odinfo.domain.models import Dominion, BarracksSpy
 from odinfo.repositories.game import GameRepository
-from odinfo.timeutils import hours_since, truncate_to_tick
+from odinfo.timeutils import hours_since, ticks_since, truncate_to_tick
 from odinfoweb.viewmodels.military import MilitaryRowVM, RealmieRowVM
 
 logger = logging.getLogger('od-info.military_service')
@@ -145,19 +145,13 @@ class MilitaryService:
         bs_list = self.get_barracks_spies_in_tick(dom, last_bs.timestamp)
 
         mc = MilitaryCalculator(dom)
-        ticks_since_bs = int(hours_since(last_bs.timestamp))
+        ticks_since_bs = ticks_since(last_bs.timestamp)
 
-        last_cs = dom.last_cs
-        if last_cs and last_cs.timestamp >= last_bs.timestamp:
-            refined_home = mc.exact_home_units(last_cs)
-            from_tick = int((last_cs.timestamp - last_bs.timestamp) / timedelta(hours=1))
-        else:
-            refined_home = mc.refined_home_units(bs_list)
-            from_tick = 0
+        refined_home, returning, from_tick = mc.starting_point(bs_list)
         if not refined_home:
             return None, None, None
 
-        arrived_returning = mc.arrived_returning_units(bs_list, ticks_since_bs, from_tick)
+        arrived_returning = mc.arrived_returning_units(bs_list, ticks_since_bs, from_tick, returning)
         arrived_training = mc.arrived_training_units(last_bs, ticks_since_bs, from_tick)
 
         current_op = mc.current_op(refined_home, arrived_returning, arrived_training)
@@ -190,9 +184,9 @@ class MilitaryService:
             return None, None, None
 
         mc = MilitaryCalculator(dom)
-        ticks_since_bs = int(hours_since(last_bs.timestamp))
+        ticks_since_bs = ticks_since(last_bs.timestamp)
 
-        refined_home = mc.refined_home_units(bs_list)
+        refined_home, returning, from_tick = mc.starting_point(bs_list)
         if not refined_home:
             return None, None, None
 
@@ -200,8 +194,8 @@ class MilitaryService:
         paid_until = last_bs.paid_until
         total_elapsed = ticks_since_bs + paid_until
 
-        arrived_returning = mc.arrived_returning_units(bs_list, total_elapsed)
-        arrived_training = mc.arrived_training_units(last_bs, total_elapsed)
+        arrived_returning = mc.arrived_returning_units(bs_list, total_elapsed, from_tick, returning)
+        arrived_training = mc.arrived_training_units(last_bs, total_elapsed, from_tick)
 
         paid_op = mc.current_op(refined_home, arrived_returning, arrived_training)
         paid_dp = mc.current_dp(refined_home, arrived_returning, arrived_training)
@@ -226,9 +220,9 @@ class MilitaryService:
         bs_list = self.get_barracks_spies_in_tick(dom, last_bs.timestamp)
 
         mc = MilitaryCalculator(dom)
-        ticks_since_bs = int(hours_since(last_bs.timestamp))
+        ticks_since_bs = ticks_since(last_bs.timestamp)
 
-        refined_home = mc.refined_home_units(bs_list)
+        refined_home, returning, from_tick = mc.starting_point(bs_list)
         if not refined_home:
             return []
 
@@ -236,8 +230,8 @@ class MilitaryService:
         for future_tick in range(13):
             total_elapsed = ticks_since_bs + future_tick
 
-            arrived_returning = mc.arrived_returning_units(bs_list, total_elapsed)
-            arrived_training = mc.arrived_training_units(last_bs, total_elapsed)
+            arrived_returning = mc.arrived_returning_units(bs_list, total_elapsed, from_tick, returning)
+            arrived_training = mc.arrived_training_units(last_bs, total_elapsed, from_tick)
 
             op = mc.current_op(refined_home, arrived_returning, arrived_training)
             dp = mc.current_dp(refined_home, arrived_returning, arrived_training)

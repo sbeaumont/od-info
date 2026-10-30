@@ -3,7 +3,7 @@ from datetime import timedelta
 from math import trunc, exp
 
 from odinfo.domain.refdata import TechTree, MASONRY_MULTIPLIER, IMP_FACTORS
-from odinfo.timeutils import hours_until
+from odinfo.timeutils import hours_until, ticks_since
 
 NON_HOME_TYPES = (
     'alchemy',
@@ -127,12 +127,14 @@ class Land(object):
 
     @property
     def incoming(self) -> int:
+        """The incoming acres of the Land Spy that have not arrived yet."""
         result = 0
         if self._data and self._data.incoming:
             incoming = self._data.incoming
+            age = ticks_since(self._data.timestamp)
             for landtype in LAND_TYPES:
                 if landtype in incoming:
-                    result += sum(incoming[landtype].values())
+                    result += sum([amount for tick, amount in incoming[landtype].items() if int(tick) - age > 0])
         return result
 
 

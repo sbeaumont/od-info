@@ -101,7 +101,7 @@ def init_db(session: Session) -> None:
             hill_constructed=100,
             water=100,
             water_constructed=100,
-            incoming=json.loads('{"hill": {"1": 5, "4": 5}, "plain": {"7": 10}}'),
+            incoming=json.loads('{"hill": {"11": 5, "14": 5}, "plain": {"17": 10}}'),
             timestamp=timestamp
         ))
 

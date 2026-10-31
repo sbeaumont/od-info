@@ -40,6 +40,7 @@ class MilitaryRowVM:
     safe_op_with_temples: int
     networth: int
     has_incomplete_intel: bool
+    has_bs_worst_case: bool
     # Current strength (home units only, refined if multiple BSes available)
     current_op: int | None
     current_dp: int | None

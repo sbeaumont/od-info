@@ -18,6 +18,7 @@
         <tr>
             <td  {% if 1 < dom_vm.ops_age <= 12 %}class="stale"{% elif dom_vm.ops_age > 12 %}class="invalid"{% endif %}>
                 {{ dom_vm.ops_age }}
+                {% if dom_vm.has_bs_worst_case %}<span class="w3-tooltip">CS?<span class="w3-text w3-tag w3-black">Unit counts are the BS worst case (+17.6%). Cast a CS.</span></span>{% endif %}
             </td>
             <td>
                 {{ dom_vm.land }}

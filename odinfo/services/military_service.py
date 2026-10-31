@@ -106,6 +106,7 @@ class MilitaryService:
                 safe_op_with_temples=mc.safe_op_with_temples(versus_op, defense_bonus),
                 networth=mc.dom.current_networth,
                 has_incomplete_intel=mc.has_incomplete_intel(),
+                has_bs_worst_case=mc.dom.military_has_bs_worst_case,
                 current_op=current_op,
                 current_dp=current_dp,
                 confidence=confidence,

@@ -121,6 +121,7 @@ class DomInfoVM:
     networth: int
     population: int | None
     ops_age: float
+    has_bs_worst_case: bool
 
     # Castle ratings
     science_rating: float | None
@@ -288,6 +289,7 @@ def build_dominfo_vm(dom: Dominion,
         networth=dom.current_networth,
         population=population,
         ops_age=hours_since(dom.last_op),
+        has_bs_worst_case=dom.military_has_bs_worst_case,
         science_rating=science_rating,
         keep_rating=keep_rating,
         spires_rating=spires_rating,

@@ -89,6 +89,7 @@
             </td>
             <td  {% if 1 < dom.ops_age <= 12 %}class="stale"{% elif dom.ops_age > 12 %}class="invalid"{% endif %}>
                 {{ dom.ops_age }}{% if dom.has_incomplete_intel %} !{% endif %}
+                {% if dom.has_bs_worst_case %}<span class="w3-tooltip">CS?<span class="w3-text w3-tag w3-black">Unit counts are the BS worst case (+17.6%). Cast a CS.</span></span>{% endif %}
             </td>
             <td>{{ dom.land }}</td>
             <td>{{ dom.hittable_75_percent }}</td>

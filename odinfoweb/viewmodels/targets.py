@@ -58,8 +58,9 @@ def explored_land(dom: Dominion, sent: list[TownCrier], hit: list[TownCrier]) ->
     return readings[0].land - readings[-1].land + land_lost
 
 
-def build_targets_vm(dominions: list[Dominion], attacker_land: int, events: list[TownCrier]) -> list[TargetRowVM]:
-    """Rows for every dominion in range of the attacker, sorted by estimated DP."""
+def build_targets_vm(dominions: list[Dominion], attacker_land: int, attacker_temples: float,
+                     events: list[TownCrier]) -> list[TargetRowVM]:
+    """Rows for every dominion in range of the attacker, sorted by the estimated DP the attacker has to beat."""
     attacks = sorted((e for e in events if e.event_type in ATTACK_EVENTS),
                      key=lambda e: e.timestamp, reverse=True)
     sent_by = {}
@@ -101,9 +102,9 @@ def build_targets_vm(dominions: list[Dominion], attacker_land: int, events: list
             hit_land=last_hit.amount if last_hit else None,
             hit_bounced=bool(last_hit) and last_hit.event_type == 'bounce',
             explored=explored_land(dom, sent, hit),
-            estimated_dp=mc.estimated_dp,
-            dp=mc.paid_dp if has_ops else None,
-            dp_per_acre=round(mc.paid_dp / dom.current_land, 1) if has_ops else None,
+            estimated_dp=mc.dp_against_temples(mc.estimated_dp, attacker_temples),
+            dp=mc.dp_against_temples(mc.paid_dp, attacker_temples) if has_ops else None,
+            dp_per_acre=round(mc.dp_against_temples(mc.paid_dp, attacker_temples) / dom.current_land, 1) if has_ops else None,
             dp_incomplete=bool(mc.missing_intel_for_stats()['defense']) if has_ops else False,
             draftees=cs.military_draftees if cs else None,
             ops_age=hours_since(dom.last_op) if dom.last_op else None,

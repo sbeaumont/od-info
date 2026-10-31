@@ -182,6 +182,15 @@ class TempleReductionTestCase(unittest.TestCase):
         mc = MilitaryCalculator(self.dom)
         self.assertEqual(11000, mc.op_with_temples(10000, 0.1))
 
+    def test_attacker_temples_take_the_dp_bonus_down_to_1(self):
+        # 10000 * max(1.1 - 0.27, 1) / 1.1
+        mc = MilitaryCalculator(self.dom)
+        self.assertEqual(9091, mc.dp_against_temples(10000, 0.27))
+
+    def test_dp_without_attacker_temples_stays_the_same(self):
+        mc = MilitaryCalculator(self.dom)
+        self.assertEqual(10000, mc.dp_against_temples(10000, 0))
+
     def test_a_negative_defence_bonus_is_rejected(self):
         mc = MilitaryCalculator(self.dom)
         with self.assertRaises(ValueError):

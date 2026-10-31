@@ -155,6 +155,11 @@ class MilitaryCalculator(object):
         multiplier = 1 + defense_bonus
         return round(op * multiplier / max(multiplier - self.temple_bonus, 1))
 
+    def dp_against_temples(self, dp: float, temple_bonus: float) -> int:
+        """This dominion's DP with an attacker's temple reduction taken off its DP multiplier."""
+        multiplier = 1 + self.defense_bonus
+        return round(dp * max(multiplier - temple_bonus, 1) / multiplier)
+
     def five_four_op_with_temples(self, defense_bonus: float) -> float:
         """The effective OP that a defender has to compare their DP with to see if they're safe."""
         return self.op_with_temples(self.five_over_four[0], defense_bonus)

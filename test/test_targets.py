@@ -43,7 +43,7 @@ class TargetsTest(unittest.TestCase):
                          event_type=event_type, amount=amount)
 
     def rows(self, doms, events=()):
-        return {row.code: row for row in build_targets_vm(doms, ATTACKER_LAND, list(events))}
+        return {row.code: row for row in build_targets_vm(doms, ATTACKER_LAND, 0, list(events))}
 
     def test_nw_per_acre_against_race_median(self):
         doms = [self.add_dom([(0, 1000, nw)]) for nw in (40000, 50000, 60000)]

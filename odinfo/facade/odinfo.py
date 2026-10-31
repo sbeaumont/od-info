@@ -12,6 +12,7 @@ import logging
 from datetime import datetime
 from typing import Callable
 
+from odinfo.calculators.military import MilitaryCalculator
 from odinfo.calculators.networthcalculator import get_networth_deltas
 from odinfo.config import Config
 from odinfo.repositories.game import GameRepository
@@ -255,6 +256,7 @@ class ODInfoFacade(object):
         logger.debug("Computing targets for %s", cache_key)
         result = build_targets_vm(list(self._repo.dominions_in_play()),
                                   attacker.current_land,
+                                  MilitaryCalculator(attacker).temple_bonus,
                                   list(self._repo.all_town_crier_events()))
         self._cache[cache_key] = result
         return result

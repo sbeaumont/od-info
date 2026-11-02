@@ -21,6 +21,7 @@ from odinfo.timeutils import current_od_time
 from odinfoweb.forms import LoginForm
 
 from odinfo.domain.models import Base
+from odinfo.domain.refdata import TEMPLE_BONUS_PER_PERC, MAX_TEMPLE_BONUS
 from odinfoweb.user import load_user_by_id, load_user_by_name
 
 from odinfo.config import (OP_CENTER_URL, WEB_PORT, NW_PERIODS, NW_DEFAULT_PERIOD,
@@ -355,6 +356,8 @@ def military(versus_op: int = 0):
                            top_op=facade().top_op(dom_list),
                            versus_op=versus_op,
                            dp_bonus_percent=round(defense_bonus * 100, 1),
+                           temple_bonus_per_perc=TEMPLE_BONUS_PER_PERC,
+                           max_temple_bonus_percent=round(MAX_TEMPLE_BONUS * 100),
                            current_day=facade().my_dominion().current_day)
 
 

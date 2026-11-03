@@ -27,6 +27,7 @@
   "daily_land_bonus": 20,
   "conquest_land_factor": 2,
   "land_arrival_ticks": 12,
+  "return_ticks": 12,
   "masonry_multiplier": 2.6,
 
   "gt_defense_factor": 1.6,

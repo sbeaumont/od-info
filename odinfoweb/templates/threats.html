@@ -72,7 +72,7 @@
             </tr>
         </thead>
         {% for row in rows %}
-        <tr data-realm="{{ row.realm }}" {% if row.ops_age is none or row.ops_age > 12 %}class="old-ops"{% endif %}>
+        <tr data-realm="{{ row.realm }}" {% if row.ops_age is none or row.ops_age > 12 or row.sent_after_bs %}class="old-ops"{% endif %}>
             <td><a href="{{ url_for('dominfo', domcode=row.code) }}">{{ row.name }}</a></td>
             <td>{{ row.realm }}</td>
             <td>{{ row.race }}</td>

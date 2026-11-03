@@ -102,10 +102,12 @@ class ODInfoFacade(object):
     def update_town_crier(self):
         """Add the new Town Crier events from the OpenDominion API."""
         self._update_service.update_town_crier()
+        self.clear_cache()
 
     def reload_town_crier(self):
         """Replace all Town Crier events with every page scraped from OpenDominion."""
         self._update_service.reload_town_crier()
+        self.clear_cache()
 
     def update_realmies(self):
         """Update ops for all dominions in the player's realm."""

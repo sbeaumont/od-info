@@ -239,6 +239,7 @@ def overview():
         facade().update_all()
         facade().update_realmies()
         facade().update_realms()
+        facade().update_town_crier()
     if request.method == 'POST':
         for k, v in request.form.items():
             if k.startswith('role.'):

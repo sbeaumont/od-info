@@ -1,7 +1,8 @@
 import unittest
+from datetime import timedelta
 
 from odinfo.calculators.threats import Strike, Trigger
-from odinfo.domain.models import BarracksSpy, Dominion, DominionHistory
+from odinfo.domain.models import BarracksSpy, Dominion, DominionHistory, TownCrier
 from odinfo.exceptions import ODInfoException
 from odinfo.timeutils import current_od_time
 from odinfoweb.viewmodels.threats import ThreatCellVM, ThreatRowVM, build_threats_vm, name_list, threat_cell
@@ -71,6 +72,23 @@ class ArmyOutTest(unittest.TestCase):
 
         self.assertIn('army out, back at +6', row.cells[5].tooltip)
         self.assertNotIn('army out', row.cells[6].tooltip)
+        self.assertIn('±15%', row.cells[0].tooltip)
+
+
+class SentAfterBarracksSpyTest(unittest.TestCase):
+    def test_a_hit_after_the_last_bs_dims_the_row_and_asks_for_a_bs(self):
+        session = create_db_session()
+        defender = make_dominion(session, 1, realm=1, land=1000, miners=5000)
+        attacker = make_dominion(session, 2, realm=2, land=1000, warriors=2000, miners=2000)
+        session.flush()
+        hit = TownCrier(origin=2, target=3, event_type='invasion', amount=10,
+                        timestamp=current_od_time() - timedelta(hours=2))
+
+        row = build_threats_vm([defender, attacker], [hit], 1, 75, 250, 2, None)[0]
+
+        self.assertTrue(row.sent_after_bs)
+        self.assertIn('sent 2h ago, after the last BS: take a BS', row.cells[9].tooltip)
+        self.assertNotIn('take a BS', row.cells[10].tooltip)
 
 
 class ThreatRowOrderTest(unittest.TestCase):

@@ -12,9 +12,9 @@ odinfo/calculators/threats.py 559d0e178bb865b2
 odinfo/domain/domainhelper.py dd57594f9fd010fb
 odinfo/domain/military.py 499bfc3253cf83a6
 odinfo/domain/models.py 825d7554fdb2d6d2
-odinfoweb/templates/threats.html 36c1076ee64ef492
+odinfoweb/templates/threats.html e95548eaca1f75e8
 odinfoweb/viewmodels/about.py 67f17eee1f9e51ea
-odinfoweb/viewmodels/threats.py 0e09b68e0eabbf3f
+odinfoweb/viewmodels/threats.py 5e27aad174e6e250
 -#}
 
 {% block content %}
@@ -148,6 +148,14 @@ odinfoweb/viewmodels/threats.py 0e09b68e0eabbf3f
     on an attack or still in training do not count until they arrive. So a strong attacker with
     its army out can show a large negative number. The tooltip then says "army out", with the
     tick at which the last returning units arrive.
+  </p>
+  <p>
+    The army out comes from the returning units of the last BS. When the Town Crier shows a hit
+    or bounce by the attacker after its last BS, the tab does not know which units went out. The
+    row is dim, and the tooltip asks you to take a BS. The tooltip also shows how exact the
+    numbers are: "locked" for exact numbers, or the fuzz that is left, for example "±8%".
+  </p>
+  <p>
     The rows go from most urgent to least urgent: red first,
     then orange, then yellow, and the earliest tick first. A row with ops older than
     {{ vm.horizon }} hours is dim.

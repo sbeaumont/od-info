@@ -26,11 +26,11 @@ class DominionTest(unittest.TestCase):
 
     def test_military_keeps_cs_that_newer_bs_allows(self):
         dom = self._older_cs_newer_bs(cs_clerics=437, bs_home_clerics=514)
-        self.assertEqual(437, dom.military['unit3'])
+        self.assertEqual(437, dom.military.amount(3))
 
     def test_military_takes_bs_worst_case_when_cs_is_ruled_out(self):
         dom = self._older_cs_newer_bs(cs_clerics=300, bs_home_clerics=514)
-        self.assertAlmostEqual(514 / BARRACKS_SPY_FUZZ, dom.military['unit3'])
+        self.assertAlmostEqual(514 / BARRACKS_SPY_FUZZ, dom.military.amount(3))
 
 
 if __name__ == '__main__':

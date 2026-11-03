@@ -6,6 +6,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from odinfo.domain.domainhelper import Buildings, Land, Technology, Magic
+from odinfo.domain.military import Military
 from odinfo.timeutils import hours_since, current_od_time, ticks_between, ticks_since
 from odinfo.domain.refdata import Race, BARRACKS_SPY_FUZZ
 
@@ -69,46 +70,8 @@ class Dominion(Base):
         return self.last_cs.wpa if self.last_cs else 0.0
 
     @property
-    def military_from_cs(self) -> bool:
-        """Whether the military starts from the last CS."""
-        cs_age = hours_since(self.last_cs.timestamp)
-        bs_age = hours_since(self.last_barracks.timestamp)
-        return (cs_age < 1) or (cs_age <= bs_age)
-
-    @property
-    def military_has_bs_worst_case(self) -> bool:
-        """Whether a unit count in the military is the BS worst case."""
-        if not self.last_barracks:
-            return False
-        if not self.last_cs:
-            return True
-        if self.military_from_cs:
-            return False
-        cs_military = self.last_cs.military
-        return not all(self.last_barracks.allows_amount(i, cs_military[f'unit{i}']) for i in range(1, 5))
-
-    @property
-    def military(self) -> dict | None:
-        result = None
-        if self.last_cs and self.last_barracks:
-            if self.military_from_cs:
-                result = self.last_cs.military
-                # Add remaining training troops from last BS that hadn't completed by CS time
-                for i in range(1, 5):
-                    result[f'unit{i}'] += self.last_barracks.aged_amount_training_for_unit_at_time(i, self.last_cs.timestamp)
-                result['paid_until'] = self.last_barracks.paid_until
-            else:
-                result = self.last_barracks.military
-                # Keep the exact CS count for each unit that the newer BS does not contradict.
-                cs_military = self.last_cs.military
-                for i in range(1, 5):
-                    if self.last_barracks.allows_amount(i, cs_military[f'unit{i}']):
-                        result[f'unit{i}'] = cs_military[f'unit{i}'] + self.last_barracks.paid_training(i)
-        elif self.last_cs:
-            result = self.last_cs.military
-        elif self.last_barracks:
-            result = self.last_barracks.military
-        return result
+    def military(self) -> Military | None:
+        return Military.of(self)
 
     @property
     def navy(self) -> dict | None:

@@ -14,7 +14,7 @@
         <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
             <span><strong>Send Type:</strong></span>
             <label style="cursor: pointer;">
-                <input type="radio" name="send_type" value="safe" checked> Normal Send
+                <input type="radio" name="send_type" value="normal" checked> Normal Send
             </label>
             <label style="cursor: pointer;">
                 <input type="radio" name="send_type" value="54"> 5/4 Send
@@ -94,9 +94,9 @@
             <td>{{ dom.land }}</td>
             <td>{{ dom.hittable_75_percent }}</td>
             <!-- Dynamic Send columns -->
-            <td class="send-col send-op" data-safe="{{ dom.safe_op }}" data-54="{{ dom.five_over_four_op }}">{{ dom.safe_op }}</td>
-            <td class="send-col send-tmps" data-safe="{{ dom.safe_op_with_temples }}" data-54="{{ dom.five_four_op_with_temples }}">{{ dom.safe_op_with_temples }}</td>
-            <td class="send-col send-dp" data-safe="{{ dom.safe_dp }}" data-54="{{ dom.five_over_four_dp }}">{{ dom.safe_dp }}</td>
+            <td class="send-col send-op" data-normal="{{ dom.normal_op }}" data-54="{{ dom.five_over_four_op }}">{{ dom.normal_op }}</td>
+            <td class="send-col send-tmps" data-normal="{{ dom.normal_op_with_temples }}" data-54="{{ dom.five_four_op_with_temples }}">{{ dom.normal_op_with_temples }}</td>
+            <td class="send-col send-dp" data-normal="{{ dom.normal_dp }}" data-54="{{ dom.five_over_four_dp }}">{{ dom.normal_dp }}</td>
             <!-- Always visible -->
             <td>{{ dom.temples_percent }}%</td>
             <td>{{ dom.paid_until }}</td>

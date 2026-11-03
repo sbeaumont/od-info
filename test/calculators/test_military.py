@@ -39,11 +39,6 @@ class MilitaryCalculatorTestCase(unittest.TestCase):
         self.assertEqual(116, mc.paid_dp)
         self.assertEqual((107, 89), mc.five_over_four)
 
-    def test_arrived_training_leaves_out_units_arrived_by_from_tick(self):
-        mc = MilitaryCalculator(self.dom)
-        self.assertEqual({'unit3': 199}, mc.arrived_training_units(self.dom.last_barracks, 10))
-        self.assertEqual({'unit3': 99}, mc.arrived_training_units(self.dom.last_barracks, 10, from_tick=5))
-
     def test_current_strength_starts_from_a_newer_cs(self):
         bs = self.dom.last_barracks
         self.dom.last_cs.timestamp = bs.timestamp + timedelta(hours=9)
@@ -54,34 +49,6 @@ class MilitaryCalculatorTestCase(unittest.TestCase):
 
         self.assertEqual(mc.paid_dp, current_dp)
         self.assertEqual('locked', confidence)
-
-    def test_cs_in_the_same_tick_narrows_the_returning_units(self):
-        bs = self.dom.last_barracks
-        bs.home_unit4 = 331
-        bs.returning = {'unit4': {'4': 4665}}
-        self.dom.last_cs.military_unit4 = 5483
-        mc = MilitaryCalculator(self.dom)
-
-        home, returning, from_tick = mc.starting_point([bs])
-
-        self.assertEqual(0, from_tick)
-        self.assertAlmostEqual(331 * 0.85, home['unit4'][0])
-        self.assertAlmostEqual(331 / 0.85, home['unit4'][1])
-        self.assertAlmostEqual(5483 - 331 / 0.85, returning['unit4'][0])
-        self.assertAlmostEqual(5483 - 331 * 0.85, returning['unit4'][1])
-
-    def test_newer_cs_holds_the_units_still_away(self):
-        bs = self.dom.last_barracks
-        bs.returning = {'unit4': {'12': 50}}
-        self.dom.last_cs.timestamp = bs.timestamp + timedelta(hours=9)
-        self.dom.last_cs.military_unit4 = 60
-        mc = MilitaryCalculator(self.dom)
-
-        home, returning, from_tick = mc.starting_point([bs])
-        arrived = mc.arrived_returning_units([bs], 12, from_tick, returning)
-
-        self.assertEqual(9, from_tick)
-        self.assertAlmostEqual(60, sum(home['unit4'][:2]) / 2 + sum(arrived['unit4'][:2]) / 2)
 
     # def test_five_over_four_liz(self):
     #     bs = self.dom.last_barracks

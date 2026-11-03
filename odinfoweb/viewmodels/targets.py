@@ -84,7 +84,7 @@ def build_targets_vm(dominions: list[Dominion], attacker_land: int, attacker_tem
         last_hit = hit[0] if hit else None
         cs = dom.last_cs
         mc = MilitaryCalculator(dom)
-        has_ops = mc.army is not None
+        has_ops = mc.military is not None
         result.append(TargetRowVM(
             code=dom.code,
             name=dom.name,

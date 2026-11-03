@@ -35,9 +35,9 @@ class MilitaryRowVM:
     paid_op: int
     raw_dp: int
     paid_dp: int
-    safe_op: int
-    safe_dp: int
-    safe_op_with_temples: int
+    normal_op: int
+    normal_dp: int
+    normal_op_with_temples: int
     networth: int
     has_incomplete_intel: bool
     has_bs_worst_case: bool

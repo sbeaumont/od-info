@@ -11,12 +11,13 @@ Design principles:
 """
 
 import logging
-from datetime import timedelta
 
 from odinfo.calculators.military import MilitaryCalculator, RatioCalculator
-from odinfo.domain.models import Dominion, BarracksSpy
+from odinfo.domain.military import barracks_spies_in_tick
+from odinfo.domain.models import Dominion
+from odinfo.domain.refdata import BUILD_TICKS
 from odinfo.repositories.game import GameRepository
-from odinfo.timeutils import hours_since, ticks_since, truncate_to_tick
+from odinfo.timeutils import hours_since
 from odinfoweb.viewmodels.military import MilitaryRowVM, RealmieRowVM
 
 logger = logging.getLogger('od-info.military_service')
@@ -63,7 +64,7 @@ class MilitaryService:
             key=lambda d: d.dom.current_networth,
             reverse=True
         )
-        mc_list = [d for d in mil_calcs if d.army]
+        mc_list = [d for d in mil_calcs if d.military]
         result_list = []
 
         for mc in mc_list:
@@ -95,18 +96,18 @@ class MilitaryService:
                 boats_prt=boat_stuff[1],
                 boats_sendable=boat_stuff[2],
                 boats_capacity=boat_stuff[3],
-                paid_until=mc.army.get('paid_until', '?'),
+                paid_until='?' if mc.military.paid_until is None else mc.military.paid_until,
                 draftees=mc.draftees,
                 raw_op=mc.raw_op,
                 paid_op=paid_op,
                 raw_dp=mc.raw_dp,
                 paid_dp=paid_dp,
-                safe_op=mc.safe_op if versus_op == 0 else mc.safe_op_versus(versus_op)[0],
-                safe_dp=mc.safe_dp if versus_op == 0 else mc.safe_op_versus(versus_op)[1],
-                safe_op_with_temples=mc.safe_op_with_temples(versus_op, defense_bonus),
+                normal_op=mc.normal_op if versus_op == 0 else mc.safe_op_versus(versus_op)[0],
+                normal_dp=mc.normal_dp if versus_op == 0 else mc.safe_op_versus(versus_op)[1],
+                normal_op_with_temples=mc.normal_op_with_temples(versus_op, defense_bonus),
                 networth=mc.dom.current_networth,
                 has_incomplete_intel=mc.has_incomplete_intel(),
-                has_bs_worst_case=mc.dom.military_has_bs_worst_case,
+                has_bs_worst_case=mc.military.has_bs_worst_case,
                 current_op=current_op,
                 current_dp=current_dp,
                 confidence=confidence,
@@ -133,28 +134,11 @@ class MilitaryService:
             Tuple of (current_op, current_dp, confidence_string).
             Returns (None, None, None) if fewer than 2 BS observations available.
         """
-        last_bs = dom.last_barracks
-        if not last_bs:
+        if not dom.last_barracks:
             return None, None, None
 
-        bs_list = self.get_barracks_spies_in_tick(dom, last_bs.timestamp)
-
-        mc = MilitaryCalculator(dom)
-        ticks_since_bs = ticks_since(last_bs.timestamp)
-
-        refined_home, returning, from_tick = mc.starting_point(bs_list)
-        if not refined_home:
-            return None, None, None
-
-        arrived_returning = mc.arrived_returning_units(bs_list, ticks_since_bs, from_tick, returning)
-        arrived_training = mc.arrived_training_units(last_bs, ticks_since_bs, from_tick)
-
-        current_op = mc.current_op(refined_home, arrived_returning, arrived_training)
-        current_dp = mc.current_dp(refined_home, arrived_returning, arrived_training)
-
-        confidence = self._calculate_confidence(refined_home, arrived_returning)
-
-        return current_op, current_dp, confidence
+        mc = MilitaryCalculator(dom, tick=0)
+        return mc.current_op(), mc.current_dp(), mc.military.confidence
 
     def refine_paid_strength(self, dom: Dominion) -> tuple[int | None, int | None, str | None]:
         """Calculate refined OP/DP at the paid_until tick.
@@ -171,33 +155,11 @@ class MilitaryService:
             Returns (None, None, None) if fewer than 2 BS observations available.
         """
         last_bs = dom.last_barracks
-        if not last_bs:
+        if not last_bs or len(barracks_spies_in_tick(dom, last_bs.timestamp)) < 2:
             return None, None, None
 
-        bs_list = self.get_barracks_spies_in_tick(dom, last_bs.timestamp)
-        if len(bs_list) < 2:
-            return None, None, None
-
-        mc = MilitaryCalculator(dom)
-        ticks_since_bs = ticks_since(last_bs.timestamp)
-
-        refined_home, returning, from_tick = mc.starting_point(bs_list)
-        if not refined_home:
-            return None, None, None
-
-        # Calculate at the paid_until tick (when all training completes)
-        paid_until = last_bs.paid_until
-        total_elapsed = ticks_since_bs + paid_until
-
-        arrived_returning = mc.arrived_returning_units(bs_list, total_elapsed, from_tick, returning)
-        arrived_training = mc.arrived_training_units(last_bs, total_elapsed, from_tick)
-
-        paid_op = mc.current_op(refined_home, arrived_returning, arrived_training)
-        paid_dp = mc.current_dp(refined_home, arrived_returning, arrived_training)
-
-        confidence = self._calculate_confidence(refined_home, arrived_returning)
-
-        return paid_op, paid_dp, confidence
+        mc = MilitaryCalculator(dom, tick=last_bs.paid_until)
+        return mc.current_op(), mc.current_dp(), mc.military.confidence
 
     def strength_forecast(self, dom: Dominion) -> list[tuple[int, int, int]]:
         """Project OP and DP for the next 12 ticks.
@@ -208,50 +170,14 @@ class MilitaryService:
         Returns:
             List of (tick, op, dp) tuples for ticks 0-12 from now.
         """
-        last_bs = dom.last_barracks
-        if not last_bs:
-            return []
-
-        bs_list = self.get_barracks_spies_in_tick(dom, last_bs.timestamp)
-
-        mc = MilitaryCalculator(dom)
-        ticks_since_bs = ticks_since(last_bs.timestamp)
-
-        refined_home, returning, from_tick = mc.starting_point(bs_list)
-        if not refined_home:
+        if not dom.last_barracks:
             return []
 
         forecast = []
-        for future_tick in range(13):
-            total_elapsed = ticks_since_bs + future_tick
-
-            arrived_returning = mc.arrived_returning_units(bs_list, total_elapsed, from_tick, returning)
-            arrived_training = mc.arrived_training_units(last_bs, total_elapsed, from_tick)
-
-            op = mc.current_op(refined_home, arrived_returning, arrived_training)
-            dp = mc.current_dp(refined_home, arrived_returning, arrived_training)
-
-            forecast.append((future_tick, op, dp))
-
+        for future_tick in range(BUILD_TICKS + 1):
+            mc = MilitaryCalculator(dom, tick=future_tick)
+            forecast.append((future_tick, mc.current_op(), mc.current_dp()))
         return forecast
-
-    def _calculate_confidence(self, refined_home: dict, arrived_returning: dict) -> str:
-        """Calculate confidence string from refined estimates.
-
-        Returns the max error percentage across all refined values.
-        """
-        max_error = 0.0
-
-        for key, (lower, upper, error_pct) in refined_home.items():
-            max_error = max(max_error, error_pct)
-
-        for key, (lower, upper, error_pct) in arrived_returning.items():
-            max_error = max(max_error, error_pct)
-
-        if max_error < 1:
-            return "locked"
-        else:
-            return f"±{round(max_error)}%"
 
     def top_op(self, mil_calc_result: list[MilitaryRowVM]) -> MilitaryRowVM | None:
         """
@@ -311,21 +237,3 @@ class MilitaryService:
             result_list.append(row)
 
         return sorted(result_list, key=lambda x: x.land, reverse=True)
-
-    def get_barracks_spies_in_tick(self, dom: Dominion, tick_time) -> list[BarracksSpy]:
-        """Get all BarracksSpy records for a dominion within a specific tick.
-
-        Args:
-            dom: Dominion to query.
-            tick_time: Any timestamp within the desired tick.
-
-        Returns:
-            List of BarracksSpy records with timestamps in the same tick (hour).
-        """
-        tick_start = truncate_to_tick(tick_time)
-        tick_end = tick_start + timedelta(hours=1)
-
-        return [
-            bs for bs in dom.barracks_spy
-            if tick_start <= bs.timestamp < tick_end
-        ]

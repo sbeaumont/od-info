@@ -1,23 +1,23 @@
 import time
 import logging
-from math import trunc, inf
+from math import trunc
 
 from odinfo.domain.models import Dominion
 from odinfo.domain.refdata import Race
 from odinfo.domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, TEMPLE_BONUS_PER_PERC, Unit, Spells, MAX_TEMPLE_BONUS
 from odinfo.domain.refdata import MAX_GUARD_TOWER_BONUS, MAX_GRYPHON_NEST_BONUS
-from odinfo.domain.refdata import NETWORTH_VALUES, ARES_BONUS, BARRACKS_SPY_FUZZ
+from odinfo.domain.refdata import NETWORTH_VALUES, ARES_BONUS
 from odinfo.domain.refdata import UNITS_PER_BOAT, BOATS_PER_DOCK, BOATS_PER_DOCK_PER_DAY
-from odinfo.timeutils import ticks_between
 
 logger = logging.getLogger('od-info.military')
 
 
 class MilitaryCalculator(object):
-    def __init__(self, dom: Dominion):
+    def __init__(self, dom: Dominion, tick: int | None = None):
+        """A calculator on the paid military of a dominion, or on its military home at a tick from now."""
         self.dom = dom
         self.race = Race(dom, dom.race)
-        self.army = dom.military
+        self.military = dom.military if tick is None else dom.military.at(tick)
         self.navy = dom.navy
         self.spells = None
         self._five_four_op = None
@@ -32,8 +32,8 @@ class MilitaryCalculator(object):
         return self.race.unit(unit_nr)
 
     def amount(self, unit_nr: int) -> int:
-        if self.army:
-            return trunc(self.army[f'unit{unit_nr}'])
+        if self.military:
+            return trunc(self.military.amount(unit_nr))
         else:
             return 0
 
@@ -164,9 +164,9 @@ class MilitaryCalculator(object):
         """The effective OP that a defender has to compare their DP with to see if they're safe."""
         return self.op_with_temples(self.five_over_four[0], defense_bonus)
 
-    def safe_op_with_temples(self, versus_op: int, defense_bonus: float) -> float:
+    def normal_op_with_temples(self, versus_op: int, defense_bonus: float) -> float:
         """The effective OP that a defender has to compare their DP with to see if they're safe."""
-        op = self.safe_op if versus_op == 0 else self.safe_op_versus(versus_op)[0]
+        op = self.normal_op if versus_op == 0 else self.safe_op_versus(versus_op)[0]
         return self.op_with_temples(op, defense_bonus)
 
     @property
@@ -291,7 +291,7 @@ class MilitaryCalculator(object):
         land_networth = NETWORTH_VALUES['land'] + NETWORTH_VALUES['buildings']
         readings = self.land_and_networth_readings()
         _, land_now, networth_now = max(readings)
-        earlier = [r for r in readings if self.army and r[0] <= self.army['timestamp']]
+        earlier = [r for r in readings if self.military and r[0] <= self.military.timestamp]
         if earlier:
             _, land_then, networth_then = max(earlier)
             growth = (networth_now - networth_then) - land_networth * (land_now - land_then)
@@ -301,301 +301,55 @@ class MilitaryCalculator(object):
             raw_dp = (networth_now - land_networth * land_now) * self.best_dp_per_networth
         return round(raw_dp * (1 + self.defense_bonus))
 
-    @staticmethod
-    def refine_unit_estimate(observations: list[int]) -> tuple[float, float, float]:
-        """Combine multiple BS observations to get tighter bounds on true value.
-
-        The game shows a value somewhere in [true * fuzz, true / fuzz], so every observation
-        puts the true value in [observed * fuzz, observed / fuzz]. The highest observation
-        raises the floor and the lowest one lowers the ceiling, which is what makes several
-        observations of the same tick worth more than one.
-
-        Args:
-            observations: List of observed values for a single unit type.
-
-        Returns:
-            Tuple of (lower_bound, upper_bound, error_pct).
-            error_pct is the percentage error (half the range as % of midpoint).
-        """
-        if not observations:
-            return 0, 0, 0
-
-        lower_bound = max(observations) * BARRACKS_SPY_FUZZ
-        upper_bound = min(observations) / BARRACKS_SPY_FUZZ
-
-        # An observation of zero units means zero units, there is nothing to be wrong about.
-        midpoint = (lower_bound + upper_bound) / 2
-        error_pct = (upper_bound - lower_bound) / midpoint * 100 / 2 if midpoint else 0
-
-        return lower_bound, upper_bound, max(0, error_pct)
-
-    def refined_home_units(self, barracks_spies: list) -> dict:
-        """Get refined home unit estimates from multiple BS observations.
-
-        Args:
-            barracks_spies: List of BarracksSpy objects from the same tick.
-
-        Returns:
-            Dict with keys 'draftees', 'unit1'-'unit4', each containing
-            (lower, upper, error_pct) tuple.
-        """
-        if not barracks_spies:
-            return {}
-
-        result = {}
-
-        # Gather observations for each unit type
-        draftee_obs = [bs.draftees for bs in barracks_spies]
-        result['draftees'] = self.refine_unit_estimate(draftee_obs)
-
-        for i in range(1, 5):
-            unit_obs = [getattr(bs, f'home_unit{i}') for bs in barracks_spies]
-            result[f'unit{i}'] = self.refine_unit_estimate(unit_obs)
-
-        return result
-
-    def clear_sight_units(self, barracks_spies: list, clear_sight, from_tick: int) -> tuple[dict, dict]:
-        """Home units at the time of a CS, and the BS returning units still away then.
-
-        Args:
-            barracks_spies: List of BarracksSpy objects from the same tick.
-            clear_sight: A CS taken in or after the tick of the BS.
-            from_tick: Ticks between the BS and the CS.
-
-        Returns:
-            Tuple of (home, returning). Home is in the shape of refined_home_units(),
-            returning is (lower, upper, error_pct) of each unit still away at the CS.
-        """
-        def bounds(lower, upper):
-            midpoint = (lower + upper) / 2
-            return lower, upper, (upper - lower) / midpoint * 100 / 2 if midpoint else 0
-
-        military = clear_sight.military
-        bs_home = self.refined_home_units(barracks_spies) if from_tick == 0 else {}
-        remaining = self.arrived_returning_units(barracks_spies, inf, from_tick)
-
-        home = {'draftees': (military['draftees'], military['draftees'], 0)}
-        returning = {}
-        for i in range(1, 5):
-            key = f'unit{i}'
-            total = military[key]
-            returning_lower, returning_upper, _ = remaining.get(key, (0, 0, 0))
-            lower, upper = total - returning_upper, total - returning_lower
-            bs_lower, bs_upper, _ = bs_home.get(key, (0, inf, 0))
-            # The CS is newer, so its range stands alone when it falls outside the BS home range.
-            if bs_lower <= upper and lower <= bs_upper:
-                lower, upper = max(lower, bs_lower), min(upper, bs_upper)
-            home[key] = bounds(lower, upper)
-            if key in remaining:
-                returning[key] = bounds(total - upper, total - lower)
-        return home, returning
-
-    def starting_point(self, barracks_spies: list) -> tuple[dict, dict, int]:
-        """Home units, the returning units still away, and the tick after the BS they hold at."""
-        last_bs, last_cs = self.dom.last_barracks, self.dom.last_cs
-        if last_cs and last_cs.timestamp >= last_bs.timestamp:
-            from_tick = ticks_between(last_bs.timestamp, last_cs.timestamp)
-            home, returning = self.clear_sight_units(barracks_spies, last_cs, from_tick)
-            return home, returning, from_tick
-        return self.refined_home_units(barracks_spies), {}, 0
-
-    def arrived_returning_units(self, barracks_spies: list, ticks_since_bs: int, from_tick: int = 0,
-                                totals: dict = None) -> dict:
-        """Get refined returning units that have arrived home since BS was taken.
-
-        Args:
-            barracks_spies: List of BarracksSpy objects from the same tick.
-            ticks_since_bs: Hours elapsed since the BS was taken.
-            from_tick: Units arrived by this tick are left out.
-            totals: Returning units after from_tick from clear_sight_units(), to share out.
-
-        Returns:
-            Dict with keys 'unit1'-'unit4', each containing
-            (lower, upper, error_pct) tuple for total arrived units.
-        """
-        if not barracks_spies:
-            return {}
-
-        result = {}
-
-        for i in range(1, 5):
-            unit_key = f'unit{i}'
-
-            # Collect all ticks that have arrived (tick <= age)
-            arrived_ticks = set()
-            for bs in barracks_spies:
-                if bs.returning and unit_key in bs.returning:
-                    for tick in bs.returning[unit_key].keys():
-                        if from_tick < int(tick) <= ticks_since_bs:
-                            arrived_ticks.add(tick)
-
-            # Sum up refined values for all arrived ticks
-            total_lower = 0
-            total_upper = 0
-            max_error = 0
-
-            for tick in arrived_ticks:
-                observations = []
-                for bs in barracks_spies:
-                    if bs.returning and unit_key in bs.returning:
-                        val = bs.returning[unit_key].get(tick, 0)
-                        if val > 0:
-                            observations.append(val)
-                if observations:
-                    lower, upper, error = self.refine_unit_estimate(observations)
-                    total_lower += lower
-                    total_upper += upper
-                    max_error = max(max_error, error)
-
-            if total_lower > 0 or total_upper > 0:
-                result[unit_key] = (total_lower, total_upper, max_error)
-
-        if totals:
-            remaining = self.arrived_returning_units(barracks_spies, inf, from_tick)
-            for key, (lower, upper, _) in result.items():
-                share = (lower + upper) / (remaining[key][0] + remaining[key][1])
-                total_lower, total_upper, error = totals[key]
-                result[key] = (total_lower * share, total_upper * share, error)
-
-        return result
-
-    def arrived_training_units(self, latest_bs, ticks_since_bs: int, from_tick: int = 0) -> dict:
-        """Get training units that have arrived home since BS was taken.
-
-        Args:
-            latest_bs: BarracksSpy object.
-            ticks_since_bs: Hours elapsed since the BS was taken.
-            from_tick: Units arrived by this tick are left out.
-
-        Returns:
-            Dict with keys 'unit1'-'unit4' containing exact arrived amounts.
-        """
-        if not latest_bs:
-            return {}
-
-        result = {}
-        for i in range(1, 5):
-            unit_key = f'unit{i}'
-            key = f'unit{i}'
-            if latest_bs.training and key in latest_bs.training:
-                arrived = sum(
-                    amount for tick, amount in latest_bs.training[key].items()
-                    if from_tick < int(tick) <= ticks_since_bs
-                )
-                if arrived > 0:
-                    result[unit_key] = arrived
-        return result
-
-    def _refined_amounts(self, refined_home: dict, arrived_returning: dict, arrived_training: dict) -> dict:
-        """Compute effective unit amounts from refined BS data.
-
-        Returns:
-            Dict mapping 'unit1'-'unit4' to effective amounts (float).
-        """
-        amounts = {}
-        for i in range(1, 5):
-            key = f'unit{i}'
-            amount = 0
-
-            # Refined home (midpoint)
-            if key in refined_home:
-                lower, upper, _ = refined_home[key]
-                amount = (lower + upper) / 2
-
-            # Arrived training (exact)
-            if key in arrived_training:
-                amount += arrived_training[key]
-
-            # Arrived returning (refined midpoint)
-            if key in arrived_returning:
-                lower, upper, _ = arrived_returning[key]
-                amount += (lower + upper) / 2
-
-            amounts[key] = amount
-        return amounts
-
-    def current_raw_op(self, refined_home: dict, arrived_returning: dict, arrived_training: dict) -> int:
-        """Calculate raw OP from refined home + arrived training + arrived returning.
-
-        Args:
-            refined_home: Dict from refined_home_units().
-            arrived_returning: Dict from arrived_returning_units().
-            arrived_training: Dict from arrived_training_units().
-
-        Returns:
-            Raw OP using midpoint of refined estimates plus arrivals.
-        """
-        if not refined_home:
-            return self.raw_op
-
-        amounts = self._refined_amounts(refined_home, arrived_returning, arrived_training)
-
+    def current_raw_op(self) -> int:
+        """Raw OP from the refined unit amounts of the military."""
         op = 0
         for i in range(1, 5):
             unit = self.unit_type(i)
-            amount = amounts[f'unit{i}']
+            amount = self.military.amount(i)
             op += amount * unit.offense
 
             # Pairing perk (e.g. kobold Overlord)
             if unit.has_perk('offense_from_pairing'):
                 slot, num_required, op_buff = unit.get_perk('offense_from_pairing')
-                paired_amount = amounts.get(f'unit{int(slot)}', 0)
+                paired_amount = self.military.amount(int(slot))
                 pairable = min(paired_amount // int(num_required), amount)
                 op += pairable * int(op_buff)
 
         return round(op)
 
-    def current_raw_dp(self, refined_home: dict, arrived_returning: dict, arrived_training: dict) -> int:
-        """Calculate raw DP from refined home + arrived training + arrived returning.
-
-        Args:
-            refined_home: Dict from refined_home_units().
-            arrived_returning: Dict from arrived_returning_units().
-            arrived_training: Dict from arrived_training_units().
-
-        Returns:
-            Raw DP using midpoint of refined estimates plus arrivals.
-        """
-        if not refined_home:
-            return self.raw_dp
-
-        amounts = self._refined_amounts(refined_home, arrived_returning, arrived_training)
-
-        dp = 0
-
-        # Draftees (no training/returning for draftees)
-        if 'draftees' in refined_home:
-            lower, upper, _ = refined_home['draftees']
-            dp += (lower + upper) / 2
+    def current_raw_dp(self) -> int:
+        """Raw DP from the refined unit amounts and draftees of the military."""
+        dp = self.military.draftees
 
         for i in range(1, 5):
             unit = self.unit_type(i)
-            amount = amounts[f'unit{i}']
+            amount = self.military.amount(i)
             dp += amount * unit.defense
 
             # Pairing perk (e.g. kobold Taskmaster)
             if unit.has_perk('defense_from_pairing'):
                 slot, num_required, dp_buff = unit.get_perk('defense_from_pairing')
-                paired_amount = amounts.get(f'unit{int(slot)}', 0)
+                paired_amount = self.military.amount(int(slot))
                 pairable = min(paired_amount // int(num_required), amount)
                 dp += pairable * int(dp_buff)
 
         return round(dp)
 
-    def current_op(self, refined_home: dict, arrived_returning: dict, arrived_training: dict) -> int:
+    def current_op(self) -> int:
         """Calculate OP with bonuses from current strength."""
-        return round(self.current_raw_op(refined_home, arrived_returning, arrived_training) * (1 + self.offense_bonus))
+        return round(self.current_raw_op() * (1 + self.offense_bonus))
 
-    def current_dp(self, refined_home: dict, arrived_returning: dict, arrived_training: dict) -> int:
+    def current_dp(self) -> int:
         """Calculate DP with bonuses from current strength."""
-        return round(self.current_raw_dp(refined_home, arrived_returning, arrived_training) * (1 + self.defense_bonus))
+        return round(self.current_raw_dp() * (1 + self.defense_bonus))
 
     @property
     def max_sendable_op(self) -> int:
-        return min((self.safe_op, self.five_over_four[0]))
+        return min((self.normal_op, self.five_over_four[0]))
 
     @property
-    def safe_op(self) -> int:
+    def normal_op(self) -> int:
         """Only calc based on attack units (types 1 & 4)"""
         # Correct for weird races like Troll
         if self.race.name in ('Troll', ):
@@ -607,7 +361,7 @@ class MilitaryCalculator(object):
         return round(offense)
 
     @property
-    def safe_dp(self) -> int:
+    def normal_dp(self) -> int:
         """Only calc based on defense units (types 2 & 3)"""
         # Correct for weird races like Troll
         if self.race.name in ('Troll', ):
@@ -622,7 +376,7 @@ class MilitaryCalculator(object):
         start = time.time()
         # First subtract power of all pure DP units
         dp_at_home = sum([self.dp_of(self.race.nr_of_unit(u), with_bonus=True) for u in self.race.pure_defense_units])
-        dp_at_home += self.army['draftees'] * (1 + self.defense_bonus)
+        dp_at_home += self.military.draftees * (1 + self.defense_bonus)
         op_to_defend = int(enemy_op) - dp_at_home
 
         # Pure offense units don't contribute to defense, can always send
@@ -812,7 +566,6 @@ class RatioCalculator(object):
     def __init__(self, dom: Dominion):
         self.dom = dom
         self.race = Race(dom, dom.race)
-        self.army = dom.military
 
     @property
     def can_calculate(self) -> bool:

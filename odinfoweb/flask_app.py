@@ -21,7 +21,7 @@ from odinfo.timeutils import current_od_time
 from odinfoweb.forms import LoginForm
 
 from odinfo.domain.models import Base
-from odinfo.domain.refdata import TEMPLE_BONUS_PER_PERC, MAX_TEMPLE_BONUS
+from odinfo.domain.refdata import TEMPLE_BONUS_PER_PERC, MAX_TEMPLE_BONUS, BUILD_TICKS, DAILY_LAND_BONUS
 from odinfoweb.user import load_user_by_id, load_user_by_name
 
 from odinfo.config import (OP_CENTER_URL, WEB_PORT, NW_PERIODS, NW_DEFAULT_PERIOD,
@@ -37,7 +37,7 @@ from odinfo.services.report_service import format_span
 from odinfoweb.viewmodels.dominfo import build_dominfo_vm
 from odinfoweb.viewmodels.economy import build_economy_vm
 from odinfoweb.viewmodels.opexplained import build_op_explained_vm
-from odinfoweb.viewmodels.about import build_nw_tracker_vm, build_philosophy_vm
+from odinfoweb.viewmodels.about import build_nw_tracker_vm, build_philosophy_vm, build_threats_explained_vm
 from odinfoweb.viewmodels.targets import MIN_RANGE, MAX_RANGE
 
 # ---------------------------------------------------------------------- Flask
@@ -385,6 +385,12 @@ def nw_tracker_explained():
     return render_template('nw-tracker-explained.html', vm=build_nw_tracker_vm())
 
 
+@app.route('/about/threats')
+@login_required
+def threats_explained():
+    return render_template('threats-explained.html', vm=build_threats_explained_vm())
+
+
 @app.route('/realmies', methods=['GET', 'POST'])
 @login_required
 def realmies():
@@ -412,6 +418,25 @@ def targets():
                            max_range=MAX_RANGE,
                            realms=sorted({target.realm for target in target_list}),
                            my_realm=facade().my_dominion().realm)
+
+
+@app.route('/threats')
+@login_required
+def threats():
+    defender_code = request.args.get('defender', type=int, default=facade().my_dominion().code)
+    min_range = request.args.get('min_range', type=float, default=MIN_RANGE)
+    land_bonus_tick = request.args.get('land_bonus_tick', type=int)
+    rows = facade().threats(defender_code, min_range, MAX_RANGE, land_bonus_tick)
+    return render_template('threats.html',
+                           rows=rows,
+                           realmies=[realmie for realmie in facade().realmies() if realmie.military],
+                           defender=facade().dominion(defender_code),
+                           min_range=min_range,
+                           max_range=MAX_RANGE,
+                           land_bonus_tick=land_bonus_tick,
+                           daily_land_bonus=DAILY_LAND_BONUS,
+                           ticks=range(BUILD_TICKS + 1),
+                           realms=sorted({row.realm for row in rows}))
 
 
 @app.route('/stealables')

@@ -238,8 +238,8 @@ def build_dominfo_vm(dom: Dominion,
 
     # Build military info
     # Use refined paid strength when available
-    paid_op = refined_paid_op if refined_paid_op is not None else mc.paid_op
-    paid_dp = refined_paid_dp if refined_paid_dp is not None else mc.paid_dp
+    paid_op = refined_paid_op if refined_paid_op is not None else mc.op
+    paid_dp = refined_paid_dp if refined_paid_dp is not None else mc.dp
 
     five_four = mc.five_over_four
     military = MilitaryInfoVM(

@@ -1,6 +1,7 @@
 import time
 import logging
-from math import trunc
+from functools import cached_property
+from math import trunc, isclose
 
 from odinfo.domain.models import Dominion
 from odinfo.domain.refdata import Race
@@ -26,7 +27,7 @@ class MilitaryCalculator(object):
 
     def __str__(self):
         unit_txt = [f"{self.amount(i)} {self.unit_type(i).name} {self.unit_type(i).offense}/{self.unit_type(i).defense}" for i in range(1, 5)]
-        return f"Military({'|'.join(unit_txt)}, {self.paid_op}OP, {self.paid_dp}DP)"
+        return f"Military({'|'.join(unit_txt)}, {self.op}OP, {self.dp}DP)"
 
     def unit_type(self, unit_nr: int) -> Unit:
         return self.race.unit(unit_nr)
@@ -131,7 +132,7 @@ class MilitaryCalculator(object):
             self.spells = Spells()
         return self.spells.value_for_perk(race, perk_name)
 
-    @property
+    @cached_property
     def temple_bonus(self) -> float:
         if self.dom.buildings:
             return min(MAX_TEMPLE_BONUS, self.dom.buildings.ratio_of('temple') * TEMPLE_BONUS_PER_PERC)
@@ -208,7 +209,7 @@ class MilitaryCalculator(object):
         """Prestige bonus as a decimal"""
         return (self.dom.last_cs.prestige / 10000) if self.dom.last_cs else 0
 
-    @property
+    @cached_property
     def offense_bonus(self) -> float:
         bonus = 0
         bonus += self.racial_offense_bonus
@@ -238,7 +239,7 @@ class MilitaryCalculator(object):
         """Walls bonus as a decimal"""
         return self.dom.last_castle.walls_rating if self.dom.last_castle else 0
 
-    @property
+    @cached_property
     def defense_bonus(self) -> float:
         """Defense bonus as a decimal"""
         bonus = 0
@@ -254,12 +255,12 @@ class MilitaryCalculator(object):
         return sum([self.op_of(i) for i in range(1, 5)])
 
     @property
-    def paid_op(self) -> int:
+    def op(self) -> int:
         return round(self.raw_op * (1 + self.offense_bonus))
 
     @property
     def draftees(self) -> int:
-        return self.dom.last_cs.military_draftees if self.dom.last_cs else 0
+        return trunc(self.military.draftees) if self.military else 0
 
     @property
     def total_units(self) -> int:
@@ -273,7 +274,7 @@ class MilitaryCalculator(object):
         return defense
 
     @property
-    def paid_dp(self) -> int:
+    def dp(self) -> int:
         return round(self.raw_dp * (1 + self.defense_bonus))
 
     @property
@@ -300,49 +301,6 @@ class MilitaryCalculator(object):
         else:
             raw_dp = (networth_now - land_networth * land_now) * self.best_dp_per_networth
         return round(raw_dp * (1 + self.defense_bonus))
-
-    def current_raw_op(self) -> int:
-        """Raw OP from the refined unit amounts of the military."""
-        op = 0
-        for i in range(1, 5):
-            unit = self.unit_type(i)
-            amount = self.military.amount(i)
-            op += amount * unit.offense
-
-            # Pairing perk (e.g. kobold Overlord)
-            if unit.has_perk('offense_from_pairing'):
-                slot, num_required, op_buff = unit.get_perk('offense_from_pairing')
-                paired_amount = self.military.amount(int(slot))
-                pairable = min(paired_amount // int(num_required), amount)
-                op += pairable * int(op_buff)
-
-        return round(op)
-
-    def current_raw_dp(self) -> int:
-        """Raw DP from the refined unit amounts and draftees of the military."""
-        dp = self.military.draftees
-
-        for i in range(1, 5):
-            unit = self.unit_type(i)
-            amount = self.military.amount(i)
-            dp += amount * unit.defense
-
-            # Pairing perk (e.g. kobold Taskmaster)
-            if unit.has_perk('defense_from_pairing'):
-                slot, num_required, dp_buff = unit.get_perk('defense_from_pairing')
-                paired_amount = self.military.amount(int(slot))
-                pairable = min(paired_amount // int(num_required), amount)
-                dp += pairable * int(dp_buff)
-
-        return round(dp)
-
-    def current_op(self) -> int:
-        """Calculate OP with bonuses from current strength."""
-        return round(self.current_raw_op() * (1 + self.offense_bonus))
-
-    def current_dp(self) -> int:
-        """Calculate DP with bonuses from current strength."""
-        return round(self.current_raw_dp() * (1 + self.defense_bonus))
 
     @property
     def max_sendable_op(self) -> int:
@@ -376,7 +334,7 @@ class MilitaryCalculator(object):
         start = time.time()
         # First subtract power of all pure DP units
         dp_at_home = sum([self.dp_of(self.race.nr_of_unit(u), with_bonus=True) for u in self.race.pure_defense_units])
-        dp_at_home += self.military.draftees * (1 + self.defense_bonus)
+        dp_at_home += self.draftees * (1 + self.defense_bonus)
         op_to_defend = int(enemy_op) - dp_at_home
 
         # Pure offense units don't contribute to defense, can always send
@@ -416,7 +374,7 @@ class MilitaryCalculator(object):
             fu = None
             pure_offense = sum([self.op_of(self.race.nr_of_unit(u)) for u in self.race.pure_offense_units])
             sendable_offense = pure_offense
-            home_defense = self.paid_dp
+            home_defense = self.dp
             hybrid_units_sendable = dict()
             for unit_type in self.race.hybrid_units:
                 unit_nr = self.race.nr_of_unit(unit_type)
@@ -444,23 +402,25 @@ class MilitaryCalculator(object):
             self._five_four_breakdown = {'sent': [], 'stayed_home': []}
             
             # Start with all units at home
-            remaining_dp = self.paid_dp
+            remaining_dp = self.dp
             sendable_op = 0
             
-            # First, send all pure offense units (they don't affect DP)
+            # First, send pure offense units (they don't affect DP), up to the 5/4 limit
             for unit_type in self.race.pure_offense_units:
                 unit_nr = self.race.nr_of_unit(unit_type)
                 amount = self.amount(unit_nr)
                 if amount > 0:
-                    op_contribution = self.op_of(unit_nr, with_bonus=True)
+                    op_per_unit = self.op_of(unit_nr, with_bonus=True, partial_amount=1)
+                    to_send = min(amount, max(0, trunc((5/4 * remaining_dp - sendable_op) / op_per_unit)))
+                    op_contribution = self.op_of(unit_nr, with_bonus=True, partial_amount=to_send) if to_send else 0
                     sendable_op += op_contribution
-                    logger.debug(f"Sending all {amount} {unit_type.name} (pure offense)")
-                    
+                    logger.debug(f"Sending {to_send}/{amount} {unit_type.name} (pure offense)")
+
                     self._five_four_breakdown['sent'].append({
                         'unit_name': unit_type.name,
                         'unit_type': f"{unit_type.offense}/{unit_type.defense}",
-                        'amount_sent': amount,
-                        'amount_home': 0,
+                        'amount_sent': to_send,
+                        'amount_home': amount - to_send,
                         'op_contribution': round(op_contribution),
                         'dp_lost': 0
                     })
@@ -531,17 +491,15 @@ class MilitaryCalculator(object):
                     'dp_contribution': round(draftee_dp)
                 })
             
+            if sendable_op > 5/4 * remaining_dp and not isclose(sendable_op, 5/4 * remaining_dp):
+                raise ValueError(f"5/4 send of {self.dom.code} breaks the 5/4 rule: "
+                                 f"OP {sendable_op} > 5/4 x DP {5/4 * remaining_dp}")
+
             self._five_four_op = round(sendable_op)
             self._five_four_dp = round(remaining_dp)
-            
+
             logger.debug(f"Final result: OP={self._five_four_op}, DP={self._five_four_dp}, 5/4*DP={round(self._five_four_dp * 5/4)}")
-            
-            # Verify constraint is satisfied
-            constraint_limit = round(self._five_four_dp * 5/4)
-            if self._five_four_op > constraint_limit:
-                logger.warning(f"Constraint violated: OP {self._five_four_op} > 5/4*DP {constraint_limit}, capping OP")
-                self._five_four_op = constraint_limit
-                
+
         return round(self._five_four_op), round(self._five_four_dp)
 
     def five_over_four_breakdown(self) -> dict:
@@ -553,8 +511,8 @@ class MilitaryCalculator(object):
             'sent': self._five_four_breakdown['sent'],
             'stayed_home': self._five_four_breakdown['stayed_home'],
             'summary': {
-                'total_op': self.paid_op,
-                'total_dp': self.paid_dp,
+                'total_op': self.op,
+                'total_dp': self.dp,
                 'sendable_op': self._five_four_op,
                 'remaining_dp': self._five_four_dp,
                 'constraint_ratio': round(self._five_four_op / (self._five_four_dp * 5/4), 3) if self._five_four_dp > 0 else 0

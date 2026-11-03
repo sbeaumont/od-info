@@ -17,6 +17,9 @@ game_constants = json.load(open(GAME_CONSTANTS_FILE))
 
 NON_HOME_CAPACITY = game_constants['non_home_capacity']
 BUILD_TICKS = game_constants['build_ticks']
+DAILY_LAND_BONUS = game_constants['daily_land_bonus']
+CONQUEST_LAND_FACTOR = game_constants['conquest_land_factor']
+LAND_ARRIVAL_TICKS = game_constants['land_arrival_ticks']
 MASONRY_MULTIPLIER = game_constants['masonry_multiplier']
 # Building bonuses run per percent of land owned and all cap out at 20% owned.
 GT_DEFENSE_FACTOR = game_constants['gt_defense_factor']

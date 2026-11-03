@@ -88,6 +88,8 @@ class Military(object):
                 for i in UNIT_NRS:
                     if bs.allows_amount(i, cs_military[f'unit{i}']):
                         result[f'unit{i}'] = cs_military[f'unit{i}'] + bs.paid_training(i)
+                if bs.allows_draftees(cs_military['draftees']):
+                    result['draftees'] = cs_military['draftees']
         elif cs:
             result = cs.military
         elif bs:
@@ -109,7 +111,7 @@ class Military(object):
 
     @property
     def has_bs_worst_case(self) -> bool:
-        """Whether a unit count in the military is the BS worst case."""
+        """Whether a unit or draftee count in the military is the BS worst case."""
         cs, bs = self.dom.last_cs, self.dom.last_barracks
         if not bs:
             return False
@@ -118,10 +120,25 @@ class Military(object):
         if self.from_cs(cs, bs):
             return False
         cs_military = cs.military
-        return not all(bs.allows_amount(i, cs_military[f'unit{i}']) for i in UNIT_NRS)
+        return not (all(bs.allows_amount(i, cs_military[f'unit{i}']) for i in UNIT_NRS)
+                    and bs.allows_draftees(cs_military['draftees']))
 
     def amount(self, unit_nr: int) -> float:
         return self.units[f'unit{unit_nr}']
+
+    @property
+    def back_at(self) -> int | None:
+        """The tick from now at which the last returning units of the last BS arrive, or None when none are out."""
+        last_bs = self.dom.last_barracks
+        if not last_bs:
+            return None
+        age = ticks_since(last_bs.timestamp)
+        arrivals = [int(tick) - age
+                    for bs in barracks_spies_in_tick(self.dom, last_bs.timestamp) if bs.returning
+                    for returning in bs.returning.values()
+                    for tick, amount in returning.items() if amount > 0]
+        later = [arrival for arrival in arrivals if arrival > 0]
+        return max(later) if later else None
 
     def at(self, tick: int) -> 'Military':
         """The units home at a tick from now, refined from the BS ops of the last BS tick."""

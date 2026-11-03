@@ -1,0 +1,124 @@
+{% extends "odinfo-base.html" %}
+{% block extrascripts %}
+<style>
+  td.threat-cell { text-align: right; white-space: nowrap; }
+  .threat-now { background-color: #c62828; color: white; }
+  .threat-triggered { background-color: #ef6c00; color: white; }
+  .threat-five_four { background-color: #fdd835; color: black; }
+  .threat-out { background-color: #303030; }
+  tr.old-ops td { opacity: 0.5; }
+  .threat-legend { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 10px; font-size: 0.9em; }
+  .threat-legend span.swatch { display: inline-block; padding: 1px 8px; border: 1px solid #555; margin-right: 4px; }
+</style>
+{% endblock %}
+
+{% block content %}
+  <div class="w3-container">
+    <form id="threat-form" method="get" class="w3-panel w3-card-2 w3-dark-grey" style="margin-bottom: 10px; padding: 8px;">
+        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <label><strong>Defender:</strong>
+                <select name="defender" class="submit-on-change" style="padding: 2px 4px;">
+                    {% for realmie in realmies %}
+                    <option value="{{ realmie.code }}" {% if realmie.code == defender.code %}selected{% endif %}>
+                        {{ realmie.name }}{% if realmie.player not in ('', '?') %} - {{ realmie.player }}{% endif %} ({{ realmie.current_land }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Min range
+                <input type="number" name="min_range" class="submit-on-change" value="{{ min_range|int }}" min="0" max="{{ max_range }}" style="width: 60px; padding: 2px 4px;">%
+            </label>
+            <label title="Adds {{ daily_land_bonus }} acres to the defender from the tick you pick.">
+                <input type="checkbox" id="land-bonus" {% if land_bonus_tick is not none %}checked{% endif %}>
+                Daily land bonus at tick
+                <select name="land_bonus_tick" id="land-bonus-tick" class="submit-on-change" style="padding: 2px 4px;"
+                        {% if land_bonus_tick is none %}disabled{% endif %}>
+                    {% for tick in ticks %}
+                    <option value="{{ tick }}" {% if tick == land_bonus_tick %}selected{% endif %}>{{ '+%d' % tick if tick else 'now' }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <a href="{{ url_for('threats_explained') }}" style="font-size: 0.8em; color: #aaa;">how it works</a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 6px;">
+            <span><strong>Realms:</strong></span>
+            {% for realm in realms %}
+            <label style="cursor: pointer;">
+                <input type="checkbox" class="toggle-realm" value="{{ realm }}" checked> {{ realm }}
+            </label>
+            {% endfor %}
+        </div>
+    </form>
+
+    <div class="threat-legend">
+        <span><span class="swatch threat-now">+k</span>breaks now</span>
+        <span><span class="swatch threat-triggered">+k</span>after sends</span>
+        <span><span class="swatch threat-five_four">+k</span>risky 5/4</span>
+        <span><span class="swatch">−k</span>safe</span>
+        <span><span class="swatch threat-out">&nbsp;</span>out of range</span>
+        <span>k = OP at home − your DP</span>    </div>
+
+    <div class="od-table-container">
+        <table id="threatTable" class="w3-table w3-striped-dark w3-bordered w3-border">
+        <thead>
+            <tr class="w3-black">
+                <th>Attacker</th>
+                <th>Realm</th>
+                <th>Race</th>
+                <th>Ops Age</th>
+                {% for tick in ticks %}
+                <th>{{ '+%d' % tick if tick else 'now' }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        {% for row in rows %}
+        <tr data-realm="{{ row.realm }}" {% if row.ops_age is none or row.ops_age > 12 %}class="old-ops"{% endif %}>
+            <td><a href="{{ url_for('dominfo', domcode=row.code) }}">{{ row.name }}</a></td>
+            <td>{{ row.realm }}</td>
+            <td>{{ row.race }}</td>
+            <td>{{ row.ops_age if row.ops_age is not none else '-' }}</td>
+            {% for cell in row.cells %}
+            <td class="threat-cell threat-{{ cell.status }}" title="{{ cell.tooltip }}">
+                {% if cell.margin is not none %}{{ '%+.1fk' % (cell.margin / 1000) }}{% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        </table>
+    </div><br>
+  </div>
+
+<script>
+    const form = document.getElementById('threat-form');
+    document.querySelectorAll('.submit-on-change').forEach(input => {
+        input.addEventListener('change', () => form.submit());
+    });
+    document.getElementById('land-bonus').addEventListener('change', function() {
+        document.getElementById('land-bonus-tick').disabled = !this.checked;
+        form.submit();
+    });
+
+    // Realm filter, kept per browser.
+    const hiddenRealmsKey = 'threats-hidden-realms';
+    const savedHiddenRealms = localStorage.getItem(hiddenRealmsKey);
+    const hiddenRealms = new Set(savedHiddenRealms !== null ? JSON.parse(savedHiddenRealms) : []);
+    function showRealms() {
+        document.querySelectorAll('#threatTable tr[data-realm]').forEach(row => {
+            row.style.display = hiddenRealms.has(row.dataset.realm) ? 'none' : '';
+        });
+    }
+    document.querySelectorAll('.toggle-realm').forEach(box => {
+        box.checked = !hiddenRealms.has(box.value);
+        box.addEventListener('change', function() {
+            if (this.checked) {
+                hiddenRealms.delete(this.value);
+            } else {
+                hiddenRealms.add(this.value);
+            }
+            localStorage.setItem(hiddenRealmsKey, JSON.stringify([...hiddenRealms]));
+            showRealms();
+        });
+    });
+    showRealms();
+</script>
+{% endblock %}

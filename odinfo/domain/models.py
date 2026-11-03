@@ -8,7 +8,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from odinfo.domain.domainhelper import Buildings, Land, Technology, Magic
 from odinfo.domain.military import Military
 from odinfo.timeutils import hours_since, current_od_time, ticks_between, ticks_since
-from odinfo.domain.refdata import Race, BARRACKS_SPY_FUZZ
+from odinfo.domain.refdata import Race, BARRACKS_SPY_FUZZ, CONQUEST_LAND_FACTOR, LAND_ARRIVAL_TICKS
 
 
 class Base(DeclarativeBase):
@@ -60,6 +60,14 @@ class Dominion(Base):
     @property
     def current_land(self) -> int:
         return self.history[0].land
+
+    def land_at(self, tick: int, invasions: list['TownCrier']) -> int:
+        """The land at a tick from now: the Land Spy acres and the land of its later invasions that arrive by then."""
+        since = self.last_land.timestamp if self.last_land else None
+        conquered = sum(CONQUEST_LAND_FACTOR * invasion.amount for invasion in invasions
+                        if (since is None or invasion.timestamp > since)
+                        and 0 < LAND_ARRIVAL_TICKS - ticks_since(invasion.timestamp) <= tick)
+        return self.current_land + (self.land.arriving_by(tick) if self.land else 0) + conquered
 
     @property
     def current_networth(self) -> int:
@@ -218,6 +226,10 @@ class BarracksSpy(TimestampedOpsMixin, Base):
         shown = getattr(self, f'home_unit{unit_type_nr}') + self.amount_returning(unit_type_nr)
         return shown * BARRACKS_SPY_FUZZ <= amount <= shown / BARRACKS_SPY_FUZZ
 
+    def allows_draftees(self, amount: int) -> bool:
+        """Whether `amount` draftees fit within the fuzz of what this BS shows."""
+        return self.draftees * BARRACKS_SPY_FUZZ <= amount <= self.draftees / BARRACKS_SPY_FUZZ
+
     @property
     def military(self) -> dict:
         def calc_unit(nr: int):
@@ -230,7 +242,7 @@ class BarracksSpy(TimestampedOpsMixin, Base):
             'unit2': calc_unit(2),
             'unit3': calc_unit(3),
             'unit4': calc_unit(4),
-            'draftees': self.draftees,
+            'draftees': self.draftees / BARRACKS_SPY_FUZZ,
             'timestamp': self.timestamp,
             'paid_until': self.paid_until
         }

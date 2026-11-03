@@ -1,0 +1,171 @@
+{% extends "odinfo-base.html" %}
+
+{#
+  This page describes what the Threats tab calculates. When the calculation changes, the page
+  has to change with it. After re-reading the page against the code, run:
+
+      uv run python check_explanations.py --stamp odinfoweb/templates/threats-explained.html
+#}
+{% set reviewed_on = '2026-11-03' %}
+{#- doc-sources
+odinfo/calculators/threats.py 559d0e178bb865b2
+odinfo/domain/domainhelper.py dd57594f9fd010fb
+odinfo/domain/military.py 499bfc3253cf83a6
+odinfo/domain/models.py 825d7554fdb2d6d2
+odinfoweb/templates/threats.html 36c1076ee64ef492
+odinfoweb/viewmodels/about.py 67f17eee1f9e51ea
+odinfoweb/viewmodels/threats.py 0e09b68e0eabbf3f
+-#}
+
+{% block content %}
+<div class="w3-container od-doc">
+
+  <h1>How the Threats tab works</h1>
+
+  <p class="od-lead">
+    The Threats tab answers one question for one realmie: who can hit this dominion in the
+    next {{ vm.horizon }} ticks, at which tick, and what has to happen first?
+  </p>
+
+  <p>
+    Most attackers do not send their full OP, because a full send leaves them weak at home.
+    Other dominions hold them back. When a top OP sends, it stops holding the others back, and
+    many hits follow in the next ticks. The tab shows those chains, tick by tick.
+  </p>
+
+  <h2>Terms</h2>
+
+  <dl>
+    <dt>Defender</dt>
+    <dd>The realmie you pick in the dropdown.</dd>
+    <dt>Attacker</dt>
+    <dd>A dominion in another realm that has the defender in range.</dd>
+    <dt>Threat</dt>
+    <dd>A dominion that can hit the attacker back while the army of the attacker is out.</dd>
+    <dt>5/4 send</dt>
+    <dd>The most OP a dominion can send under the 5/4 rule.</dd>
+    <dt>Safe send</dt>
+    <dd>The most OP a dominion can send while its home DP still beats every threat to it.</dd>
+    <dt>Trigger</dt>
+    <dd>A threat that has to send first, before the safe send of the attacker breaks the defender.</dd>
+    <dt>Free sender</dt>
+    <dd>A dominion whose home DP after a 5/4 send beats every threat to it.</dd>
+  </dl>
+
+  <h2>Range</h2>
+
+  <p>
+    An attacker can hit the defender at a tick when the land of the defender is between
+    {{ vm.min_range }}% and {{ vm.max_range }}% of the land of the attacker at that tick. A hit
+    below {{ vm.min_range }}% is bottom feeding. The game penalizes it heavily, so it happens
+    only as a last measure near the end of the round. You can set a lower minimum range on the
+    page to see those attackers too.
+  </p>
+  <p>
+    Land changes during the {{ vm.horizon }} ticks. An invasion in the Town Crier gives the
+    attacker {{ vm.conquest_land_factor }} times the land its target lost, {{ vm.land_arrival_ticks }}
+    ticks after the hit. A Land Spy also shows land from exploring. It replaces the invasions
+    from before its time, and invasions after it add to it. A daily land bonus gives
+    {{ vm.daily_land_bonus }} acres at once.
+    Tick the box on the page to see what claiming it at a given tick does to your range.
+  </p>
+
+  <h2>OP and DP at a tick</h2>
+
+  <p>For each tick from now to {{ vm.horizon }} ticks ahead, the tab takes the military that is home at that tick:</p>
+  <ul class="w3-ul w3-border w3-border-black">
+    <li>Units at home now stay home.</li>
+    <li>Returning units count from the tick they arrive.</li>
+    <li>Units in training count from the tick their training completes.</li>
+  </ul>
+  <p>
+    A hit happens at one tick, so the military at that tick is what counts. Units that are out
+    on an attack do not count in the OP of a dominion until they return. Your realmies have
+    exact numbers from the realm advisors. The numbers of other dominions come from their last
+    ops.
+  </p>
+
+  <h2>The safe send of an attacker</h2>
+
+  <ol>
+    <li>Find all threats to the attacker at the tick: dominions in another realm that have the attacker in range.</li>
+    <li>Calculate the 5/4 send of each threat, with its temples, against the DP bonus of the attacker.</li>
+    <li>Take the strongest one. The attacker has to keep enough DP home to beat it.</li>
+    <li>Send the units that are free to go: pure offense units first, then hybrid units from best OP/DP ratio down, until the DP that stays home is just enough.</li>
+    <li>The OP that goes out is the safe send. It is never more than the 5/4 send.</li>
+  </ol>
+  <p>A free sender has a safe send equal to its 5/4 send.</p>
+
+  <h2>Can the attacker break the defender?</h2>
+
+  <p>
+    Take the safe send of the attacker with its temples, against the DP bonus of the defender.
+    Compare it with the DP of the defender at the tick. The difference is the margin. A positive
+    margin means that the attacker can break the defender without risk.
+  </p>
+
+  <h2>Triggers: what sets an attacker free</h2>
+
+  <p>
+    When a strong dominion sends, its army is out until it returns. During that time it is no
+    threat to anyone. Every dominion that it held back can send more.
+  </p>
+  <p>If the safe send does not break the defender, the tab looks for the trigger:</p>
+  <ol>
+    <li>Put the threats to the attacker in order, strongest first.</li>
+    <li>Take away the strongest threat. Calculate the safe send again without it.</li>
+    <li>If the safe send now breaks the defender, stop. The threats taken away are the triggers.</li>
+    <li>If not, take away the next threat and go back to step 2.</li>
+    <li>Stop after {{ vm.max_triggers }} triggers. A longer chain depends on old ops of many dominions, so the tab does not show it.</li>
+    <li>If the attacker still cannot break the defender, the attacker has no safe hit at this tick.</li>
+  </ol>
+  <p>
+    The defender can itself be a threat to the attacker. When the tab takes the defender away,
+    the defender has sent. It then keeps only its home DP after a full 5/4 send, and the
+    attacker has to beat that DP instead of the full DP. So a defender that sends can make
+    itself a target, even for an attacker that cannot break its full DP.
+  </p>
+  <p>
+    For each trigger, the tab also shows if the trigger is itself a free sender. A free trigger
+    can send at any time. A trigger that is held back needs its own trigger first, so that chain
+    is less likely.
+  </p>
+
+  <h2>Reading the grid</h2>
+
+  <table class="w3-table w3-striped-dark w3-bordered w3-border">
+    <thead>
+      <tr class="w3-black"><th>Cell</th><th>Value</th><th>Meaning</th></tr>
+    </thead>
+    <tr><td>Red</td><td>Safe send margin</td><td>The safe send breaks the defender now.</td></tr>
+    <tr><td>Orange</td><td>Safe send margin after the triggers</td><td>The safe send breaks the defender after the triggers send. The tooltip names them.</td></tr>
+    <tr><td>Yellow</td><td>5/4 margin</td><td>Only a full 5/4 send breaks the defender, and that send is not safe. The tooltip names the threats that hold the attacker back.</td></tr>
+    <tr><td>No color</td><td>5/4 margin</td><td>Even a 5/4 send cannot break the defender.</td></tr>
+    <tr><td>Dark grey</td><td>empty</td><td>The attacker does not have the defender in range at this tick.</td></tr>
+  </table>
+  <p>
+    The value is the OP at home minus the DP of the defender, in thousands. Units that are out
+    on an attack or still in training do not count until they arrive. So a strong attacker with
+    its army out can show a large negative number. The tooltip then says "army out", with the
+    tick at which the last returning units arrive.
+    The rows go from most urgent to least urgent: red first,
+    then orange, then yellow, and the earliest tick first. A row with ops older than
+    {{ vm.horizon }} hours is dim.
+  </p>
+
+  <h2>What the tab leaves out</h2>
+
+  <ul class="w3-ul w3-border w3-border-black">
+    <li>The threat to an attacker counts as the full 5/4 send of that threat. A threat that is itself held back cannot send its full OP. So the safe send is the lowest value, and a real attacker can send somewhat more.</li>
+    <li>An attacker can accept risk and send more than its safe send. The yellow cells show where a full 5/4 send breaks the defender.</li>
+    <li>The tab shows one hit at a time. A realm can hit one target with several dominions in a row.</li>
+    <li>Draftees stay at their last count. They grow between trainings in the game.</li>
+    <li>Land from exploring is known only from a Land Spy.</li>
+    <li>Other dominions can claim a daily land bonus too. The tab does not know when.</li>
+    <li>Guards limit the range in both directions. The tab uses the normal range only.</li>
+  </ul>
+
+  <p class="od-stamp">Last checked on {{ reviewed_on }}.</p>
+
+</div>
+{% endblock %}

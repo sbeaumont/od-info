@@ -14,7 +14,7 @@ from typing import Callable
 
 from odinfo.calculators.military import MilitaryCalculator
 from odinfo.calculators.networthcalculator import get_networth_deltas
-from odinfo.config import Config
+from odinfo.config import Config, THREAT_MAX_TRIGGERS
 from odinfo.repositories.game import GameRepository
 from odinfo.domain.models import Dominion, MyDominion
 from odinfo.timeutils import hours_since, add_duration, current_od_time
@@ -29,6 +29,7 @@ from odinfo.services.update_service import UpdateService
 from odinfoweb.viewmodels.overview import build_overview_list_vm
 from odinfoweb.viewmodels.ratios import build_ratio_list_vm
 from odinfoweb.viewmodels.targets import build_targets_vm
+from odinfoweb.viewmodels.threats import build_threats_vm
 
 logger = logging.getLogger('od-info.facade')
 
@@ -258,6 +259,19 @@ class ODInfoFacade(object):
                                   attacker.current_land,
                                   MilitaryCalculator(attacker).temple_bonus,
                                   list(self._repo.all_town_crier_events()))
+        self._cache[cache_key] = result
+        return result
+
+    def threats(self, defender_code: int, min_range: float, max_range: float, land_bonus_tick: int | None) -> list:
+        """Who can hit the defender at each tick from now to the horizon, and what has to happen first."""
+        cache_key = f'threats_{defender_code}_{min_range}_{max_range}_{land_bonus_tick}'
+        if cache_key in self._cache:
+            logger.debug("Returning cached threats for %s", cache_key)
+            return self._cache[cache_key]
+
+        logger.debug("Computing threats for %s", cache_key)
+        result = build_threats_vm(list(self._repo.dominions_in_play()), list(self._repo.all_town_crier_events()),
+                                  defender_code, min_range, max_range, THREAT_MAX_TRIGGERS, land_bonus_tick)
         self._cache[cache_key] = result
         return result
 

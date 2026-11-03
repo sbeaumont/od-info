@@ -73,8 +73,8 @@ class MilitaryService:
 
             # Get refined paid strength (uses midpoint estimates)
             refined_paid_op, refined_paid_dp, confidence = self.refine_paid_strength(mc.dom)
-            paid_op = refined_paid_op if refined_paid_op is not None else mc.paid_op
-            paid_dp = refined_paid_dp if refined_paid_dp is not None else mc.paid_dp
+            paid_op = refined_paid_op if refined_paid_op is not None else mc.op
+            paid_dp = refined_paid_dp if refined_paid_dp is not None else mc.dp
 
             current_op, current_dp, current_confidence = self.calculate_current_strength(mc.dom)
             if current_confidence:
@@ -138,7 +138,7 @@ class MilitaryService:
             return None, None, None
 
         mc = MilitaryCalculator(dom, tick=0)
-        return mc.current_op(), mc.current_dp(), mc.military.confidence
+        return mc.op, mc.dp, mc.military.confidence
 
     def refine_paid_strength(self, dom: Dominion) -> tuple[int | None, int | None, str | None]:
         """Calculate refined OP/DP at the paid_until tick.
@@ -159,7 +159,7 @@ class MilitaryService:
             return None, None, None
 
         mc = MilitaryCalculator(dom, tick=last_bs.paid_until)
-        return mc.current_op(), mc.current_dp(), mc.military.confidence
+        return mc.op, mc.dp, mc.military.confidence
 
     def strength_forecast(self, dom: Dominion) -> list[tuple[int, int, int]]:
         """Project OP and DP for the next 12 ticks.
@@ -176,7 +176,7 @@ class MilitaryService:
         forecast = []
         for future_tick in range(BUILD_TICKS + 1):
             mc = MilitaryCalculator(dom, tick=future_tick)
-            forecast.append((future_tick, mc.current_op(), mc.current_dp()))
+            forecast.append((future_tick, mc.op, mc.dp))
         return forecast
 
     def top_op(self, mil_calc_result: list[MilitaryRowVM]) -> MilitaryRowVM | None:
@@ -226,7 +226,7 @@ class MilitaryService:
                 land=mc.dom.current_land,
                 hittable_75_percent=mc.hittable_75_percent,
                 max_sendable_op=boat_info[2] if boat_info else 0,
-                paid_dp=mc.paid_dp,
+                paid_dp=mc.dp,
                 wpa=mc.dom.current_wpa,
                 spa=rc.spy_ratio_actual,
                 docks=mc.dom.navy['docks'] if mc.dom.navy else None,

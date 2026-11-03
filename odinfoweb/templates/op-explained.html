@@ -10,13 +10,13 @@
 #}
 {% set reviewed_on = '2026-11-03' %}
 {#- doc-sources
-data/game-constants.json b929609823abd74f
-odinfo/calculators/military.py daa025e2b734f1de
-odinfo/domain/domainhelper.py 1190e20f7e8a525c
-odinfo/domain/military.py d9a97861331efa74
-odinfo/domain/models.py c8fe88cded29d016
-odinfo/domain/refdata.py 69a20ab61b8f978e
-odinfo/services/military_service.py 718539829e668b1f
+data/game-constants.json 18da5febc92f41d0
+odinfo/calculators/military.py 63781746caa9fcd5
+odinfo/domain/domainhelper.py dd57594f9fd010fb
+odinfo/domain/military.py e3abe7434485f69c
+odinfo/domain/models.py 825d7554fdb2d6d2
+odinfo/domain/refdata.py 6aa55e0064b84a26
+odinfo/services/military_service.py 2e1d046524cadd91
 odinfoweb/viewmodels/opexplained.py 75439f8e7e721396
 -#}
 
@@ -66,7 +66,9 @@ odinfoweb/viewmodels/opexplained.py 75439f8e7e721396
     <li>
       <strong>Barracks Spy is fresher</strong>: home, returning and training get added back
       together. Units at home are taken at the top of their fuzz range and returning units
-      at the bottom, so the dominion reads as strong at home now.
+      at the bottom, so the dominion reads as strong at home now. Draftees follow the same
+      rule as units at home. A Clear Sight count stays in use when it fits inside the fuzz
+      range of the Barracks Spy.
     </li>
   </ul>
 
@@ -208,7 +210,8 @@ odinfoweb/viewmodels/opexplained.py 75439f8e7e721396
     </dd>
     <dt>5/4 OP / 5/4 DP</dt>
     <dd>
-      The absolute maximum. Hybrids get thrown at the attack in order of how much offense
+      The absolute maximum. Pure offense units go first, up to the 5/4 limit. Then hybrids
+      get thrown at the attack in order of how much offense
       they buy per point of defence given up, until sending one more would break the 5/4
       rule. Treat it as the worst case rather than the likely one.
     </dd>

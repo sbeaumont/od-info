@@ -42,6 +42,9 @@ NW_DEFAULT_PERIOD = 12
 NW_ROW_COUNTS = (10, 25, 50, 0)
 NW_UNCHANGED_DEFAULT = 50
 
+# The most dominions that may have to send before an attacker on the Threats page is set free.
+THREAT_MAX_TRIGGERS = 2
+
 # Knowledge of internal directory and file structure
 
 INSTANCE_DIR = './instance'

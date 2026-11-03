@@ -1,6 +1,6 @@
 from collections import defaultdict
 from datetime import timedelta
-from math import trunc, exp
+from math import trunc, exp, inf
 
 from odinfo.domain.refdata import TechTree, MASONRY_MULTIPLIER, IMP_FACTORS
 from odinfo.timeutils import hours_until, ticks_since
@@ -128,13 +128,18 @@ class Land(object):
     @property
     def incoming(self) -> int:
         """The incoming acres of the Land Spy that have not arrived yet."""
+        return self.arriving_by(inf)
+
+    def arriving_by(self, tick: float) -> int:
+        """The incoming acres of the Land Spy that arrive from now up to a tick from now."""
         result = 0
         if self._data and self._data.incoming:
             incoming = self._data.incoming
             age = ticks_since(self._data.timestamp)
             for landtype in LAND_TYPES:
                 if landtype in incoming:
-                    result += sum([amount for tick, amount in incoming[landtype].items() if int(tick) - age > 0])
+                    result += sum([amount for arrival, amount in incoming[landtype].items()
+                                   if 0 < int(arrival) - age <= tick])
         return result
 
 

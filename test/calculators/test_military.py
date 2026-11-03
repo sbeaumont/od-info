@@ -6,6 +6,7 @@ from odinfo.domain.models import ClearSight, Dominion, DominionHistory
 from odinfo.domain.refdata import Spells
 from odinfo.repositories.game import GameRepository
 from odinfo.services.military_service import MilitaryService
+from odinfo.timeutils import current_od_time
 from test.fixtures import create_db_session, init_db
 
 NOW = datetime(2026, 10, 28, 12, 0, 0)
@@ -35,9 +36,33 @@ class MilitaryCalculatorTestCase(unittest.TestCase):
 
         mc = MilitaryCalculator(self.dom)
 
-        self.assertEqual(144, mc.paid_op)
-        self.assertEqual(116, mc.paid_dp)
+        self.assertEqual(144, mc.op)
+        self.assertEqual(116, mc.dp)
         self.assertEqual((107, 89), mc.five_over_four)
+
+    def test_five_over_four_sends_pure_offense_only_up_to_the_limit(self):
+        self.dom.last_barracks.training = {}
+        cs = self.dom.last_cs
+        cs.military_unit1, cs.military_unit2, cs.military_unit3, cs.military_unit4 = 1000, 100, 0, 0
+        mc = MilitaryCalculator(self.dom)
+
+        op, dp = mc.five_over_four
+        soldiers = mc.five_over_four_breakdown()['sent'][0]
+
+        self.assertLessEqual(op, 5 / 4 * dp)
+        self.assertLess(soldiers['amount_sent'], 1000)
+        self.assertEqual(1000, soldiers['amount_sent'] + soldiers['amount_home'])
+        self.assertAlmostEqual(op, soldiers['op_contribution'], delta=1)
+
+    def test_five_over_four_at_a_tick_counts_the_training_landed_by_then(self):
+        bs = self.dom.last_barracks
+        bs.timestamp = current_od_time()
+        self.dom.last_cs.timestamp = bs.timestamp - timedelta(hours=3)
+        now, later = MilitaryCalculator(self.dom, tick=0), MilitaryCalculator(self.dom, tick=6)
+
+        self.assertEqual(now.amount(3) + 199, later.amount(3))
+        self.assertEqual((107, 89), now.five_over_four)
+        self.assertEqual((597, 485), later.five_over_four)
 
     def test_current_strength_starts_from_a_newer_cs(self):
         bs = self.dom.last_barracks
@@ -47,7 +72,7 @@ class MilitaryCalculatorTestCase(unittest.TestCase):
 
         _, current_dp, confidence = MilitaryService(GameRepository(self.session)).calculate_current_strength(self.dom)
 
-        self.assertEqual(mc.paid_dp, current_dp)
+        self.assertEqual(mc.dp, current_dp)
         self.assertEqual('locked', confidence)
 
     # def test_five_over_four_liz(self):
@@ -211,7 +236,7 @@ class EstimatedDPTestCase(unittest.TestCase):
         self.add_cs(2, 1000)
         self.add_history(0, 1000, 45000)
         mc = MilitaryCalculator(self.dom)
-        self.assertEqual(mc.paid_dp, mc.estimated_dp)
+        self.assertEqual(mc.dp, mc.estimated_dp)
 
 
 class SpellRaceKeyTestCase(unittest.TestCase):

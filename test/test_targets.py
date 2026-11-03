@@ -88,7 +88,7 @@ class TargetsTest(unittest.TestCase):
                                           timestamp=NOW - timedelta(hours=2)))
         self.session.commit()
         row = self.rows([dom])[dom.code]
-        self.assertEqual(MilitaryCalculator(dom).paid_dp, row.dp)
+        self.assertEqual(MilitaryCalculator(dom).dp, row.dp)
         self.assertLessEqual(1000, row.dp)
         self.assertFalse(row.dp_incomplete)
 

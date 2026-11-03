@@ -1,7 +1,11 @@
 import unittest
 from datetime import timedelta
+from math import trunc
 
+from odinfo.calculators.military import MilitaryCalculator
+from odinfo.domain.military import Military
 from odinfo.domain.models import Dominion
+from odinfo.domain.refdata import BARRACKS_SPY_FUZZ
 from test.fixtures import create_db_session, init_db
 
 
@@ -42,6 +46,27 @@ class MilitaryTestCase(unittest.TestCase):
 
         self.assertEqual(9, from_tick)
         self.assertAlmostEqual(60, sum(home['unit4'][:2]) / 2 + sum(arrived['unit4'][:2]) / 2)
+
+    def _older_cs_newer_bs(self, cs_draftees: int, bs_draftees: int) -> Military:
+        self.dom.last_barracks.training = {}
+        self.dom.last_barracks.draftees = bs_draftees
+        self.dom.last_cs.military_draftees = cs_draftees
+        self.dom.last_cs.timestamp = self.dom.last_barracks.timestamp - timedelta(hours=3)
+        return self.dom.military
+
+    def test_military_keeps_cs_draftees_that_newer_bs_allows(self):
+        military = self._older_cs_newer_bs(cs_draftees=437, bs_draftees=514)
+        self.assertEqual(437, military.draftees)
+        self.assertFalse(military.has_bs_worst_case)
+
+    def test_military_takes_bs_worst_case_draftees_when_cs_is_ruled_out(self):
+        military = self._older_cs_newer_bs(cs_draftees=300, bs_draftees=514)
+        self.assertAlmostEqual(514 / BARRACKS_SPY_FUZZ, military.draftees)
+        self.assertTrue(military.has_bs_worst_case)
+
+    def test_calculator_reads_draftees_from_the_military(self):
+        self._older_cs_newer_bs(cs_draftees=300, bs_draftees=514)
+        self.assertEqual(trunc(514 / BARRACKS_SPY_FUZZ), MilitaryCalculator(self.dom).draftees)
 
 
 if __name__ == '__main__':

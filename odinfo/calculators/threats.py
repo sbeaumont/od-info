@@ -12,6 +12,21 @@ class Contender:
     realm: int
     land: int
     mc: MilitaryCalculator
+    home_dp: int | None = None
+
+    @property
+    def sent(self) -> bool:
+        """Whether the army is out, with home_dp as the DP left at home."""
+        return self.home_dp is not None
+
+    @property
+    def dp(self) -> int:
+        return self.home_dp if self.sent else self.mc.dp
+
+    @property
+    def lowest_dp(self) -> int:
+        """The DP at home after a 5/4 send, or the DP left at home when the army is out."""
+        return self.home_dp if self.sent else self.mc.five_over_four[1]
 
 
 @dataclass
@@ -55,10 +70,12 @@ def contenders_at(doms: list[Dominion], tick: int, invasions: dict[int, list]) -
 
 def threats_to(attacker: Contender, contenders: list[Contender], min_range: float,
                max_range: float) -> list[tuple[Contender, int]]:
-    """Dominions in another realm with the attacker in range, with their 5/4 send against it, strongest first."""
+    """Dominions in another realm with the attacker in range and their army at home, with their 5/4 send against it,
+    strongest first."""
     threats = [(c, c.mc.five_four_op_with_temples(attacker.mc.defense_bonus))
                for c in contenders
-               if c.realm != attacker.realm and in_range(attacker.land, c.land, min_range, max_range)]
+               if c.realm != attacker.realm and not c.sent
+               and in_range(attacker.land, c.land, min_range, max_range)]
     return sorted(threats, key=lambda threat: threat[1], reverse=True)
 
 
@@ -85,12 +102,12 @@ class Battlefield(object):
     def is_free_sender(self, contender: Contender) -> bool:
         """Whether the home DP after a 5/4 send beats every threat to the dominion."""
         threats = self.threats_to(contender)
-        return not threats or threats[0][1] <= contender.mc.five_over_four[1]
+        return not threats or threats[0][1] <= contender.lowest_dp
 
     def strike(self, attacker: Contender, defender: Contender) -> Strike:
         """The 5/4 send and safe send of the attacker at the defender, and the threats that have to send first."""
         defense_bonus = defender.mc.defense_bonus
-        defender_dp = defender.mc.dp
+        defender_dp = defender.dp
         threats = self.threats_to(attacker)
 
         def op_at_defender(threat_index: int) -> int:
@@ -98,7 +115,7 @@ class Battlefield(object):
             return attacker.mc.op_with_temples(safe_send(attacker, threat_op), defense_bonus)
 
         five_four_op = attacker.mc.five_four_op_with_temples(defense_bonus)
-        lowest_dp = (defender.mc.five_over_four[1]
+        lowest_dp = (defender.lowest_dp
                      if in_range(attacker.land, defender.land, self.min_range, self.max_range) else defender_dp)
         # No send is more than the 5/4 send, and a defender that sends still keeps its 5/4 home DP.
         if five_four_op <= lowest_dp:
@@ -108,7 +125,7 @@ class Battlefield(object):
         if safe_send_op <= defender_dp:
             for count in range(1, min(len(threats), self.max_triggers) + 1):
                 sent = [c for c, _ in threats[:count]]
-                dp = defender.mc.five_over_four[1] if defender.code in [c.code for c in sent] else defender_dp
+                dp = defender.lowest_dp if defender.code in [c.code for c in sent] else defender_dp
                 op = op_at_defender(count)
                 if op > dp:
                     triggers = [Trigger(c.code, self.is_free_sender(c)) for c in sent]

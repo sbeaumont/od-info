@@ -62,7 +62,7 @@ class DefenderWithoutOpsTest(unittest.TestCase):
         session.flush()
 
         with self.assertRaisesRegex(ODInfoException, 'No Advisors has no CS or BS'):
-            build_threats_vm([defender, attacker], [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None)
+            build_threats_vm([defender, attacker], [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None, None)
 
 
 class ArmyOutTest(unittest.TestCase):
@@ -75,7 +75,7 @@ class ArmyOutTest(unittest.TestCase):
             training={}, returning={'unit4': {'6': 1000}}, timestamp=attacker.last_cs.timestamp))
         session.flush()
 
-        row = build_threats_vm([defender, attacker], [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None)[0]
+        row = build_threats_vm([defender, attacker], [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None, None)[0]
 
         self.assertIn('army out, back at +6', row.cells[5].tooltip)
         self.assertNotIn('army out', row.cells[6].tooltip)
@@ -91,7 +91,7 @@ class SentAfterBarracksSpyTest(unittest.TestCase):
         hit = TownCrier(origin=2, target=3, event_type='invasion', amount=10,
                         timestamp=current_od_time() - timedelta(hours=2))
 
-        row = build_threats_vm([defender, attacker], [hit], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None)[0]
+        row = build_threats_vm([defender, attacker], [hit], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None, None)[0]
 
         self.assertTrue(row.sent_after_bs)
         self.assertIn('sent 2h ago, after the last BS: take a BS', row.cells[9].tooltip)
@@ -105,7 +105,7 @@ class RowSelectionTest(unittest.TestCase):
     def rows(self, *doms):
         self.session.flush()
         return {row.code: row
-                for row in build_threats_vm(list(doms), [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None)}
+                for row in build_threats_vm(list(doms), [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None, None)}
 
     def test_a_5_4_send_more_than_the_potential_margin_below_the_dp_is_no_threat(self):
         rows = self.rows(make_dominion(self.session, 1, realm=1, land=1000, miners=5000),
@@ -142,7 +142,7 @@ class RowSelectionTest(unittest.TestCase):
                 make_dominion(self.session, 2, realm=2, land=1000, warriors=9000, miners=50000),
                 make_dominion(self.session, 3, realm=2, land=800, warriors=100, miners=5000)]
         self.session.flush()
-        rows = build_threats_vm(doms, [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None)
+        rows = build_threats_vm(doms, [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None, None)
         self.assertEqual([(2, False), (3, True)], [(row.code, row.in_range) for row in rows])
 
     def test_each_table_starts_with_the_largest_range_limit(self):
@@ -152,7 +152,7 @@ class RowSelectionTest(unittest.TestCase):
                 make_dominion(self.session, 4, realm=2, land=1000, warriors=100),
                 make_dominion(self.session, 5, realm=2, land=1100, warriors=100)]
         self.session.flush()
-        rows = build_threats_vm(doms, [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None)
+        rows = build_threats_vm(doms, [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None, None)
         self.assertEqual([(5, False), (4, False), (3, True), (2, True)], [(row.code, row.in_range) for row in rows])
 
     def test_a_dominion_with_the_defender_far_below_its_range_is_out_of_range(self):
@@ -160,6 +160,13 @@ class RowSelectionTest(unittest.TestCase):
                          make_dominion(self.session, 2, realm=2, land=3000, warriors=9000, miners=50000))
         self.assertFalse(rows[2].in_range)
         self.assertTrue(rows[2].threat)
+
+    def test_the_home_dp_after_a_send_is_the_dp_of_the_defender(self):
+        doms = [make_dominion(self.session, 1, realm=1, land=1000, miners=5000),
+                make_dominion(self.session, 2, realm=2, land=1000, warriors=2000, miners=50000)]
+        self.session.flush()
+        rows = build_threats_vm(doms, [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None, 10000)
+        self.assertEqual([('now', 14000 - 10000)] * 13, [(cell.status, cell.margin) for cell in rows[0].cells])
 
 
 if __name__ == '__main__':

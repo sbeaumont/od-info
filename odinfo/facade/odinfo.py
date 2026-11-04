@@ -264,9 +264,10 @@ class ODInfoFacade(object):
         self._cache[cache_key] = result
         return result
 
-    def threats(self, defender_code: int, min_range: float, max_range: float, land_bonus_tick: int | None) -> list:
+    def threats(self, defender_code: int, min_range: float, max_range: float, land_bonus_tick: int | None,
+                home_dp: int | None) -> list:
         """Who can hit the defender at each tick from now to the horizon, and what has to happen first."""
-        cache_key = f'threats_{defender_code}_{min_range}_{max_range}_{land_bonus_tick}'
+        cache_key = f'threats_{defender_code}_{min_range}_{max_range}_{land_bonus_tick}_{home_dp}'
         if cache_key in self._cache:
             logger.debug("Returning cached threats for %s", cache_key)
             return self._cache[cache_key]
@@ -274,7 +275,7 @@ class ODInfoFacade(object):
         logger.debug("Computing threats for %s", cache_key)
         result = build_threats_vm(list(self._repo.dominions_in_play()), list(self._repo.all_town_crier_events()),
                                   defender_code, min_range, max_range, THREAT_MAX_TRIGGERS, POTENTIAL_THREAT_MARGIN,
-                                  land_bonus_tick)
+                                  land_bonus_tick, home_dp)
         self._cache[cache_key] = result
         return result
 

@@ -444,7 +444,8 @@ def threats():
     defender_code = request.args.get('defender', type=int, default=facade().my_dominion().code)
     min_range = request.args.get('min_range', type=float, default=MIN_RANGE)
     land_bonus_tick = request.args.get('land_bonus_tick', type=int)
-    rows = facade().threats(defender_code, min_range, MAX_RANGE, land_bonus_tick)
+    home_dp = request.args.get('home_dp', type=int)
+    rows = facade().threats(defender_code, min_range, MAX_RANGE, land_bonus_tick, home_dp)
     return render_template('threats.html',
                            rows=rows,
                            realmies=[realmie for realmie in facade().realmies() if realmie.military],
@@ -452,6 +453,7 @@ def threats():
                            min_range=min_range,
                            max_range=MAX_RANGE,
                            land_bonus_tick=land_bonus_tick,
+                           home_dp=home_dp,
                            daily_land_bonus=DAILY_LAND_BONUS,
                            potential_margin=POTENTIAL_THREAT_MARGIN,
                            ticks=range(BUILD_TICKS + 1),

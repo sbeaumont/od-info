@@ -86,9 +86,9 @@ def latest_send_after_bs(dom: Dominion, sends: list[TownCrier]) -> TownCrier | N
 
 def build_threats_vm(dominions: list[Dominion], events: list[TownCrier], defender_code: int, min_range: float,
                      max_range: float, max_triggers: int, potential_margin: float,
-                     land_bonus_tick: int | None) -> list[ThreatRowVM]:
+                     land_bonus_tick: int | None, home_dp: int | None) -> list[ThreatRowVM]:
     """The dominions that have the defender below their range, then the ones with the defender in range at one tick,
-    each largest range limit first."""
+    each largest range limit first. A home_dp is the DP the defender keeps at home after a send now."""
     names = {dom.code: dom.name for dom in dominions}
     invasions, sends = defaultdict(list), defaultdict(list)
     for event in events:
@@ -101,13 +101,21 @@ def build_threats_vm(dominions: list[Dominion], events: list[TownCrier], defende
                               f"Realmies who do not share advisors have no ops.")
     ticks = range(BUILD_TICKS + 1)
     strikes_per_tick, out_of_range_per_tick, contenders_per_tick, defenders = [], [], [], []
+    dp_now = None
     for tick in ticks:
         contenders = contenders_at(dominions, tick, invasions)
         defender = {c.code: c for c in contenders}[defender_code]
+        if dp_now is None:
+            dp_now = defender.mc.dp
+        changes = {}
         if land_bonus_tick is not None and tick >= land_bonus_tick:
-            claimed = replace(defender, land=defender.land + DAILY_LAND_BONUS)
-            contenders = [claimed if c is defender else c for c in contenders]
-            defender = claimed
+            changes['land'] = defender.land + DAILY_LAND_BONUS
+        if home_dp is not None:
+            changes['home_dp'] = home_dp + defender.mc.dp - dp_now
+        if changes:
+            changed = replace(defender, **changes)
+            contenders = [changed if c is defender else c for c in contenders]
+            defender = changed
         battlefield = Battlefield(contenders, min_range, max_range, max_triggers)
         strikes_per_tick.append({s.attacker: s for s in battlefield.strikes_on(defender)})
         out_of_range_per_tick.append({s.attacker: s for s in battlefield.strikes_out_of_range(defender)})

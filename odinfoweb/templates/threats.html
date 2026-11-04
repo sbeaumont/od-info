@@ -40,6 +40,10 @@
                     {% endfor %}
                 </select>
             </label>
+            <label title="The DP left at home after you send now. Training and returning units still add to it at later ticks. Empty means no send.">
+                Home DP
+                <input type="number" name="home_dp" class="submit-on-change" value="{{ home_dp if home_dp is not none else '' }}" min="0" style="width: 90px; padding: 2px 4px;">
+            </label>
             <a href="{{ url_for('threats_explained') }}" style="font-size: 0.8em; color: #aaa;">how it works</a>
         </div>
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 6px;">

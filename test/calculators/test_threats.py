@@ -1,4 +1,5 @@
 import unittest
+from dataclasses import replace
 
 from odinfo.calculators.threats import Battlefield, contenders_at, safe_send, threats_to
 from odinfo.domain.domainhelper import in_range, range_limit
@@ -137,6 +138,18 @@ class ThreatsTestCase(unittest.TestCase):
         self.assertEqual([1], [t.code for t in result.triggers])
         self.assertEqual(defender.mc.five_over_four[1], result.triggered_dp)
         self.assertGreater(result.triggered_margin, 0)
+
+    def test_a_defender_that_already_sent_keeps_its_home_dp_and_holds_no_one_back(self):
+        c = self.contenders(
+            make_dominion(self.session, 1, realm=1, land=1000, warriors=14000, miners=6000),
+            make_dominion(self.session, 2, realm=2, land=1000, warriors=10000, miners=10000))
+        c[1] = replace(c[1], home_dp=c[1].mc.five_over_four[1])
+
+        result = self.strike(c[2], c[1], c)
+
+        self.assertEqual([], result.held_by)
+        self.assertEqual(c[1].home_dp, result.defender_dp)
+        self.assertGreater(result.safe_send_margin, 0)
 
     def test_a_5_4_send_under_the_lowest_dp_of_the_defender_skips_the_safe_send(self):
         c = self.contenders(make_dominion(self.session, 1, realm=1, land=1000, miners=5000),

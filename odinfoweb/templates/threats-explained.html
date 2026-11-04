@@ -8,13 +8,13 @@
 #}
 {% set reviewed_on = '2026-11-04' %}
 {#- doc-sources
-odinfo/calculators/threats.py d78ad60810dedf11
+odinfo/calculators/threats.py e7a567801a16b873
 odinfo/domain/domainhelper.py 876f24af71133e57
 odinfo/domain/military.py 499bfc3253cf83a6
 odinfo/domain/models.py 825d7554fdb2d6d2
-odinfoweb/templates/threats.html 30e92858a23d9436
+odinfoweb/templates/threats.html 480ba2375703037f
 odinfoweb/viewmodels/about.py c7f4e00e8415197f
-odinfoweb/viewmodels/threats.py e54d6600510d35bd
+odinfoweb/viewmodels/threats.py 8af837ad2ed6fa03
 -#}
 
 {% block content %}
@@ -129,6 +129,15 @@ odinfoweb/viewmodels/threats.py e54d6600510d35bd
     For each trigger, the tab also shows if the trigger is itself a free sender. A free trigger
     can send at any time. A trigger that is held back needs its own trigger first, so that chain
     is less likely.
+  </p>
+
+  <h2>Planning a send: Home DP</h2>
+  <p>
+    Before you send, enter the DP that stays at home in the Home DP box. The game shows it on
+    the invade page. The tab then uses that DP for the defender at every tick. Training and
+    returning units still add DP at the later ticks, the same amount as without the send. The
+    army of the defender is out, so the defender is no threat and no trigger for any attacker.
+    Leave the box empty to see the defender with its army at home.
   </p>
 
   <h2>The two tables</h2>

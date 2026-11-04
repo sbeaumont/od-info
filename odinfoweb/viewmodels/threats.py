@@ -6,13 +6,14 @@ from collections import defaultdict
 from dataclasses import dataclass, replace
 
 from odinfo.calculators.threats import Battlefield, Strike, contenders_at
+from odinfo.domain.domainhelper import range_limit
 from odinfo.domain.models import Dominion, TownCrier
 from odinfo.domain.refdata import BUILD_TICKS, DAILY_LAND_BONUS, RETURN_TICKS
 from odinfo.exceptions import ODInfoException
 from odinfo.timeutils import hours_since, ticks_since
 from odinfoweb.viewmodels.targets import ATTACK_EVENTS
 
-STATUS_ORDER = ('now', 'triggered', 'five_four', 'none', 'out')
+THREAT_STATUSES = ('now', 'triggered', 'five_four', 'potential')
 
 
 @dataclass
@@ -31,14 +32,16 @@ class ThreatRowVM:
     realm: int
     race: str
     ops_age: int | None
+    sent_after_bs: bool
+    land: int
+    limit: int
+    in_range: bool
     cells: list[ThreatCellVM]
-    sent_after_bs: bool = False
 
     @property
-    def sort_key(self) -> tuple:
-        """Most urgent first: the worst status, then the first tick with it, then the largest margin."""
-        return min((STATUS_ORDER.index(cell.status), tick, -(cell.margin or 0))
-                   for tick, cell in enumerate(self.cells))
+    def threat(self) -> bool:
+        """Whether a send breaks the defender at one tick, or a 5/4 send comes close enough to be a potential threat."""
+        return any(cell.status in THREAT_STATUSES for cell in self.cells)
 
 
 TOOLTIP_NAMES = 3
@@ -54,9 +57,9 @@ def name_list(names: list[str]) -> str:
     return f'{shown} +{len(names) - TOOLTIP_NAMES} more' if len(names) > TOOLTIP_NAMES else shown
 
 
-def threat_cell(s: Strike, names: dict[int, str]) -> ThreatCellVM:
-    """The status, margin and tooltip of one strike."""
-    if s.safe_send_margin > 0:
+def threat_cell(s: Strike, names: dict[int, str], potential_margin: float) -> ThreatCellVM:
+    """The status, margin and tooltip of one strike, potential when its 5/4 send is within potential_margin % of the DP."""
+    if s.safe_send_op is not None and s.safe_send_margin > 0:
         return ThreatCellVM(s.safe_send_margin, 'now',
                             f'safe {thousands(s.safe_send_op)} vs DP {thousands(s.defender_dp)}')
     if s.triggers:
@@ -67,7 +70,8 @@ def threat_cell(s: Strike, names: dict[int, str]) -> ThreatCellVM:
         held = name_list([names[code] for code in s.held_by])
         return ThreatCellVM(s.five_four_margin, 'five_four',
                             f'5/4 {thousands(s.five_four_op)} · safe {thousands(s.safe_send_op)} · held: {held}')
-    return ThreatCellVM(s.five_four_margin, 'none',
+    potential = s.five_four_op >= (1 - potential_margin / 100) * s.defender_dp
+    return ThreatCellVM(s.five_four_margin, 'potential' if potential else 'none',
                         f'5/4 {thousands(s.five_four_op)} vs DP {thousands(s.defender_dp)}')
 
 
@@ -81,8 +85,10 @@ def latest_send_after_bs(dom: Dominion, sends: list[TownCrier]) -> TownCrier | N
 
 
 def build_threats_vm(dominions: list[Dominion], events: list[TownCrier], defender_code: int, min_range: float,
-                     max_range: float, max_triggers: int, land_bonus_tick: int | None) -> list[ThreatRowVM]:
-    """A row for every dominion that has the defender in range at one or more ticks, most urgent first."""
+                     max_range: float, max_triggers: int, potential_margin: float,
+                     land_bonus_tick: int | None) -> list[ThreatRowVM]:
+    """The dominions that have the defender below their range, then the ones with the defender in range at one tick,
+    each largest range limit first."""
     names = {dom.code: dom.name for dom in dominions}
     invasions, sends = defaultdict(list), defaultdict(list)
     for event in events:
@@ -94,7 +100,7 @@ def build_threats_vm(dominions: list[Dominion], events: list[TownCrier], defende
         raise ODInfoException(f"{names[defender_code]} has no CS or BS, so there is no military to defend with. "
                               f"Realmies who do not share advisors have no ops.")
     ticks = range(BUILD_TICKS + 1)
-    strikes_per_tick, confidence_per_tick = [], []
+    strikes_per_tick, out_of_range_per_tick, contenders_per_tick, defenders = [], [], [], []
     for tick in ticks:
         contenders = contenders_at(dominions, tick, invasions)
         defender = {c.code: c for c in contenders}[defender_code]
@@ -104,28 +110,38 @@ def build_threats_vm(dominions: list[Dominion], events: list[TownCrier], defende
             defender = claimed
         battlefield = Battlefield(contenders, min_range, max_range, max_triggers)
         strikes_per_tick.append({s.attacker: s for s in battlefield.strikes_on(defender)})
-        confidence_per_tick.append({c.code: c.mc.military.confidence for c in contenders})
+        out_of_range_per_tick.append({s.attacker: s for s in battlefield.strikes_out_of_range(defender)})
+        contenders_per_tick.append({c.code: c for c in contenders})
+        defenders.append(defender)
 
     doms = {dom.code: dom for dom in dominions}
-    rows = []
-    for code in {code for strikes in strikes_per_tick for code in strikes}:
-        back_at = doms[code].military.back_at
-        sent = latest_send_after_bs(doms[code], sends[code])
-        row_cells = []
-        for tick in ticks:
-            strike = strikes_per_tick[tick].get(code)
-            if strike is None:
-                row_cells.append(ThreatCellVM(None, 'out', ''))
+
+    def row(code: int, cells: list[ThreatCellVM], in_range: bool) -> ThreatRowVM:
+        dom = doms[code]
+        back_at = dom.military.back_at
+        sent = latest_send_after_bs(dom, sends[code])
+        for tick, cell in enumerate(cells):
+            if cell.margin is None:
                 continue
-            cell = threat_cell(strike, names)
+            limit = range_limit(contenders_per_tick[tick][code].land, min_range)
+            cell.tooltip += f' · {min_range:g}% at {limit} acres, defender {defenders[tick].land - limit:+d}'
             if back_at is not None and tick < back_at:
                 cell.tooltip += f' · army out, back at +{back_at}'
             if sent is not None and tick < RETURN_TICKS - ticks_since(sent.timestamp):
                 cell.tooltip += f' · sent {hours_since(sent.timestamp)}h ago, after the last BS: take a BS'
-            if confidence_per_tick[tick][code]:
-                cell.tooltip += f' · {confidence_per_tick[tick][code]}'
-            row_cells.append(cell)
-        rows.append(ThreatRowVM(code, doms[code].name, doms[code].realm, doms[code].race,
-                                hours_since(doms[code].last_op) if doms[code].last_op else None, row_cells,
-                                sent is not None))
-    return sorted(rows, key=lambda row: row.sort_key)
+            confidence = contenders_per_tick[tick][code].mc.military.confidence
+            if confidence:
+                cell.tooltip += f' · {confidence}'
+        land = contenders_per_tick[0][code].land
+        return ThreatRowVM(code, dom.name, dom.realm, dom.race, hours_since(dom.last_op) if dom.last_op else None,
+                           sent is not None, land, range_limit(land, min_range), in_range, cells)
+
+    def cells(per_tick: list[dict[int, Strike]], code: int) -> list[ThreatCellVM]:
+        return [threat_cell(per_tick[tick][code], names, potential_margin) if code in per_tick[tick]
+                else ThreatCellVM(None, 'out', '') for tick in ticks]
+
+    in_range_codes = {code for strikes in strikes_per_tick for code in strikes}
+    out_of_range_codes = {code for strikes in out_of_range_per_tick for code in strikes} - in_range_codes
+    in_range_rows = [row(code, cells(strikes_per_tick, code), True) for code in in_range_codes]
+    out_of_range_rows = [row(code, cells(out_of_range_per_tick, code), False) for code in out_of_range_codes]
+    return sorted(out_of_range_rows + in_range_rows, key=lambda r: (r.in_range, -r.limit))

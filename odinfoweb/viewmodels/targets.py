@@ -7,12 +7,11 @@ from datetime import timedelta
 from statistics import median
 
 from odinfo.calculators.military import MilitaryCalculator
+from odinfo.domain.domainhelper import in_range
 from odinfo.domain.models import Dominion, TownCrier
+from odinfo.domain.refdata import MAX_RANGE, MIN_RANGE
 from odinfo.timeutils import current_od_time, hours_since
 
-# Hits under 75% get the bottom-feeding penalties
-MIN_RANGE = 75
-MAX_RANGE = 250
 EXPLORE_WINDOW = 24
 # Land from a hit arrives with the returning units, so an invasion this long ago can still add land
 LAND_ARRIVAL_WINDOW = EXPLORE_WINDOW + 12
@@ -75,9 +74,9 @@ def build_targets_vm(dominions: list[Dominion], attacker_land: int, attacker_tem
 
     result = []
     for dom in dominions:
-        range_percent = dom.current_land / attacker_land * 100
-        if not MIN_RANGE <= range_percent <= MAX_RANGE:
+        if not in_range(dom.current_land, attacker_land, MIN_RANGE, MAX_RANGE):
             continue
+        range_percent = dom.current_land / attacker_land * 100
         sent = sent_by.get(dom.code, [])
         hit = hit_on.get(dom.code, [])
         last_sent = sent[0] if sent else None

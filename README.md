@@ -30,8 +30,9 @@ You need [Docker Desktop](https://www.docker.com/products/docker-desktop/) or
 2. Unzip it to a folder that you can find again, for example `Documents`. This gives you
    the `odinfo-docker` folder. Windows can put it in a second folder with the same name.
    Use the folder that holds `start.bat`.
-3. Open the `odinfo-docker` folder. On Windows, double-click `start.bat`. On Mac/Linux, run
-   `./start.sh` from a terminal.
+3. Open the `odinfo-docker` folder. On Windows, double-click `start.bat`. On Mac,
+   double-click `start.command`. On Linux, run `./start.sh` from a terminal. The first
+   time, macOS blocks the file: the `README.md` in the folder tells you how to allow it.
 4. Edit the two files that the first start makes in `odinfo-docker/instance`:
    `secret.txt` and `users.json`.
 5. Start it again. Open http://localhost:5042 in your browser.
@@ -45,11 +46,11 @@ go into the container.
 
 ```
 odinfo-docker/
-├── start.bat / start.sh                    starts ODInfo, upgrades it first
-├── stop.bat / stop.sh                      stops ODInfo
-├── update_data.bat / update_data.sh        fetches game data now
-├── update_refdata.bat / update_refdata.sh  gets the race and unit data for a new round
-├── logs.bat / logs.sh                      shows what ODInfo does
+├── start.bat / .command / .sh              starts ODInfo, upgrades it first
+├── stop.bat / .command / .sh               stops ODInfo
+├── update_data.bat / .command / .sh        fetches game data now
+├── update_refdata.bat / .command / .sh     gets the race and unit data for a new round
+├── logs.bat / .command / .sh               shows what ODInfo does
 ├── README.md                               all settings and help
 ├── .env                                    your settings, made by the first start
 └── instance/                               your configuration and database
@@ -60,8 +61,9 @@ Back up the `instance` folder. It holds all of your data.
 #### Upgrade
 
 1. Open the `odinfo-docker` folder.
-2. Double-click `stop.bat` (Windows), or run `./stop.sh` (Mac/Linux).
-3. Double-click `start.bat` (Windows), or run `./start.sh` (Mac/Linux). It downloads the
+2. Double-click `stop.bat` (Windows) or `stop.command` (Mac), or run `./stop.sh` (Linux).
+3. Double-click `start.bat` (Windows) or `start.command` (Mac), or run `./start.sh`
+   (Linux). It downloads the
    newest version of ODInfo before it starts.
 
 When you download a newer `odinfo-docker.zip`, copy its files over your `odinfo-docker`

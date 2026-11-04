@@ -44,6 +44,8 @@ NW_UNCHANGED_DEFAULT = 50
 
 # The most dominions that may have to send before an attacker on the Threats page is set free.
 THREAT_MAX_TRIGGERS = 2
+# A 5/4 send at most this percent below the defender's DP is a potential threat on the Threats page.
+POTENTIAL_THREAT_MARGIN = 10
 
 # Knowledge of internal directory and file structure
 

@@ -280,6 +280,9 @@ when a dominion has a survey but no Land Spy.
   return in 9 ticks, the 12 ticks is a best guess. Check it in the game.
 - **Guards**: a guard (Royal, Elite) limits the range in both directions. The first version uses
   the normal range only.
+- **Performance online**: "Show all" hides rows in the browser only, so the server calculates every row
+  of both tables. Measure the load time of `/threats` on PythonAnywhere (MySQL). If it is too slow,
+  calculate the rows that are no threat only when "Show all" is on.
 - **Better threat estimate**: the threat to an attacker can use the safe send of that threat
   instead of its 5/4 send, calculated in a second pass. That gives an upper value next to the
   lower value. Add it only if the lower value turns out to be too careful.

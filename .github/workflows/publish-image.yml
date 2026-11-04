@@ -66,7 +66,7 @@ jobs:
       run: |
         cp -r docker-dist odinfo-docker
         rm -f odinfo-docker/.gitignore
-        chmod +x odinfo-docker/*.sh
+        chmod +x odinfo-docker/*.sh odinfo-docker/*.command
         zip -r odinfo-docker.zip odinfo-docker
 
     - name: Release

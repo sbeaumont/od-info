@@ -12,7 +12,7 @@ from typing import Iterator
 from datetime import datetime
 
 from sqlalchemy import select, func, update, delete, or_
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from odinfo.domain.models import (
     Dominion, DominionHistory, DominionStatus, TownCrier, ClearSight, BarracksSpy, CastleSpy,
@@ -21,6 +21,11 @@ from odinfo.domain.models import (
 
 
 logger = logging.getLogger('od-info.repository')
+
+# Without these, every op list of every dominion is a query of its own, a round trip each on MySQL.
+OPS_OF_EVERY_DOMINION = [selectinload(relation) for relation in (
+    Dominion.history, Dominion.clear_sight, Dominion.barracks_spy, Dominion.castle_spy, Dominion.land_spy,
+    Dominion.survey_dominion, Dominion.vision, Dominion.revelation)]
 
 
 class GameRepository:
@@ -68,7 +73,8 @@ class GameRepository:
         """Return the dominions that are not in protection, locked or abandoned."""
         out_of_play = select(DominionStatus.dominion_id).where(
             or_(DominionStatus.in_protection, DominionStatus.locked, DominionStatus.abandoned))
-        return self._session.execute(select(Dominion).where(Dominion.code.not_in(out_of_play))).scalars()
+        return self._session.execute(
+            select(Dominion).where(Dominion.code.not_in(out_of_play)).options(*OPS_OF_EVERY_DOMINION)).scalars()
 
     def get_dominion(self, dom_id: int) -> Dominion | None:
         """Get a dominion by its code/id."""

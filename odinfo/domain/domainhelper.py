@@ -1,9 +1,18 @@
 from collections import defaultdict
 from datetime import timedelta
-from math import trunc, exp, inf
+from math import ceil, trunc, exp, inf
 
 from odinfo.domain.refdata import TechTree, MASONRY_MULTIPLIER, IMP_FACTORS
 from odinfo.timeutils import hours_until, ticks_since
+
+
+def in_range(target_land: int, attacker_land: int, min_range: float, max_range: float) -> bool:
+    return min_range <= target_land / attacker_land * 100 <= max_range
+
+
+def range_limit(attacker_land: int, min_range: float) -> int:
+    """The smallest land the attacker has in range."""
+    return ceil(attacker_land * min_range / 100)
 
 NON_HOME_TYPES = (
     'alchemy',

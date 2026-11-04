@@ -6,15 +6,15 @@
 
       uv run python check_explanations.py --stamp odinfoweb/templates/threats-explained.html
 #}
-{% set reviewed_on = '2026-11-03' %}
+{% set reviewed_on = '2026-11-04' %}
 {#- doc-sources
-odinfo/calculators/threats.py 559d0e178bb865b2
-odinfo/domain/domainhelper.py dd57594f9fd010fb
+odinfo/calculators/threats.py d78ad60810dedf11
+odinfo/domain/domainhelper.py 876f24af71133e57
 odinfo/domain/military.py 499bfc3253cf83a6
 odinfo/domain/models.py 825d7554fdb2d6d2
-odinfoweb/templates/threats.html e95548eaca1f75e8
-odinfoweb/viewmodels/about.py 67f17eee1f9e51ea
-odinfoweb/viewmodels/threats.py 5e27aad174e6e250
+odinfoweb/templates/threats.html 30e92858a23d9436
+odinfoweb/viewmodels/about.py c7f4e00e8415197f
+odinfoweb/viewmodels/threats.py e54d6600510d35bd
 -#}
 
 {% block content %}
@@ -131,6 +131,36 @@ odinfoweb/viewmodels/threats.py 5e27aad174e6e250
     is less likely.
   </p>
 
+  <h2>The two tables</h2>
+  <p>
+    <strong>Out of range</strong> holds the dominions that have the defender below their
+    minimum range at every tick. These are the larger dominions that the defender can grow into
+    range of: from a hit of its own, from exploring or from a daily land bonus. A hit can make
+    the defender jump far, so the table holds them at any distance. The cells show what the
+    dominion can do if the defender were in its range at that tick.
+  </p>
+  <p>
+    <strong>In range</strong> holds every attacker that has the defender in range at one or
+    more of the {{ vm.horizon }} ticks.
+  </p>
+  <p>
+    Both tables start with the largest {{ vm.min_range }}% limit. So the page goes from the
+    largest dominion at the top, through the ones just above your range, down to the smallest
+    attacker.
+  </p>
+  <p>
+    Both tables show a dominion only when it is a threat: one or more cells are red, orange,
+    yellow or a potential threat. A potential threat is a 5/4 send that does not break the
+    defender, but comes within {{ vm.potential_margin }}% of the DP of the defender. Tick
+    "Show all" to see the other dominions too.
+  </p>
+  <p>
+    The {{ vm.min_range }}% column of both tables shows the smallest land that the dominion has
+    in range now. The tooltip of each cell shows that limit at the tick, and how many acres the
+    defender is above it (+) or below it (−). In the Out of range table, this tells you how many
+    acres you can still grow. In the In range table, it tells you how far you are from getting
+    out of range.
+  </p>
   <h2>Reading the grid</h2>
 
   <table class="w3-table w3-striped-dark w3-bordered w3-border">
@@ -140,6 +170,7 @@ odinfoweb/viewmodels/threats.py 5e27aad174e6e250
     <tr><td>Red</td><td>Safe send margin</td><td>The safe send breaks the defender now.</td></tr>
     <tr><td>Orange</td><td>Safe send margin after the triggers</td><td>The safe send breaks the defender after the triggers send. The tooltip names them.</td></tr>
     <tr><td>Yellow</td><td>5/4 margin</td><td>Only a full 5/4 send breaks the defender, and that send is not safe. The tooltip names the threats that hold the attacker back.</td></tr>
+    <tr><td>Pale yellow</td><td>5/4 margin</td><td>Potential threat: a 5/4 send cannot break the defender at this tick, but comes within {{ vm.potential_margin }}% of its DP. More training, an OP spell or a drop in the DP of the defender can make it break.</td></tr>
     <tr><td>No color</td><td>5/4 margin</td><td>Even a 5/4 send cannot break the defender.</td></tr>
     <tr><td>Dark grey</td><td>empty</td><td>The attacker does not have the defender in range at this tick.</td></tr>
   </table>
@@ -156,9 +187,7 @@ odinfoweb/viewmodels/threats.py 5e27aad174e6e250
     numbers are: "locked" for exact numbers, or the fuzz that is left, for example "±8%".
   </p>
   <p>
-    The rows go from most urgent to least urgent: red first,
-    then orange, then yellow, and the earliest tick first. A row with ops older than
-    {{ vm.horizon }} hours is dim.
+    A row with ops older than {{ vm.horizon }} hours is dim.
   </p>
 
   <h2>What the tab leaves out</h2>

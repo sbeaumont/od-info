@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from odinfo.calculators.military import MilitaryCalculator
+from odinfo.domain.domainhelper import in_range, range_limit
 from odinfo.domain.models import Dominion
 
 
@@ -26,7 +27,7 @@ class Strike:
     attacker: int
     defender_dp: int
     five_four_op: int
-    safe_send_op: int
+    safe_send_op: int | None
     held_by: list[int]
     triggers: list[Trigger]
     triggered_op: int | None
@@ -37,8 +38,8 @@ class Strike:
         return self.five_four_op - self.defender_dp
 
     @property
-    def safe_send_margin(self) -> int:
-        return self.safe_send_op - self.defender_dp
+    def safe_send_margin(self) -> int | None:
+        return None if self.safe_send_op is None else self.safe_send_op - self.defender_dp
 
     @property
     def triggered_margin(self) -> int | None:
@@ -50,10 +51,6 @@ def contenders_at(doms: list[Dominion], tick: int, invasions: dict[int, list]) -
     return [Contender(dom.code, dom.realm, dom.land_at(tick, invasions.get(dom.code, [])),
                       MilitaryCalculator(dom, tick))
             for dom in doms if dom.military]
-
-
-def in_range(target_land: int, attacker_land: int, min_range: float, max_range: float) -> bool:
-    return min_range <= target_land / attacker_land * 100 <= max_range
 
 
 def threats_to(attacker: Contender, contenders: list[Contender], min_range: float,
@@ -101,6 +98,11 @@ class Battlefield(object):
             return attacker.mc.op_with_temples(safe_send(attacker, threat_op), defense_bonus)
 
         five_four_op = attacker.mc.five_four_op_with_temples(defense_bonus)
+        lowest_dp = (defender.mc.five_over_four[1]
+                     if in_range(attacker.land, defender.land, self.min_range, self.max_range) else defender_dp)
+        # No send is more than the 5/4 send, and a defender that sends still keeps its 5/4 home DP.
+        if five_four_op <= lowest_dp:
+            return Strike(attacker.code, defender_dp, five_four_op, None, [], [], None, None)
         safe_send_op = op_at_defender(0)
         triggers, triggered_op, triggered_dp = [], None, None
         if safe_send_op <= defender_dp:
@@ -122,3 +124,9 @@ class Battlefield(object):
         return [self.strike(c, defender)
                 for c in self.contenders
                 if c.realm != defender.realm and in_range(defender.land, c.land, self.min_range, self.max_range)]
+
+    def strikes_out_of_range(self, defender: Contender) -> list[Strike]:
+        """A strike, as if in range, for every dominion in another realm that has the defender below its minimum range."""
+        return [self.strike(c, defender)
+                for c in self.contenders
+                if c.realm != defender.realm and defender.land < range_limit(c.land, self.min_range)]

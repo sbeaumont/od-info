@@ -1,6 +1,7 @@
 import unittest
 
-from odinfo.calculators.threats import Battlefield, contenders_at, in_range, safe_send, threats_to
+from odinfo.calculators.threats import Battlefield, contenders_at, safe_send, threats_to
+from odinfo.domain.domainhelper import in_range, range_limit
 from odinfo.domain.models import ClearSight, Dominion, DominionHistory
 from odinfo.timeutils import current_od_time
 from test.fixtures import create_db_session
@@ -43,6 +44,12 @@ class ThreatsTestCase(unittest.TestCase):
         self.assertTrue(in_range(250, 100, MIN_RANGE, MAX_RANGE))
         self.assertFalse(in_range(74, 100, MIN_RANGE, MAX_RANGE))
         self.assertFalse(in_range(251, 100, MIN_RANGE, MAX_RANGE))
+
+    def test_the_range_limit_is_the_smallest_land_in_range(self):
+        self.assertEqual(751, range_limit(1001, MIN_RANGE))
+        self.assertTrue(in_range(751, 1001, MIN_RANGE, MAX_RANGE))
+        self.assertFalse(in_range(750, 1001, MIN_RANGE, MAX_RANGE))
+        self.assertEqual(750, range_limit(1000, MIN_RANGE))
 
     def test_threats_are_other_realms_with_the_attacker_in_range_strongest_first(self):
         c = self.contenders(
@@ -130,6 +137,21 @@ class ThreatsTestCase(unittest.TestCase):
         self.assertEqual([1], [t.code for t in result.triggers])
         self.assertEqual(defender.mc.five_over_four[1], result.triggered_dp)
         self.assertGreater(result.triggered_margin, 0)
+
+    def test_a_5_4_send_under_the_lowest_dp_of_the_defender_skips_the_safe_send(self):
+        c = self.contenders(make_dominion(self.session, 1, realm=1, land=1000, miners=5000),
+                            make_dominion(self.session, 2, realm=2, land=1000, warriors=100, miners=5000))
+        strike = self.strike(c[2], c[1], c)
+        self.assertIsNone(strike.safe_send_op)
+        self.assertEqual([], strike.triggers)
+
+    def test_strikes_out_of_range_come_from_other_realms_with_the_defender_below_their_range(self):
+        c = self.contenders(make_dominion(self.session, 1, realm=1, land=700, miners=5000),
+                            make_dominion(self.session, 2, realm=2, land=1000, warriors=100),
+                            make_dominion(self.session, 3, realm=2, land=900, warriors=100),
+                            make_dominion(self.session, 4, realm=1, land=1000, warriors=100))
+        battlefield = Battlefield(list(c.values()), MIN_RANGE, MAX_RANGE, MAX_TRIGGERS)
+        self.assertEqual([2], [strike.attacker for strike in battlefield.strikes_out_of_range(c[1])])
 
     def test_strikes_come_from_other_realms_in_range(self):
         c = self.contenders(

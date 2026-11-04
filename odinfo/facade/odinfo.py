@@ -14,7 +14,7 @@ from typing import Callable
 
 from odinfo.calculators.military import MilitaryCalculator
 from odinfo.calculators.networthcalculator import get_networth_deltas
-from odinfo.config import Config, THREAT_MAX_TRIGGERS
+from odinfo.config import Config, POTENTIAL_THREAT_MARGIN, THREAT_MAX_TRIGGERS
 from odinfo.repositories.game import GameRepository
 from odinfo.domain.models import Dominion, MyDominion
 from odinfo.timeutils import hours_since, add_duration, current_od_time
@@ -273,7 +273,8 @@ class ODInfoFacade(object):
 
         logger.debug("Computing threats for %s", cache_key)
         result = build_threats_vm(list(self._repo.dominions_in_play()), list(self._repo.all_town_crier_events()),
-                                  defender_code, min_range, max_range, THREAT_MAX_TRIGGERS, land_bonus_tick)
+                                  defender_code, min_range, max_range, THREAT_MAX_TRIGGERS, POTENTIAL_THREAT_MARGIN,
+                                  land_bonus_tick)
         self._cache[cache_key] = result
         return result
 

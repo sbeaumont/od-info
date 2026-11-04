@@ -21,12 +21,13 @@ from odinfo.timeutils import current_od_time
 from odinfoweb.forms import LoginForm
 
 from odinfo.domain.models import Base
-from odinfo.domain.refdata import TEMPLE_BONUS_PER_PERC, MAX_TEMPLE_BONUS, BUILD_TICKS, DAILY_LAND_BONUS
+from odinfo.domain.refdata import TEMPLE_BONUS_PER_PERC, MAX_TEMPLE_BONUS, BUILD_TICKS, DAILY_LAND_BONUS, MAX_RANGE, MIN_RANGE
 from odinfoweb.user import load_user_by_id, load_user_by_name
 
 from odinfo.config import (OP_CENTER_URL, WEB_PORT, NW_PERIODS, NW_DEFAULT_PERIOD,
-                           NW_ROW_COUNTS, NW_UNCHANGED_DEFAULT, DATE_TIME_FORMAT, SECRET_FILE, load_secrets,
-                           check_dirs_and_configs, get_config, executable_path, write_secrets)
+                           NW_ROW_COUNTS, NW_UNCHANGED_DEFAULT, SECRET_FILE, load_secrets,
+                           check_dirs_and_configs, get_config, executable_path, write_secrets,
+                           POTENTIAL_THREAT_MARGIN)
 from odinfo.facade.cache import FacadeCache
 from odinfo.facade.odinfo import ODInfoFacade
 from odinfo.facade.graphs import nw_history_graph, land_history_graph
@@ -38,7 +39,6 @@ from odinfoweb.viewmodels.dominfo import build_dominfo_vm
 from odinfoweb.viewmodels.economy import build_economy_vm
 from odinfoweb.viewmodels.opexplained import build_op_explained_vm
 from odinfoweb.viewmodels.about import build_nw_tracker_vm, build_philosophy_vm, build_threats_explained_vm
-from odinfoweb.viewmodels.targets import MIN_RANGE, MAX_RANGE
 
 # ---------------------------------------------------------------------- Flask
 
@@ -148,6 +148,23 @@ def inject_config():
     return {'feature_toggles': get_config().feature_toggles}
 
 
+@app.context_processor
+def inject_times():
+    """Inject the OD time and the time of the last update into all templates."""
+    if not current_user.is_authenticated:
+        return {}
+    # The error page renders the sidebar too, so a failure here must not raise.
+    try:
+        time_last_update = facade().time_last_update()
+        return {
+            'current_time': current_od_time(as_str=True),
+            'time_since_last_update': format_span(current_od_time() - time_last_update),
+        }
+    except Exception as e:
+        app.logger.error("Could not read the time of the last update: %s", e, exc_info=e)
+        return {'time_error': f"Could not read the last update: {e.__class__.__name__}"}
+
+
 # ---------------------------------------------------------------------- Error Handlers
 
 @app.errorhandler(ODInfoException)
@@ -234,12 +251,6 @@ def favicon():
 @app.route('/dominfo/', methods=['GET', 'POST'])
 @login_required
 def overview():
-    if request.args.get('update'):
-        facade().update_dom_index()
-        facade().update_all()
-        facade().update_realmies()
-        facade().update_realms()
-        facade().update_town_crier()
     if request.method == 'POST':
         for k, v in request.form.items():
             if k.startswith('role.'):
@@ -250,13 +261,21 @@ def overview():
                 prefix, dom, old_name = k.split('.', 2)
                 if old_name != v:
                     facade().update_player(dom, v)
-    time_last_update = facade().time_last_update()
-    return render_template(
-        'overview.html',
-        doms=facade().dom_list(),
-        current_time=current_od_time(as_str=True),
-        time_last_update=time_last_update.strftime(DATE_TIME_FORMAT),
-        time_since_last_update=format_span(current_od_time() - time_last_update))
+    return render_template('overview.html', doms=facade().dom_list())
+
+
+@app.route('/refresh')
+@login_required
+def refresh():
+    next_page = request.args.get('next', flask.url_for('overview'))
+    if not next_page.startswith('/') or next_page.startswith('//'):
+        flask.abort(400)
+    facade().update_dom_index()
+    facade().update_all()
+    facade().update_realmies()
+    facade().update_realms()
+    facade().update_town_crier()
+    return flask.redirect(next_page)
 
 
 @app.route('/dominfo/<domcode>')
@@ -265,6 +284,7 @@ def overview():
 def dominfo(domcode: int, update=None):
     if update == 'update':
         facade().update_single_dom(domcode)
+        return flask.redirect(flask.url_for('dominfo', domcode=domcode))
     nw_history = facade().nw_history(domcode)
     dominion = facade().dominion(domcode)
     current_strength = facade().current_strength(dominion)
@@ -282,8 +302,6 @@ def dominfo(domcode: int, update=None):
 @app.route('/towncrier')
 @login_required
 def towncrier():
-    if request.args.get('update'):
-        facade().update_town_crier()
     return render_template('towncrier.html',
                             towncrier=facade().get_town_crier())
 
@@ -291,10 +309,9 @@ def towncrier():
 @app.route('/stats')
 @login_required
 def stats():
-    if request.args.get('update'):
-        facade().update_town_crier()
     if request.args.get('reload'):
         facade().reload_town_crier()
+        return flask.redirect(flask.url_for('stats'))
     return render_template('stats.html',
                             stats=facade().award_stats())
 
@@ -436,6 +453,7 @@ def threats():
                            max_range=MAX_RANGE,
                            land_bonus_tick=land_bonus_tick,
                            daily_land_bonus=DAILY_LAND_BONUS,
+                           potential_margin=POTENTIAL_THREAT_MARGIN,
                            ticks=range(BUILD_TICKS + 1),
                            realms=sorted({row.realm for row in rows}))
 

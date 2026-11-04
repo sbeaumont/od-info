@@ -5,8 +5,9 @@ This runs ODInfo without installing Python or anything else. All you need is eit
 
 ## First Time Setup
 
-1. **Start it**: double-click `start.bat` on Windows, or run `./start.sh` on macOS and
-   Linux. The first start downloads ODInfo and creates the configuration files for you.
+1. **Start it**: double-click `start.bat` on Windows or `start.command` on macOS, or run
+   `./start.sh` on Linux. The first start downloads ODInfo and creates the configuration
+   files for you. On macOS, see [the first double-click](#the-first-double-click-on-macos).
 2. **Edit the configuration files** it just made:
    - `instance/secret.txt` - your OpenDominion credentials and settings
    - `instance/users.json` - your login for the web interface
@@ -29,7 +30,21 @@ scripts and the ODInfo version go together. The zip has no `instance/` folder an
 ## The Scripts
 
 Use these and you never have to type a Podman or Docker command yourself. On Windows use
-the `.bat` version of each, on macOS and Linux the `.sh` version.
+the `.bat` version of each, on macOS the `.command` version, and on Linux the `.sh`
+version. A `.command` file opens a Terminal window and runs the `.sh` file of the same
+name. Close the window when the script is done.
+
+### The first double-click on macOS
+
+macOS blocks a script that comes from the internet the first time you open it. It shows
+a message that it cannot verify the file. Do these steps once for each `.command` file:
+
+1. Click **Done** in the message.
+2. Open **System Settings** and go to **Privacy & Security**.
+3. Scroll down and click **Open Anyway** next to the name of the file.
+4. Confirm with your password.
+
+After that, a double-click is enough.
 
 | Script            | What it does                                                    |
 |-------------------|-----------------------------------------------------------------|

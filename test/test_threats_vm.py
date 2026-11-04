@@ -10,6 +10,9 @@ from test.calculators.test_threats import make_dominion
 from test.fixtures import create_db_session
 
 NAMES = {1: 'Defender', 2: 'Attacker', 3: 'Vex', 4: 'Kragg'}
+MIN_RANGE = 75
+MAX_RANGE = 250
+POTENTIAL_MARGIN = 10
 
 
 def make_strike(five_four_op: int, safe_send_op: int, triggers=(), triggered_op=None, triggered_dp=None) -> Strike:
@@ -19,22 +22,26 @@ def make_strike(five_four_op: int, safe_send_op: int, triggers=(), triggered_op=
 
 class ThreatCellTest(unittest.TestCase):
     def test_safe_send_that_breaks_is_now(self):
-        cell = threat_cell(make_strike(14000, 12000), NAMES)
+        cell = threat_cell(make_strike(14000, 12000), NAMES, POTENTIAL_MARGIN)
         self.assertEqual(('now', 2000), (cell.status, cell.margin))
 
     def test_safe_send_after_triggers_is_triggered(self):
-        cell = threat_cell(make_strike(14000, 9000, [Trigger(3, True)], 11000, 10000), NAMES)
+        cell = threat_cell(make_strike(14000, 9000, [Trigger(3, True)], 11000, 10000), NAMES, POTENTIAL_MARGIN)
         self.assertEqual(('triggered', 1000), (cell.status, cell.margin))
         self.assertIn('after Vex (free)', cell.tooltip)
 
     def test_only_a_5_4_send_that_breaks_is_five_four(self):
-        cell = threat_cell(make_strike(14000, 9000), NAMES)
+        cell = threat_cell(make_strike(14000, 9000), NAMES, POTENTIAL_MARGIN)
         self.assertEqual(('five_four', 4000), (cell.status, cell.margin))
         self.assertIn('held: Vex, Kragg', cell.tooltip)
 
-    def test_no_send_that_breaks_is_none(self):
-        cell = threat_cell(make_strike(9000, 8000), NAMES)
-        self.assertEqual(('none', -1000), (cell.status, cell.margin))
+    def test_a_5_4_send_within_the_potential_margin_is_potential(self):
+        cell = threat_cell(make_strike(9000, 8000), NAMES, POTENTIAL_MARGIN)
+        self.assertEqual(('potential', -1000), (cell.status, cell.margin))
+
+    def test_a_5_4_send_below_the_potential_margin_is_none(self):
+        cell = threat_cell(make_strike(8999, 8000), NAMES, POTENTIAL_MARGIN)
+        self.assertEqual(('none', -1001), (cell.status, cell.margin))
 
 
 class NameListTest(unittest.TestCase):
@@ -55,7 +62,7 @@ class DefenderWithoutOpsTest(unittest.TestCase):
         session.flush()
 
         with self.assertRaisesRegex(ODInfoException, 'No Advisors has no CS or BS'):
-            build_threats_vm([defender, attacker], [], 1, 75, 250, 2, None)
+            build_threats_vm([defender, attacker], [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None)
 
 
 class ArmyOutTest(unittest.TestCase):
@@ -68,7 +75,7 @@ class ArmyOutTest(unittest.TestCase):
             training={}, returning={'unit4': {'6': 1000}}, timestamp=attacker.last_cs.timestamp))
         session.flush()
 
-        row = build_threats_vm([defender, attacker], [], 1, 75, 250, 2, None)[0]
+        row = build_threats_vm([defender, attacker], [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None)[0]
 
         self.assertIn('army out, back at +6', row.cells[5].tooltip)
         self.assertNotIn('army out', row.cells[6].tooltip)
@@ -84,26 +91,75 @@ class SentAfterBarracksSpyTest(unittest.TestCase):
         hit = TownCrier(origin=2, target=3, event_type='invasion', amount=10,
                         timestamp=current_od_time() - timedelta(hours=2))
 
-        row = build_threats_vm([defender, attacker], [hit], 1, 75, 250, 2, None)[0]
+        row = build_threats_vm([defender, attacker], [hit], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None)[0]
 
         self.assertTrue(row.sent_after_bs)
         self.assertIn('sent 2h ago, after the last BS: take a BS', row.cells[9].tooltip)
         self.assertNotIn('take a BS', row.cells[10].tooltip)
 
 
-class ThreatRowOrderTest(unittest.TestCase):
-    def row(self, *cells: ThreatCellVM) -> ThreatRowVM:
-        return ThreatRowVM(2, 'Attacker', 2, 'Dwarf', 0, list(cells))
+class RowSelectionTest(unittest.TestCase):
+    def setUp(self):
+        self.session = create_db_session()
 
-    def test_a_red_cell_comes_before_an_earlier_orange_cell(self):
-        red_later = self.row(ThreatCellVM(-1, 'none', ''), ThreatCellVM(500, 'now', ''))
-        orange_now = self.row(ThreatCellVM(9000, 'triggered', ''), ThreatCellVM(9000, 'triggered', ''))
-        self.assertLess(red_later.sort_key, orange_now.sort_key)
+    def rows(self, *doms):
+        self.session.flush()
+        return {row.code: row
+                for row in build_threats_vm(list(doms), [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None)}
 
-    def test_the_earlier_tick_comes_first_for_the_same_status(self):
-        red_now = self.row(ThreatCellVM(100, 'now', ''), ThreatCellVM(100, 'now', ''))
-        red_later = self.row(ThreatCellVM(None, 'out', ''), ThreatCellVM(9000, 'now', ''))
-        self.assertLess(red_now.sort_key, red_later.sort_key)
+    def test_a_5_4_send_more_than_the_potential_margin_below_the_dp_is_no_threat(self):
+        rows = self.rows(make_dominion(self.session, 1, realm=1, land=1000, miners=5000),
+                         make_dominion(self.session, 2, realm=2, land=1000, warriors=2000, miners=50000))
+        self.assertEqual(14000 - 16500, rows[2].cells[0].margin)
+        self.assertTrue(rows[2].in_range)
+        self.assertFalse(rows[2].threat)
+
+    def test_a_5_4_send_within_the_potential_margin_of_the_dp_is_a_potential_threat(self):
+        rows = self.rows(make_dominion(self.session, 1, realm=1, land=1000, miners=5000),
+                         make_dominion(self.session, 2, realm=2, land=1000, warriors=2200, miners=50000))
+        cell = rows[2].cells[0]
+        self.assertEqual(('potential', 15400 - 16500), (cell.status, cell.margin))
+        self.assertTrue(rows[2].threat)
+        self.assertIn('75% at 750 acres, defender +250', cell.tooltip)
+
+    def test_a_threat_with_the_defender_below_its_range_is_out_of_range_with_its_limit(self):
+        rows = self.rows(make_dominion(self.session, 1, realm=1, land=700, miners=5000),
+                         make_dominion(self.session, 2, realm=2, land=1000, warriors=9000, miners=50000))
+        self.assertFalse(rows[2].in_range)
+        self.assertEqual(750, rows[2].limit)
+        self.assertEqual('now', rows[2].cells[0].status)
+        self.assertTrue(rows[2].threat)
+        self.assertIn('75% at 750 acres, defender -50', rows[2].cells[0].tooltip)
+
+    def test_an_out_of_range_dominion_that_cannot_break_the_defender_is_no_threat(self):
+        rows = self.rows(make_dominion(self.session, 1, realm=1, land=700, miners=5000),
+                         make_dominion(self.session, 2, realm=2, land=1000, warriors=100, miners=5000))
+        self.assertFalse(rows[2].in_range)
+        self.assertFalse(rows[2].threat)
+
+    def test_out_of_range_rows_come_before_in_range_rows(self):
+        doms = [make_dominion(self.session, 1, realm=1, land=700, miners=5000),
+                make_dominion(self.session, 2, realm=2, land=1000, warriors=9000, miners=50000),
+                make_dominion(self.session, 3, realm=2, land=800, warriors=100, miners=5000)]
+        self.session.flush()
+        rows = build_threats_vm(doms, [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None)
+        self.assertEqual([(2, False), (3, True)], [(row.code, row.in_range) for row in rows])
+
+    def test_each_table_starts_with_the_largest_range_limit(self):
+        doms = [make_dominion(self.session, 1, realm=1, land=700, miners=5000),
+                make_dominion(self.session, 2, realm=2, land=800, warriors=100),
+                make_dominion(self.session, 3, realm=2, land=900, warriors=100),
+                make_dominion(self.session, 4, realm=2, land=1000, warriors=100),
+                make_dominion(self.session, 5, realm=2, land=1100, warriors=100)]
+        self.session.flush()
+        rows = build_threats_vm(doms, [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None)
+        self.assertEqual([(5, False), (4, False), (3, True), (2, True)], [(row.code, row.in_range) for row in rows])
+
+    def test_a_dominion_with_the_defender_far_below_its_range_is_out_of_range(self):
+        rows = self.rows(make_dominion(self.session, 1, realm=1, land=700, miners=5000),
+                         make_dominion(self.session, 2, realm=2, land=3000, warriors=9000, miners=50000))
+        self.assertFalse(rows[2].in_range)
+        self.assertTrue(rows[2].threat)
 
 
 if __name__ == '__main__':

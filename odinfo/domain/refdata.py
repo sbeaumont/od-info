@@ -21,6 +21,9 @@ DAILY_LAND_BONUS = game_constants['daily_land_bonus']
 CONQUEST_LAND_FACTOR = game_constants['conquest_land_factor']
 LAND_ARRIVAL_TICKS = game_constants['land_arrival_ticks']
 RETURN_TICKS = game_constants['return_ticks']
+# The tool does not know guard status, so every dominion counts as unguarded.
+MIN_RANGE = game_constants['bottom_feeding_range']
+MAX_RANGE = game_constants['guard_ranges']['none']['max']
 MASONRY_MULTIPLIER = game_constants['masonry_multiplier']
 # Building bonuses run per percent of land owned and all cap out at 20% owned.
 GT_DEFENSE_FACTOR = game_constants['gt_defense_factor']

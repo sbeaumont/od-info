@@ -8,10 +8,9 @@ templates, so the explanation cannot drift away from what the tool actually does
 from dataclasses import dataclass
 
 from odinfo.config import (NW_PERIODS, NW_DEFAULT_PERIOD, NW_ROW_COUNTS,
-                           NW_UNCHANGED_DEFAULT, THREAT_MAX_TRIGGERS)
-from odinfo.domain.refdata import BUILD_TICKS, CONQUEST_LAND_FACTOR, DAILY_LAND_BONUS, LAND_ARRIVAL_TICKS
+                           NW_UNCHANGED_DEFAULT, THREAT_MAX_TRIGGERS, POTENTIAL_THREAT_MARGIN)
+from odinfo.domain.refdata import BUILD_TICKS, CONQUEST_LAND_FACTOR, DAILY_LAND_BONUS, LAND_ARRIVAL_TICKS, MAX_RANGE, MIN_RANGE
 from odinfo.services.report_service import BOT_REALM, TOP_BOTTOM_COUNT
-from odinfoweb.viewmodels.targets import MIN_RANGE, MAX_RANGE
 
 
 @dataclass
@@ -51,6 +50,7 @@ class ThreatsExplainedVM:
     conquest_land_factor: int
     land_arrival_ticks: int
     max_triggers: int
+    potential_margin: int
 
 
 def build_threats_explained_vm() -> ThreatsExplainedVM:
@@ -60,4 +60,5 @@ def build_threats_explained_vm() -> ThreatsExplainedVM:
                               daily_land_bonus=DAILY_LAND_BONUS,
                               conquest_land_factor=CONQUEST_LAND_FACTOR,
                               land_arrival_ticks=LAND_ARRIVAL_TICKS,
-                              max_triggers=THREAT_MAX_TRIGGERS)
+                              max_triggers=THREAT_MAX_TRIGGERS,
+                              potential_margin=POTENTIAL_THREAT_MARGIN)

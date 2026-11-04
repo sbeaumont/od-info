@@ -2,9 +2,11 @@
 {% block extrascripts %}
 <style>
   td.threat-cell { text-align: right; white-space: nowrap; }
-  .threat-now { background-color: #c62828; color: white; }
-  .threat-triggered { background-color: #ef6c00; color: white; }
-  .threat-five_four { background-color: #fdd835; color: black; }
+  /* ColorBrewer YlOrRd: one ramp, light to dark, so the order shows in the color. */
+  .threat-now { background-color: #e31a1c; color: white; }
+  .threat-triggered { background-color: #fd8d3c; color: black; }
+  .threat-five_four { background-color: #fecc5c; color: black; }
+  .threat-potential { background-color: #ffffb2; color: black; }
   .threat-out { background-color: #303030; }
   tr.old-ops td { opacity: 0.5; }
   .threat-legend { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 10px; font-size: 0.9em; }
@@ -51,32 +53,40 @@
     </form>
 
     <div class="threat-legend">
-        <span><span class="swatch threat-now">+k</span>breaks now</span>
-        <span><span class="swatch threat-triggered">+k</span>after sends</span>
-        <span><span class="swatch threat-five_four">+k</span>risky 5/4</span>
+        <span><span class="swatch threat-now">+k</span>breaks you, safe send</span>
+        <span><span class="swatch threat-triggered">+k</span>breaks you after others send</span>
+        <span><span class="swatch threat-five_four">+k</span>breaks you, risky 5/4</span>
+        <span><span class="swatch threat-potential">−k</span>potential threat ({{ potential_margin }}% margin)</span>
         <span><span class="swatch">−k</span>safe</span>
         <span><span class="swatch threat-out">&nbsp;</span>out of range</span>
         <span>k = OP at home − your DP</span>    </div>
 
+    {% macro threat_table(title, table_rows) %}
+    <h4>{{ title }} ({{ table_rows|length }})</h4>
     <div class="od-table-container">
-        <table id="threatTable" class="w3-table w3-striped-dark w3-bordered w3-border">
+        <table class="threat-table w3-table w3-striped-dark w3-bordered w3-border">
         <thead>
             <tr class="w3-black">
                 <th>Attacker</th>
                 <th>Realm</th>
                 <th>Race</th>
                 <th>Ops Age</th>
+                <th>Land</th>
+                <th title="The smallest land this dominion has in range now">{{ '%g' % min_range }}%</th>
                 {% for tick in ticks %}
                 <th>{{ '+%d' % tick if tick else 'now' }}</th>
                 {% endfor %}
             </tr>
         </thead>
-        {% for row in rows %}
-        <tr data-realm="{{ row.realm }}" {% if row.ops_age is none or row.ops_age > 12 or row.sent_after_bs %}class="old-ops"{% endif %}>
+        {% for row in table_rows %}
+        <tr data-realm="{{ row.realm }}"
+            class="{% if row.ops_age is none or row.ops_age > 12 or row.sent_after_bs %}old-ops{% endif %} {% if not row.threat %}no-threat{% endif %}">
             <td><a href="{{ url_for('dominfo', domcode=row.code) }}">{{ row.name }}</a></td>
             <td>{{ row.realm }}</td>
             <td>{{ row.race }}</td>
             <td>{{ row.ops_age if row.ops_age is not none else '-' }}</td>
+            <td>{{ row.land }}</td>
+            <td>{{ row.limit }}</td>
             {% for cell in row.cells %}
             <td class="threat-cell threat-{{ cell.status }}" title="{{ cell.tooltip }}">
                 {% if cell.margin is not none %}{{ '%+.1fk' % (cell.margin / 1000) }}{% endif %}
@@ -86,6 +96,13 @@
         {% endfor %}
         </table>
     </div><br>
+    {% endmacro %}
+
+    <label title="Also show the dominions whose 5/4 send stays more than {{ potential_margin }}% below the defender's DP at every tick.">
+        <input type="checkbox" id="show-all"> Show all
+    </label>
+    {{ threat_table('Out of range', rows|rejectattr('in_range')|list) }}
+    {{ threat_table('In range', rows|selectattr('in_range')|list) }}
   </div>
 
 <script>
@@ -102,11 +119,19 @@
     const hiddenRealmsKey = 'threats-hidden-realms';
     const savedHiddenRealms = localStorage.getItem(hiddenRealmsKey);
     const hiddenRealms = new Set(savedHiddenRealms !== null ? JSON.parse(savedHiddenRealms) : []);
+    const showAllKey = 'threats-show-all';
+    const showAll = document.getElementById('show-all');
+    showAll.checked = localStorage.getItem(showAllKey) === 'true';
     function showRealms() {
-        document.querySelectorAll('#threatTable tr[data-realm]').forEach(row => {
-            row.style.display = hiddenRealms.has(row.dataset.realm) ? 'none' : '';
+        document.querySelectorAll('.threat-table tr[data-realm]').forEach(row => {
+            const hidden = row.classList.contains('no-threat') && !showAll.checked;
+            row.style.display = hiddenRealms.has(row.dataset.realm) || hidden ? 'none' : '';
         });
     }
+    showAll.addEventListener('change', function() {
+        localStorage.setItem(showAllKey, this.checked);
+        showRealms();
+    });
     document.querySelectorAll('.toggle-realm').forEach(box => {
         box.checked = !hiddenRealms.has(box.value);
         box.addEventListener('change', function() {

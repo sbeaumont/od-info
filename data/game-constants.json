@@ -28,6 +28,13 @@
   "conquest_land_factor": 2,
   "land_arrival_ticks": 12,
   "return_ticks": 12,
+  "guard_ranges": {
+    "none": {"min": 40, "max": 250},
+    "royal": {"min": 60, "max": 166},
+    "elite": {"min": 75, "max": 133}
+  },
+  "bottom_feeding_range": 75,
+  "prestige_loss_range": 60,
   "masonry_multiplier": 2.6,
 
   "gt_defense_factor": 1.6,

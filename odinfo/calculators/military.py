@@ -3,8 +3,9 @@ import logging
 from functools import cached_property
 from math import trunc, isclose
 
+from odinfo.domain.domainhelper import range_limit
 from odinfo.domain.models import Dominion
-from odinfo.domain.refdata import Race
+from odinfo.domain.refdata import MIN_RANGE, Race
 from odinfo.domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, TEMPLE_BONUS_PER_PERC, Unit, Spells, MAX_TEMPLE_BONUS
 from odinfo.domain.refdata import MAX_GUARD_TOWER_BONUS, MAX_GRYPHON_NEST_BONUS
 from odinfo.domain.refdata import NETWORTH_VALUES, ARES_BONUS
@@ -82,7 +83,7 @@ class MilitaryCalculator(object):
 
     @property
     def hittable_75_percent(self):
-        return trunc(self.dom.current_land * 3 / 4)
+        return range_limit(self.dom.current_land, MIN_RANGE)
 
     def op_of(self, unit_nr: int, with_bonus=False, partial_amount=None):
         assert isinstance(unit_nr, int)

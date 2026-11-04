@@ -40,7 +40,9 @@ port=$(env_value ODINFO_PORT)
 bind=$(env_value ODINFO_BIND)
 [ -n "$bind" ] || bind=0.0.0.0
 
-$compose pull 2>/dev/null || echo "Could not reach the registry, using the version already on this machine."
+if ! $compose pull; then
+    echo "Could not download the newest ODInfo, see above. Starting the version you already have."
+fi
 
 # Make the folder ourselves so it belongs to you, not to the container runtime.
 mkdir -p "$instance"
@@ -68,7 +70,7 @@ fi
 if grep -q EDIT_THIS "$instance/secret.txt"; then
     echo ""
     echo "Almost there. Edit these two files, then run start again:"
-    echo "  $instance/secret.txt   your OpenDominion login and the round number"
+    echo "  $instance/secret.txt   your OpenDominion login and API key"
     echo "  $instance/users.json   the login for the web interface"
     exit 0
 fi

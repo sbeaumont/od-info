@@ -21,19 +21,54 @@ There are three ways, in the order I recommend them:
 
 ### In a Container (recommended)
 
-Unzip `odinfo-docker.zip` somewhere of your own and run `start.bat` on Windows, or
-`./start.sh` on Mac/Linux. It downloads ODInfo, writes the template configuration files
-for you to fill in, and on the second start serves the interface on http://localhost:5042.
+You need [Docker Desktop](https://www.docker.com/products/docker-desktop/) or
+[Podman](https://podman.io/) on your computer. Make sure that it runs before you start.
 
-Next to the interface it fetches new game data every hour by itself, so unlike the other
-two ways there is nothing for you to schedule. The unzipped folder has its own README,
-and scripts that mirror the ones described below: `start`, `stop`, `update_data`,
-`update_refdata` and `logs`.
+#### Install
 
-Where your data lives, the port, and whether the interface is reachable from the rest of
-your network are all settings in the `.env` file in that folder. It also explains how to
-drive the container yourself instead of through the scripts, for anyone who would rather
-do that.
+1. Download `odinfo-docker.zip` from the [releases page](../../releases).
+2. Unzip it to a folder that you can find again, for example `Documents`. This gives you
+   the `odinfo-docker` folder. Windows can put it in a second folder with the same name.
+   Use the folder that holds `start.bat`.
+3. Open the `odinfo-docker` folder. On Windows, double-click `start.bat`. On Mac/Linux, run
+   `./start.sh` from a terminal.
+4. Edit the two files that the first start makes in `odinfo-docker/instance`:
+   `secret.txt` and `users.json`.
+5. Start it again. Open http://localhost:5042 in your browser.
+
+ODInfo then fetches new game data every hour by itself.
+
+#### The odinfo-docker folder
+
+You do everything from this folder. The ODInfo program runs in a container, but you never
+go into the container.
+
+```
+odinfo-docker/
+├── start.bat / start.sh                    starts ODInfo, upgrades it first
+├── stop.bat / stop.sh                      stops ODInfo
+├── update_data.bat / update_data.sh        fetches game data now
+├── update_refdata.bat / update_refdata.sh  gets the race and unit data for a new round
+├── logs.bat / logs.sh                      shows what ODInfo does
+├── README.md                               all settings and help
+├── .env                                    your settings, made by the first start
+└── instance/                               your configuration and database
+```
+
+Back up the `instance` folder. It holds all of your data.
+
+#### Upgrade
+
+1. Open the `odinfo-docker` folder.
+2. Double-click `stop.bat` (Windows), or run `./stop.sh` (Mac/Linux).
+3. Double-click `start.bat` (Windows), or run `./start.sh` (Mac/Linux). It downloads the
+   newest version of ODInfo before it starts.
+
+When you download a newer `odinfo-docker.zip`, copy its files over your `odinfo-docker`
+folder. The zip has no `instance` folder and no `.env` file, so your own files stay.
+
+The `README.md` in the `odinfo-docker` folder tells you about the settings in `.env`: the
+port, the place of the `instance` folder, and who can open the interface.
 
 ## Running From the Source
 
@@ -47,17 +82,13 @@ On Windows, double-click `setup.bat`. On Mac/Linux, run `./setup.sh` from a term
 
 This will install uv (a Python package manager that handles Python and all dependencies for you), and then walk you through the configuration. You don't need to install Python or any packages yourself.
 
-You can re-run setup at any time — for example to update the round number for a new round. Your existing settings will be offered as defaults.
+You can run setup again at any time, for example to enter the API key of a new round. Setup shows your current settings as defaults.
 
 NOTE: If you're not used to using a command prompt, what you need to do is go to the folder where you downloaded the files from GitHub, right-click and choose "Open In Terminal". This will put you in a command prompt at the correct location.
 
 ### Discord notifications (optional)
 
 You can send the networth tracking overview to Discord. During setup you'll be asked for a Discord webhook URL. To get one, go to a Discord channel where you have settings access, add a webhook, and copy the URL.
-
-### One database per round
-
-Each round gets its own database file. When a new round starts, re-run setup and enter the new round number. Your old round data is preserved.
 
 ### Run application
 
@@ -74,8 +105,67 @@ it's http://localhost:5042 or http://127.0.0.1:5042.
 First time you will be asked to enter a username and password, this is NOT your OD credentials, but what you filled in
 the "users.json" file. If you have your browser remember it you won't have to deal with that anymore.
 
-Only a user with `"admin": "true"` in "users.json" sees the Settings page. On that page you change the API key
-(new every round), the Discord webhook and your OD login, and you reset the database.
+## Configuration
+
+Your configuration is in two files in the `instance` folder: `secret.txt` and `users.json`.
+In the container version, this is the `odinfo-docker/instance` folder.
+
+### secret.txt
+
+| Setting              | What it is                                                                          |
+|----------------------|-------------------------------------------------------------------------------------|
+| `api_key`            | Required. Your OpenDominion API key. Make it on the Settings page of your dominion. |
+| `username`           | Required. Your OpenDominion login name. ODInfo uses it to read the full Town Crier. |
+| `password`           | Required. Your OpenDominion password.                                               |
+| `secret_key`         | Required. A long random text that protects the web login. `setup` makes one for you. |
+| `discord_webhook`    | Optional. Sends the networth overview to a Discord channel.                         |
+| `feature_toggles`    | Optional. Experimental pages to show, with commas between them. Example: `economy`. |
+| `database_name`      | Optional. Opens a different database, for example one from an old round.            |
+
+You do not set a round number. ODInfo asks OpenDominion which round your API key is for,
+and gives the database a name from that: `odinfo-round-{number}-id-{id}.sqlite`.
+
+### A new round
+
+Each round has a new API key and its own database.
+
+1. Make a new API key on the Settings page of your new dominion in OpenDominion.
+2. Put the key in `secret.txt`, or on the ODInfo Settings page.
+3. Stop ODInfo and start it again. It makes a new database for the new round.
+
+The database of the old round stays in the `instance` folder.
+
+### users.json
+
+These are the logins for the ODInfo web interface. They are not your OpenDominion login.
+
+```json
+[
+  {
+    "id": "1",
+    "name": "admin",
+    "password": "a password that you choose",
+    "active": "true",
+    "admin": "true"
+  }
+]
+```
+
+To add a user, add a second block with a different `id`.
+
+### The Settings page
+
+A user with `"admin": "true"` in `users.json` sees the Settings page in the menu. A new
+install gives the first user this line. If you installed ODInfo before this version, add
+the line to your own user yourself. Put a comma at the end of the line above it.
+
+On the Settings page you can:
+
+- change the API key, the Discord webhook and your OpenDominion login
+- reset the database. This deletes all data, and you cannot undo it.
+
+After you change a setting, stop ODInfo and start it again. The hourly data update uses
+the new values from its next run.
 
 ## Usage
 
@@ -92,10 +182,9 @@ your actions there, and then you can use the update links to pull in the latest 
 ## Stopping and resetting
 You can stop the server by shutting down the Terminal window or pressing Ctrl+C there.
 
-The database "odinfo.sqlite" is created in the folder "instance ". This is just a file:
-You can reset the whole application by just renaming, moving or deleting the database file.
-As soon as the application sees that there is no database file it will
-generate a new one and initialize it.
+The database is a file in the `instance` folder, with a name like
+`odinfo-round-{number}-id-{id}.sqlite`. To start again with no data, delete that file or
+move it somewhere else. ODInfo makes a new, empty database the next time it starts.
 
 ## Updating reference information
 
@@ -130,34 +219,6 @@ see one.
 
 When a later version of this app ships with newer reference data than what you downloaded,
 that newer data automatically takes over.
-
-## Keeping the About pages honest
-
-The About section explains the tool to its users: what it is for and what each part of it
-is meant to answer, and how it arrives at a dominion's OP and DP. Those pages are only
-worth having if they stay true, so each one carries the date somebody last read it against
-the code, plus a fingerprint of every file it depends on. The page itself lists those
-files, so a page decides what would make it go stale.
-
-Install the hook that guards them once per checkout:
-
-```bash
-git config core.hooksPath .githooks
-```
-
-From then on a push that touches the code behind an explanation stops until somebody has
-read the page against the change:
-
-```bash
-uv run python check_explanations.py            # are the pages still current?
-uv run python check_explanations.py --stamp    # they are now, record that
-```
-
-Name a page to limit either command to that one. Stamping is a claim that you have read
-the page, not a formality. `git push --no-verify` skips the hook if you need it to.
-
-A new explanation page joins in by carrying a `reviewed_on` date and a `doc-sources` block
-listing the files it describes; nothing else has to be registered anywhere.
 
 ## Creating a Distribution Package
 

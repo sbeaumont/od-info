@@ -78,7 +78,7 @@ goto end
 :needsedit
 echo.
 echo Almost there. Edit these two files, then run start again:
-echo   %INSTANCE%\secret.txt   your OpenDominion login and the round number
+echo   %INSTANCE%\secret.txt   your OpenDominion login and API key
 echo   %INSTANCE%\users.json   the login for the web interface
 
 :end

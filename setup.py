@@ -115,7 +115,8 @@ def setup_users_file():
     "id": "1",
     "name": "{name}",
     "password": "{password}",
-    "active": "true"
+    "active": "true",
+    "admin": "true"
   }}
 ]
 """

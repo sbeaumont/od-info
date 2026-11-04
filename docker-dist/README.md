@@ -10,8 +10,21 @@ This runs ODInfo without installing Python or anything else. All you need is eit
 2. **Edit the configuration files** it just made:
    - `instance/secret.txt` - your OpenDominion credentials and settings
    - `instance/users.json` - your login for the web interface
-3. **Update the round number** in `secret.txt` to match the current OpenDominion round.
-4. **Start it again.** It will tell you it is running on http://localhost:5042
+3. **Start it again.** It will tell you it is running on http://localhost:5042
+
+## Upgrading
+
+1. Run `stop`.
+2. Run `start`. It downloads the newest version of ODInfo before it starts.
+
+Your `instance/` folder and your `.env` file stay as they are.
+
+If `start` says that it could not download the newest version, it starts the version you
+already have. Check your internet connection and run `start` again.
+
+When you download a newer `odinfo-docker.zip`, copy its files over this folder. The
+scripts and the ODInfo version go together. The zip has no `instance/` folder and no
+`.env` file, so your own files stay.
 
 ## The Scripts
 
@@ -48,12 +61,6 @@ The web interface is reachable from your network by default, since a machine in 
 is no use if only that machine can open it. It asks for the login from `users.json` before
 it shows anything. If you would rather keep it to the machine it runs on, put
 `ODINFO_BIND=127.0.0.1` in `.env`.
-
-## Upgrading
-
-Run `stop`, then `start`. Starting always checks for a newer version of ODInfo first. Your
-data is never touched by an upgrade. Do replace these scripts along with it when you
-download a newer bundle, since they and the ODInfo image are released together.
 
 ## Your Data
 

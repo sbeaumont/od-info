@@ -142,7 +142,8 @@ USERS_JSON_TEMPLATE = """[
     "id": "1",
     "name": "admin",
     "password": "CHANGE_THIS_PASSWORD",
-    "active": "true"
+    "active": "true",
+    "admin": "true"
   }
 ]
 """

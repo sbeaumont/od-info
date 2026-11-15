@@ -415,7 +415,7 @@ class MilitaryCalculator(object):
 
     @property
     def five_over_four(self) -> tuple:
-        if not self._five_four_dp:
+        if self._five_four_dp is None:
             logger.debug(f"Starting five_over_four for dom {self.dom.code} {self.dom.race} {self.dom.name}")
             
             # Initialize breakdown tracking

@@ -118,13 +118,7 @@ class Battlefield(object):
         """The 5/4 send and safe send of the attacker at the defender, and the threats that have to send first."""
         defense_bonus = defender.mc.defense_bonus
         defender_dp = defender.dp
-        threats = self.threats_to(attacker)
         attacker_mc = attacker.mc_versus(defender.realm)
-
-        def op_at_defender(threat_index: int) -> int:
-            threat_op = threats[threat_index][1] if threat_index < len(threats) else 0
-            return attacker_mc.op_with_temples(safe_send(attacker_mc, threat_op), defense_bonus)
-
         five_four_op = attacker_mc.five_four_op_with_temples(defense_bonus)
         lowest_dp = (defender.lowest_dp
                      if in_range(attacker.land, defender.land, self.min_range, self.max_range) else defender_dp)
@@ -132,6 +126,12 @@ class Battlefield(object):
         if five_four_op <= lowest_dp:
             return Strike(attacker.code, defender_dp, five_four_op, None, [], [], None, None,
                           attacker_mc.war_bonus)
+        threats = self.threats_to(attacker)
+
+        def op_at_defender(threat_index: int) -> int:
+            threat_op = threats[threat_index][1] if threat_index < len(threats) else 0
+            return attacker_mc.op_with_temples(safe_send(attacker_mc, threat_op), defense_bonus)
+
         safe_send_op = op_at_defender(0)
         triggers, triggered_op, triggered_dp = [], None, None
         if safe_send_op <= defender_dp:

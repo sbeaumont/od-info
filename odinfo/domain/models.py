@@ -60,7 +60,7 @@ class Dominion(Base):
     wars: Mapped[List['War']] = relationship('War',
                                              primaryjoin='or_(Dominion.realm == foreign(War.realm), '
                                                          'Dominion.realm == foreign(War.target_realm))',
-                                             viewonly=True)
+                                             viewonly=True, lazy='selectin')
 
     @property
     def pinned(self) -> bool:

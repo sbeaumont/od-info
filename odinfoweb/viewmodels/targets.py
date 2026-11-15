@@ -44,6 +44,7 @@ class TargetRowVM:
     draftees: int | None
     ops_age: int | None
     war_bonus: float
+    pinned: bool
 
 
 def explored_land(dom: Dominion, sent: list[TownCrier], hit: list[TownCrier]) -> int | None:
@@ -110,6 +111,7 @@ def build_targets_vm(dominions: list[Dominion], attacker_land: int, attacker_tem
             draftees=cs.military_draftees if cs else None,
             ops_age=hours_since(dom.last_op) if dom.last_op else None,
             war_bonus=mc.war_bonus,
+            pinned=dom.pinned,
         ))
 
     return sorted(result, key=lambda r: r.estimated_dp)

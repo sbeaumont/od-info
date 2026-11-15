@@ -2,7 +2,7 @@ import unittest
 from datetime import timedelta
 
 from odinfo.calculators.threats import Strike, Trigger
-from odinfo.domain.models import BarracksSpy, Dominion, DominionHistory, TownCrier
+from odinfo.domain.models import BarracksSpy, Dominion, DominionHistory, PinnedDominion, TownCrier
 from odinfo.exceptions import ODInfoException
 from odinfo.timeutils import current_od_time
 from odinfoweb.viewmodels.threats import ThreatCellVM, ThreatRowVM, build_threats_vm, name_list, threat_cell
@@ -97,6 +97,19 @@ class SentAfterBarracksSpyTest(unittest.TestCase):
         self.assertTrue(row.sent_after_bs)
         self.assertIn('sent 2h ago, after the last BS: take a BS', row.cells[9].tooltip)
         self.assertNotIn('take a BS', row.cells[10].tooltip)
+
+
+class PinnedTest(unittest.TestCase):
+    def test_a_row_shows_if_its_attacker_is_pinned(self):
+        session = create_db_session()
+        defender = make_dominion(session, 1, realm=1, land=1000, miners=5000)
+        attacker = make_dominion(session, 2, realm=2, land=1000, warriors=2000, miners=2000)
+        session.add(PinnedDominion(dominion_id=2))
+        session.commit()
+
+        row = build_threats_vm([defender, attacker], [], 1, MIN_RANGE, MAX_RANGE, 2, POTENTIAL_MARGIN, None, None)[0]
+
+        self.assertTrue(row.pinned)
 
 
 class RowSelectionTest(unittest.TestCase):

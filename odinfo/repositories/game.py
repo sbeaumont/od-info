@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from odinfo.domain.models import (
     Dominion, DominionHistory, DominionStatus, TownCrier, ClearSight, BarracksSpy, CastleSpy,
-    LandSpy, SurveyDominion, Vision, Revelation, MyDominion, Wonder, War
+    LandSpy, SurveyDominion, Vision, Revelation, MyDominion, Wonder, War, PinnedDominion
 )
 
 
@@ -129,6 +129,13 @@ class GameRepository:
             self._session.execute(
                 update(Dominion).where(Dominion.code == dom_id).values(player=player_name)
             )
+
+    def update_dominion_pinned(self, dom_id: int, pinned: bool) -> None:
+        """Pin or unpin a dominion."""
+        with self.transaction():
+            self._session.execute(delete(PinnedDominion).where(PinnedDominion.dominion_id == dom_id))
+            if pinned:
+                self._session.add(PinnedDominion(dominion_id=dom_id))
 
     # ----------------------------- TownCrier queries
 

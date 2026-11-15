@@ -1,9 +1,10 @@
 {% extends "odinfo-base.html" %}
+{% from "macros.html" import pin_button %}
 {% block title %}Dominion {{ dom_vm.name }} ({{ dom_vm.code }}){% endblock %}
 
 {% block content %}
   <div class="w3-container">
-    <h3>{{ dom_vm.name }} (#{{ dom_vm.realm }})</h3>
+    <h3>{{ dom_vm.name }} (#{{ dom_vm.realm }}) {{ pin_button(dom_vm.code, dom_vm.pinned) }}</h3>
     <a class="od-update" href="{{ url_for('dominfo', domcode=dom_vm.code, update='update' ) }}">Update</a> |
       <a href="{{ op_center_url }}/{{ dom_vm.code }}" target="_blank">OP Center</a>
     <div style="max-width: 80%;">

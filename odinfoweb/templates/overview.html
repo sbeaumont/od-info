@@ -1,11 +1,12 @@
 {% set use_datatables = true %}
 {% extends "odinfo-base.html" %}
+{% from "macros.html" import pin_button %}
 
 {% block title %}Overview{% endblock %}
 
 {% block content %}
   <div class="w3-container">
-    <form action="{{ url_for('overview') }}" method="post" id="domform">
+    <form action="{{ url_for('overview') }}" method="post" id="domform"></form>
     <div class="od-table-container">
     <table id="mainContentTable" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
         <thead>
@@ -19,6 +20,7 @@
                 <th>NW Delta (12h)</th>
                 <th>Player?</th>
                 <th>Role</th>
+                <th>Pin</th>
             </tr>
         </thead>
         <tbody>
@@ -33,7 +35,7 @@
             <td>{{ dom.land }}</td>
             <td>{{ dom.networth }}</td>
             <td>{{ dom.nw_delta }}</td>
-            <td><input type="text" name="name.{{dom.code}}.{{dom.player}}" onfocusout="this.form.submit()" value="{{ dom.player }}"></td>
+            <td><input type="text" name="name.{{dom.code}}.{{dom.player}}" form="domform" onfocusout="this.form.submit()" value="{{ dom.player }}"></td>
             <td>
                 <select name="role.{{dom.code}}.{{dom.role}}" onchange="this.form.submit()" form="domform">
                     {% for option in ('unknown', 'attacker', 'explorer', 'blopper') %}
@@ -41,12 +43,12 @@
                     {% endfor %}
                 </select>
             </td>
+            <td data-order="{{ 1 if dom.pinned else 0 }}">{{ pin_button(dom.code, dom.pinned) }}</td>
         </tr>
         {% endfor %}
         </tbody>
     </table>
     </div><br>
-        </form>
   </div>
 
 <script>

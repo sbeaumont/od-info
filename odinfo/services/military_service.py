@@ -113,6 +113,7 @@ class MilitaryService:
                 current_dp=current_dp,
                 confidence=confidence,
                 war_bonus=mc.war_bonus,
+                pinned=mc.dom.pinned,
             )
             result_list.append(row)
 

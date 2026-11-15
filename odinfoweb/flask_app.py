@@ -264,6 +264,13 @@ def overview():
     return render_template('overview.html', doms=facade().dom_list())
 
 
+@app.route('/pin/<int:domcode>', methods=['POST'])
+@login_required
+def pin(domcode: int):
+    facade().update_pinned(domcode, request.form['pinned'] == 'true')
+    return flask.redirect(request.form['next'])
+
+
 @app.route('/refresh')
 @login_required
 def refresh():
@@ -331,6 +338,7 @@ def nw_tracker(send=None):
     if show not in NW_ROW_COUNTS:
         show = NW_UNCHANGED_DEFAULT
     return render_template('nwtracker.html',
+                           pinned_nw=facade().get_pinned_nw(since=hours),
                            top_nw=facade().get_top_bot_nw(filter_zeroes=True, since=hours),
                            bot_nw=facade().get_top_bot_nw(top=False, filter_zeroes=True, since=hours),
                            unchanged_nw=facade().get_unchanged_nw(top=show or None, since=hours),

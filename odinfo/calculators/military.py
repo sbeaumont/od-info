@@ -24,7 +24,6 @@ class MilitaryCalculator(object):
         self.tick = tick
         self.versus_realm = versus_realm
         self.race = Race(dom, dom.race)
-        self.military = dom.military if tick is None else dom.military.at(tick)
         self.navy = dom.navy
         self.spells = None
         self._five_four_op = None
@@ -34,6 +33,10 @@ class MilitaryCalculator(object):
     def __str__(self):
         unit_txt = [f"{self.amount(i)} {self.unit_type(i).name} {self.unit_type(i).offense}/{self.unit_type(i).defense}" for i in range(1, 5)]
         return f"Military({'|'.join(unit_txt)}, {self.op}OP, {self.dp}DP)"
+
+    @cached_property
+    def military(self):
+        return self.dom.military if self.tick is None else self.dom.military.at(self.tick)
 
     def unit_type(self, unit_nr: int) -> Unit:
         return self.race.unit(unit_nr)

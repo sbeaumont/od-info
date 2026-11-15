@@ -56,10 +56,15 @@ class Dominion(Base):
                                                      back_populates='dom',
                                                      order_by='Vision.timestamp.desc()')
     status: Mapped[Optional['DominionStatus']] = relationship('DominionStatus', back_populates='dom')
+    pin: Mapped[Optional['PinnedDominion']] = relationship('PinnedDominion', lazy='selectin')
     wars: Mapped[List['War']] = relationship('War',
                                              primaryjoin='or_(Dominion.realm == foreign(War.realm), '
                                                          'Dominion.realm == foreign(War.target_realm))',
                                              viewonly=True)
+
+    @property
+    def pinned(self) -> bool:
+        return self.pin is not None
 
     @property
     def current_land(self) -> int:
@@ -436,6 +441,14 @@ class DominionStatus(Base):
     def __repr__(self):
         return (f'DominionStatus({self.dominion_id}, {self.timestamp}, '
                 f'{self.in_protection}, {self.locked}, {self.abandoned})')
+
+
+class PinnedDominion(Base):
+    """A dominion the players track, shown in its own section above the lists."""
+    # A table of its own, because no table changes during a round. Becomes a column on Dominions in the next round.
+    __tablename__ = 'PinnedDominion'
+
+    dominion_id: Mapped[int] = mapped_column('dominion', ForeignKey('Dominions.code'), primary_key=True)
 
 
 class Wonder(Base):

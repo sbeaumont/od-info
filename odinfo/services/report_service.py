@@ -101,6 +101,13 @@ class ReportService:
                         key=itemgetter('land'), reverse=True)
         return result[:top] if top else result
 
+    def get_pinned_nw(self, since: int = NW_DEFAULT_PERIOD) -> list[dict]:
+        """The pinned dominions that have a delta in the period, largest land first."""
+        doms, readings = self._readings(since)
+        return sorted((self._nw_row(doms[code], reading)
+                       for code, reading in readings.items() if doms[code].pinned),
+                      key=itemgetter('land'), reverse=True)
+
     def get_top_bot_nw(self, top: bool = True, filter_zeroes: bool = False, since: int = NW_DEFAULT_PERIOD) -> list[dict]:
         """
         Get top or bottom networth changers.

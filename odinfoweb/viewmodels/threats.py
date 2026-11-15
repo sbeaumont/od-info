@@ -37,6 +37,7 @@ class ThreatRowVM:
     limit: int
     in_range: bool
     war_bonus: float
+    pinned: bool
     cells: list[ThreatCellVM]
 
     @property
@@ -148,7 +149,7 @@ def build_threats_vm(dominions: list[Dominion], events: list[TownCrier], defende
                 cell.tooltip += f' · war +{per_tick[tick][code].war_bonus:.0%} OP'
         land = contenders_per_tick[0][code].land
         return ThreatRowVM(code, dom.name, dom.realm, dom.race, hours_since(dom.last_op) if dom.last_op else None,
-                           sent is not None, land, range_limit(land, min_range), in_range, war_bonus, cells)
+                           sent is not None, land, range_limit(land, min_range), in_range, war_bonus, dom.pinned, cells)
 
     in_range_codes = {code for strikes in strikes_per_tick for code in strikes}
     out_of_range_codes = {code for strikes in out_of_range_per_tick for code in strikes} - in_range_codes

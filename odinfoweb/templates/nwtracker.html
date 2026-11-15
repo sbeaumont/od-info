@@ -55,6 +55,11 @@
     {% if without_delta %}
       <p>No delta for {{ without_delta }} dominions.</p>
     {% endif %}
+    {% if pinned_nw %}
+    <h5>Pinned ({{ pinned_nw|length }})</h5>
+    {{ nw_table(pinned_nw) }}
+    <br>
+    {% endif %}
     <h5>Top 10</h5>
     {{ nw_table(top_nw) }}
     <br>

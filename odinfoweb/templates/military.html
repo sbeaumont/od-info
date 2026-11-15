@@ -7,45 +7,9 @@
 <script src="https://cdn.datatables.net/colreorder/1.7.0/js/dataTables.colReorder.min.js"></script>
 {% endblock %}
 
-{% block content %}
-  <div class="w3-container">
-    <!-- Column View Selector -->
-    <div class="w3-panel w3-card-2 w3-dark-grey" style="margin-bottom: 10px; padding: 8px;">
-        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-            <span><strong>Send Type:</strong></span>
-            <label style="cursor: pointer;">
-                <input type="radio" name="send_type" value="normal" checked> Normal Send
-            </label>
-            <label style="cursor: pointer;">
-                <input type="radio" name="send_type" value="54"> 5/4 Send
-            </label>
-            <label style="cursor: pointer; margin-left: 20px;">
-                <input type="checkbox" id="toggle-draftees"> Draftees
-            </label>
-            <label style="cursor: pointer;">
-                <input type="checkbox" id="toggle-boats"> Boats
-            </label>
-            <span id="colvis-container" style="margin-left: 10px;"></span>
-            <a href="#" id="reset-columns" style="font-size: 0.8em; color: #aaa;">reset</a>
-            <label style="margin-left: 20px;">
-                vs OP: <input type="number" id="versus-op" value="{{ versus_op or '' }}" placeholder="0" style="width: 70px; padding: 2px 4px;">
-            </label>
-            <label title="Your own DP bonus. Their temples come off it, so it sets the +Tmps column. Empty the box to go back to your own.">
-                my DP bonus: <input type="number" id="dp-bonus" value="{{ dp_bonus_percent }}" step="0.1" min="0" style="width: 70px; padding: 2px 4px;">%
-            </label>
-        </div>
-        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 6px;">
-            <span><strong>Realms:</strong></span>
-            {% for realm in realms %}
-            <label style="cursor: pointer;">
-                <input type="checkbox" class="toggle-realm" value="{{ realm }}"> {{ realm }}
-            </label>
-            {% endfor %}
-        </div>
-    </div>
-
+{% macro military_table(table_id, rows) %}
     <div class="od-table-container">
-        <table id="mainContentTable" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
+        <table id="{{ table_id }}" class="w3-table w3-striped-dark w3-bordered w3-border w3-hoverable">
         <thead>
             <tr class="w3-black">
                 <!-- Always visible -->
@@ -56,9 +20,9 @@
                 <th>Land</th>
                 <th>75%</th>
                 <!-- Dynamic Send columns -->
-                <th class="send-col" id="send-op-header">Send OP</th>
-                <th class="send-col" id="send-tmps-header">+Tmps</th>
-                <th class="send-col" id="send-dp-header">Send DP</th>
+                <th class="send-col send-op-header">Send OP</th>
+                <th class="send-col">+Tmps</th>
+                <th class="send-col send-dp-header">Send DP</th>
                 <!-- Always visible -->
                 <th title="Temple bonus. Each 1% of land with temples takes {{ temple_bonus_per_perc }}% off the target's DP multiplier, up to {{ max_temple_bonus_percent }}%.">Temples</th>
                 <th>Paid</th>
@@ -76,7 +40,7 @@
                 <th>NW</th>
             </tr>
         </thead>
-        {% for dom in doms %}
+        {% for dom in rows %}
         <tr data-realm="{{ dom.realm }}">
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
@@ -117,21 +81,67 @@
         {% endfor %}
         </table>
     </div><br>
+{% endmacro %}
+
+{% block content %}
+  <div class="w3-container">
+    <!-- Column View Selector -->
+    <div class="w3-panel w3-card-2 w3-dark-grey" style="margin-bottom: 10px; padding: 8px;">
+        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <span><strong>Send Type:</strong></span>
+            <label style="cursor: pointer;">
+                <input type="radio" name="send_type" value="normal" checked> Normal Send
+            </label>
+            <label style="cursor: pointer;">
+                <input type="radio" name="send_type" value="54"> 5/4 Send
+            </label>
+            <label style="cursor: pointer; margin-left: 20px;">
+                <input type="checkbox" id="toggle-draftees"> Draftees
+            </label>
+            <label style="cursor: pointer;">
+                <input type="checkbox" id="toggle-boats"> Boats
+            </label>
+            <span id="colvis-container" style="margin-left: 10px;"></span>
+            <a href="#" id="reset-columns" style="font-size: 0.8em; color: #aaa;">reset</a>
+            <label style="margin-left: 20px;">
+                vs OP: <input type="number" id="versus-op" value="{{ versus_op or '' }}" placeholder="0" style="width: 70px; padding: 2px 4px;">
+            </label>
+            <label title="Your own DP bonus. Their temples come off it, so it sets the +Tmps column. Empty the box to go back to your own.">
+                my DP bonus: <input type="number" id="dp-bonus" value="{{ dp_bonus_percent }}" step="0.1" min="0" style="width: 70px; padding: 2px 4px;">%
+            </label>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 6px;">
+            <span><strong>Realms:</strong></span>
+            {% for realm in realms %}
+            <label style="cursor: pointer;">
+                <input type="checkbox" class="toggle-realm" value="{{ realm }}"> {{ realm }}
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% set pinned_doms = doms|selectattr('pinned')|list %}
+    {% if pinned_doms %}
+    <h5>Pinned ({{ pinned_doms|length }})</h5>
+    {{ military_table('pinnedTable', pinned_doms) }}
+    {% endif %}
+    {{ military_table('mainContentTable', doms|rejectattr('pinned')|list) }}
   </div>
 
 <script>
     var militaryTable;
+    var pinnedTable;
 
     function updateSendType() {
         const preset = $('input[name="send_type"]:checked').val();
 
         // Update column headers based on mode
         if (preset === '54') {
-            $('#send-op-header').text('5/4 OP');
-            $('#send-dp-header').text('5/4 DP');
+            $('.send-op-header').text('5/4 OP');
+            $('.send-dp-header').text('5/4 DP');
         } else {
-            $('#send-op-header').text('Send OP');
-            $('#send-dp-header').text('Send DP');
+            $('.send-op-header').text('Send OP');
+            $('.send-dp-header').text('Send DP');
         }
 
         // Update cell values based on mode
@@ -146,11 +156,13 @@
         if (militaryTable) {
             militaryTable.rows().invalidate('dom').draw();
         }
+        if (pinnedTable) {
+            pinnedTable.rows().invalidate('dom').draw();
+        }
     }
 
     $(document).ready(function() {
-        // Initialize DataTable with ColVis and ColReorder
-        militaryTable = $('#mainContentTable').DataTable({
+        const tableOptions = {
             paging: false,
             order: [[7, 'desc']], // Sort by +Tmps column by default
             columnDefs: [
@@ -158,7 +170,11 @@
                 { visible: false, targets: [11, 12, 13, 14, 15, 16, 17, 18] } // Hide Draftees, Boats, Raw OP/DP, Current by default
             ],
             autoWidth: false,
-            colReorder: true,
+            colReorder: true
+        };
+        // Initialize DataTable with ColVis and ColReorder
+        militaryTable = $('#mainContentTable').DataTable({
+            ...tableOptions,
             stateSave: true,
             stateDuration: -1, // Use localStorage (persists across sessions)
             buttons: [
@@ -172,6 +188,10 @@
 
         // Move the Columns button to our container
         militaryTable.buttons().container().appendTo('#colvis-container');
+        {% if pinned_doms %}
+        pinnedTable = $('#pinnedTable').DataTable(tableOptions);
+        followColumns(militaryTable, pinnedTable);
+        {% endif %}
 
         // Column indices for quick toggles
         const drafteesCols = [11];
@@ -201,7 +221,7 @@
             syncCheckboxes();
         });
 
-        // Realm filter, kept per browser. A first visit hides my own realm and the bots.
+        // Realm filter, kept per browser. A first visit hides my own realm and the bots. Pinned rows always show.
         const hiddenRealmsKey = 'military-hidden-realms';
         const savedHiddenRealms = localStorage.getItem(hiddenRealmsKey);
         const hiddenRealms = new Set(savedHiddenRealms !== null
@@ -211,7 +231,8 @@
             $(this).prop('checked', !hiddenRealms.has(this.value));
         });
         $.fn.dataTable.ext.search.push(function(settings, searchData, index) {
-            return !hiddenRealms.has(militaryTable.row(index).node().dataset.realm);
+            return settings.nTable.id !== 'mainContentTable'
+                || !hiddenRealms.has(militaryTable.row(index).node().dataset.realm);
         });
         militaryTable.draw();
         $('.toggle-realm').on('change', function() {

@@ -16,6 +16,9 @@
   td.stale { background-color: orange; color: white; }
   td.invalid { background-color: red; color: white; }
   .war-icon { font-size: 1.4em; line-height: 1; margin-left: 4px; cursor: help; }
+  .pin-form { display: inline; }
+  .pin-button { background: none; border: none; padding: 0; cursor: pointer; font-size: 1.2em; opacity: 0.3; }
+  .pin-button.pinned { opacity: 1; }
   .w3-tooltip .w3-text { position: absolute; left: 0; bottom: 1.5em; white-space: nowrap; z-index: 10; }
 
   /* Dark striped table styling */
@@ -94,6 +97,22 @@
 <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css"/>
 <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+<script>
+  // Gives the follower table the column order and column choice of the main table, now and on every change.
+  function followColumns(main, follower) {
+    function copy() {
+      if (main.init().colReorder) {
+        follower.colReorder.order(main.colReorder.order(), true);
+      }
+      main.columns().every(function(index) {
+        follower.column(index).visible(this.visible(), false);
+      });
+      follower.columns.adjust().draw(false);
+    }
+    copy();
+    main.on('column-visibility.dt column-reorder.dt', copy);
+  }
+</script>
 {% endif %}
 {% block extrascripts %}{% endblock %}
 </head>

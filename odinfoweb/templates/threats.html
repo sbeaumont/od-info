@@ -1,3 +1,4 @@
+{% set use_datatables = true %}
 {% extends "odinfo-base.html" %}
 {% block extrascripts %}
 <style>
@@ -62,10 +63,10 @@
         <span><span class="swatch threat-five_four">+k</span>breaks you, risky 5/4</span>
         <span><span class="swatch threat-potential">−k</span>potential threat ({{ potential_margin }}% margin)</span>        <span>k = OP at home − your DP</span>    </div>
 
-    {% macro threat_table(title, table_rows) %}
+    {% macro threat_table(table_id, title, table_rows) %}
     <h4>{{ title }} ({{ table_rows|length }})</h4>
     <div class="od-table-container">
-        <table class="threat-table w3-table w3-striped-dark w3-bordered w3-border">
+        <table id="{{ table_id }}" class="threat-table w3-table w3-striped-dark w3-bordered w3-border">
         <thead>
             <tr class="w3-black">
                 <th>Attacker</th>
@@ -86,11 +87,12 @@
             <td data-order="{{ row.realm }}">{{ row.realm }}
                 {% if row.war_bonus %}<span class="war-icon" title="War with the defender's realm: up to +{{ '%g' % (row.war_bonus * 100) }}% OP both ways. The tick tooltips show when it applies.">⚔</span>{% endif %}</td>
             <td>{{ row.race }}</td>
-            <td>{{ row.ops_age if row.ops_age is not none else '-' }}</td>
+            <td data-order="{{ row.ops_age if row.ops_age is not none else 9999 }}">{{ row.ops_age if row.ops_age is not none else '-' }}</td>
             <td>{{ row.land }}</td>
             <td>{{ row.limit }}</td>
             {% for cell in row.cells %}
-            <td class="threat-cell threat-{{ cell.status }}" title="{{ cell.tooltip }}">
+            <td class="threat-cell threat-{{ cell.status }}" title="{{ cell.tooltip }}"
+                data-order="{{ cell.margin if cell.margin is not none else -999999999 }}">
                 {% if cell.margin is not none %}{{ '%+.1fk' % (cell.margin / 1000) }}{% endif %}
             </td>
             {% endfor %}
@@ -103,8 +105,13 @@
     <label title="Also show the dominions whose 5/4 send stays more than {{ potential_margin }}% below the defender's DP at every tick.">
         <input type="checkbox" id="show-all"> Show all
     </label>
-    {{ threat_table('Out of range', rows|rejectattr('in_range')|list) }}
-    {{ threat_table('In range', rows|selectattr('in_range')|list) }}
+    {% set pinned_rows = rows|selectattr('pinned')|list %}
+    {% if pinned_rows %}
+    {{ threat_table('pinnedTable', 'Pinned', pinned_rows) }}
+    {% endif %}
+    {% set other_rows = rows|rejectattr('pinned')|list %}
+    {{ threat_table('outOfRangeTable', 'Out of range', other_rows|rejectattr('in_range')|list) }}
+    {{ threat_table('inRangeTable', 'In range', other_rows|selectattr('in_range')|list) }}
   </div>
 
 <script>
@@ -117,18 +124,30 @@
         form.submit();
     });
 
-    // Realm filter, kept per browser.
+    const threatTables = $('.threat-table').DataTable({
+        paging: false,
+        order: [],
+        dom: 't',
+        autoWidth: false
+    });
+
+    // Realm filter and Show all, kept per browser. Pinned rows always show.
     const hiddenRealmsKey = 'threats-hidden-realms';
     const savedHiddenRealms = localStorage.getItem(hiddenRealmsKey);
     const hiddenRealms = new Set(savedHiddenRealms !== null ? JSON.parse(savedHiddenRealms) : []);
     const showAllKey = 'threats-show-all';
     const showAll = document.getElementById('show-all');
     showAll.checked = localStorage.getItem(showAllKey) === 'true';
+    $.fn.dataTable.ext.search.push(function(settings, searchData, index) {
+        if (settings.nTable.id === 'pinnedTable') {
+            return true;
+        }
+        const row = new $.fn.dataTable.Api(settings).row(index).node();
+        const hidden = row.classList.contains('no-threat') && !showAll.checked;
+        return !hiddenRealms.has(row.dataset.realm) && !hidden;
+    });
     function showRealms() {
-        document.querySelectorAll('.threat-table tr[data-realm]').forEach(row => {
-            const hidden = row.classList.contains('no-threat') && !showAll.checked;
-            row.style.display = hiddenRealms.has(row.dataset.realm) || hidden ? 'none' : '';
-        });
+        threatTables.draw();
     }
     showAll.addEventListener('change', function() {
         localStorage.setItem(showAllKey, this.checked);

@@ -100,6 +100,24 @@ class ReportServiceTest(unittest.TestCase):
         self.add_dom([(3, 10000), (1, 10000)])
         self.assertEqual('2h00m', self.service.get_unchanged_nw(since=48)[0]['span'])
 
+    def test_pinned_lists_only_the_pinned_dominions_with_a_delta(self):
+        small = self.add_dom([(10, 10000), (1, 12000)], land=300)
+        big = self.add_dom([(10, 10000), (1, 9000)], land=900)
+        self.add_dom([(10, 10000), (1, 15000)])
+        without_delta = self.add_dom([(1, 10000)])
+        repo = GameRepository(self.session)
+        for code in (small, big, without_delta):
+            repo.update_dominion_pinned(code, True)
+        self.assertEqual([big, small], self.codes_in(self.service.get_pinned_nw()))
+
+    def test_unpin_takes_a_dominion_off_the_pinned_list(self):
+        code = self.add_dom([(10, 10000), (1, 12000)])
+        repo = GameRepository(self.session)
+        repo.update_dominion_pinned(code, True)
+        repo.update_dominion_pinned(code, False)
+        self.assertEqual([], self.service.get_pinned_nw())
+        self.assertFalse(self.session.get(Dominion, code).pinned)
+
 
 class FormatSpanTest(unittest.TestCase):
     def test_renders_hours_and_minutes(self):

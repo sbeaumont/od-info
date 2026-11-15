@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from unittest.mock import patch
 
 from odinfo.calculators.military import MilitaryCalculator
-from odinfo.domain.models import ClearSight, Dominion, DominionHistory, TownCrier
+from odinfo.domain.models import ClearSight, Dominion, DominionHistory, PinnedDominion, TownCrier
 from odinfoweb.viewmodels.targets import build_targets_vm
 from test.fixtures import create_db_session
 
@@ -102,6 +102,14 @@ class TargetsTest(unittest.TestCase):
         dom = self.add_dom([(23, 1000, 50000), (0, 1060, 52000)])
         rows = self.rows([dom], [self.invasion(30, dom.code, 99, 40)])
         self.assertIsNone(rows[dom.code].explored)
+
+    def test_a_row_shows_if_its_dominion_is_pinned(self):
+        pinned, other = self.add_dom([(0, 1000, 50000)]), self.add_dom([(0, 1000, 50000)])
+        self.session.add(PinnedDominion(dominion_id=pinned.code))
+        self.session.commit()
+        rows = self.rows([pinned, other])
+        self.assertTrue(rows[pinned.code].pinned)
+        self.assertFalse(rows[other.code].pinned)
 
 
 if __name__ == '__main__':

@@ -46,6 +46,7 @@ class MilitaryRowVM:
     current_dp: int | None
     confidence: str | None  # "locked", "±X%", or None if no refinement
     war_bonus: float
+    pinned: bool
 
     @property
     def temples_percent(self) -> float:

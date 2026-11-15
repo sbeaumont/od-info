@@ -22,6 +22,7 @@ class OverviewRowVM:
     role: str
     ops_age: float
     nw_delta: int
+    pinned: bool
 
 
 def build_overview_list_vm(
@@ -50,6 +51,7 @@ def build_overview_list_vm(
             role=dom.role or 'unknown',
             ops_age=hours_since(dom.last_op),
             nw_delta=reading.delta if reading else 0,
+            pinned=dom.pinned,
         ))
 
     return sorted(result, key=lambda r: r.land, reverse=True)

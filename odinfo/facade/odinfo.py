@@ -126,6 +126,11 @@ class ODInfoFacade(object):
         self._repo.update_dominion_player(dom_code, player_name)
         self.invalidate_cache('dom_list')
 
+    def update_pinned(self, dom_code: int, pinned: bool):
+        logger.debug("Updating dominion %s pinned to %s", dom_code, pinned)
+        self._repo.update_dominion_pinned(dom_code, pinned)
+        self.clear_cache()
+
     # ---------------------------------------- COMMANDS - Send out information
 
     def send_top_bot_nw_to_discord(self):
@@ -299,6 +304,10 @@ class ODInfoFacade(object):
     def get_unchanged_nw(self, top: int | None = None, since: int = 12):
         """Get dominions with unchanged networth, capped at top if one is given."""
         return self._report_service.get_unchanged_nw(top, since=since)
+
+    def get_pinned_nw(self, since: int = 12):
+        """Networth rows of the pinned dominions."""
+        return self._report_service.get_pinned_nw(since=since)
 
     def get_top_bot_nw(self, top=True, filter_zeroes=False, since: int = 12):
         """Get top or bottom networth changers."""

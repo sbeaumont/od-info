@@ -1,0 +1,8 @@
+{% macro pin_button(code, pinned) %}
+<form method="post" action="{{ url_for('pin', domcode=code) }}" class="pin-form">
+    <input type="hidden" name="pinned" value="{{ 'false' if pinned else 'true' }}">
+    <input type="hidden" name="next" value="{{ request.full_path }}">
+    <button type="submit" class="pin-button{% if pinned %} pinned{% endif %}"
+            title="{{ 'Unpin' if pinned else 'Pin: show in the Pinned section of the lists' }}">📌</button>
+</form>
+{% endmacro %}

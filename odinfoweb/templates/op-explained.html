@@ -8,16 +8,16 @@
 
       uv run python check_explanations.py --stamp odinfoweb/templates/op-explained.html
 #}
-{% set reviewed_on = '2026-11-03' %}
+{% set reviewed_on = '2026-11-15' %}
 {#- doc-sources
-data/game-constants.json 18da5febc92f41d0
-odinfo/calculators/military.py 63781746caa9fcd5
-odinfo/domain/domainhelper.py dd57594f9fd010fb
-odinfo/domain/military.py e3abe7434485f69c
+data/game-constants.json f10e94090b48cd99
+odinfo/calculators/military.py 3ddd56cba6dbe6fc
+odinfo/domain/domainhelper.py 876f24af71133e57
+odinfo/domain/military.py 4becc59b701b61ec
 odinfo/domain/models.py 825d7554fdb2d6d2
-odinfo/domain/refdata.py 6aa55e0064b84a26
+odinfo/domain/refdata.py d5e6dad819febb92
 odinfo/services/military_service.py 2e1d046524cadd91
-odinfoweb/viewmodels/opexplained.py 75439f8e7e721396
+odinfoweb/viewmodels/opexplained.py 367b048aa8f2e71a
 -#}
 
 {% block content %}
@@ -64,11 +64,21 @@ odinfoweb/viewmodels/opexplained.py 75439f8e7e721396
       the Clear Sight was taken. What they own now, plus what's still in the oven.
     </li>
     <li>
-      <strong>Barracks Spy is fresher</strong>: home, returning and training get added back
-      together. Units at home are taken at the top of their fuzz range and returning units
-      at the bottom, so the dominion reads as strong at home now. Draftees follow the same
-      rule as units at home. A Clear Sight count stays in use when it fits inside the fuzz
-      range of the Barracks Spy.
+      <strong>Barracks Spy is fresher</strong>: the tool starts from the exact Clear Sight
+      count. It then adds every training batch that landed after the Clear Sight. Each
+      Barracks Spy shows its training queue exactly, so a chain of them shows every batch.
+      The chain starts at the last Barracks Spy in or before the tick of the Clear Sight.
+      No two Barracks Spies in it can be more than {{ vm.max_barracks_spy_gap }} ticks apart,
+      because then a batch can start and land between them unseen.
+    </li>
+    <li>
+      <strong>No chain, or a Barracks Spy rules it out</strong>: home, returning and
+      training get added back together. Units at home are taken at the top of their fuzz
+      range and returning units at the bottom, so the dominion reads as strong at home now.
+      A unit type falls back to this when a Barracks Spy after the Clear Sight shows a
+      count outside its fuzz range. Units lost in a hit or released have that effect.
+      Draftees change every tick, so they always follow this rule. A Clear Sight count of
+      draftees stays in use when it fits inside the fuzz range of the Barracks Spy.
     </li>
   </ul>
 
@@ -247,7 +257,9 @@ odinfoweb/viewmodels/opexplained.py 75439f8e7e721396
       its own range and the ranges overlap. A Clear Sight at or after that tick narrows it
       too. Its exact total is home plus returning, so home is that total minus the units
       the Barracks Spy shows still away. In the same tick the two ranges pin each other,
-      and a small home army leaves the returning units almost exact.
+      and a small home army leaves the returning units almost exact. With a chain of
+      Barracks Spies from an older Clear Sight (see section 1), the total is exact, and
+      only the units still away carry fuzz.
       <span class="od-term">Conf</span> tells you how tight that got:
       <code>locked</code> means they pinned it exactly, otherwise you get the margin
       that's left.
@@ -286,8 +298,10 @@ odinfoweb/viewmodels/opexplained.py 75439f8e7e721396
     <li>
       <strong>Barracks Spy fuzz.</strong> Every number on one is off by up to
       {{ vm.barracks_spy_error_percent }}% either way. When the Barracks Spy is the
-      freshest op, that error rides straight into the OP. A second one in the same tick
-      genuinely narrows it, and so does a Clear Sight in the same tick.
+      freshest op and there is no chain back to a Clear Sight, that error rides straight
+      into the OP. A second one in the same tick genuinely narrows it, and so does a Clear
+      Sight in the same tick. Take a Clear Sight and keep the Barracks Spies at most
+      {{ vm.max_barracks_spy_gap }} ticks apart to get exact numbers.
     </li>
     <li>
       <strong>Ops taken at different times.</strong> The bonuses come from up to four

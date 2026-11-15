@@ -1,10 +1,57 @@
 from datetime import timedelta
 from math import inf
 
-from odinfo.domain.refdata import BARRACKS_SPY_FUZZ
+from odinfo.domain.refdata import BARRACKS_SPY_FUZZ, MIN_TRAINING_TICKS
 from odinfo.timeutils import hours_since, ticks_between, ticks_since, truncate_to_tick
 
 UNIT_NRS = range(1, 5)
+
+
+def training_chain(dom) -> list:
+    """The BS ops from the last one in or before the tick of the last CS up to the last BS, oldest first.
+
+    Empty when there is no such BS, or when two BS ops are far enough apart for a training batch to go unseen.
+    """
+    cs_tick = truncate_to_tick(dom.last_cs.timestamp)
+    ops = dom.barracks_spy[::-1]
+    starts = [n for n, bs in enumerate(ops) if truncate_to_tick(bs.timestamp) <= cs_tick]
+    if not starts:
+        return []
+    chain = ops[starts[-1]:]
+    if any(ticks_between(a.timestamp, b.timestamp) >= MIN_TRAINING_TICKS for a, b in zip(chain, chain[1:])):
+        return []
+    return chain
+
+
+def finished_training(chain: list, cs, unit_nr: int, until: float) -> int:
+    """The units of a training chain that finish after the tick of the CS, up to `until` ticks after it."""
+    key = f'unit{unit_nr}'
+    offsets = [ticks_between(cs.timestamp, bs.timestamp) for bs in chain]
+    total = 0
+    for bs, offset, next_offset in zip(chain, offsets, offsets[1:] + [inf]):
+        if bs.training and key in bs.training:
+            total += sum(amount for tick, amount in bs.training[key].items()
+                         if 0 < offset + int(tick) <= min(until, next_offset))
+    return total
+
+
+def exact_units(dom, until: float) -> dict:
+    """The units at home and away `until` ticks after the tick of the last CS, from the CS and the training chain.
+
+    Only the unit types that every BS since the CS allows.
+    """
+    cs = dom.last_cs
+    chain = training_chain(dom)
+    if not chain:
+        return {}
+    checks = [(bs, offset) for bs in chain if (offset := ticks_between(cs.timestamp, bs.timestamp)) >= 0]
+    result = {}
+    for i in UNIT_NRS:
+        def amount(ticks: float) -> int:
+            return cs.military[f'unit{i}'] + finished_training(chain, cs, i, ticks)
+        if all(bs.allows_amount(i, amount(offset)) for bs, offset in checks):
+            result[f'unit{i}'] = amount(until)
+    return result
 
 
 def barracks_spies_in_tick(dom, tick_time) -> list:
@@ -83,13 +130,10 @@ class Military(object):
                 result['paid_until'] = bs.paid_until
             else:
                 result = bs.military
-                # Keep the exact CS count for each unit that the newer BS does not contradict.
-                cs_military = cs.military
-                for i in UNIT_NRS:
-                    if bs.allows_amount(i, cs_military[f'unit{i}']):
-                        result[f'unit{i}'] = cs_military[f'unit{i}'] + bs.paid_training(i)
-                if bs.allows_draftees(cs_military['draftees']):
-                    result['draftees'] = cs_military['draftees']
+                result.update(exact_units(dom, inf))
+                cs_draftees = cs.military['draftees']
+                if bs.allows_draftees(cs_draftees):
+                    result['draftees'] = cs_draftees
         elif cs:
             result = cs.military
         elif bs:
@@ -119,9 +163,8 @@ class Military(object):
             return True
         if self.from_cs(cs, bs):
             return False
-        cs_military = cs.military
-        return not (all(bs.allows_amount(i, cs_military[f'unit{i}']) for i in UNIT_NRS)
-                    and bs.allows_draftees(cs_military['draftees']))
+        return not (len(exact_units(self.dom, inf)) == len(UNIT_NRS)
+                    and bs.allows_draftees(cs.military['draftees']))
 
     def amount(self, unit_nr: int) -> float:
         return self.units[f'unit{unit_nr}']
@@ -150,13 +193,22 @@ class Military(object):
         elapsed = ticks_since(last_bs.timestamp) + tick
         arrived_returning = self.arrived_returning_units(bs_list, elapsed, from_tick, returning)
         arrived_training = self.arrived_training_units(last_bs, elapsed, from_tick)
+        amounts = self.refined_amounts(refined_home, arrived_returning, arrived_training)
+        exact = exact_units(self.dom, ticks_since(self.dom.last_cs.timestamp) + tick) if self.dom.last_cs else {}
+        still_away = self.arrived_returning_units(bs_list, inf, elapsed, returning)
+        for key, total in exact.items():
+            away_lower, away_upper, _ = still_away.get(key, (0, 0, 0))
+            amounts[key] = total - (away_lower + away_upper) / 2
+        fuzzed_home = {key: value for key, value in refined_home.items() if key not in exact}
+        fuzzed_returning = {key: value for key, value in arrived_returning.items() if key not in exact}
+        fuzzed_returning.update({key: value for key, value in still_away.items() if key in exact})
         lower, upper, _ = refined_home['draftees']
         return Military(self.dom,
-                        self.refined_amounts(refined_home, arrived_returning, arrived_training),
+                        amounts,
                         (lower + upper) / 2,
                         self.timestamp,
                         self.paid_until,
-                        confidence(refined_home, arrived_returning))
+                        confidence(fuzzed_home, fuzzed_returning))
 
     def refined_home_units(self, barracks_spies: list) -> dict:
         """Get refined home unit estimates from multiple BS observations.

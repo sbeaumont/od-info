@@ -46,6 +46,7 @@ MIDAS_TOUCH_BONUS = game_constants['midas_touch_bonus']
 
 # The game shows barracks spy numbers somewhere in [true * fuzz, true / fuzz].
 BARRACKS_SPY_FUZZ = game_constants['barracks_spy_fuzz']
+MIN_TRAINING_TICKS = game_constants['min_training_ticks']
 
 ImpFactor = namedtuple('ImpFactor', 'max factor plus')
 

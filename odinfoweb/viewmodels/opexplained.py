@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 from odinfo.domain.refdata import (Spells, ARES_BONUS, BARRACKS_SPY_FUZZ, BUILD_TICKS,
                                    GN_OFFENSE_BONUS, MAX_GRYPHON_NEST_BONUS,
-                                   GT_DEFENSE_FACTOR, MAX_GUARD_TOWER_BONUS,
+                                   GT_DEFENSE_FACTOR, MAX_GUARD_TOWER_BONUS, MIN_TRAINING_TICKS,
                                    TEMPLE_BONUS_PER_PERC, MAX_TEMPLE_BONUS)
 
 
@@ -34,6 +34,7 @@ class AssumedSpellVM:
 @dataclass
 class OpExplainedVM:
     barracks_spy_error_percent: float
+    max_barracks_spy_gap: int
     ares_bonus_percent: float
     build_ticks: int
     buildings: list[BuildingBonusVM]
@@ -59,6 +60,7 @@ def build_op_explained_vm() -> OpExplainedVM:
     return OpExplainedVM(
         # The game shows a barracks spy value somewhere in [true * fuzz, true / fuzz].
         barracks_spy_error_percent=round((1 - BARRACKS_SPY_FUZZ) * 100, 1),
+        max_barracks_spy_gap=MIN_TRAINING_TICKS - 1,
         ares_bonus_percent=round(ARES_BONUS * 100, 1),
         build_ticks=BUILD_TICKS,
         buildings=[

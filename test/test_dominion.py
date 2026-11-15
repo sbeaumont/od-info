@@ -2,7 +2,7 @@ import unittest
 from datetime import timedelta
 
 from test.fixtures import create_db_session, init_db
-from odinfo.domain.models import Dominion
+from odinfo.domain.models import BarracksSpy, Dominion
 from odinfo.domain.refdata import BARRACKS_SPY_FUZZ
 
 
@@ -22,6 +22,9 @@ class DominionTest(unittest.TestCase):
         dom.last_barracks.home_unit3 = bs_home_clerics
         dom.last_cs.military_unit3 = cs_clerics
         dom.last_cs.timestamp = dom.last_barracks.timestamp - timedelta(hours=3)
+        dom.barracks_spy.append(BarracksSpy(home_unit3=cs_clerics, training={}, returning={},
+                                            timestamp=dom.last_cs.timestamp))
+        self.session.flush()
         return dom
 
     def test_military_keeps_cs_that_newer_bs_allows(self):

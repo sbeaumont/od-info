@@ -48,6 +48,7 @@
   "midas_touch_bonus": 0.1,
 
   "barracks_spy_fuzz": 0.85,
+  "min_training_ticks": 9,
 
   "plat_per_alchemy_per_tick": 45,
   "plat_per_peasant_per_tick": 2.7,

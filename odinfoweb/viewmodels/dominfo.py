@@ -34,6 +34,7 @@ class OffenseBonusesVM:
     improvements: float  # Forges
     tech: float
     spell: float
+    war: float
     total: float
 
 
@@ -138,6 +139,7 @@ class DomInfoVM:
 
 
 def build_dominfo_vm(dom: Dominion,
+                     versus_realm: int,
                      current_strength: tuple[int | None, int | None, str | None] = (None, None, None),
                      paid_strength: tuple[int | None, int | None, str | None] = (None, None, None),
                      strength_forecast: list[tuple[int, int, int]] = None
@@ -150,11 +152,12 @@ def build_dominfo_vm(dom: Dominion,
 
     Args:
         dom: The dominion to build the view model for.
+        versus_realm: The realm the OP is against, for the war bonus.
         current_strength: Tuple of (current_op, current_dp, confidence) from refinement.
         paid_strength: Tuple of (paid_op, paid_dp, confidence) from refinement at paid_until tick.
         strength_forecast: List of (tick, op, dp) tuples for 12-tick forecast.
     """
-    mc = MilitaryCalculator(dom)
+    mc = MilitaryCalculator(dom, versus_realm=versus_realm)
     rc = RatioCalculator(dom)
     current_op, current_dp, _ = current_strength
     refined_paid_op, refined_paid_dp, confidence = paid_strength
@@ -185,6 +188,7 @@ def build_dominfo_vm(dom: Dominion,
         improvements=round(mc.forges_bonus * 100, 2),
         tech=round(mc.tech_offense_bonus * 100, 2),
         spell=round(mc.spell_offense_bonus * 100, 2),
+        war=round(mc.war_bonus * 100, 2),
         total=round(mc.offense_bonus * 100, 2),
     )
 

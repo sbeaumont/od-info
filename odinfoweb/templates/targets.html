@@ -60,7 +60,8 @@
         {% for t in targets %}
         <tr data-realm="{{ t.realm }}">
             <td><a href="{{ url_for('dominfo', domcode=t.code) }}">{{ t.name }}</a></td>
-            <td>{{ t.realm }}</td>
+            <td data-order="{{ t.realm }}">{{ t.realm }}
+                {% if t.war_bonus %}<span class="war-icon" title="War with the attacker's realm: +{{ '%g' % (t.war_bonus * 100) }}% OP both ways">⚔</span>{% endif %}</td>
             <td>{{ t.race }}</td>
             <td>{{ t.land }}</td>
             <td>{{ t.networth }}</td>

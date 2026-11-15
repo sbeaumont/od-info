@@ -1,5 +1,6 @@
 import time
 import logging
+from datetime import timedelta
 from functools import cached_property
 from math import trunc, isclose
 
@@ -9,15 +10,19 @@ from odinfo.domain.refdata import MIN_RANGE, Race
 from odinfo.domain.refdata import GT_DEFENSE_FACTOR, GN_OFFENSE_BONUS, TEMPLE_BONUS_PER_PERC, Unit, Spells, MAX_TEMPLE_BONUS
 from odinfo.domain.refdata import MAX_GUARD_TOWER_BONUS, MAX_GRYPHON_NEST_BONUS
 from odinfo.domain.refdata import NETWORTH_VALUES, ARES_BONUS
-from odinfo.domain.refdata import UNITS_PER_BOAT, BOATS_PER_DOCK, BOATS_PER_DOCK_PER_DAY
+from odinfo.domain.refdata import UNITS_PER_BOAT, BOATS_PER_DOCK, BOATS_PER_DOCK_PER_DAY, WAR_BONUS, MUTUAL_WAR_BONUS
+from odinfo.timeutils import current_od_time, truncate_to_tick
 
 logger = logging.getLogger('od-info.military')
 
 
 class MilitaryCalculator(object):
-    def __init__(self, dom: Dominion, tick: int | None = None):
-        """A calculator on the paid military of a dominion, or on its military home at a tick from now."""
+    def __init__(self, dom: Dominion, tick: int | None = None, versus_realm: int | None = None):
+        """A calculator on the paid military of a dominion, or on its military home at a tick from now, with the
+        OP bonuses against the versus realm."""
         self.dom = dom
+        self.tick = tick
+        self.versus_realm = versus_realm
         self.race = Race(dom, dom.race)
         self.military = dom.military if tick is None else dom.military.at(tick)
         self.navy = dom.navy
@@ -210,6 +215,16 @@ class MilitaryCalculator(object):
         """Prestige bonus as a decimal"""
         return (self.dom.last_cs.prestige / 10000) if self.dom.last_cs else 0
 
+    @property
+    def war_bonus(self) -> float:
+        """War bonus against the versus realm as a decimal, at the time of the tick"""
+        if self.versus_realm is None:
+            return 0
+        tick_time = truncate_to_tick(current_od_time()) + timedelta(hours=self.tick or 0)
+        active = {(war.realm, war.target_realm) for war in self.dom.wars if war.is_active(tick_time)}
+        declared = active & {(self.dom.realm, self.versus_realm), (self.versus_realm, self.dom.realm)}
+        return {0: 0, 1: WAR_BONUS, 2: MUTUAL_WAR_BONUS}[len(declared)]
+
     @cached_property
     def offense_bonus(self) -> float:
         bonus = 0
@@ -220,6 +235,7 @@ class MilitaryCalculator(object):
         bonus += self.forges_bonus
         bonus += self.gryphon_nest_bonus
         bonus += self.prestige_bonus
+        bonus += self.war_bonus
         return bonus
 
     @property

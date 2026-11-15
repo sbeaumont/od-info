@@ -9,6 +9,7 @@ from test.fixtures import create_db_session
 
 NOW = datetime(2026, 10, 28, 12, 0, 0)
 ATTACKER_LAND = 1000
+ATTACKER_REALM = 1
 
 
 class TargetsTest(unittest.TestCase):
@@ -43,7 +44,7 @@ class TargetsTest(unittest.TestCase):
                          event_type=event_type, amount=amount)
 
     def rows(self, doms, events=()):
-        return {row.code: row for row in build_targets_vm(doms, ATTACKER_LAND, 0, list(events))}
+        return {row.code: row for row in build_targets_vm(doms, ATTACKER_LAND, 0, list(events), ATTACKER_REALM)}
 
     def test_nw_per_acre_against_race_median(self):
         doms = [self.add_dom([(0, 1000, nw)]) for nw in (40000, 50000, 60000)]

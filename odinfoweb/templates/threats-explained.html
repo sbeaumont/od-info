@@ -8,13 +8,13 @@
 #}
 {% set reviewed_on = '2026-11-15' %}
 {#- doc-sources
-odinfo/calculators/threats.py e7a567801a16b873
+odinfo/calculators/threats.py 0db785f136f4e22e
 odinfo/domain/domainhelper.py 876f24af71133e57
 odinfo/domain/military.py 4becc59b701b61ec
-odinfo/domain/models.py 825d7554fdb2d6d2
-odinfoweb/templates/threats.html 480ba2375703037f
+odinfo/domain/models.py 7b31087ad9d646a3
+odinfoweb/templates/threats.html 3c4cc3fd69d5e9c6
 odinfoweb/viewmodels/about.py c7f4e00e8415197f
-odinfoweb/viewmodels/threats.py 8af837ad2ed6fa03
+odinfoweb/viewmodels/threats.py fe063723db8d73a5
 -#}
 
 {% block content %}
@@ -100,6 +100,8 @@ odinfoweb/viewmodels/threats.py 8af837ad2ed6fa03
 
   <p>
     Take the safe send of the attacker with its temples, against the DP bonus of the defender.
+    When the two realms are at war, the OP includes the war bonus at the tick. A ⚔ next to the
+    realm marks the attacker, and the tooltip of each tick shows the bonus.
     Compare it with the DP of the defender at the tick. The difference is the margin. A positive
     margin means that the attacker can break the defender without risk.
   </p>

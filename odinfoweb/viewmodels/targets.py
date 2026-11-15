@@ -43,6 +43,7 @@ class TargetRowVM:
     dp_incomplete: bool
     draftees: int | None
     ops_age: int | None
+    war_bonus: float
 
 
 def explored_land(dom: Dominion, sent: list[TownCrier], hit: list[TownCrier]) -> int | None:
@@ -58,7 +59,7 @@ def explored_land(dom: Dominion, sent: list[TownCrier], hit: list[TownCrier]) ->
 
 
 def build_targets_vm(dominions: list[Dominion], attacker_land: int, attacker_temples: float,
-                     events: list[TownCrier]) -> list[TargetRowVM]:
+                     events: list[TownCrier], attacker_realm: int) -> list[TargetRowVM]:
     """Rows for every dominion in range of the attacker, sorted by the estimated DP the attacker has to beat."""
     attacks = sorted((e for e in events if e.event_type in ATTACK_EVENTS),
                      key=lambda e: e.timestamp, reverse=True)
@@ -82,7 +83,8 @@ def build_targets_vm(dominions: list[Dominion], attacker_land: int, attacker_tem
         last_sent = sent[0] if sent else None
         last_hit = hit[0] if hit else None
         cs = dom.last_cs
-        mc = MilitaryCalculator(dom)
+        # The war bonus works both ways, so the target has the war bonus of the attacker
+        mc = MilitaryCalculator(dom, versus_realm=attacker_realm)
         has_ops = mc.military is not None
         result.append(TargetRowVM(
             code=dom.code,
@@ -107,6 +109,7 @@ def build_targets_vm(dominions: list[Dominion], attacker_land: int, attacker_tem
             dp_incomplete=bool(mc.missing_intel_for_stats()['defense']) if has_ops else False,
             draftees=cs.military_draftees if cs else None,
             ops_age=hours_since(dom.last_op) if dom.last_op else None,
+            war_bonus=mc.war_bonus,
         ))
 
     return sorted(result, key=lambda r: r.estimated_dp)

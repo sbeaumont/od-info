@@ -41,7 +41,7 @@ class MilitaryService:
         """
         self._repo = repo
 
-    def military_list(self, current_day: int, defense_bonus: float, versus_op: int = 0,
+    def military_list(self, current_day: int, defense_bonus: float, defender_realm: int, versus_op: int = 0,
                       top: int = 20) -> list[MilitaryRowVM]:
         """
         Get military overview for top dominions.
@@ -50,6 +50,7 @@ class MilitaryService:
             current_day: Current game day (for boat protection calculations).
             defense_bonus: The defender's own DP bonus as a decimal, which is what a
                 target's temples eat into. Used for the +Tmps columns.
+            defender_realm: The realm the OP of each dominion is against, for the war bonus.
             versus_op: OP value to calculate safe OP/DP against (0 for default).
             top: Number of top dominions to include.
 
@@ -60,7 +61,7 @@ class MilitaryService:
                      versus_op, top, defense_bonus)
         all_doms = list(self._repo.dominions_in_play())[:top]
         mil_calcs = sorted(
-            [MilitaryCalculator(dom) for dom in all_doms],
+            [MilitaryCalculator(dom, versus_realm=defender_realm) for dom in all_doms],
             key=lambda d: d.dom.current_networth,
             reverse=True
         )
@@ -72,11 +73,11 @@ class MilitaryService:
             boat_stuff = mc.boats(current_day)
 
             # Get refined paid strength (uses midpoint estimates)
-            refined_paid_op, refined_paid_dp, confidence = self.refine_paid_strength(mc.dom)
+            refined_paid_op, refined_paid_dp, confidence = self.refine_paid_strength(mc.dom, defender_realm)
             paid_op = refined_paid_op if refined_paid_op is not None else mc.op
             paid_dp = refined_paid_dp if refined_paid_dp is not None else mc.dp
 
-            current_op, current_dp, current_confidence = self.calculate_current_strength(mc.dom)
+            current_op, current_dp, current_confidence = self.calculate_current_strength(mc.dom, defender_realm)
             if current_confidence:
                 confidence = current_confidence
 
@@ -111,6 +112,7 @@ class MilitaryService:
                 current_op=current_op,
                 current_dp=current_dp,
                 confidence=confidence,
+                war_bonus=mc.war_bonus,
             )
             result_list.append(row)
 
@@ -120,7 +122,8 @@ class MilitaryService:
         """A dominion's own DP bonus as a decimal, from guard towers, walls, spells and techs."""
         return MilitaryCalculator(dom).defense_bonus
 
-    def calculate_current_strength(self, dom: Dominion) -> tuple[int | None, int | None, str | None]:
+    def calculate_current_strength(self, dom: Dominion,
+                                   versus_realm: int) -> tuple[int | None, int | None, str | None]:
         """Calculate current strength from refined BS data.
 
         Requires multiple BS observations from the same tick to actually
@@ -137,10 +140,11 @@ class MilitaryService:
         if not dom.last_barracks:
             return None, None, None
 
-        mc = MilitaryCalculator(dom, tick=0)
+        mc = MilitaryCalculator(dom, tick=0, versus_realm=versus_realm)
         return mc.op, mc.dp, mc.military.confidence
 
-    def refine_paid_strength(self, dom: Dominion) -> tuple[int | None, int | None, str | None]:
+    def refine_paid_strength(self, dom: Dominion,
+                             versus_realm: int) -> tuple[int | None, int | None, str | None]:
         """Calculate refined OP/DP at the paid_until tick.
 
         Requires multiple BS observations from the same tick to actually
@@ -158,14 +162,15 @@ class MilitaryService:
         if not last_bs or len(barracks_spies_in_tick(dom, last_bs.timestamp)) < 2:
             return None, None, None
 
-        mc = MilitaryCalculator(dom, tick=last_bs.paid_until)
+        mc = MilitaryCalculator(dom, tick=last_bs.paid_until, versus_realm=versus_realm)
         return mc.op, mc.dp, mc.military.confidence
 
-    def strength_forecast(self, dom: Dominion) -> list[tuple[int, int, int]]:
+    def strength_forecast(self, dom: Dominion, versus_realm: int) -> list[tuple[int, int, int]]:
         """Project OP and DP for the next 12 ticks.
 
         Args:
             dom: Dominion to forecast.
+            versus_realm: The realm the OP is against, for the war bonus.
 
         Returns:
             List of (tick, op, dp) tuples for ticks 0-12 from now.
@@ -175,7 +180,7 @@ class MilitaryService:
 
         forecast = []
         for future_tick in range(BUILD_TICKS + 1):
-            mc = MilitaryCalculator(dom, tick=future_tick)
+            mc = MilitaryCalculator(dom, tick=future_tick, versus_realm=versus_realm)
             forecast.append((future_tick, mc.op, mc.dp))
         return forecast
 

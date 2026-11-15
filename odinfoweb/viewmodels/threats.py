@@ -36,6 +36,7 @@ class ThreatRowVM:
     land: int
     limit: int
     in_range: bool
+    war_bonus: float
     cells: list[ThreatCellVM]
 
     @property
@@ -124,8 +125,11 @@ def build_threats_vm(dominions: list[Dominion], events: list[TownCrier], defende
 
     doms = {dom.code: dom for dom in dominions}
 
-    def row(code: int, cells: list[ThreatCellVM], in_range: bool) -> ThreatRowVM:
+    def row(code: int, per_tick: list[dict[int, Strike]], in_range: bool) -> ThreatRowVM:
         dom = doms[code]
+        cells = [threat_cell(per_tick[tick][code], names, potential_margin) if code in per_tick[tick]
+                 else ThreatCellVM(None, 'out', '') for tick in ticks]
+        war_bonus = max(strikes[code].war_bonus for strikes in per_tick if code in strikes)
         back_at = dom.military.back_at
         sent = latest_send_after_bs(dom, sends[code])
         for tick, cell in enumerate(cells):
@@ -140,16 +144,14 @@ def build_threats_vm(dominions: list[Dominion], events: list[TownCrier], defende
             confidence = contenders_per_tick[tick][code].mc.military.confidence
             if confidence:
                 cell.tooltip += f' · {confidence}'
+            if per_tick[tick][code].war_bonus:
+                cell.tooltip += f' · war +{per_tick[tick][code].war_bonus:.0%} OP'
         land = contenders_per_tick[0][code].land
         return ThreatRowVM(code, dom.name, dom.realm, dom.race, hours_since(dom.last_op) if dom.last_op else None,
-                           sent is not None, land, range_limit(land, min_range), in_range, cells)
-
-    def cells(per_tick: list[dict[int, Strike]], code: int) -> list[ThreatCellVM]:
-        return [threat_cell(per_tick[tick][code], names, potential_margin) if code in per_tick[tick]
-                else ThreatCellVM(None, 'out', '') for tick in ticks]
+                           sent is not None, land, range_limit(land, min_range), in_range, war_bonus, cells)
 
     in_range_codes = {code for strikes in strikes_per_tick for code in strikes}
     out_of_range_codes = {code for strikes in out_of_range_per_tick for code in strikes} - in_range_codes
-    in_range_rows = [row(code, cells(strikes_per_tick, code), True) for code in in_range_codes]
-    out_of_range_rows = [row(code, cells(out_of_range_per_tick, code), False) for code in out_of_range_codes]
+    in_range_rows = [row(code, strikes_per_tick, True) for code in in_range_codes]
+    out_of_range_rows = [row(code, out_of_range_per_tick, False) for code in out_of_range_codes]
     return sorted(out_of_range_rows + in_range_rows, key=lambda r: (r.in_range, -r.limit))

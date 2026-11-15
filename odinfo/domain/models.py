@@ -56,6 +56,10 @@ class Dominion(Base):
                                                      back_populates='dom',
                                                      order_by='Vision.timestamp.desc()')
     status: Mapped[Optional['DominionStatus']] = relationship('DominionStatus', back_populates='dom')
+    wars: Mapped[List['War']] = relationship('War',
+                                             primaryjoin='or_(Dominion.realm == foreign(War.realm), '
+                                                         'Dominion.realm == foreign(War.target_realm))',
+                                             viewonly=True)
 
     @property
     def current_land(self) -> int:
@@ -457,6 +461,10 @@ class War(Base):
     declared_at: Mapped[datetime] = mapped_column(DateTime)
     active_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
     inactive_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
+
+    def is_active(self, tick_time: datetime) -> bool:
+        """Whether the war gives its bonus after the tick at the time."""
+        return self.active_at <= tick_time and (self.inactive_at is None or self.inactive_at > tick_time)
 
 
 class MyDominion(Base):

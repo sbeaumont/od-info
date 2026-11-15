@@ -1,9 +1,11 @@
 import unittest
 from dataclasses import replace
+from datetime import timedelta
 
 from odinfo.calculators.threats import Battlefield, contenders_at, safe_send, threats_to
 from odinfo.domain.domainhelper import in_range, range_limit
-from odinfo.domain.models import ClearSight, Dominion, DominionHistory
+from odinfo.domain.models import ClearSight, Dominion, DominionHistory, War
+from odinfo.domain.refdata import WAR_BONUS
 from odinfo.timeutils import current_od_time
 from test.fixtures import create_db_session
 
@@ -69,9 +71,9 @@ class ThreatsTestCase(unittest.TestCase):
         attacker = c[1]
         five_four_op = attacker.mc.five_over_four[0]
 
-        self.assertEqual(five_four_op, safe_send(attacker, 0))
-        self.assertLess(safe_send(attacker, round(attacker.mc.five_over_four[1] * 1.2)), five_four_op)
-        self.assertEqual(0, safe_send(attacker, attacker.mc.dp))
+        self.assertEqual(five_four_op, safe_send(attacker.mc, 0))
+        self.assertLess(safe_send(attacker.mc, round(attacker.mc.five_over_four[1] * 1.2)), five_four_op)
+        self.assertEqual(0, safe_send(attacker.mc, attacker.mc.dp))
 
     def test_safe_send_breaks_the_defender_now(self):
         c = self.contenders(
@@ -176,6 +178,19 @@ class ThreatsTestCase(unittest.TestCase):
         strikes = Battlefield(list(c.values()), MIN_RANGE, MAX_RANGE, MAX_TRIGGERS).strikes_on(c[1])
 
         self.assertEqual([3], [s.attacker for s in strikes])
+
+    def test_a_strike_uses_the_war_bonus_against_the_realm_of_the_defender(self):
+        now = current_od_time()
+        self.session.add(War(realm=2, target_realm=1, target_realm_name='Realm 1', status='active',
+                             declared_at=now - timedelta(hours=25), active_at=now - timedelta(hours=1)))
+        c = self.contenders(
+            make_dominion(self.session, 1, realm=1, land=1000, miners=5000),
+            make_dominion(self.session, 2, realm=2, land=1000, warriors=1000),
+            make_dominion(self.session, 3, realm=3, land=1000, warriors=1000))
+
+        self.assertEqual(WAR_BONUS, self.strike(c[2], c[1], c).war_bonus)
+        self.assertEqual(0, self.strike(c[3], c[1], c).war_bonus)
+        self.assertGreater(self.strike(c[2], c[1], c).five_four_op, self.strike(c[3], c[1], c).five_four_op)
 
 
 if __name__ == '__main__':

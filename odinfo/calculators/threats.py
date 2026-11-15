@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from odinfo.calculators.military import MilitaryCalculator
 from odinfo.domain.domainhelper import in_range, range_limit
@@ -13,6 +13,15 @@ class Contender:
     land: int
     mc: MilitaryCalculator
     home_dp: int | None = None
+    versus_mcs: dict[int, MilitaryCalculator] = field(default_factory=dict, repr=False)
+
+    def mc_versus(self, realm: int) -> MilitaryCalculator:
+        """The calculator with the OP bonuses against the realm, kept once made."""
+        if realm not in self.versus_mcs:
+            mc = MilitaryCalculator(self.mc.dom, self.mc.tick, realm)
+            # Most realms are not at war, and a calculator per realm makes every 5/4 send again
+            self.versus_mcs[realm] = mc if mc.war_bonus else self.mc
+        return self.versus_mcs[realm]
 
     @property
     def sent(self) -> bool:
@@ -47,6 +56,7 @@ class Strike:
     triggers: list[Trigger]
     triggered_op: int | None
     triggered_dp: int | None
+    war_bonus: float
 
     @property
     def five_four_margin(self) -> int:
@@ -72,16 +82,16 @@ def threats_to(attacker: Contender, contenders: list[Contender], min_range: floa
                max_range: float) -> list[tuple[Contender, int]]:
     """Dominions in another realm with the attacker in range and their army at home, with their 5/4 send against it,
     strongest first."""
-    threats = [(c, c.mc.five_four_op_with_temples(attacker.mc.defense_bonus))
+    threats = [(c, c.mc_versus(attacker.realm).five_four_op_with_temples(attacker.mc.defense_bonus))
                for c in contenders
                if c.realm != attacker.realm and not c.sent
                and in_range(attacker.land, c.land, min_range, max_range)]
     return sorted(threats, key=lambda threat: threat[1], reverse=True)
 
 
-def safe_send(attacker: Contender, threat_op: int) -> int:
+def safe_send(mc: MilitaryCalculator, threat_op: int) -> int:
     """The OP the attacker can send while its home DP still beats the threat."""
-    return min(attacker.mc.safe_op_versus(threat_op)[0], attacker.mc.five_over_four[0])
+    return min(mc.safe_op_versus(threat_op)[0], mc.five_over_four[0])
 
 
 class Battlefield(object):
@@ -109,17 +119,19 @@ class Battlefield(object):
         defense_bonus = defender.mc.defense_bonus
         defender_dp = defender.dp
         threats = self.threats_to(attacker)
+        attacker_mc = attacker.mc_versus(defender.realm)
 
         def op_at_defender(threat_index: int) -> int:
             threat_op = threats[threat_index][1] if threat_index < len(threats) else 0
-            return attacker.mc.op_with_temples(safe_send(attacker, threat_op), defense_bonus)
+            return attacker_mc.op_with_temples(safe_send(attacker_mc, threat_op), defense_bonus)
 
-        five_four_op = attacker.mc.five_four_op_with_temples(defense_bonus)
+        five_four_op = attacker_mc.five_four_op_with_temples(defense_bonus)
         lowest_dp = (defender.lowest_dp
                      if in_range(attacker.land, defender.land, self.min_range, self.max_range) else defender_dp)
         # No send is more than the 5/4 send, and a defender that sends still keeps its 5/4 home DP.
         if five_four_op <= lowest_dp:
-            return Strike(attacker.code, defender_dp, five_four_op, None, [], [], None, None)
+            return Strike(attacker.code, defender_dp, five_four_op, None, [], [], None, None,
+                          attacker_mc.war_bonus)
         safe_send_op = op_at_defender(0)
         triggers, triggered_op, triggered_dp = [], None, None
         if safe_send_op <= defender_dp:
@@ -132,9 +144,9 @@ class Battlefield(object):
                     triggered_op, triggered_dp = op, dp
                     break
 
-        held_by = [c.code for c, op in threats if op > attacker.mc.five_over_four[1]]
+        held_by = [c.code for c, op in threats if op > attacker_mc.five_over_four[1]]
         return Strike(attacker.code, defender_dp, five_four_op, safe_send_op,
-                      held_by, triggers, triggered_op, triggered_dp)
+                      held_by, triggers, triggered_op, triggered_dp, attacker_mc.war_bonus)
 
     def strikes_on(self, defender: Contender) -> list[Strike]:
         """A strike for every dominion in another realm that has the defender in range."""

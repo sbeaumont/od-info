@@ -45,6 +45,7 @@ class MilitaryRowVM:
     current_op: int | None
     current_dp: int | None
     confidence: str | None  # "locked", "±X%", or None if no refinement
+    war_bonus: float
 
     @property
     def temples_percent(self) -> float:

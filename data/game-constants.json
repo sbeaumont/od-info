@@ -44,6 +44,9 @@
   "temple_bonus_per_perc": 1.35,
   "max_temple_bonus": 0.27,
 
+  "war_bonus": 0.04,
+  "mutual_war_bonus": 0.08,
+
   "ares_bonus": 0.1,
   "midas_touch_bonus": 0.1,
 

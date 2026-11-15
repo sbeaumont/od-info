@@ -98,6 +98,7 @@ class ODInfoFacade(object):
     def update_realms(self):
         """Update the wonders and wars from the OpenDominion API."""
         self._update_service.update_realms()
+        self.clear_cache()
 
     def update_town_crier(self):
         """Add the new Town Crier events from the OpenDominion API."""
@@ -215,7 +216,7 @@ class ODInfoFacade(object):
 
         current_day = self.my_dominion().current_day
         result_list = self._military_service.military_list(
-            current_day, defense_bonus, versus_op, top)
+            current_day, defense_bonus, self.my_dominion().realm, versus_op, top)
         self._cache[cache_key] = result_list
         return result_list
 
@@ -229,15 +230,15 @@ class ODInfoFacade(object):
 
     def current_strength(self, dom: Dominion) -> tuple[int | None, int | None, str | None]:
         """Get current strength (refined) for a single dominion."""
-        return self._military_service.calculate_current_strength(dom)
+        return self._military_service.calculate_current_strength(dom, self.my_dominion().realm)
 
     def refine_paid_strength(self, dom: Dominion) -> tuple[int | None, int | None, str | None]:
         """Get refined paid strength (at paid_until tick) for a single dominion."""
-        return self._military_service.refine_paid_strength(dom)
+        return self._military_service.refine_paid_strength(dom, self.my_dominion().realm)
 
     def strength_forecast(self, dom: Dominion) -> list[tuple[int, int, int]]:
         """Get 12-tick strength forecast for a single dominion."""
-        return self._military_service.strength_forecast(dom)
+        return self._military_service.strength_forecast(dom, self.my_dominion().realm)
 
     def realmies(self) -> list[Dominion]:
         logger.debug("Getting Realmies")
@@ -260,7 +261,8 @@ class ODInfoFacade(object):
         result = build_targets_vm(list(self._repo.dominions_in_play()),
                                   attacker.current_land,
                                   MilitaryCalculator(attacker).temple_bonus,
-                                  list(self._repo.all_town_crier_events()))
+                                  list(self._repo.all_town_crier_events()),
+                                  attacker.realm)
         self._cache[cache_key] = result
         return result
 

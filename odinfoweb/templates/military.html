@@ -81,7 +81,8 @@
             <td>
                 <a href="{{ url_for('dominfo', domcode=dom.code) }}">{{ dom.name }}</a>
             </td>
-            <td>{{ dom.realm }}</td>
+            <td data-order="{{ dom.realm }}">{{ dom.realm }}
+                {% if dom.war_bonus %}<span class="war-icon" title="War with your realm: +{{ '%g' % (dom.war_bonus * 100) }}% OP both ways">⚔</span>{% endif %}</td>
             <td>
                 <a href="{{ url_for('military', versus_op=dom.five_over_four_op) }}">
                     {{ dom.race }}

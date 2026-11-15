@@ -290,7 +290,8 @@ def dominfo(domcode: int, update=None):
     current_strength = facade().current_strength(dominion)
     paid_strength = facade().refine_paid_strength(dominion)
     strength_forecast = facade().strength_forecast(dominion)
-    dom_vm = build_dominfo_vm(dominion, current_strength, paid_strength, strength_forecast)
+    dom_vm = build_dominfo_vm(dominion, facade().my_dominion().realm, current_strength, paid_strength,
+                              strength_forecast)
     return render_template(
         'dominfo.html',
         dom_vm=dom_vm,

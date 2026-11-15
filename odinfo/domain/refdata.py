@@ -38,6 +38,8 @@ PLAT_PER_PEASANT_PER_TICK = game_constants['plat_per_peasant_per_tick']
 UNITS_PER_BOAT = game_constants['units_per_boat']
 BOATS_PER_DOCK = game_constants['boats_per_dock']
 BOATS_PER_DOCK_PER_DAY = game_constants['boats_per_dock_per_day']
+WAR_BONUS = game_constants['war_bonus']
+MUTUAL_WAR_BONUS = game_constants['mutual_war_bonus']
 
 # Bonuses from spells that every dominion is assumed to keep up, since the tool can't see
 # them for other dominions. Racial spells come from spells.yml instead.

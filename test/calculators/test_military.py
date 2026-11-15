@@ -2,11 +2,11 @@ import unittest
 from datetime import datetime, timedelta
 
 from odinfo.calculators.military import MilitaryCalculator
-from odinfo.domain.models import ClearSight, Dominion, DominionHistory
-from odinfo.domain.refdata import Spells
+from odinfo.domain.models import ClearSight, Dominion, DominionHistory, War
+from odinfo.domain.refdata import Spells, WAR_BONUS, MUTUAL_WAR_BONUS
 from odinfo.repositories.game import GameRepository
 from odinfo.services.military_service import MilitaryService
-from odinfo.timeutils import current_od_time
+from odinfo.timeutils import current_od_time, truncate_to_tick
 from test.fixtures import create_db_session, init_db
 
 NOW = datetime(2026, 10, 28, 12, 0, 0)
@@ -70,7 +70,7 @@ class MilitaryCalculatorTestCase(unittest.TestCase):
         bs.home_unit3 = 0
         mc = MilitaryCalculator(self.dom)
 
-        _, current_dp, confidence = MilitaryService(GameRepository(self.session)).calculate_current_strength(self.dom)
+        _, current_dp, confidence = MilitaryService(GameRepository(self.session)).calculate_current_strength(self.dom, self.dom.realm)
 
         self.assertEqual(mc.dp, current_dp)
         self.assertEqual('locked', confidence)
@@ -237,6 +237,53 @@ class EstimatedDPTestCase(unittest.TestCase):
         self.add_history(0, 1000, 45000)
         mc = MilitaryCalculator(self.dom)
         self.assertEqual(mc.dp, mc.estimated_dp)
+
+
+class WarBonusTestCase(unittest.TestCase):
+    """The dominion of the fixture is in realm 10."""
+
+    def setUp(self):
+        self.session = create_db_session()
+        init_db(self.session)
+        self.dom = self.session.get(Dominion, 1)
+        self.now = truncate_to_tick(current_od_time())
+
+    def declare(self, realm: int, target_realm: int, active_in: int = -1, inactive_in: int | None = None):
+        """A war declared by the realm, active from active_in ticks from now, until inactive_in if one is given."""
+        self.session.add(War(realm=realm, target_realm=target_realm, target_realm_name=f'Realm {target_realm}',
+                             status='active', declared_at=self.now - timedelta(hours=24),
+                             active_at=self.now + timedelta(hours=active_in),
+                             inactive_at=None if inactive_in is None else self.now + timedelta(hours=inactive_in)))
+        self.session.commit()
+
+    def test_no_versus_realm_has_no_war_bonus(self):
+        self.declare(10, 20)
+        self.assertEqual(0, MilitaryCalculator(self.dom).war_bonus)
+
+    def test_a_war_declared_either_way_gives_the_war_bonus(self):
+        self.declare(10, 20)
+        self.declare(30, 10)
+        self.assertEqual(WAR_BONUS, MilitaryCalculator(self.dom, versus_realm=20).war_bonus)
+        self.assertEqual(WAR_BONUS, MilitaryCalculator(self.dom, versus_realm=30).war_bonus)
+
+    def test_a_mutual_war_gives_the_mutual_war_bonus(self):
+        self.declare(10, 20)
+        self.declare(20, 10)
+        self.assertEqual(MUTUAL_WAR_BONUS, MilitaryCalculator(self.dom, versus_realm=20).war_bonus)
+
+    def test_a_war_between_other_realms_gives_nothing(self):
+        self.declare(20, 30)
+        self.assertEqual(0, MilitaryCalculator(self.dom, versus_realm=20).war_bonus)
+
+    def test_a_war_gives_its_bonus_from_active_until_inactive(self):
+        self.declare(10, 20, active_in=2, inactive_in=5)
+        bonus_per_tick = [MilitaryCalculator(self.dom, tick, versus_realm=20).war_bonus for tick in range(7)]
+        self.assertEqual([0, 0, WAR_BONUS, WAR_BONUS, WAR_BONUS, 0, 0], bonus_per_tick)
+
+    def test_the_war_bonus_adds_to_the_offense_bonus(self):
+        self.declare(10, 20)
+        self.assertAlmostEqual(MilitaryCalculator(self.dom).offense_bonus + WAR_BONUS,
+                               MilitaryCalculator(self.dom, versus_realm=20).offense_bonus)
 
 
 class SpellRaceKeyTestCase(unittest.TestCase):

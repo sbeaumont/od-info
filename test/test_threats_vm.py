@@ -17,7 +17,8 @@ POTENTIAL_MARGIN = 10
 
 def make_strike(five_four_op: int, safe_send_op: int, triggers=(), triggered_op=None, triggered_dp=None) -> Strike:
     return Strike(attacker=2, defender_dp=10000, five_four_op=five_four_op, safe_send_op=safe_send_op,
-                  held_by=[3, 4], triggers=list(triggers), triggered_op=triggered_op, triggered_dp=triggered_dp)
+                  held_by=[3, 4], triggers=list(triggers), triggered_op=triggered_op, triggered_dp=triggered_dp,
+                  war_bonus=0)
 
 
 class ThreatCellTest(unittest.TestCase):

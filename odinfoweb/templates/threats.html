@@ -83,7 +83,8 @@
         <tr data-realm="{{ row.realm }}"
             class="{% if row.ops_age is none or row.ops_age > 12 or row.sent_after_bs %}old-ops{% endif %} {% if not row.threat %}no-threat{% endif %}">
             <td><a href="{{ url_for('dominfo', domcode=row.code) }}">{{ row.name }}</a></td>
-            <td>{{ row.realm }}</td>
+            <td data-order="{{ row.realm }}">{{ row.realm }}
+                {% if row.war_bonus %}<span class="war-icon" title="War with the defender's realm: up to +{{ '%g' % (row.war_bonus * 100) }}% OP both ways. The tick tooltips show when it applies.">⚔</span>{% endif %}</td>
             <td>{{ row.race }}</td>
             <td>{{ row.ops_age if row.ops_age is not none else '-' }}</td>
             <td>{{ row.land }}</td>

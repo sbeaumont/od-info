@@ -20,6 +20,8 @@ class RatioRowVM:
     networth: int
     wpa: float | None
     spa: float | None
+    tower_percentage: float | None
+    mana: int
     ops_age: float
 
 
@@ -44,6 +46,8 @@ def build_ratio_list_vm(dominions: list[Dominion], max_ops_age: int = 100) -> li
                 networth=dom.current_networth,
                 wpa=dom.current_wpa,
                 spa=rc.spy_ratio_actual,
+                tower_percentage=dom.buildings.ratio_of('tower') * 100 if dom.buildings else None,
+                mana=dom.last_cs.resource_mana,
                 ops_age=ops_age,
             ))
 

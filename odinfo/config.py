@@ -137,6 +137,9 @@ secret_key = EDIT_THIS
 
 # Optional: database to open, for example an old round. Default is one database per current round.
 #database_name = sqlite:///odinfo-round-49.sqlite
+
+# Optional: false runs every request as a local admin, without a login. Only for a local machine.
+#login = false
 """
 
 USERS_JSON_TEMPLATE = """[
@@ -169,6 +172,14 @@ def check_dirs_and_configs():
         if f.read() == SECRETS_TEMPLATE:
             problems.append(f"You still need to change {secrets_filename}.")
 
+    if login_enabled(read_secrets(secrets_filename)):
+        problems.extend(check_users_file())
+
+    return problems
+
+
+def check_users_file():
+    problems = []
     users_filename = executable_path(USERS_FILE)
     if not os.path.exists(users_filename):
         problems.append(f'Expected {users_filename} with your login settings.')
@@ -180,7 +191,6 @@ def check_dirs_and_configs():
         if f.read() == USERS_JSON_TEMPLATE:
             problems.append(f"You still need to change {users_filename}.")
 
-
     return problems
 
 
@@ -191,22 +201,31 @@ def load_secrets():
         sys.exit('\n'.join(problems))
 
     secrets_filename = executable_path(SECRET_FILE)
+    secrets_dict = read_secrets(secrets_filename)
+    for key, value in secrets_dict.items():
+        if value == 'EDIT_THIS':
+            sys.exit(f"ERROR: Please edit {secrets_filename} and replace 'EDIT_THIS' with actual values for: {key}")
+    return secrets_dict
+
+
+def read_secrets(secrets_filename: str) -> dict[str, str]:
+    """The key = value pairs in a secrets file."""
     with open(secrets_filename) as f:
         secrets_dict = dict()
         for line_num, line in enumerate(f.readlines(), 1):
             line = line.strip()
-            # Skip empty lines and comments
             if not line or line.startswith('#'):
                 continue
-            # Check for malformed config lines
             if '=' not in line:
                 sys.exit(f"ERROR: Invalid configuration line {line_num} in {secrets_filename}: '{line}'\nExpected format: key = value")
             key, value = [part.strip() for part in line.split('=', 1)]
-            # Check for template placeholder values
-            if value == 'EDIT_THIS':
-                sys.exit(f"ERROR: Please edit {secrets_filename} and replace 'EDIT_THIS' with actual values for: {key}")
             secrets_dict[key] = value
         return secrets_dict
+
+
+def login_enabled(secrets: dict[str, str]) -> bool:
+    """False only for an explicit `login = false` in the secrets file."""
+    return secrets.get('login') != 'false'
 
 
 def write_secrets(secrets_filename: str, changes: dict[str, str]):

@@ -22,12 +22,12 @@ from odinfoweb.forms import LoginForm
 
 from odinfo.domain.models import Base
 from odinfo.domain.refdata import TEMPLE_BONUS_PER_PERC, MAX_TEMPLE_BONUS, BUILD_TICKS, DAILY_LAND_BONUS, MAX_RANGE, MIN_RANGE
-from odinfoweb.user import load_user_by_id, load_user_by_name
+from odinfoweb.user import load_user_by_id, load_user_by_name, LOCAL_USER
 
 from odinfo.config import (OP_CENTER_URL, WEB_PORT, NW_PERIODS, NW_DEFAULT_PERIOD,
                            NW_ROW_COUNTS, NW_UNCHANGED_DEFAULT, SECRET_FILE, load_secrets,
                            check_dirs_and_configs, get_config, executable_path, write_secrets,
-                           POTENTIAL_THREAT_MARGIN)
+                           login_enabled, POTENTIAL_THREAT_MARGIN)
 from odinfo.facade.cache import FacadeCache
 from odinfo.facade.odinfo import ODInfoFacade
 from odinfo.facade.graphs import nw_history_graph, land_history_graph
@@ -114,6 +114,12 @@ login_manager.login_message = u"Please login"
 @login_manager.user_loader
 def load_user(user_id):
     return load_user_by_id(user_id)
+
+
+if not login_enabled(load_secrets()):
+    @login_manager.request_loader
+    def load_local_user(_request):
+        return LOCAL_USER
 
 
 def admin_required(view):

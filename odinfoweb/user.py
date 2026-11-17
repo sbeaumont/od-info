@@ -33,6 +33,9 @@ class User(object):
         return str(self._id)
 
 
+LOCAL_USER = User({"id": "local", "name": "local", "password": None, "active": "true", "admin": "true"})
+
+
 @cache
 def load_users() -> list[dict]:
     """The login entries in the users file."""
